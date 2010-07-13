@@ -1,0 +1,42 @@
+#------------------------------------------------------------------------------
+VERSION = BWS.01
+#------------------------------------------------------------------------------
+!ifndef ROOT
+ROOT = $(MAKEDIR)\..
+!endif
+#------------------------------------------------------------------------------
+MAKE = $(ROOT)\bin\make.exe -$(MAKEFLAGS) -f$**
+DCC = $(ROOT)\bin\dcc32.exe $**
+BRCC = $(ROOT)\bin\brcc32.exe $**
+#------------------------------------------------------------------------------
+PROJECTS = RestFront.exe tmsd7.bpl tmsded7.bpl tmsexd7.bpl kbmMemD7Des.bpl \
+  kbmMemD7Run.bpl EhLib70.bpl DclEhLib70.bpl
+#------------------------------------------------------------------------------
+default: $(PROJECTS)
+#------------------------------------------------------------------------------
+
+RestFront.exe: RestFront.dpr
+  $(DCC)
+
+tmsd7.bpl: TMS\tmsd7.dpk
+  $(DCC)
+
+tmsded7.bpl: TMS\tmsded7.dpk
+  $(DCC)
+
+tmsexd7.bpl: TMS\tmsexd7.dpk
+  $(DCC)
+
+kbmMemD7Des.bpl: Components\kbmMemTable\Source\kbmMemD7Des.dpk
+  $(DCC)
+
+kbmMemD7Run.bpl: Components\kbmMemTable\Source\kbmMemD7Run.dpk
+  $(DCC)
+
+EhLib70.bpl: Components\EhLib\Delphi7\EhLib70.dpk
+  $(DCC)
+
+DclEhLib70.bpl: Components\EhLib\Delphi7\DclEhLib70.dpk
+  $(DCC)
+
+
