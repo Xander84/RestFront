@@ -38,6 +38,7 @@ const
 панелей, будут кнопки ОК и Отмена }
 { TODO -oAlexander : Реализовать форму выбора параметров }
 { TODO -oAlexander : Реализовать форму добавления сотрудника }
+{ TODO : В проекте не отлавливаются ошибки!!! }
 
 {
 Для удаления мерцания компонентов использую
@@ -420,15 +421,19 @@ begin
 
   FReport.Free;
 
-  FOrderDataSet.Free;
-  FMenuDataSet.Free;
-  FGoodDataSet.Free;
-  FGroupDataSet.Free;
+  // инчае будет AV при уничтожения грида
+  if Assigned(dsMain.DataSet) then
+    dsMain.DataSet := nil;
 
-  FModificationDataSet.Free;
-  FMasterDataSource.Free;
-  FLineTable.Free;
-  FHeaderTable.Free;
+  FreeAndNil(FOrderDataSet);
+  FreeAndNil(FMenuDataSet);
+  FreeAndNil(FGoodDataSet);
+  FreeAndNil(FGroupDataSet);
+
+  FreeAndNil(FModificationDataSet);
+  FreeAndNil(FMasterDataSource);
+  FreeAndNil(FLineTable);
+  FreeAndNil(FHeaderTable);
 
   FMenuButtonList.Free;
   FOrderButtonList.Free;
