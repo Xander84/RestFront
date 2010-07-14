@@ -10,7 +10,7 @@ uses
   Contnrs, kbmMemTable, DBGridEh, GridsEh, Spark617_Unit,
   SplitOrderForm_Unit, Report_Unit, FrontData_Unit, RestBaseForm_Unit,
   AdvSmoothButton, AdvPanel, AdvPageControl, AdvSmoothTouchKeyBoard,
-  TaskDialog, FrontLog_Unit;
+  TaskDialog, FrontLog_Unit, Grids;
 
 const
   btnHeight = 51;
@@ -365,6 +365,8 @@ begin
   end else
   begin
     AdvTaskMessageDlg('Внимание', 'Неверный пароль', mtWarning, [mbOK], 0);
+    if edPassword.CanFocus then
+      edPassword.SetFocus;
     WriteLog(FFrontBase, cn_l_ErrorPass, '');
   end;
 end;
