@@ -7,17 +7,16 @@ uses
 
 type
 
-  //Абстрактный класс
+  //Базовый класс работы с дисплеем.
   TBaseDisplay = class(TObject)
   private
     FCom: Integer;
     FInitialized: Boolean;
     FDisplay: THandle; //Handle COM порта дисплея
-
+    FErrorInInit: Boolean;
   public
-    property Display: THandle read FDisplay write FDisplay;
-    property Initialized: Boolean read FInitialized write FInitialized;
-    property ComPort: Integer read FCom write FCom;
+    constructor Create;
+    destructor Destroy; override;
 
     procedure WritePos(const Name: String; const Quantity: Currency;
       const Cost: Currency); virtual; abstract;
@@ -28,9 +27,10 @@ type
     procedure Payed; virtual; abstract;
     procedure Clear; virtual; abstract;
 
-    constructor Create;
-    destructor Destroy; override;
-
+    property Display: THandle read FDisplay write FDisplay;
+    property Initialized: Boolean read FInitialized write FInitialized;
+    property ComPort: Integer read FCom write FCom;
+    property ErrorInInit: Boolean read FErrorInInit write FErrorInInit;
   end;
 
 implementation
@@ -44,6 +44,7 @@ begin
   FDisplay := 0;
   FCom := 0;
   FInitialized := False;
+  FErrorInInit := False;
 end;
 
 destructor TBaseDisplay.Destroy;
