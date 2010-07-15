@@ -1,7 +1,9 @@
 program RestFront;
 
 uses
+  FastMM4,
   Forms,
+  AppEvnts,
   MainForm in 'MainForm.pas' {RestMainForm},
   GuestForm_unit in 'GuestForm_unit.pas' {GuestForm},
   DeleteOrderLine_unit in 'DeleteOrderLine_unit.pas' {DeleteOrderLine},
@@ -20,13 +22,26 @@ uses
   FrontData_Unit in 'FrontData_Unit.pas' {FrontData: TDataModule},
   EditReportForm_Unit in 'EditReportForm_Unit.pas' {EditReport},
   RestBaseForm_Unit in 'RestBaseForm_Unit.pas',
-  FrontLog_Unit in 'FrontLog_Unit.pas';
+  FrontLog_Unit in 'FrontLog_Unit.pas',
+  FrontApplicationEventsHandler_Unit in 'FrontApplicationEventsHandler_Unit.pas';
 
 {$R *.res}
 
+var
+  ApplicationEventsHandler: TApplicationEventsHandler;
+  FApplicationEvents: TApplicationEvents;
+
 begin
-  Application.Initialize;
-  Application.CreateForm(TFrontData, FrontData);
-  Application.CreateForm(TRestMainForm, RestMainForm);
-  Application.Run;
+  ApplicationEventsHandler := TApplicationEventsHandler.Create;
+  try
+    FApplicationEvents := TApplicationEvents.Create(Application);
+    FApplicationEvents.OnException := ApplicationEventsHandler.ApplicationEventsException;  
+
+    Application.Initialize;
+    Application.CreateForm(TFrontData, FrontData);
+    Application.CreateForm(TRestMainForm, RestMainForm);
+    Application.Run;
+  finally
+    ApplicationEventsHandler.Free;
+  end;
 end.
