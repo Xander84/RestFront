@@ -115,7 +115,6 @@ object SellParamForm: TSellParamForm
       Height = 252
       AutoFitColWidths = True
       DataSource = dsMain
-      Flat = False
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -11
@@ -554,26 +553,6 @@ object SellParamForm: TSellParamForm
       Version = '1.6.5.2'
     end
   end
-  object dsPayLine: TkbmMemTable
-    DesignActivation = True
-    AttachedAutoRefresh = True
-    AttachMaxCount = 1
-    FieldDefs = <>
-    IndexDefs = <>
-    SortOptions = []
-    PersistentBackup = False
-    ProgressFlags = [mtpcLoad, mtpcSave, mtpcCopy]
-    LoadedCompletely = False
-    SavedCompletely = False
-    FilterOptions = []
-    Version = '5.52'
-    LanguageID = 0
-    SortID = 0
-    SubLanguageID = 1
-    LocaleID = 1024
-    Left = 368
-    Top = 48
-  end
   object dsMain: TDataSource
     DataSet = dsPayLine
     Left = 416
@@ -592,5 +571,25 @@ object SellParamForm: TSellParamForm
       OnExecute = actDeletePayExecute
       OnUpdate = actDeletePayUpdate
     end
+  end
+  object dsPayLine: TkbmMemTable
+    DesignActivation = True
+    AttachedAutoRefresh = True
+    AttachMaxCount = 1
+    FieldDefs = <>
+    IndexDefs = <>
+    SortOptions = []
+    PersistentBackup = False
+    ProgressFlags = [mtpcLoad, mtpcSave, mtpcCopy]
+    LoadedCompletely = False
+    SavedCompletely = False
+    FilterOptions = []
+    Version = '5.52'
+    LanguageID = 0
+    SortID = 0
+    SubLanguageID = 1
+    LocaleID = 1024
+    Left = 552
+    Top = 32
   end
 end

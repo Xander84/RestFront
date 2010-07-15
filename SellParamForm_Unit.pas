@@ -7,7 +7,7 @@ uses
   Dialogs, StdCtrls, Front_DataBase_Unit, kbmMemTable, DB,
   GridsEh, DBGridEh, Spark617_Unit, ActnList, FrontData_Unit,
   AdvSmoothTouchKeyBoard, ExtCtrls, AdvPanel, AdvSmoothButton,
-  AdvSmoothToggleButton;
+  AdvSmoothToggleButton, Grids;
 
 const
   cn_maxpay = 1000000;
@@ -28,7 +28,6 @@ type
     Label2: TLabel;
     DBGrMain: TDBGridEh;
     edMain: TEdit;
-    dsPayLine: TkbmMemTable;
     dsMain: TDataSource;
     acListMain: TActionList;
     actPay: TAction;
@@ -40,6 +39,7 @@ type
     btnCardPay: TAdvSmoothToggleButton;
     actDeletePay: TAction;
     btnDelPay: TAdvSmoothButton;
+    dsPayLine: TkbmMemTable;
     procedure edMainKeyPress(Sender: TObject; var Key: Char);
     procedure edMainChange(Sender: TObject);
     procedure btnCashPayClick(Sender: TObject);
