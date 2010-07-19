@@ -554,7 +554,6 @@ object SellParamForm: TSellParamForm
     end
   end
   object dsMain: TDataSource
-    DataSet = dsPayLine
     Left = 416
     Top = 48
   end
@@ -571,25 +570,5 @@ object SellParamForm: TSellParamForm
       OnExecute = actDeletePayExecute
       OnUpdate = actDeletePayUpdate
     end
-  end
-  object dsPayLine: TkbmMemTable
-    DesignActivation = True
-    AttachedAutoRefresh = True
-    AttachMaxCount = 1
-    FieldDefs = <>
-    IndexDefs = <>
-    SortOptions = []
-    PersistentBackup = False
-    ProgressFlags = [mtpcLoad, mtpcSave, mtpcCopy]
-    LoadedCompletely = False
-    SavedCompletely = False
-    FilterOptions = []
-    Version = '5.52'
-    LanguageID = 0
-    SortID = 0
-    SubLanguageID = 1
-    LocaleID = 1024
-    Left = 552
-    Top = 32
   end
 end

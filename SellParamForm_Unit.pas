@@ -18,6 +18,14 @@ const
   //рубли по умолчанию форма оплаты
   mn_RUBpaytypeXID = 147141777;
   mn_RUBpaytypeDBID = 349813242;
+  // тип оплаты
+  // 0 нал
+  // 1 карта
+  // 2 безнал
+  cn_paytype_cash = 0;
+  cn_paytype_credit = 1;
+  cn_paytype_noncash = 2;
+
 
 type
   TSellParamForm = class(TForm)
@@ -39,7 +47,6 @@ type
     btnCardPay: TAdvSmoothToggleButton;
     actDeletePay: TAction;
     btnDelPay: TAdvSmoothButton;
-    dsPayLine: TkbmMemTable;
     procedure edMainKeyPress(Sender: TObject; var Key: Char);
     procedure edMainChange(Sender: TObject);
     procedure btnCashPayClick(Sender: TObject);
@@ -64,6 +71,7 @@ type
     FDoc: TkbmMemTable;
     FDocLine: TkbmMemTable;
     FPayType: Integer;
+    dsPayLine: TkbmMemTable;
 
     procedure SetSumToPay(const Value: Currency);
     procedure SetFiscalRegister(const Value: TFiscalRegister);
@@ -72,6 +80,7 @@ type
 
   public
     constructor CreateWithFrontBase(AOwner: TComponent; FBase: TFrontBase);
+    destructor Destroy; override;
 
     property SumToPay: Currency read FSumToPay write SetSumToPay;
     property FiscalRegistry: TFiscalRegister read FFiscalRegiter write SetFiscalRegister;
@@ -101,19 +110,17 @@ begin
   FPaySum := 0;
   FSumToPay := 0;
 
+  dsPayLine := TkbmMemTable.Create(nil);
   dsPayLine.Close;
   dsPayLine.FieldDefs.Clear;
   dsPayLine.FieldDefs.Add('USR$NAME', ftString, 60);
   dsPayLine.FieldDefs.Add('USR$PAYTYPEKEY', ftInteger, 0);
   dsPayLine.FieldDefs.Add('USR$NOFISCAL', ftInteger, 0);
   dsPayLine.FieldDefs.Add('SUM', ftCurrency, 0);
-  // тип оплаты
-  // 0 нал
-  // 1 карта
-  // 2 безнал
   dsPayLine.FieldDefs.Add('PAYTYPE', ftInteger, 0);
   dsPayLine.CreateTable;
   dsPayLine.Open;
+  dsMain.DataSet := dsPayLine;
 
   FNalID := FFrontBase.GetIDByRUID(mn_nalXID, mn_nalDBID);
   Assert(FNalID <> -1, 'Invalid RUID');
@@ -124,17 +131,17 @@ begin
   FCurrentPayType := FFrontBase.GetIDByRUID(mn_RUBpaytypeXID, mn_RUBpaytypeDBID);
   FCurrentPayName := 'Рубли';
   FNoFiscal := 0;
-  FPayType := 0;
+  FPayType := cn_paytype_cash;
 
   Assert(FCurrentPayType <> -1, 'Invalid RUID');
 
-  with DBGrMain do
-  begin
-    Font.Size := cn_FontSize;
-    TitleFont.Size := cn_TitleFontSize;
-    OddRowColor := cn_OddRowColor;
-    EvenRowColor := cn_EvenRowColor;
-  end;
+  SetupGrid(DBGrMain);
+end;
+
+destructor TSellParamForm.Destroy;
+begin
+  dsPayLine.Free;
+  inherited;
 end;
 
 procedure TSellParamForm.edMainKeyPress(Sender: TObject; var Key: Char);
@@ -145,10 +152,6 @@ end;
 
 procedure TSellParamForm.edMainChange(Sender: TObject);
 begin
-//заносить изменения в датасет
-//  if edMain.Text = '' then
-//    edMain.Text := '0';
-
   if dsPayLine.IsEmpty then
   begin
     if edMain.Text <> '' then
@@ -160,7 +163,7 @@ begin
       dsPayLine.FieldByName('USR$NOFISCAL').AsInteger := FNoFiscal;
       dsPayLine.FieldByName('PAYTYPE').AsInteger := FPayType;
       dsPayLine.Post;
-    end;  
+    end;
   end else
   begin
     if dsPayLine.Locate('USR$PAYTYPEKEY', FCurrentPayType, []) then
@@ -197,7 +200,7 @@ begin
     FCurrentPayType := FFrontBase.GetIDByRUID(mn_RUBpaytypeXID, mn_RUBpaytypeDBID);
     FCurrentPayName := 'Рубли';
     FNoFiscal := 0;
-    FPayType := 0;
+    FPayType := cn_paytype_cash;
     edMain.Text := '';
   end;
   Assert(FCurrentPayType <> -1, 'Invalid RUID');
@@ -217,7 +220,7 @@ begin
       FCurrentPayType := FForm.PayFormDataSet.FieldByName('USR$PAYTYPEKEY').AsInteger;
       FCurrentPayName := FForm.PayFormDataSet.FieldByName('USR$NAME').AsString;
       FNoFiscal := FForm.PayFormDataSet.FieldByName('USR$NOFISCAL').AsInteger;
-      FPayType := 2;
+      FPayType := cn_paytype_noncash;
       edMain.Text := '';
     end;
   finally
@@ -245,7 +248,7 @@ begin
       FCurrentPayType := FForm.PayFormDataSet.FieldByName('USR$PAYTYPEKEY').AsInteger;
       FCurrentPayName := FForm.PayFormDataSet.FieldByName('USR$NAME').AsString;
       FNoFiscal := FForm.PayFormDataSet.FieldByName('USR$NOFISCAL').AsInteger;
-      FPayType := 1;
+      FPayType := cn_paytype_credit;
       edMain.Text := '';
     end;
   finally

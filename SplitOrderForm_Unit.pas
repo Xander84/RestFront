@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, ExtCtrls, Front_DataBase_Unit, DB, GridsEh, DBGridEh, kbmMemTable,
-  StdCtrls, FrontData_Unit, AdvPanel, AdvSmoothButton;
+  StdCtrls, FrontData_Unit, AdvPanel, AdvSmoothButton, Grids;
 
 
 type
@@ -343,21 +343,8 @@ begin
   btnRight.Picture := FrontData.RestPictureContainer.FindPicture('Right');
   btnAllRight.Picture := FrontData.RestPictureContainer.FindPicture('AllRight');
 
-  with DBGrLeft do
-  begin
-    Font.Size := cn_FontSize;
-    TitleFont.Size := cn_TitleFontSize;
-    OddRowColor := cn_OddRowColor;
-    EvenRowColor := cn_EvenRowColor;
-  end;
-
-  with DBGrRight do
-  begin
-    Font.Size := cn_FontSize;
-    TitleFont.Size := cn_TitleFontSize;
-    OddRowColor := cn_OddRowColor;
-    EvenRowColor := cn_EvenRowColor;
-  end;
+  SetupGrid(DBGrLeft);
+  SetupGrid(DBGrRight);
 end;
 
 procedure TSplitOrder.FormDestroy(Sender: TObject);

@@ -6,7 +6,8 @@ interface
 
 uses
   SysUtils, Windows, Classes, AdvPanel, AdvSmoothMessageDialog, AdvStyleIF,
-  SysConst, Graphics, ImgList, Controls, AdvAppStyler, GDIPPictureContainer;
+  SysConst, Graphics, ImgList, Controls, AdvAppStyler, GDIPPictureContainer,
+  DBGridEh;
 
 type
   TApplicationFile = (afApplicationData);
@@ -32,6 +33,8 @@ type
     class function GetFrontStyle: TTMSStyle;
   end;
 
+  procedure SetupGrid(const Grid: TDBGridEh);
+
 // настройки для гридов
 const
   cn_TitleFontSize = 10;
@@ -55,6 +58,17 @@ uses
 {$R *.dfm}
 
 { TFrontData }
+
+procedure SetupGrid(const Grid: TDBGridEh);
+begin
+  with Grid do
+  begin
+    Font.Size := cn_FontSize;
+    TitleFont.Size := cn_TitleFontSize;
+    OddRowColor := cn_OddRowColor;
+    EvenRowColor := cn_EvenRowColor;
+  end;
+end;
 
 function TFrontData.GetStyle: TTMSStyle;
 begin
