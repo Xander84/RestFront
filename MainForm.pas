@@ -26,6 +26,7 @@ const
 
 const
   btnFirstTop = 8;
+  btnColor = $00E7DCD5;
 
 
 { TODO -oAlexander : Запросы в front_database_unit вынести в константы }
@@ -38,7 +39,6 @@ const
 панелей, будут кнопки ОК и Отмена }
 { TODO -oAlexander : Реализовать форму выбора параметров }
 { TODO -oAlexander : Реализовать форму добавления сотрудника }
-{ TODO : В проекте не отлавливаются ошибки!!! }
 
 {
 Для удаления мерцания компонентов использую
@@ -391,6 +391,7 @@ begin
     on E: Exception do
     begin
       AdvTaskMessageDlg('Внимание', 'Ошибка при подключении ' + E.Message, mtError, [mbOK], 0);
+      FFrontBase.Free;
       Application.Terminate;
     end;
   end;
@@ -569,7 +570,7 @@ begin
   //Создание кнопки
   FButton := TAdvSmoothButton.Create(tsUserOrder);
   FButton.Appearance.Font.Name := 'Times New Roman';
-  FButton.Color := $00E7DCD5;
+  FButton.Color := btnColor;
   FButton.Appearance.Font.Size := 14;
   FButton.Parent := tsUserOrder;
   FButton.OnClick := OrderButtonOnClick;
@@ -620,7 +621,7 @@ begin
   //Создание кнопки
   FButton := TAdvSmoothButton.Create(pnlGood);
   FButton.Appearance.Font.Name := 'Times New Roman';
-  FButton.Color := $00E7DCD5;
+  FButton.Color := btnColor;
   FButton.Parent := pnlGood;
   FButton.OnClick := GoodButtonOnClick;
   FButton.Name := Format(btnGoodName, [FGoodButtonNumber]);
@@ -665,7 +666,7 @@ begin
   FButton := TAdvSmoothButton.Create(pnlGood);
   FButton.Appearance.Font.Name := 'Times New Roman';
   FButton.Appearance.Font.Size := 11;
-  FButton.Color := $00E7DCD5;
+  FButton.Color := btnColor;
   FButton.Parent := FPanel;
   FButton.OnClick := GroupButtonOnClick;
   FButton.Name := Format(btnGroupName, [FGroupButtonNumber]);
@@ -702,7 +703,7 @@ begin
   FButton := TAdvSmoothButton.Create(pnlGood);
   FButton.Appearance.Font.Name := 'Times New Roman';
   FButton.Appearance.Font.Size := 14;
-  FButton.Color := $00E7DCD5;
+  FButton.Color := btnColor;
   FButton.Parent := pnlMenu;
   FButton.OnClick := MenuButtonOnClick;
   FButton.Name := Format(btnMenuName, [FMenuButtonNumber]);
@@ -1553,7 +1554,7 @@ begin
           FGoodFirstTop := btnFirstTop;
           FGroupFirstTop := btnFirstTop;
 
-          FUserFirstTop       := btnFirstTop ;
+          FUserFirstTop       := btnFirstTop;
           FUserLastLeftButton := btnFirstTop;
           FUserLastTop        := btnFirstTop;
           FUserButtonNumber   := 1;
@@ -1616,7 +1617,7 @@ begin
           FMenuButtonCount := 0;
           FGroupLastTop   := btnFirstTop;
 
-          FUserFirstTop       := btnFirstTop ;
+          FUserFirstTop       := btnFirstTop;
           FUserLastLeftButton := btnFirstTop;
           FUserLastTop        := btnFirstTop;
           FUserButtonNumber   := 1;
@@ -1666,7 +1667,7 @@ begin
 
           FUserFirstTop       := btnFirstTop;
           FUserLastLeftButton := btnFirstTop;
-          FUserLastTop        := -(btnHeight - 6 );
+          FUserLastTop        := -(btnHeight - 6);
           FUserButtonNumber   := 1;
 
           FUserOrderFirstTop       := btnFirstTop;
@@ -1701,7 +1702,7 @@ begin
 
           FUserFirstTop       := btnFirstTop;
           FUserLastLeftButton := btnFirstTop;
-          FUserLastTop        := -(btnHeight - 6 );
+          FUserLastTop        := -(btnHeight - 6);
           FUserButtonNumber   := 1;
 
           FUserOrderFirstTop       := btnFirstTop;
@@ -1727,7 +1728,7 @@ begin
   //Создание кнопки
   FButton := TAdvSmoothButton.Create(pnlUsers);
   FButton.Appearance.Font.Name := 'Times New Roman';
-  FButton.Color := $00E7DCD5;
+  FButton.Color := btnColor;
   FButton.Appearance.Font.Size := 12;
   FButton.Parent := pnlUsers;
   FButton.Name := Format(btnUserName, [FUserButtonNumber]);
@@ -1822,7 +1823,7 @@ begin
   //Создание кнопки
   FButton := TAdvSmoothButton.Create(pnlUserOrders);
   FButton.Appearance.Font.Name := 'Times New Roman';
-  FButton.Color := $00E7DCD5;
+  FButton.Color := btnColor;
   FButton.Appearance.Font.Size := 14;
   FButton.Parent := pnlUserOrders;
   if FormState = ManagerPage then
@@ -1920,20 +1921,24 @@ end;
 
 procedure TRestMainForm.WritePos(DataSet: TDataSet);
 begin
+{ TODO : Обработка должна быть внутри класса дисплея }
   try
     if Assigned(FFrontBase.Display) then
       FFrontBase.Display.WritePos(DataSet.FieldByName('GOODNAME').AsString,
         DataSet.FieldByName('usr$quantity').AsCurrency, DataSet.FieldByName('usr$costncu').AsCurrency);
   except
+    raise;
   end;
 end;
 
 procedure TRestMainForm.ClearDisplay;
 begin
+{ TODO : Обработка должна быть внутри класса дисплея } 
   try
     if Assigned(FFrontBase.Display) then
       FFrontBase.Display.Clear;
   except
+    raise;
   end;
 end;
 
@@ -2224,6 +2229,8 @@ begin
     Form.ShowModal;
   finally
     Form.Free;
+    if edPassword.CanFocus then
+      edPassword.SetFocus;
   end;
 end;
 
