@@ -42,6 +42,9 @@ type
     function GetDocumentNumber: Integer;
     //возврат ошибки
     procedure ErrMessage(Err: Integer);
+
+    function Get_Self: Integer;    
+    property Self: Integer read Get_Self;
   end;
 
 var

@@ -16,6 +16,7 @@ type
     procedure ErrMessage(Err: Integer);
     procedure SetFrontBase(const Value: TFrontBase);
     function GetFrontBase: TFrontBase;
+    function Get_Self: Integer;
   public
     IsInit: Boolean;
 
@@ -37,6 +38,7 @@ type
     function GetDocumentNumber: Integer;
 
     property FrontBase: TFrontBase read GetFrontBase write SetFrontBase;
+    property Self: Integer read Get_Self;
   end;
 
 
@@ -681,6 +683,11 @@ end;
 function TSpark617Register.GetFrontBase: TFrontBase;
 begin
   Result := FFrontBase;
+end;
+
+function TSpark617Register.Get_Self: Integer;
+begin
+  Result := Integer(Self);
 end;
 
 end.
