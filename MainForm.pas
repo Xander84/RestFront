@@ -7,7 +7,7 @@ interface
 uses
   Windows, Messages, Variants, Classes, Graphics, Controls, Forms,
   DB, ActnList, ComCtrls, StdCtrls, ExtCtrls, Dialogs, Front_DataBase_Unit,
-  Contnrs, kbmMemTable, DBGridEh, GridsEh, Spark617_Unit,
+  Contnrs, kbmMemTable, DBGridEh, GridsEh, FiscalRegister_Unit,
   SplitOrderForm_Unit, Report_Unit, FrontData_Unit, RestBaseForm_Unit,
   AdvSmoothButton, AdvPanel, AdvPageControl, AdvSmoothTouchKeyBoard,
   TaskDialog, FrontLog_Unit, Grids;
@@ -395,7 +395,7 @@ begin
       Application.Terminate;
     end;
   end;
-  FFiscal := TFiscalRegister.Create(Self);
+  FFiscal := TFiscalRegister.Create;
   FFiscal.FrontBase := FFrontBase;
 
   FReport := TRestReport.Create(Self);

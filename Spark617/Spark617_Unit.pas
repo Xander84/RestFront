@@ -3,38 +3,40 @@ unit Spark617_Unit;
 interface
 
 uses
-  Classes, Windows, Forms, SPARKAX3Lib_TLB, Front_DataBase_Unit, kbmMemTable, DB;
+  Classes, Windows, Forms, SPARKAX3Lib_TLB, Front_DataBase_Unit, kbmMemTable, DB,
+  Base_FiscalRegister_unit;
 
 type
-  TFiscalRegister = class(TSpark617TF)
+  TSpark617Register = class(TSpark617TF, IBaseFiscalRegister)
   private
     FFrontBase: TFrontBase;
     FDriverInit: Boolean;
 
     function SetParams: Boolean;
     procedure ErrMessage(Err: Integer);
+    procedure SetFrontBase(const Value: TFrontBase);
+    function GetFrontBase: TFrontBase;
   public
     IsInit: Boolean;
+
+    constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
 
     function CheckDeviceInfo: Boolean;
     function Init: Boolean;
     function PrintCheck(const Doc, DocLine, PayLine: TkbmMemTable): Boolean;
 
-
-    constructor Create(AOwner: TComponent); override;
-    destructor Destroy; override;
-    property FrontBase: TFrontBase read FFrontBase write FFrontBase;
-
-    function PrintReportWithCleaning: Boolean;
-    function PrintReportWithCleaning2: Boolean;
-    function PrintReportWithOutCleaning: Boolean;
-    function PrintReportWithOutCleaning2: Boolean;
+    function PrintZ1ReportWithCleaning: Boolean;
+    function PrintZ2ReportWithCleaning: Boolean;
+    function PrintX1ReportWithOutCleaning: Boolean;
+    function PrintX2ReportWithOutCleaning: Boolean;
     procedure OpenDrawer;
     procedure EndSession;
     procedure MoneyIn;
     procedure MoneyOut;
     function GetDocumentNumber: Integer;
 
+    property FrontBase: TFrontBase read GetFrontBase write SetFrontBase;
   end;
 
 
@@ -42,9 +44,9 @@ implementation
 
 uses SysUtils, Math;
 
-{ TFiscalRegister }
+{ TSpark617Register }
 
-function TFiscalRegister.CheckDeviceInfo: Boolean;
+function TSpark617Register.CheckDeviceInfo: Boolean;
 var
   Res: Integer;
 begin
@@ -215,7 +217,7 @@ begin
   end;
 end;
 
-constructor TFiscalRegister.Create(AOwner: TComponent);
+constructor TSpark617Register.Create(AOwner: TComponent);
 begin
   FDriverInit := True;
   try
@@ -228,7 +230,7 @@ begin
   IsInit := False;
 end;
 
-destructor TFiscalRegister.Destroy;
+destructor TSpark617Register.Destroy;
 begin
   if FDriverInit then
     if IsInit then
@@ -237,7 +239,7 @@ begin
   inherited;
 end;
 
-procedure TFiscalRegister.EndSession;
+procedure TSpark617Register.EndSession;
 var
   Res: Integer;
 begin
@@ -249,7 +251,7 @@ begin
   end;
 end;
 
-procedure TFiscalRegister.ErrMessage(Err: Integer);
+procedure TSpark617Register.ErrMessage(Err: Integer);
 var
   ErrStr: String;
 begin
@@ -261,14 +263,14 @@ begin
   end;
 end;
 
-function TFiscalRegister.GetDocumentNumber: Integer;
+function TSpark617Register.GetDocumentNumber: Integer;
 begin
   Result := 0;
   if FDriverInit then
     Result := GetDeviceInfo(26);
 end;
 
-function TFiscalRegister.Init: Boolean;
+function TSpark617Register.Init: Boolean;
 begin
   Result := False;
   if FDriverInit then
@@ -289,17 +291,17 @@ begin
   IsInit := True;
 end;
 
-procedure TFiscalRegister.MoneyIn;
+procedure TSpark617Register.MoneyIn;
 begin
 // не реализовано
 end;
 
-procedure TFiscalRegister.MoneyOut;
+procedure TSpark617Register.MoneyOut;
 begin
 // не реализовано
 end;
 
-procedure TFiscalRegister.OpenDrawer;
+procedure TSpark617Register.OpenDrawer;
 var
   Res: Integer;
 begin
@@ -311,7 +313,7 @@ begin
   end;
 end;
 
-function TFiscalRegister.PrintCheck(const Doc, DocLine, PayLine: TkbmMemTable): Boolean;
+function TSpark617Register.PrintCheck(const Doc, DocLine, PayLine: TkbmMemTable): Boolean;
 var
   Res: Integer;
   DocNumber, WaiterName: String;
@@ -560,7 +562,7 @@ begin
      'Внимание', MB_OK or MB_ICONEXCLAMATION);
 end;
 
-function TFiscalRegister.PrintReportWithCleaning: Boolean;
+function TSpark617Register.PrintZ1ReportWithCleaning: Boolean;
 var
   Res: Integer;
 begin
@@ -581,7 +583,7 @@ begin
   end;
 end;
 
-function TFiscalRegister.PrintReportWithCleaning2: Boolean;
+function TSpark617Register.PrintZ2ReportWithCleaning: Boolean;
 var
   Res: Integer;
 begin
@@ -602,7 +604,7 @@ begin
   end;
 end;
 
-function TFiscalRegister.PrintReportWithOutCleaning: Boolean;
+function TSpark617Register.PrintX1ReportWithOutCleaning: Boolean;
 var
   Res: Integer;
 begin
@@ -623,7 +625,7 @@ begin
   end;
 end;
 
-function TFiscalRegister.PrintReportWithOutCleaning2: Boolean;
+function TSpark617Register.PrintX2ReportWithOutCleaning: Boolean;
 var
   Res: Integer;
 begin
@@ -644,7 +646,7 @@ begin
   end;
 end;
 
-function TFiscalRegister.SetParams: Boolean;
+function TSpark617Register.SetParams: Boolean;
 var
   Res: Integer;
 begin
@@ -669,6 +671,16 @@ begin
   end;
 
   Result := True;
+end;
+
+procedure TSpark617Register.SetFrontBase(const Value: TFrontBase);
+begin
+  FFrontBase := Value;
+end;
+
+function TSpark617Register.GetFrontBase: TFrontBase;
+begin
+  Result := FFrontBase;
 end;
 
 end.

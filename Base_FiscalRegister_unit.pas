@@ -32,7 +32,7 @@ type
     //отчет X1 без гашения
     function PrintX1ReportWithOutCleaning: Boolean;
     //отчет X2 без гашения
-    function PrintReportWithOutCleaning2: Boolean;
+    function PrintX2ReportWithOutCleaning: Boolean;
     procedure OpenDrawer;
     procedure EndSession;
     //деньги в кассу

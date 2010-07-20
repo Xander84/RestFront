@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, Front_DataBase_Unit, kbmMemTable, DB,
-  GridsEh, DBGridEh, Spark617_Unit, ActnList, FrontData_Unit,
+  GridsEh, DBGridEh, FiscalRegister_Unit, ActnList, FrontData_Unit,
   AdvSmoothTouchKeyBoard, ExtCtrls, AdvPanel, AdvSmoothButton,
   AdvSmoothToggleButton, Grids;
 
@@ -324,7 +324,7 @@ begin
 
         3: //Спарк 617 ТФ
         begin
-          FFiscalRegiter.Init;
+          FFiscalRegiter.InitFiscalRegister(CashCode);
           FFiscalRegiter.OpenDrawer;
           if FFiscalRegiter.PrintCheck(Doc, DocLine, dsPayLine) then
           begin
@@ -404,11 +404,10 @@ procedure TSellParamForm.TouchKeyBoardKeyClick(Sender: TObject;
 begin
   with TouchKeyBoard.Keys.Items[Index] do
   begin
-
     if SpecialKey = skNone then
       PostMessage(edMain.Handle, WM_KEYUP, Ord(Caption[1]), 0)
     else
-        PostMessage(edMain.Handle, WM_KEYUP, 8, 0);
+      PostMessage(edMain.Handle, WM_KEYUP, 8, 0);
   end;
 end;
 
