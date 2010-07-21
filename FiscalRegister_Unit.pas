@@ -59,6 +59,8 @@ begin
 end;
 
 procedure TFiscalRegister.InitFiscalRegister(const FiscalType: Integer);
+var
+  Obj: TObject;
 begin
   Assert(Assigned(FFrontBase), 'FrontBase not Assigned');
 
@@ -66,7 +68,11 @@ begin
   begin
     FLastFiscalType := FiscalType;
     if Assigned(FFiscalRegister) then
-      FreeAndNil(FFiscalRegister);
+    begin
+      Obj := TObject(FFiscalRegister.Self);
+      if Assigned(Obj) then
+        FreeAndNil(Obj);
+    end;
 
     case FiscalType of
       0: //Øòðèõ-ÔÐ
