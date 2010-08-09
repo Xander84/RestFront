@@ -11,15 +11,15 @@ type
   private
     FFrontBase: TFrontBase;
     FDriverInit: Boolean;
+    IsInit: Boolean;
 
     function SetParams: Boolean;
     procedure ErrMessage(Err: Integer);
     procedure SetFrontBase(const Value: TFrontBase);
+    procedure MoneyOperation(const Param: Integer);
     function GetFrontBase: TFrontBase;
     function Get_Self: Integer;
   public
-    IsInit: Boolean;
-
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
@@ -33,6 +33,7 @@ type
     function PrintX2ReportWithOutCleaning: Boolean;
     procedure OpenDrawer;
     procedure EndSession;
+    function OpenDay: Boolean;
     procedure MoneyIn;
     procedure MoneyOut;
     function GetDocumentNumber: Integer;
@@ -44,7 +45,7 @@ type
 
 implementation
 
-uses SysUtils, Math;
+uses SysUtils, Math, DevideForm_Unit, Controls;
 
 { TSpark617Register }
 
@@ -234,8 +235,7 @@ end;
 
 destructor TSpark617Register.Destroy;
 begin
-  if FDriverInit then
-    if IsInit then
+  if FDriverInit and IsInit then
       DeinitDevice;
 
   inherited;
@@ -295,12 +295,12 @@ end;
 
 procedure TSpark617Register.MoneyIn;
 begin
-// не реализовано
+  MoneyOperation(4);
 end;
 
 procedure TSpark617Register.MoneyOut;
 begin
-// не реализовано
+  MoneyOperation(5);
 end;
 
 procedure TSpark617Register.OpenDrawer;
@@ -688,6 +688,42 @@ end;
 function TSpark617Register.Get_Self: Integer;
 begin
   Result := Integer(Self);
+end;
+
+procedure TSpark617Register.MoneyOperation(const Param: Integer);
+var
+  Form: TDevideForm;
+  Res: Integer;
+begin
+  Form := TDevideForm.Create(nil);
+  try
+    Form.LabelCaption := 'Сумма';
+    Form.ShowModal;
+    if Form.ModalResult = mrOK then
+      if FDriverInit then
+      begin
+        Init;
+        Res := StartDocument(Param, 1, 0, FFrontBase.UserName);
+        if Res <> 0 then
+          ErrMessage(Res);
+        Res := Tender2(StrToCurr(Form.Number), 8, '', '');
+        if Res <> 0 then
+          ErrMessage(Res);
+        Res := EndDocument;
+        if Res <> 0 then
+          ErrMessage(Res);
+        CheckDeviceInfo;
+      end;
+  finally
+    Form.Free;
+  end;
+end;
+
+function TSpark617Register.OpenDay: Boolean;
+begin
+ { TODO : В спарке открытие смены происходит в CheckDeviceInfo (StartSession)
+   возможно стоит вынести в отдельную ф-цию и проверять}
+  Result := True;
 end;
 
 end.
