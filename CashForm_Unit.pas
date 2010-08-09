@@ -7,8 +7,9 @@ uses
   Dialogs, ExtCtrls, AdvPanel, FrontData_Unit, AdvSmoothButton, FiscalRegister_Unit,
   ActnList, Front_DataBase_Unit;
 
-const
-  cn_noFR = 'В системе не установлен фискальный регистратор!';
+type
+  TActionType = (atStartDay, atStartSession, atReportWithoutCleaning,
+    atReportWithCleaning, atEndSession, atEndDay, atMoneyIn, atMoneyOut, atOpenMoney);
 
 type
   TCashForm = class(TForm)
@@ -43,6 +44,8 @@ type
     procedure actOpenMoneyExecute(Sender: TObject);
   private
     FFiscalRegiter: TFiscalRegister;
+
+    procedure Run(const Act: TActionType);
 
     procedure SetFiscalRegister(const Value: TFiscalRegister);
   public
@@ -85,11 +88,7 @@ end;
 
 procedure TCashForm.actEndSessionExecute(Sender: TObject);
 begin
-  if Assigned(FFiscalRegiter) then
-    FFiscalRegiter.EndSession
-  else
-    MessageBox(Application.Handle, cn_noFR,
-     'Внимание', MB_OK or MB_ICONEXCLAMATION);
+  Run(atEndSession);
 end;
 
 procedure TCashForm.actEndDayExecute(Sender: TObject);
@@ -99,28 +98,40 @@ end;
 
 procedure TCashForm.actMoneyINExecute(Sender: TObject);
 begin
-  if Assigned(FFiscalRegiter) then
-    FFiscalRegiter.MoneyIn
-  else
-    MessageBox(Application.Handle, cn_noFR,
-     'Внимание', MB_OK or MB_ICONEXCLAMATION);
+  Run(atMoneyIn);
 end;
 
 procedure TCashForm.actMoneyOUTExecute(Sender: TObject);
 begin
-  if Assigned(FFiscalRegiter) then
-    FFiscalRegiter.MoneyOut
-  else
-    MessageBox(Application.Handle, cn_noFR,
-     'Внимание', MB_OK or MB_ICONEXCLAMATION);
+  Run(atMoneyOut);
 end;
 
 procedure TCashForm.actOpenMoneyExecute(Sender: TObject);
 begin
+  Run(atOpenMoney);
+end;
+
+procedure TCashForm.Run(const Act: TActionType);
+begin
   if Assigned(FFiscalRegiter) then
-    FFiscalRegiter.OpenDrawer
-  else
-    MessageBox(Application.Handle, cn_noFR,
+  begin
+    case Act of
+      atOpenMoney:
+        FFiscalRegiter.OpenDrawer;
+
+      atMoneyOut:
+        FFiscalRegiter.MoneyOut;
+
+      atMoneyIn:
+        FFiscalRegiter.MoneyIn;
+
+      atEndSession:
+        FFiscalRegiter.EndSession;
+    else
+
+    end;
+  end else
+    MessageBox(Application.Handle, 'В системе не установлен фискальный регистратор!',
      'Внимание', MB_OK or MB_ICONEXCLAMATION);
 end;
 
