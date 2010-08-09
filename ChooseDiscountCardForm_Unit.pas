@@ -65,7 +65,7 @@ var
 begin
   Form := TDevideForm.Create(nil);
   try
-    Form.Label1.Caption := 'Сумма';
+    Form.LabelCaption := 'Сумма';
     if usrg_lbBonusSum.Caption <> '' then
       Form.Number := usrg_lbBonusSum.Caption
     else

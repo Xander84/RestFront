@@ -1,6 +1,6 @@
 object OrderNumber: TOrderNumber
-  Left = 496
-  Top = 114
+  Left = 564
+  Top = 109
   BorderStyle = bsDialog
   Caption = #1053#1086#1084#1077#1088' '#1079#1072#1082#1072#1079#1072
   ClientHeight = 506
@@ -13,9 +13,10 @@ object OrderNumber: TOrderNumber
   Font.Style = []
   OldCreateOrder = False
   Position = poScreenCenter
+  OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
-  object AdvPanel1: TAdvPanel
+  object pnlMain: TAdvPanel
     Left = 0
     Top = 0
     Width = 450
@@ -54,7 +55,7 @@ object OrderNumber: TOrderNumber
     StatusBar.GradientDirection = gdVertical
     Styler = FrontData.FrontPanelStyler
     FullHeight = 0
-    object Label1: TLabel
+    object lblMain: TLabel
       Left = 0
       Top = 0
       Width = 450

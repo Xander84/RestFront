@@ -24,7 +24,10 @@ type
     destructor Destroy; override;
 
     procedure InitFiscalRegister(const FiscalType: Integer);
+    procedure MoneyIn;
+    procedure MoneyOut;    
     procedure OpenDrawer;
+    procedure EndSession;
     function PrintCheck(const Doc, DocLine, PayLine: TkbmMemTable): Boolean;      
 
     property FrontBase: TFrontBase read FFrontBase write FFrontBase;
@@ -34,7 +37,7 @@ type
 implementation
 
 uses
-  Spark617_Unit;
+  Spark617_Unit, MercFP_Unit;
 
 { TFiscalRegister }
 
@@ -56,6 +59,12 @@ begin
       FreeAndNil(Obj);
   end;
   inherited;
+end;
+
+procedure TFiscalRegister.EndSession;
+begin
+  if Assigned(FFiscalRegister) then
+    FFiscalRegister.EndSession;
 end;
 
 procedure TFiscalRegister.InitFiscalRegister(const FiscalType: Integer);
@@ -82,7 +91,9 @@ begin
 
       2: //Меркурий-Epson 220U
       begin
-        Assert(False, 'Данный тип кассы не поддерживается');
+        FFiscalRegister := TMercuryRegister.Create(nil);
+        FFiscalRegister.FrontBase := FFrontBase;
+        FFiscalRegister.Init;
       end;
 
       3: //Спарк 617 ТФ
@@ -99,6 +110,18 @@ begin
     FInit := True;  
   end else
     FInit := True;
+end;
+
+procedure TFiscalRegister.MoneyIn;
+begin
+  if Assigned(FFiscalRegister) then
+    FFiscalRegister.MoneyIn;
+end;
+
+procedure TFiscalRegister.MoneyOut;
+begin
+  if Assigned(FFiscalRegister) then
+    FFiscalRegister.MoneyOut;
 end;
 
 procedure TFiscalRegister.OpenDrawer;

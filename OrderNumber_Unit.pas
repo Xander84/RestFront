@@ -9,8 +9,8 @@ uses
 
 type
   TOrderNumber = class(TForm)
-    AdvPanel1: TAdvPanel;
-    Label1: TLabel;
+    pnlMain: TAdvPanel;
+    lblMain: TLabel;
     edtNumber: TEdit;
     TouchKeyBoard: TAdvSmoothTouchKeyBoard;
     btnOK: TAdvSmoothButton;
@@ -20,6 +20,7 @@ type
       Index: Integer);
     procedure btnOKClick(Sender: TObject);
     procedure btnCancelClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
   private
     procedure SetNumber(const Value: String);
 
@@ -69,6 +70,11 @@ end;
 procedure TOrderNumber.SetNumber(const Value: String);
 begin
   edtNumber.Text := Value;
+end;
+
+procedure TOrderNumber.FormCreate(Sender: TObject);
+begin
+  edtNumber.Color := pnlMain.Color;
 end;
 
 end.

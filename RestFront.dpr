@@ -23,7 +23,12 @@ uses
   EditReportForm_Unit in 'EditReportForm_Unit.pas' {EditReport},
   RestBaseForm_Unit in 'RestBaseForm_Unit.pas',
   FrontLog_Unit in 'FrontLog_Unit.pas',
-  FrontApplicationEventsHandler_Unit in 'FrontApplicationEventsHandler_Unit.pas';
+  FrontApplicationEventsHandler_Unit in 'FrontApplicationEventsHandler_Unit.pas',
+  Base_FiscalRegister_unit in 'Base_FiscalRegister_unit.pas',
+  FiscalRegister_Unit in 'FiscalRegister_Unit.pas',
+  MercFP_Unit in 'Merc\MercFP_Unit.pas',
+  CashForm_Unit in 'CashForm_Unit.pas' {CashForm};
+
 
 {$R *.res}
 

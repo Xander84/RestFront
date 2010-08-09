@@ -33,15 +33,19 @@ type
     function PrintX1ReportWithOutCleaning: Boolean;
     //отчет X2 без гашения
     function PrintX2ReportWithOutCleaning: Boolean;
+    // открытие денежного ящика    
     procedure OpenDrawer;
+    // закрытие сессии (печать Z отчета)
     procedure EndSession;
+    // открыте смены
+    function OpenDay: Boolean;
     //деньги в кассу
     procedure MoneyIn;
     //деньги из кассы
     procedure MoneyOut;
     function GetDocumentNumber: Integer;
     //возврат ошибки
-    procedure ErrMessage(Err: Integer);
+//    procedure ErrMessage(Err: Integer);
 
     function Get_Self: Integer;    
     property Self: Integer read Get_Self;
@@ -51,7 +55,6 @@ var
   BaseFiscalRegister: IBaseFiscalRegister;
 
 implementation
-
 
 initialization
   BaseFiscalRegister := nil;

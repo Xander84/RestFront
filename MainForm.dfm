@@ -28,7 +28,7 @@ object RestMainForm: TRestMainForm
       Top = 0
       Width = 934
       Height = 720
-      ActivePage = tsPassWord
+      ActivePage = tsMain
       ActiveFont.Charset = DEFAULT_CHARSET
       ActiveFont.Color = clWindowText
       ActiveFont.Height = -11
@@ -812,7 +812,6 @@ object RestMainForm: TRestMainForm
                 DataSource = dsMain
                 DrawMemoText = True
                 EvenRowColor = clInfoBk
-                Flat = False
                 Font.Charset = DEFAULT_CHARSET
                 Font.Color = clWindowText
                 Font.Height = -21
@@ -827,7 +826,6 @@ object RestMainForm: TRestMainForm
                 FooterRowCount = 1
                 OddRowColor = clGradientActiveCaption
                 Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit]
-                OptionsEh = [dghFixed3D, dghHighlightFocus, dghClearSelection, dghDialogFind, dghShowRecNo, dghColumnResize, dghColumnMove]
                 ParentFont = False
                 ReadOnly = True
                 RowHeight = 2
@@ -950,22 +948,22 @@ object RestMainForm: TRestMainForm
                   Left = 1
                   Top = 1
                   Width = 192
-                  Height = 518
+                  Height = 528
                   Align = alLeft
                   TabOrder = 0
                 end
                 object pnlUserOrders: TPanel
                   Left = 193
                   Top = 1
-                  Width = 472
-                  Height = 518
+                  Width = 480
+                  Height = 528
                   Align = alClient
                   TabOrder = 1
                 end
                 object pnlManagerBottom: TPanel
                   Left = 1
-                  Top = 519
-                  Width = 664
+                  Top = 529
+                  Width = 672
                   Height = 67
                   Align = alBottom
                   TabOrder = 2

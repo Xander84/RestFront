@@ -10,9 +10,12 @@ uses
 type
   TDevideForm = class(TOrderNumber)
   private
+    function GetLabelCaption: String;
+    procedure SetLabelCaption(const Value: String);
     { Private declarations }
   public
     property Number;
+    property LabelCaption: String read GetLabelCaption write SetLabelCaption;
   end;
 
 var
@@ -21,5 +24,18 @@ var
 implementation
 
 {$R *.dfm}
+
+{ TDevideForm }
+
+function TDevideForm.GetLabelCaption: String;
+begin
+  Result := lblMain.Caption;
+end;
+
+procedure TDevideForm.SetLabelCaption(const Value: String);
+begin
+  lblMain.Caption := Value;
+  Caption := Value;
+end;
 
 end.
