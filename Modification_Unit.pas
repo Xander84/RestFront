@@ -31,6 +31,7 @@ type
     FFrontBase: TFrontBase;
     FGoodKey: Integer;
     FModifyGroupKey: Integer;
+    FIsEmptyLine: Boolean;
     //
     FLastLeftButton          : Integer;
     FLastTopButton           : Integer;
@@ -86,6 +87,7 @@ begin
 
   FGoodKey := -1;
   FModifyGroupKey := -1;
+  FIsEmptyLine := True;
 
   FButtonList := TObjectList.Create;
 end;
@@ -168,6 +170,7 @@ end;
 procedure TModificationForm.SetLineModifyTable(const Value: TkbmMemTable);
 begin
   FLineModifyTable := Value;
+  FIsEmptyLine := FLineModifyTable.IsEmpty;
 end;
 
 procedure TModificationForm.ModifyButtonOnClick(Sender: TObject);
@@ -204,9 +207,12 @@ end;
 
 procedure TModificationForm.actCancelExecute(Sender: TObject);
 begin
-  FLineModifyTable.First;
-  while not FLineModifyTable.Eof do
-    FLineModifyTable.Delete;
+  if FIsEmptyLine then
+  begin
+    FLineModifyTable.First;
+    while not FLineModifyTable.Eof do
+      FLineModifyTable.Delete;
+  end;    
     
   ModalResult := mrCancel;
 end;
