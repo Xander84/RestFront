@@ -16,7 +16,7 @@ object PercOrCard: TPercOrCard
   OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
-  object AdvPanel1: TAdvPanel
+  object pnlMain: TAdvPanel
     Left = 0
     Top = 0
     Width = 373

@@ -5,10 +5,10 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, kbmMemTable, Front_DataBase_Unit, DB, FrontData_Unit,
-  ExtCtrls, AdvPanel, AdvSmoothButton;
+  ExtCtrls, AdvPanel, AdvSmoothButton, BaseFrontForm_Unit;
 
 type
-  TChooseDiscountCard = class(TForm)
+  TChooseDiscountCard = class(TBaseFrontForm)
     memTable: TkbmMemTable;
     AdvPanel1: TAdvPanel;
     Label1: TLabel;

@@ -6,10 +6,10 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, Front_DataBase_Unit, kbmMemTable, Contnrs, DB, ExtCtrls,
   StdCtrls, ActnList, FrontData_Unit, AdvPanel, AdvSmoothToggleButton, AdvStyleIF,
-  AdvSmoothButton;
+  AdvSmoothButton, BaseFrontForm_Unit;
 
 type
-  TPayForm = class(TForm)
+  TPayForm = class(TBaseFrontForm)
     pnlBottom: TAdvPanel;
     pnlMain: TAdvPanel;
     pnlRight: TAdvPanel;

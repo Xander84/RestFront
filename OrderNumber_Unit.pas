@@ -5,10 +5,10 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, AdvSmoothTouchKeyBoard, ExtCtrls, AdvPanel, FrontData_Unit,
-  AdvSmoothButton;
+  AdvSmoothButton, BaseFrontForm_Unit;
 
 type
-  TOrderNumber = class(TForm)
+  TOrderNumber = class(TBaseFrontForm)
     pnlMain: TAdvPanel;
     lblMain: TLabel;
     edtNumber: TEdit;

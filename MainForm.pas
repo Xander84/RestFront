@@ -8,7 +8,7 @@ uses
   Windows, Messages, Variants, Classes, Graphics, Controls, Forms,
   DB, ActnList, ComCtrls, StdCtrls, ExtCtrls, Dialogs, Front_DataBase_Unit,
   Contnrs, kbmMemTable, DBGridEh, GridsEh, FiscalRegister_Unit,
-  SplitOrderForm_Unit, Report_Unit, FrontData_Unit, RestBaseForm_Unit,
+  SplitOrderForm_Unit, Report_Unit, FrontData_Unit, BaseFrontForm_Unit,
   AdvSmoothButton, AdvPanel, AdvPageControl, AdvSmoothTouchKeyBoard,
   TaskDialog, FrontLog_Unit, Grids;
 
@@ -62,7 +62,7 @@ type
   //окно менеджера для разделения
   TRestState = (Pass, OrderMenu, MenuInfo, ManagerPage, ManagerChooseOrder);
 
-  TRestMainForm = class(TRestBaseForm)
+  TRestMainForm = class(TBaseFrontForm)
     pnlMain: TPanel;
     pcMain: TAdvPageControl;
     sbMain: TStatusBar;
@@ -337,6 +337,7 @@ type
     procedure OnBeforePostLine(DataSet: TDataSet);
     procedure OnAfterPostHeader(DataSet: TDataSet);
     procedure OnAfterPost(DataSet: TDataSet); ///!!!!
+    procedure OnAfterDelete(DataSet: TDataSet);
 
   public
 
@@ -548,6 +549,7 @@ begin
   FLineTable.CreateTable;
   FLineTable.OnFilterRecord := OnFilterLine;
   FLineTable.BeforePost := OnBeforePostLine;
+  FLineTable.AfterDelete := OnAfterDelete;
 //  FLineTable.Filter := '([usr$quantity] > 0) AND ([usr$causedeletekey] IS NULL) ';
   FLineTable.Filtered := True;
   FLineTable.Open;
@@ -1144,6 +1146,8 @@ begin
         FLineTable.FieldByName('STATEFIELD').AsInteger := 2; //обновили поле
       FLineTable.Post;
       WritePos(FLineTable);
+      //обновить футер грида
+      DBGrMain.SumList.RecalcAll;
     end else
     begin
       //удалять может только пользователь с правами менеджера
@@ -2240,7 +2244,13 @@ end;
 
 procedure TRestMainForm.OnAfterPost(DataSet: TDataSet);
 begin
-/// так надо
+  // так надо
+end;
+
+procedure TRestMainForm.OnAfterDelete(DataSet: TDataSet);
+begin
+  //обновить футер грида
+  DBGrMain.SumList.RecalcAll;
 end;
 
 end.

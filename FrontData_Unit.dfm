@@ -1128,4 +1128,8 @@ object FrontData: TFrontData
     Left = 168
     Top = 16
   end
+  object ApStyler: TAdvAppStyler
+    Left = 112
+    Top = 160
+  end
 end

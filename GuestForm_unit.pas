@@ -3,12 +3,12 @@ unit GuestForm_unit;
 interface
 
 uses
-  Windows, {Messages,} SysUtils, {Variants, Classes, Graphics,} Controls, Forms,
+  Windows, SysUtils, Controls, Forms,
   Dialogs, StdCtrls, ExtCtrls, AdvPanel, FrontData_Unit, AdvSmoothButton,
-  Classes;
+  Classes, BaseFrontForm_Unit;
 
 type
-  TGuestForm = class(TForm)
+  TGuestForm = class(TBaseFrontForm)
     AdvPanel1: TAdvPanel;
     Label1: TLabel;
     lblGuestCount: TLabel;

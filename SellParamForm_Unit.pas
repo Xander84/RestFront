@@ -7,7 +7,7 @@ uses
   Dialogs, StdCtrls, Front_DataBase_Unit, kbmMemTable, DB,
   GridsEh, DBGridEh, FiscalRegister_Unit, ActnList, FrontData_Unit,
   AdvSmoothTouchKeyBoard, ExtCtrls, AdvPanel, AdvSmoothButton,
-  AdvSmoothToggleButton, Grids;
+  AdvSmoothToggleButton, Grids, BaseFrontForm_Unit;
 
 const
   cn_maxpay = 1000000;
@@ -28,8 +28,8 @@ const
 
 
 type
-  TSellParamForm = class(TForm)
-    AdvPanel1: TAdvPanel;
+  TSellParamForm = class(TBaseFrontForm)
+    pnlMain: TAdvPanel;
     lblToPay: TLabel;
     lblChange: TLabel;
     Label1: TLabel;
@@ -78,6 +78,7 @@ type
     procedure SetDoc(const Value: TkbmMemTable);
     procedure SetDocLine(const Value: TkbmMemTable);
 
+    procedure OnAfterDelete(DataSet: TDataSet);
   public
     constructor CreateWithFrontBase(AOwner: TComponent; FBase: TFrontBase);
     destructor Destroy; override;
@@ -119,6 +120,7 @@ begin
   dsPayLine.FieldDefs.Add('SUM', ftCurrency, 0);
   dsPayLine.FieldDefs.Add('PAYTYPE', ftInteger, 0);
   dsPayLine.CreateTable;
+  dsPayLine.AfterDelete := OnAfterDelete;
   dsPayLine.Open;
   dsMain.DataSet := dsPayLine;
 
@@ -424,6 +426,11 @@ end;
 procedure TSellParamForm.actDeletePayExecute(Sender: TObject);
 begin
   dsPayLine.Delete;
+end;
+
+procedure TSellParamForm.OnAfterDelete(DataSet: TDataSet);
+begin
+  edMain.Text := '';
 end;
 
 end.

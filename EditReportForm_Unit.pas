@@ -5,10 +5,11 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, FrontData_Unit, ExtCtrls, AdvPanel, DB, kbmMemTable, GridsEh,
-  DBGridEh, Front_DataBase_Unit, Report_Unit, AdvSmoothButton;
+  DBGridEh, Front_DataBase_Unit, Report_Unit, AdvSmoothButton, Grids,
+  BaseFrontForm_Unit;
 
 type
-  TEditReport = class(TForm)
+  TEditReport = class(TBaseFrontForm)
     pnlMain: TAdvPanel;
     DBGrMain: TDBGridEh;
     MemTable: TkbmMemTable;

@@ -5,10 +5,10 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, dblookup, DB, kbmMemTable, Front_DataBase_Unit,
-  DBCtrls, FrontData_Unit, AdvSmoothButton, ExtCtrls, AdvPanel;
+  DBCtrls, FrontData_Unit, AdvSmoothButton, ExtCtrls, AdvPanel, BaseFrontForm_Unit;
 
 type
-  TDiscountType = class(TForm)
+  TDiscountType = class(TBaseFrontForm)
     memTableDiscount: TkbmMemTable;
     dsMain: TDataSource;
     AdvPanel1: TAdvPanel;

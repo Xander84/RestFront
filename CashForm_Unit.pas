@@ -5,14 +5,14 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, ExtCtrls, AdvPanel, FrontData_Unit, AdvSmoothButton, FiscalRegister_Unit,
-  ActnList, Front_DataBase_Unit;
+  ActnList, Front_DataBase_Unit, BaseFrontForm_Unit;
 
 type
   TActionType = (atStartDay, atStartSession, atReportWithoutCleaning,
     atReportWithCleaning, atEndSession, atEndDay, atMoneyIn, atMoneyOut, atOpenMoney);
 
 type
-  TCashForm = class(TForm)
+  TCashForm = class(TBaseFrontForm)
     pnlMain: TAdvPanel;
     btnStartDay: TAdvSmoothButton;
     btnStartSession: TAdvSmoothButton;
@@ -78,12 +78,12 @@ end;
 
 procedure TCashForm.actReportWithoutCleaningExecute(Sender: TObject);
 begin
-//
+  Run(atReportWithoutCleaning);
 end;
 
 procedure TCashForm.actReportWithCleaningExecute(Sender: TObject);
 begin
-//
+  Run(atReportWithCleaning);
 end;
 
 procedure TCashForm.actEndSessionExecute(Sender: TObject);
@@ -127,8 +127,14 @@ begin
 
       atEndSession:
         FFiscalRegiter.EndSession;
-    else
 
+      atReportWithCleaning:
+        FFiscalRegiter.PrintReportWithCleaning;
+
+      atReportWithoutCleaning:
+        FFiscalRegiter.PrintReportWithOutCleaning;    
+    else
+      Assert(False, 'Операция не поддерживается');
     end;
   end else
     MessageBox(Application.Handle, 'В системе не установлен фискальный регистратор!',

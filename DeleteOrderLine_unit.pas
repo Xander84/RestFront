@@ -6,10 +6,10 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, kbmMemTable, DB, Front_DataBase_Unit, Contnrs, StdCtrls,
   ExtCtrls, ActnList, FrontData_Unit, AdvSmoothButton, AdvPanel,
-  AdvSmoothToggleButton, AdvStyleIF;
+  AdvSmoothToggleButton, AdvStyleIF, BaseFrontForm_Unit;
 
 type
-  TDeleteOrderLine = class(TForm)
+  TDeleteOrderLine = class(TBaseFrontForm)
     pnlTop: TAdvPanel;
     pnlBottom: TAdvPanel;
     pnlMain: TAdvPanel;

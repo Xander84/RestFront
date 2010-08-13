@@ -7,7 +7,7 @@ interface
 uses
   SysUtils, Windows, Classes, AdvPanel, AdvSmoothMessageDialog, AdvStyleIF,
   SysConst, Graphics, ImgList, Controls, AdvAppStyler, GDIPPictureContainer,
-  DBGridEh;
+  DBGridEh, AdvGrid, DBAdvGrid;
 
 type
   TApplicationFile = (afApplicationData);
@@ -16,24 +16,24 @@ type
     FrontPanelStyler: TAdvPanelStyler;
     AdvSmoothMessageDialog1: TAdvSmoothMessageDialog;
     RestPictureContainer: TGDIPPictureContainer;
+    ApStyler: TAdvAppStyler;
     procedure DataModuleCreate(Sender: TObject);
   private
     FPanelColor: TColor;
     FPanelColorTo: TColor;
-    function GetStyle: TTMSStyle;
+
     function CheckUserDataDirectory: Boolean;
     function GetUserApplicationFileName(const AFile: TApplicationFile): String;
     function GetDefaultTheme: TTMSStyle;
   public
 
-    property Style: TTMSStyle read GetStyle;
     property PanelColor: TColor read FPanelColor write FPanelColor;
     property PanelColorTo: TColor read FPanelColorTo write FPanelColorTo;
-
-    class function GetFrontStyle: TTMSStyle;
   end;
 
   procedure SetupGrid(const Grid: TDBGridEh);
+  procedure SetupAdvGrid(const AnGrid: TDBAdvGrid);
+  function GetFrontStyle: TTMSStyle;
 
 // настройки для гридов
 const
@@ -49,11 +49,12 @@ const
 var
   FrontData: TFrontData;
   FFormatSettings: TFormatSettings;
+  FFrontStyle: TTMSStyle;
   
 implementation
 
 uses
-  UxTheme, IniFiles, Dialogs;
+  UxTheme, IniFiles, Dialogs, Grids;
 
 {$R *.dfm}
 
@@ -70,14 +71,19 @@ begin
   end;
 end;
 
-function TFrontData.GetStyle: TTMSStyle;
+procedure SetupAdvGrid(const AnGrid: TDBAdvGrid);
 begin
-  Result := tsOffice2003Blue;
+  with AnGrid do
+  begin
+    Font.Size := cn_FontSize;
+
+
+  end;
 end;
 
-class function TFrontData.GetFrontStyle: TTMSStyle;
+function GetFrontStyle: TTMSStyle;
 begin
-  Result := tsOffice2003Blue;
+  Result := FFrontStyle;
 end;
 
 var
@@ -89,6 +95,7 @@ var
   IconID: PChar;
   FPicture: TPicture;
 begin
+  ApStyler.Style := GetDefaultTheme;
   FrontPanelStyler.SetComponentStyle(GetDefaultTheme);
   FPanelColor := FrontPanelStyler.Settings.Color;
   FPanelColorTo := FrontPanelStyler.Settings.ColorTo;
@@ -214,9 +221,11 @@ begin
   finally
     FreeAndNil(FunctionFile);
   end;
+  FFrontStyle := Result;
 end;
 
 initialization
+  FFrontStyle := tsOffice2003Blue;
   GetLocaleFormatSettings(LOCALE_SYSTEM_DEFAULT, FFormatSettings);
   InitThemeLibrary;
 

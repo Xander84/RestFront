@@ -4,10 +4,11 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, FrontData_Unit, AdvSmoothButton, ExtCtrls, AdvPanel;
+  Dialogs, StdCtrls, FrontData_Unit, AdvSmoothButton, ExtCtrls, AdvPanel,
+  BaseFrontForm_Unit;
 
 type
-  TCardCode = class(TForm)
+  TCardCode = class(TBaseFrontForm)
     AdvPanel1: TAdvPanel;
     edPass: TEdit;
     btnOK: TAdvSmoothButton;

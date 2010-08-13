@@ -5,11 +5,11 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, ExtCtrls, Front_DataBase_Unit, DB, GridsEh, DBGridEh, kbmMemTable,
-  StdCtrls, FrontData_Unit, AdvPanel, AdvSmoothButton, Grids;
+  StdCtrls, FrontData_Unit, AdvPanel, AdvSmoothButton, Grids, BaseFrontForm_Unit;
 
 
 type
-  TSplitOrder = class(TForm)
+  TSplitOrder = class(TBaseFrontForm)
     pnlLeft: TAdvPanel;
     pnlRight: TAdvPanel;
     pnlBottom: TAdvPanel;

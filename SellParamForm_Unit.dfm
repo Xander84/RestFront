@@ -1,6 +1,6 @@
 object SellParamForm: TSellParamForm
-  Left = 118
-  Top = 127
+  Left = 135
+  Top = 150
   BorderStyle = bsDialog
   Caption = #1055#1072#1088#1072#1084#1077#1090#1088#1099' '#1087#1088#1086#1076#1072#1078#1080
   ClientHeight = 505
@@ -15,7 +15,7 @@ object SellParamForm: TSellParamForm
   Position = poScreenCenter
   PixelsPerInch = 96
   TextHeight = 13
-  object AdvPanel1: TAdvPanel
+  object pnlMain: TAdvPanel
     Left = 0
     Top = 0
     Width = 800
@@ -109,9 +109,9 @@ object SellParamForm: TSellParamForm
       ParentFont = False
     end
     object DBGrMain: TDBGridEh
-      Left = 568
+      Left = 510
       Top = 101
-      Width = 224
+      Width = 280
       Height = 252
       AutoFitColWidths = True
       DataSource = dsMain
@@ -152,10 +152,10 @@ object SellParamForm: TSellParamForm
           Title.Font.Style = []
         end
         item
-          DisplayFormat = '# ##0'
+          DisplayFormat = '#,##0'
           EditButtons = <>
           FieldName = 'SUM'
-          Footer.DisplayFormat = '# ##0'
+          Footer.DisplayFormat = '#,##0'
           Footer.FieldName = 'SUM'
           Footer.ValueType = fvtSum
           Footers = <>
@@ -173,7 +173,6 @@ object SellParamForm: TSellParamForm
       Width = 121
       Height = 21
       TabOrder = 1
-      Visible = False
       OnChange = edMainChange
       OnKeyPress = edMainKeyPress
     end
@@ -417,7 +416,7 @@ object SellParamForm: TSellParamForm
     object btnCashPay: TAdvSmoothToggleButton
       Left = 320
       Top = 97
-      Width = 226
+      Width = 174
       Height = 59
       Color = 15195349
       ColorDisabled = 16765357
@@ -453,7 +452,7 @@ object SellParamForm: TSellParamForm
     object btnBeznalPay: TAdvSmoothToggleButton
       Left = 320
       Top = 163
-      Width = 226
+      Width = 174
       Height = 59
       Color = 15195349
       ColorDisabled = 16765357
@@ -489,7 +488,7 @@ object SellParamForm: TSellParamForm
     object btnCardPay: TAdvSmoothToggleButton
       Left = 320
       Top = 229
-      Width = 226
+      Width = 174
       Height = 59
       Color = 15195349
       ColorDisabled = 16765357
@@ -525,7 +524,7 @@ object SellParamForm: TSellParamForm
     object btnDelPay: TAdvSmoothButton
       Left = 321
       Top = 296
-      Width = 224
+      Width = 172
       Height = 57
       Action = actDeletePay
       Appearance.Font.Charset = DEFAULT_CHARSET

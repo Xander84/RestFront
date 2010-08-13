@@ -4,11 +4,12 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, FrontData_Unit, ExtCtrls, AdvPanel, AdvSmoothButton;
+  Dialogs, StdCtrls, FrontData_Unit, ExtCtrls, AdvPanel, AdvSmoothButton,
+  BaseFrontForm_Unit;
 
 type
-  TPercOrCard = class(TForm)
-    AdvPanel1: TAdvPanel;
+  TPercOrCard = class(TBaseFrontForm)
+    pnlMain: TAdvPanel;
     btnPercent: TAdvSmoothButton;
     btnCard: TAdvSmoothButton;
     procedure btnPercentClick(Sender: TObject);

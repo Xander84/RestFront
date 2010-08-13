@@ -6,10 +6,10 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, ExtCtrls, kbmMemTable, DB, Front_DataBase_Unit, Contnrs,
   ActnList, AdvPanel, FrontData_Unit, AdvSmoothButton, AdvStyleIF,
-  AdvSmoothToggleButton;
+  AdvSmoothToggleButton, BaseFrontForm_Unit;
 
 type
-  TModificationForm = class(TForm)
+  TModificationForm = class(TBaseFrontForm)
     pnlTop: TAdvPanel;
     Label1: TLabel;
     plnRight: TAdvPanel;
@@ -212,8 +212,8 @@ begin
     FLineModifyTable.First;
     while not FLineModifyTable.Eof do
       FLineModifyTable.Delete;
-  end;    
-    
+  end;
+
   ModalResult := mrCancel;
 end;
 
