@@ -5,9 +5,12 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, Front_DataBase_Unit, kbmMemTable, DB,
-  GridsEh, DBGridEh, FiscalRegister_Unit, ActnList, FrontData_Unit,
+  FiscalRegister_Unit, ActnList, FrontData_Unit,
   AdvSmoothTouchKeyBoard, ExtCtrls, AdvPanel, AdvSmoothButton,
-  AdvSmoothToggleButton, Grids, BaseFrontForm_Unit;
+  AdvSmoothToggleButton, Grids, BaseFrontForm_Unit, BaseGrid, AdvGrid,
+  DBAdvGrid;
+
+{ TODO : Подключить табло покупателя }  
 
 const
   cn_maxpay = 1000000;
@@ -34,7 +37,6 @@ type
     lblChange: TLabel;
     Label1: TLabel;
     Label2: TLabel;
-    DBGrMain: TDBGridEh;
     edMain: TEdit;
     dsMain: TDataSource;
     acListMain: TActionList;
@@ -47,6 +49,7 @@ type
     btnCardPay: TAdvSmoothToggleButton;
     actDeletePay: TAction;
     btnDelPay: TAdvSmoothButton;
+    DBAdvGrMain: TDBAdvGrid;
     procedure edMainKeyPress(Sender: TObject; var Key: Char);
     procedure edMainChange(Sender: TObject);
     procedure btnCashPayClick(Sender: TObject);
@@ -58,15 +61,21 @@ type
     procedure btnCancelClick(Sender: TObject);
     procedure actDeletePayUpdate(Sender: TObject);
     procedure actDeletePayExecute(Sender: TObject);
+    procedure DBAdvGrMainFooterCalc(Sender: TObject; ACol, ARow: Integer;
+      var Value: String);
   private
     FFrontBase: TFrontBase;
+    // сумма к оплате
     FSumToPay: Currency;
+    // сумма по всем видам оплат
+    FPaySum: Currency;
+    // сдача
+    FChange: Currency;
     FNalID: Integer;
     FBezNalID: Integer;
     FCurrentPayType: Integer;
     FCurrentPayName: String;
     FNoFiscal: Integer;
-    FPaySum: Currency;
     FFiscalRegiter: TFiscalRegister;
     FDoc: TkbmMemTable;
     FDocLine: TkbmMemTable;
@@ -110,6 +119,7 @@ begin
   FCurrentPayType := -1;
   FPaySum := 0;
   FSumToPay := 0;
+  FChange := 0;
 
   dsPayLine := TkbmMemTable.Create(nil);
   dsPayLine.Close;
@@ -117,7 +127,7 @@ begin
   dsPayLine.FieldDefs.Add('USR$NAME', ftString, 60);
   dsPayLine.FieldDefs.Add('USR$PAYTYPEKEY', ftInteger, 0);
   dsPayLine.FieldDefs.Add('USR$NOFISCAL', ftInteger, 0);
-  dsPayLine.FieldDefs.Add('SUM', ftCurrency, 0);
+  dsPayLine.FieldDefs.Add('SUM', ftFloat, 0);
   dsPayLine.FieldDefs.Add('PAYTYPE', ftInteger, 0);
   dsPayLine.CreateTable;
   dsPayLine.AfterDelete := OnAfterDelete;
@@ -137,7 +147,13 @@ begin
 
   Assert(FCurrentPayType <> -1, 'Invalid RUID');
 
-  SetupGrid(DBGrMain);
+  SetupAdvGrid(DBAdvGrMain);
+  with DBAdvGrMain do
+  begin
+    FloatingFooter.Visible := True;
+    FloatingFooter.ColumnCalc[1] := acCUSTOM;
+    FloatingFooter.ColumnCalc[2] := acCUSTOM;
+  end;
 end;
 
 destructor TSellParamForm.Destroy;
@@ -188,11 +204,17 @@ begin
       dsPayLine.Post;
     end;
   end;
-  FPaySum := DBGrMain.SumList.SumCollection.Items[0].SumValue;
+
+  DBAdvGrMain.CalcFooter(2);
   if (FSumToPay - FPaySum) < 0 then
-    lblChange.Caption := CurrToStr(FSumToPay - FPaySum)
-  else
+  begin
+    lblChange.Caption := Format(DBAdvGrMain.FloatFormat, [FSumToPay - FPaySum]);
+    FChange := FSumToPay - FPaySum;
+  end else
+  begin
     lblChange.Caption := '0';
+    FChange := 0;
+  end;
 end;
 
 procedure TSellParamForm.btnCashPayClick(Sender: TObject);
@@ -233,7 +255,7 @@ end;
 procedure TSellParamForm.SetSumToPay(const Value: Currency);
 begin
   FSumToPay := Value;
-  lblToPay.Caption := CurrToStr(Value);
+  lblToPay.Caption := Format(DBAdvGrMain.FloatFormat, [Value]);
 end;
 
 procedure TSellParamForm.btnCardPayClick(Sender: TObject);
@@ -283,19 +305,19 @@ begin
      'Внимание', MB_OK or MB_ICONEXCLAMATION);
     exit;
   end;
-  if StrToInt(lblChange.Caption) > 0 then
+  if FChange > 0 then
   begin
     MessageBox(Self.Handle, PChar('Сумма оплаты меньше суммы чека!'),
      'Внимание', MB_OK or MB_ICONEXCLAMATION);
     exit;
   end;
-  if (StrToInt(lblChange.Caption) > 0) and (FSumToPay = 0) then
+  if (FChange > 0) and (FSumToPay = 0) then
   begin
     MessageBox(Self.Handle, PChar('Сумма оплаты больше суммы чека!'),
      'Внимание', MB_OK or MB_ICONEXCLAMATION);
     exit;
   end;
-  if (-StrToInt(lblChange.Caption) >= cn_maxpay) then
+  if (-FChange >= cn_maxpay) then
   begin
     MessageBox(Self.Handle, PChar('Неверная сумма оплаты!'),
      'Внимание', MB_OK or MB_ICONEXCLAMATION);
@@ -431,6 +453,26 @@ end;
 procedure TSellParamForm.OnAfterDelete(DataSet: TDataSet);
 begin
   edMain.Text := '';
+  DBAdvGrMain.CalcFooter(2);
+end;
+
+procedure TSellParamForm.DBAdvGrMainFooterCalc(Sender: TObject; ACol,
+  ARow: Integer; var Value: String);
+var
+  I : Integer;
+  Curr: Currency;
+begin
+  if ACol = 1 then
+    Value := 'Итого'
+  else if ACol = 2 then
+  begin
+    Curr := 0;
+    for I := DBAdvGrMain.FixedRows to ARow - 1 do
+      Curr := Curr + DBAdvGrMain.Floats[ACol, I];
+
+    FPaySum := Curr;
+    Value := Format(DBAdvGrMain.FloatFormat, [Curr]);
+  end;
 end;
 
 end.
