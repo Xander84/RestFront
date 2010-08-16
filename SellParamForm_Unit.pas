@@ -71,6 +71,7 @@ type
     FPaySum: Currency;
     // сдача
     FChange: Currency;
+    FInDelete: Boolean;
     FNalID: Integer;
     FBezNalID: Integer;
     FCurrentPayType: Integer;
@@ -88,6 +89,7 @@ type
     procedure SetDocLine(const Value: TkbmMemTable);
 
     procedure OnAfterDelete(DataSet: TDataSet);
+    procedure PrevSettings(const PayType: Integer; NeedLocate: Boolean = True);
   public
     constructor CreateWithFrontBase(AOwner: TComponent; FBase: TFrontBase);
     destructor Destroy; override;
@@ -120,6 +122,7 @@ begin
   FPaySum := 0;
   FSumToPay := 0;
   FChange := 0;
+  FInDelete := False;
 
   dsPayLine := TkbmMemTable.Create(nil);
   dsPayLine.Close;
@@ -170,46 +173,49 @@ end;
 
 procedure TSellParamForm.edMainChange(Sender: TObject);
 begin
-  if dsPayLine.IsEmpty then
+  if not FInDelete then
   begin
-    if edMain.Text <> '' then
+    if dsPayLine.IsEmpty then
     begin
-      dsPayLine.Append;
-      dsPayLine.FieldByName('SUM').AsCurrency := StrToCurr(edMain.Text);
-      dsPayLine.FieldByName('USR$PAYTYPEKEY').AsInteger := FCurrentPayType;
-      dsPayLine.FieldByName('USR$NAME').AsString := FCurrentPayName;
-      dsPayLine.FieldByName('USR$NOFISCAL').AsInteger := FNoFiscal;
-      dsPayLine.FieldByName('PAYTYPE').AsInteger := FPayType;
-      dsPayLine.Post;
-    end;
-  end else
-  begin
-    if dsPayLine.Locate('USR$PAYTYPEKEY', FCurrentPayType, []) then
-    begin
-      dsPayLine.Edit;
       if edMain.Text <> '' then
-        dsPayLine.FieldByName('SUM').AsCurrency := StrToCurr(edMain.Text)
-      else
-        dsPayLine.FieldByName('SUM').AsCurrency := 0;
-      dsPayLine.Post;
+      begin
+        dsPayLine.Append;
+        dsPayLine.FieldByName('SUM').AsCurrency := StrToCurr(edMain.Text);
+        dsPayLine.FieldByName('USR$PAYTYPEKEY').AsInteger := FCurrentPayType;
+        dsPayLine.FieldByName('USR$NAME').AsString := FCurrentPayName;
+        dsPayLine.FieldByName('USR$NOFISCAL').AsInteger := FNoFiscal;
+        dsPayLine.FieldByName('PAYTYPE').AsInteger := FPayType;
+        dsPayLine.Post;
+      end;
     end else
     begin
-      dsPayLine.Append;
-      if edMain.Text <> '' then
-        dsPayLine.FieldByName('SUM').AsCurrency := StrToCurr(edMain.Text);
-      dsPayLine.FieldByName('USR$PAYTYPEKEY').AsInteger := FCurrentPayType;
-      dsPayLine.FieldByName('USR$NAME').AsString := FCurrentPayName;
-      dsPayLine.FieldByName('USR$NOFISCAL').AsInteger := FNoFiscal;
-      dsPayLine.FieldByName('PAYTYPE').AsInteger := FPayType;
-      dsPayLine.Post;
+      if dsPayLine.Locate('USR$PAYTYPEKEY', FCurrentPayType, []) then
+      begin
+        dsPayLine.Edit;
+        if edMain.Text <> '' then
+          dsPayLine.FieldByName('SUM').AsCurrency := StrToCurr(edMain.Text)
+        else
+          dsPayLine.FieldByName('SUM').AsCurrency := 0;
+        dsPayLine.Post;
+      end else
+      begin
+        dsPayLine.Append;
+        if edMain.Text <> '' then
+          dsPayLine.FieldByName('SUM').AsCurrency := StrToCurr(edMain.Text);
+        dsPayLine.FieldByName('USR$PAYTYPEKEY').AsInteger := FCurrentPayType;
+        dsPayLine.FieldByName('USR$NAME').AsString := FCurrentPayName;
+        dsPayLine.FieldByName('USR$NOFISCAL').AsInteger := FNoFiscal;
+        dsPayLine.FieldByName('PAYTYPE').AsInteger := FPayType;
+        dsPayLine.Post;
+      end;
     end;
-  end;
+  end;  
 
   DBAdvGrMain.CalcFooter(2);
   if (FSumToPay - FPaySum) < 0 then
   begin
-    lblChange.Caption := Format(DBAdvGrMain.FloatFormat, [FSumToPay - FPaySum]);
-    FChange := FSumToPay - FPaySum;
+    lblChange.Caption := Format(DBAdvGrMain.FloatFormat, [-(FSumToPay - FPaySum)]);
+    FChange := -(FSumToPay - FPaySum);
   end else
   begin
     lblChange.Caption := '0';
@@ -246,7 +252,8 @@ begin
       FNoFiscal := FForm.PayFormDataSet.FieldByName('USR$NOFISCAL').AsInteger;
       FPayType := cn_paytype_noncash;
       edMain.Text := '';
-    end;
+    end else
+      PrevSettings(FPayType);
   finally
     FForm.Free;
   end;
@@ -274,7 +281,8 @@ begin
       FNoFiscal := FForm.PayFormDataSet.FieldByName('USR$NOFISCAL').AsInteger;
       FPayType := cn_paytype_credit;
       edMain.Text := '';
-    end;
+    end else
+      PrevSettings(FPayType);
   finally
     FForm.Free;
   end;
@@ -452,7 +460,13 @@ end;
 
 procedure TSellParamForm.OnAfterDelete(DataSet: TDataSet);
 begin
-  edMain.Text := '';
+  FInDelete := True;
+  try
+    edMain.Text := '';
+    PrevSettings(dsPayLine.FieldByName('USR$PAYTYPEKEY').AsInteger, False);
+  finally
+    FInDelete := False;
+  end;
   DBAdvGrMain.CalcFooter(2);
 end;
 
@@ -472,6 +486,29 @@ begin
 
     FPaySum := Curr;
     Value := Format(DBAdvGrMain.FloatFormat, [Curr]);
+  end;
+end;
+
+procedure TSellParamForm.PrevSettings(const PayType: Integer; NeedLocate: Boolean);
+begin
+  try
+    if NeedLocate then
+      dsPayLine.Locate('USR$PAYTYPEKEY', FCurrentPayType, []);
+    case PayType of
+       cn_paytype_cash:
+         btnCashPay.Down := True;
+
+       cn_paytype_credit:
+         btnCardPay.Down := True;
+
+       cn_paytype_noncash:
+         btnBeznalPay.Down := True;
+
+    else
+      btnCashPay.Down := True;
+    end;
+  except
+    raise;
   end;
 end;
 
