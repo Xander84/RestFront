@@ -28,9 +28,6 @@ type
     property Display;
   end;
 
-{ TODO : В будущем переделать процедуры на функции с проверкой записи }
-
-
 implementation
 
 { TPoleDisplay }
@@ -97,8 +94,8 @@ begin
         WriteSingleByte(6);
       except
         ErrorInInit := True;
+        Display := 0;
         raise;
-{ TODO : Разобраться, почему не выводится ошибка }        
       end;
     finally
       Initialized := True;
@@ -184,10 +181,12 @@ var
   OemStr: String;
   I: Integer;
 begin
-  OemStr := StrAnsiToOem(S);
   if Display > 0 then
-    for I := 0 to Length(OemStr) do
+  begin
+    OemStr := StrAnsiToOem(S);
+    for I := 1 to Length(OemStr) do
       WriteSingleByte(Ord(OemStr[I]));
+  end;    
 end;
 
 end.
