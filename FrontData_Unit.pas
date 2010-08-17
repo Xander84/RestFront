@@ -72,12 +72,18 @@ begin
 end;
 
 procedure SetupAdvGrid(const AnGrid: TDBAdvGrid);
+var
+  I: Integer;
 begin
   with AnGrid do
   begin
-    Font.Size := cn_FontSize;
-
-
+    DefaultRowHeight := 2 * cn_FontSize;
+    FixedFont.Size := cn_FontSize;
+    for I := 0 to Columns.Count - 1 do
+    begin
+      Columns[I].Font.Size := cn_FontSize;
+      Columns[I].HeaderFont.Size := cn_FontSize;
+    end;
   end;
 end;
 
