@@ -71,7 +71,8 @@ type
     FPaySum: Currency;
     // сдача
     FChange: Currency;
-    FInDelete: Boolean;
+    FInDeleteOrUpdate: Boolean;
+    FInInsert: Boolean;
     FNalID: Integer;
     FBezNalID: Integer;
     FCurrentPayType: Integer;
@@ -89,6 +90,8 @@ type
     procedure SetDocLine(const Value: TkbmMemTable);
 
     procedure OnAfterDelete(DataSet: TDataSet);
+    procedure OnAfterScroll(DataSet: TDataSet);    
+
     procedure PrevSettings(const PayType: Integer; NeedLocate: Boolean = True);
   public
     constructor CreateWithFrontBase(AOwner: TComponent; FBase: TFrontBase);
@@ -122,7 +125,8 @@ begin
   FPaySum := 0;
   FSumToPay := 0;
   FChange := 0;
-  FInDelete := False;
+  FInDeleteOrUpdate := False;
+  FInInsert := False;
 
   dsPayLine := TkbmMemTable.Create(nil);
   dsPayLine.Close;
@@ -134,6 +138,7 @@ begin
   dsPayLine.FieldDefs.Add('PAYTYPE', ftInteger, 0);
   dsPayLine.CreateTable;
   dsPayLine.AfterDelete := OnAfterDelete;
+  dsPayLine.AfterScroll := OnAfterScroll;
   dsPayLine.Open;
   dsMain.DataSet := dsPayLine;
 
@@ -173,53 +178,58 @@ end;
 
 procedure TSellParamForm.edMainChange(Sender: TObject);
 begin
-  if not FInDelete then
-  begin
-    if dsPayLine.IsEmpty then
+  FInInsert := True;
+  try
+    if not FInDeleteOrUpdate then
     begin
-      if edMain.Text <> '' then
+      if dsPayLine.IsEmpty then
       begin
-        dsPayLine.Append;
-        dsPayLine.FieldByName('SUM').AsCurrency := StrToCurr(edMain.Text);
-        dsPayLine.FieldByName('USR$PAYTYPEKEY').AsInteger := FCurrentPayType;
-        dsPayLine.FieldByName('USR$NAME').AsString := FCurrentPayName;
-        dsPayLine.FieldByName('USR$NOFISCAL').AsInteger := FNoFiscal;
-        dsPayLine.FieldByName('PAYTYPE').AsInteger := FPayType;
-        dsPayLine.Post;
-      end;
-    end else
-    begin
-      if dsPayLine.Locate('USR$PAYTYPEKEY', FCurrentPayType, []) then
-      begin
-        dsPayLine.Edit;
         if edMain.Text <> '' then
-          dsPayLine.FieldByName('SUM').AsCurrency := StrToCurr(edMain.Text)
-        else
-          dsPayLine.FieldByName('SUM').AsCurrency := 0;
-        dsPayLine.Post;
+        begin
+          dsPayLine.Append;
+          dsPayLine.FieldByName('SUM').AsCurrency := StrToCurr(edMain.Text);
+          dsPayLine.FieldByName('USR$PAYTYPEKEY').AsInteger := FCurrentPayType;
+          dsPayLine.FieldByName('USR$NAME').AsString := FCurrentPayName;
+          dsPayLine.FieldByName('USR$NOFISCAL').AsInteger := FNoFiscal;
+          dsPayLine.FieldByName('PAYTYPE').AsInteger := FPayType;
+          dsPayLine.Post;
+        end;
       end else
       begin
-        dsPayLine.Append;
-        if edMain.Text <> '' then
-          dsPayLine.FieldByName('SUM').AsCurrency := StrToCurr(edMain.Text);
-        dsPayLine.FieldByName('USR$PAYTYPEKEY').AsInteger := FCurrentPayType;
-        dsPayLine.FieldByName('USR$NAME').AsString := FCurrentPayName;
-        dsPayLine.FieldByName('USR$NOFISCAL').AsInteger := FNoFiscal;
-        dsPayLine.FieldByName('PAYTYPE').AsInteger := FPayType;
-        dsPayLine.Post;
+        if dsPayLine.Locate('USR$PAYTYPEKEY', FCurrentPayType, []) then
+        begin
+          dsPayLine.Edit;
+          if edMain.Text <> '' then
+            dsPayLine.FieldByName('SUM').AsCurrency := StrToCurr(edMain.Text)
+          else
+            dsPayLine.FieldByName('SUM').AsCurrency := 0;
+          dsPayLine.Post;
+        end else
+        begin
+          dsPayLine.Append;
+          if edMain.Text <> '' then
+            dsPayLine.FieldByName('SUM').AsCurrency := StrToCurr(edMain.Text);
+          dsPayLine.FieldByName('USR$PAYTYPEKEY').AsInteger := FCurrentPayType;
+          dsPayLine.FieldByName('USR$NAME').AsString := FCurrentPayName;
+          dsPayLine.FieldByName('USR$NOFISCAL').AsInteger := FNoFiscal;
+          dsPayLine.FieldByName('PAYTYPE').AsInteger := FPayType;
+          dsPayLine.Post;
+        end;
       end;
     end;
-  end;  
 
-  DBAdvGrMain.CalcFooter(2);
-  if (FSumToPay - FPaySum) < 0 then
-  begin
-    lblChange.Caption := Format(DBAdvGrMain.FloatFormat, [-(FSumToPay - FPaySum)]);
-    FChange := -(FSumToPay - FPaySum);
-  end else
-  begin
-    lblChange.Caption := '0';
-    FChange := 0;
+    DBAdvGrMain.CalcFooter(2);
+    if (FSumToPay - FPaySum) < 0 then
+    begin
+      lblChange.Caption := Format(DBAdvGrMain.FloatFormat, [(FPaySum - FSumToPay)]);
+      FChange := FPaySum - FSumToPay;
+    end else
+    begin
+      lblChange.Caption := '0';
+      FChange := 0;
+    end;
+  finally
+    FInInsert := False;
   end;
 end;
 
@@ -240,6 +250,8 @@ procedure TSellParamForm.btnBeznalPayClick(Sender: TObject);
 var
   FForm: TPayForm;
 begin
+  if TAdvSmoothToggleButton(Sender).Down = False then
+    TAdvSmoothToggleButton(Sender).Down := True;
   FForm := TPayForm.CreateWithFrontBase(nil, FFrontBase);
   FForm.PayType := FBezNalID;
   FForm.IsPlCard := 0;
@@ -251,7 +263,10 @@ begin
       FCurrentPayName := FForm.PayFormDataSet.FieldByName('USR$NAME').AsString;
       FNoFiscal := FForm.PayFormDataSet.FieldByName('USR$NOFISCAL').AsInteger;
       FPayType := cn_paytype_noncash;
-      edMain.Text := '';
+      if edMain.Text = '0' then
+        edMain.Text := ''
+      else
+        edMain.Text := '0';
     end else
       PrevSettings(FPayType);
   finally
@@ -269,6 +284,8 @@ procedure TSellParamForm.btnCardPayClick(Sender: TObject);
 var
   FForm: TPayForm;
 begin
+  if TAdvSmoothToggleButton(Sender).Down = False then
+    TAdvSmoothToggleButton(Sender).Down := True;
   FForm := TPayForm.CreateWithFrontBase(nil, FFrontBase);
   FForm.PayType := FBezNalID;
   FForm.IsPlCard := 1;
@@ -280,7 +297,10 @@ begin
       FCurrentPayName := FForm.PayFormDataSet.FieldByName('USR$NAME').AsString;
       FNoFiscal := FForm.PayFormDataSet.FieldByName('USR$NOFISCAL').AsInteger;
       FPayType := cn_paytype_credit;
-      edMain.Text := '';
+      if edMain.Text = '0' then
+        edMain.Text := ''
+      else
+        edMain.Text := '0';
     end else
       PrevSettings(FPayType);
   finally
@@ -460,12 +480,24 @@ end;
 
 procedure TSellParamForm.OnAfterDelete(DataSet: TDataSet);
 begin
-  FInDelete := True;
+  FInDeleteOrUpDate := True;
   try
-    edMain.Text := '';
-    PrevSettings(dsPayLine.FieldByName('USR$PAYTYPEKEY').AsInteger, False);
+    //edMain.Text := '';
+    edMain.Text := dsPayLine.FieldByName('SUM').AsString;
+    PrevSettings(dsPayLine.FieldByName('PAYTYPE').AsInteger, False);
+    if not dsPayLine.IsEmpty then
+    begin
+      FCurrentPayType := dsPayLine.FieldByName('USR$PAYTYPEKEY').AsInteger;
+      FCurrentPayName := dsPayLine.FieldByName('USR$NAME').AsString;
+      FPayType := dsPayLine.FieldByName('PAYTYPE').AsInteger;
+    end else
+    begin
+      FCurrentPayType := FFrontBase.GetIDByRUID(mn_RUBpaytypeXID, mn_RUBpaytypeDBID);
+      FCurrentPayName := 'Рубли';
+      FPayType := cn_paytype_cash;
+    end;
   finally
-    FInDelete := False;
+    FInDeleteOrUpdate := False;
   end;
   DBAdvGrMain.CalcFooter(2);
 end;
@@ -509,6 +541,24 @@ begin
     end;
   except
     raise;
+  end;
+end;
+
+procedure TSellParamForm.OnAfterScroll(DataSet: TDataSet);
+begin
+  if (not FInInsert) and (not dsPayLine.IsEmpty) then
+  begin
+    FInDeleteOrUpdate := True;
+    try
+      edMain.Text := dsPayLine.FieldByName('SUM').AsString;
+      edMain.SelStart := Length(edMain.Text) - 1;
+      FCurrentPayType := dsPayLine.FieldByName('USR$PAYTYPEKEY').AsInteger;
+      FCurrentPayName := dsPayLine.FieldByName('USR$NAME').AsString;
+      FPayType := dsPayLine.FieldByName('PAYTYPE').AsInteger;
+      PrevSettings(FPayType, False);
+    finally
+      FInDeleteOrUpdate := False;
+    end;
   end;
 end;
 
