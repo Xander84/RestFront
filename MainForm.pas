@@ -597,8 +597,10 @@ begin
     FButton.Top  := FLastTopButton;
   end;
   FButton.Tag := FOrderDataSet.FieldByName('ID').AsInteger;
-  FButton.Caption := 'π ' + FOrderDataSet.FieldByName('TableName').AsString +
-    ' —ÛÏÏ‡ ' + FOrderDataSet.FieldByName('Summ').AsString;
+  FButton.Caption := Format('π %s —ÛÏÏ‡ %s', [FOrderDataSet.FieldByName('TableName').AsString,
+    FOrderDataSet.FieldByName('Summ').AsString]);
+//  FButton.Caption := 'π ' + FOrderDataSet.FieldByName('TableName').AsString +
+//    ' —ÛÏÏ‡ ' + FOrderDataSet.FieldByName('Summ').AsString;
 
   FLastLeftButton := FLastLeftButton + btnWidth + 10;
 
@@ -1846,8 +1848,10 @@ begin
   FButton.Top  := FUserOrderLastTop;
 
   FButton.Tag := MemTable.FieldByName('ID').AsInteger;
-  FButton.Caption := 'π ' + MemTable.FieldByName('TableName').AsString +
-    ' —ÛÏÏ‡ ' + MemTable.FieldByName('Summ').AsString;
+  FButton.Caption := Format('π %s —ÛÏÏ‡ %s', [MemTable.FieldByName('TableName').AsString,
+    MemTable.FieldByName('Summ').AsString]);
+//  FButton.Caption := 'π ' + MemTable.FieldByName('TableName').AsString +
+//    ' —ÛÏÏ‡ ' + MemTable.FieldByName('Summ').AsString;
 
   FUserOrderLastLeftButton := FUserOrderLastLeftButton + btnWidth + 10;
 
@@ -1955,7 +1959,7 @@ procedure TRestMainForm.DeleteOrderLine(var Amount: Currency;
 var
   OldQuantity: Currency;
   OldDetailID, MasterKey: Integer;
-  V: array of Variant;
+  V: Array of Variant;
   I: Integer;
   PrnGrid, DocumentKey, OrderKey: Integer;
   PrinterName: String;
