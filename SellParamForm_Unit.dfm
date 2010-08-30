@@ -25,7 +25,7 @@ object SellParamForm: TSellParamForm
     Color = 16640730
     TabOrder = 0
     UseDockManager = True
-    Version = '1.9.0.0'
+    Version = '2.0.1.0'
     BorderColor = clGray
     Caption.Color = 14059353
     Caption.ColorTo = 9648131
@@ -37,7 +37,7 @@ object SellParamForm: TSellParamForm
     Caption.GradientDirection = gdVertical
     Caption.Indent = 2
     Caption.ShadeLight = 255
-    CollapsColor = clHighlight
+    CollapsColor = clNone
     CollapsDelay = 0
     ColorTo = 14986888
     ShadowColor = clBlack
@@ -131,6 +131,7 @@ object SellParamForm: TSellParamForm
       AutoCompletion.Color = clBlack
       Fill.ColorMirror = clNone
       Fill.ColorMirrorTo = clNone
+      Fill.BorderColor = clNone
       Fill.Rounding = 0
       Fill.ShadowOffset = 0
       AutoPostKey = False
@@ -286,7 +287,7 @@ object SellParamForm: TSellParamForm
       SmallFont.Height = -13
       SmallFont.Name = 'Times New Roman'
       SmallFont.Style = []
-      Version = '1.0.1.1'
+      Version = '1.5.0.0'
       OnKeyClick = TouchKeyBoardKeyClick
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
@@ -322,7 +323,7 @@ object SellParamForm: TSellParamForm
       Color = 15195349
       ParentFont = False
       TabOrder = 2
-      Version = '1.6.5.2'
+      Version = '1.6.9.0'
     end
     object btnCancel: TAdvSmoothButton
       Left = 524
@@ -352,7 +353,7 @@ object SellParamForm: TSellParamForm
       Color = 15195349
       ParentFont = False
       TabOrder = 3
-      Version = '1.6.5.2'
+      Version = '1.6.9.0'
       OnClick = btnCancelClick
     end
     object btnCashPay: TAdvSmoothToggleButton
@@ -372,7 +373,7 @@ object SellParamForm: TSellParamForm
       Appearance.Font.Name = 'Times New Roman'
       Appearance.Font.Style = []
       Caption = #1053#1072#1083#1080#1095#1085#1099#1084#1080
-      Version = '1.1.5.2'
+      Version = '1.1.8.0'
       Status.Caption = '0'
       Status.Appearance.Fill.Color = clRed
       Status.Appearance.Fill.ColorMirror = clNone
@@ -408,7 +409,7 @@ object SellParamForm: TSellParamForm
       Appearance.Font.Name = 'Times New Roman'
       Appearance.Font.Style = []
       Caption = #1041#1077#1079#1085#1072#1083#1080#1095#1085#1099#1084#1080
-      Version = '1.1.5.2'
+      Version = '1.1.8.0'
       Status.Caption = '0'
       Status.Appearance.Fill.Color = clRed
       Status.Appearance.Fill.ColorMirror = clNone
@@ -444,7 +445,7 @@ object SellParamForm: TSellParamForm
       Appearance.Font.Name = 'Times New Roman'
       Appearance.Font.Style = []
       Caption = #1055#1083#1072#1090'. '#1082#1072#1088#1090#1086#1081
-      Version = '1.1.5.2'
+      Version = '1.1.8.0'
       Status.Caption = '0'
       Status.Appearance.Fill.Color = clRed
       Status.Appearance.Fill.ColorMirror = clNone
@@ -491,7 +492,7 @@ object SellParamForm: TSellParamForm
       Color = 15195349
       ParentFont = False
       TabOrder = 7
-      Version = '1.6.5.2'
+      Version = '1.6.9.0'
     end
     object DBAdvGrMain: TDBAdvGrid
       Left = 504
@@ -518,12 +519,31 @@ object SellParamForm: TSellParamForm
       ActiveCellFont.Name = 'Tahoma'
       ActiveCellFont.Style = [fsBold]
       ColumnSize.Stretch = True
+      ControlLook.FixedGradientHoverFrom = clGray
+      ControlLook.FixedGradientHoverTo = clWhite
+      ControlLook.FixedGradientDownFrom = clGray
+      ControlLook.FixedGradientDownTo = clSilver
+      ControlLook.DropDownHeader.Font.Charset = DEFAULT_CHARSET
+      ControlLook.DropDownHeader.Font.Color = clWindowText
+      ControlLook.DropDownHeader.Font.Height = -11
+      ControlLook.DropDownHeader.Font.Name = 'Tahoma'
+      ControlLook.DropDownHeader.Font.Style = []
+      ControlLook.DropDownHeader.Visible = True
+      ControlLook.DropDownHeader.Buttons = <>
+      ControlLook.DropDownFooter.Font.Charset = DEFAULT_CHARSET
+      ControlLook.DropDownFooter.Font.Color = clWindowText
+      ControlLook.DropDownFooter.Font.Height = -11
+      ControlLook.DropDownFooter.Font.Name = 'MS Sans Serif'
+      ControlLook.DropDownFooter.Font.Style = []
+      ControlLook.DropDownFooter.Visible = True
+      ControlLook.DropDownFooter.Buttons = <>
       Filter = <>
       FilterDropDown.Font.Charset = DEFAULT_CHARSET
       FilterDropDown.Font.Color = clWindowText
       FilterDropDown.Font.Height = -11
       FilterDropDown.Font.Name = 'MS Sans Serif'
       FilterDropDown.Font.Style = []
+      FilterDropDownClear = '(All)'
       FixedColWidth = 20
       FixedRowHeight = 30
       FixedFont.Charset = DEFAULT_CHARSET
@@ -568,7 +588,7 @@ object SellParamForm: TSellParamForm
       SearchFooter.HintFindPrev = 'Find previous occurence'
       SearchFooter.HintHighlight = 'Highlight occurences'
       SearchFooter.MatchCaseCaption = 'Match case'
-      Version = '2.1.10.3'
+      Version = '2.1.14.2'
       AutoCreateColumns = True
       AutoRemoveColumns = True
       Columns = <

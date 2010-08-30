@@ -8,7 +8,7 @@ uses
   FiscalRegister_Unit, ActnList, FrontData_Unit,
   AdvSmoothTouchKeyBoard, ExtCtrls, AdvPanel, AdvSmoothButton,
   AdvSmoothToggleButton, Grids, BaseFrontForm_Unit, BaseGrid, AdvGrid,
-  DBAdvGrid;
+  DBAdvGrid, AdvObj;
 
 { TODO : Подключить табло покупателя }  
 
@@ -139,8 +139,8 @@ begin
   dsPayLine.CreateTable;
   dsPayLine.AfterDelete := OnAfterDelete;
   dsPayLine.AfterScroll := OnAfterScroll;
-  dsPayLine.Open;
   dsMain.DataSet := dsPayLine;
+  dsPayLine.Open;
 
   FNalID := FFrontBase.GetIDByRUID(mn_nalXID, mn_nalDBID);
   Assert(FNalID <> -1, 'Invalid RUID');
