@@ -27,7 +27,13 @@ type
     procedure MoneyIn;
     procedure MoneyOut;    
     procedure OpenDrawer;
+    procedure PrintReportWithCleaning;
+    procedure PrintReportWithOutCleaning;
+    procedure StartDay;
+    procedure StartSession;
+    procedure EndDay;
     procedure EndSession;
+
     function PrintCheck(const Doc, DocLine, PayLine: TkbmMemTable): Boolean;      
 
     property FrontBase: TFrontBase read FFrontBase write FFrontBase;
@@ -59,6 +65,11 @@ begin
       FreeAndNil(Obj);
   end;
   inherited;
+end;
+
+procedure TFiscalRegister.EndDay;
+begin
+{ TODO : Сделать }
 end;
 
 procedure TFiscalRegister.EndSession;
@@ -138,6 +149,28 @@ begin
   else
 { TODO : Подумать над результатом }
     Result := True;
+end;
+
+procedure TFiscalRegister.PrintReportWithCleaning;
+begin
+  if Assigned(FFiscalRegister) then
+    FFiscalRegister.PrintZ1ReportWithCleaning;
+end;
+
+procedure TFiscalRegister.PrintReportWithOutCleaning;
+begin
+  if Assigned(FFiscalRegister) then
+    FFiscalRegister.PrintX1ReportWithOutCleaning;
+end;
+
+procedure TFiscalRegister.StartDay;
+begin
+{ TODO : Сделать }
+end;
+
+procedure TFiscalRegister.StartSession;
+begin
+{ TODO : Сделать }
 end;
 
 end.

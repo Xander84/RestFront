@@ -68,12 +68,12 @@ end;
 
 procedure TCashForm.actStartDayExecute(Sender: TObject);
 begin
-//
+  Run(atStartDay);
 end;
 
 procedure TCashForm.actStartSessionExecute(Sender: TObject);
 begin
-//
+  Run(atStartSession);
 end;
 
 procedure TCashForm.actReportWithoutCleaningExecute(Sender: TObject);
@@ -93,7 +93,7 @@ end;
 
 procedure TCashForm.actEndDayExecute(Sender: TObject);
 begin
-//
+  Run(atEndDay);
 end;
 
 procedure TCashForm.actMoneyINExecute(Sender: TObject);
@@ -132,7 +132,16 @@ begin
         FFiscalRegiter.PrintReportWithCleaning;
 
       atReportWithoutCleaning:
-        FFiscalRegiter.PrintReportWithOutCleaning;    
+        FFiscalRegiter.PrintReportWithOutCleaning;
+
+      atStartDay:
+        FFiscalRegiter.StartDay;
+
+      atStartSession:
+        FFiscalRegiter.StartSession;
+
+      atEndDay:
+        FFiscalRegiter.EndDay;
     else
       Assert(False, 'Операция не поддерживается');
     end;
