@@ -2,6 +2,8 @@ program RestFront;
 
 uses
   FastMM4,
+  RtlVclOptimize,
+{  ExceptionLog, }
   Forms,
   AppEvnts,
   MainForm in 'MainForm.pas' {RestMainForm},
