@@ -38,7 +38,7 @@ object RestMainForm: TRestMainForm
       TabBackGroundColor = clBtnFace
       TabMargin.RightMargin = 0
       TabOverlap = 0
-      Version = '1.6.1.1'
+      Version = '1.6.2.1'
       TabOrder = 0
       object tsPassWord: TAdvTabSheet
         Caption = 'Password'
@@ -94,7 +94,7 @@ object RestMainForm: TRestMainForm
           Color = 15195349
           ParentFont = False
           TabOrder = 1
-          Version = '1.6.5.2'
+          Version = '1.6.9.0'
         end
       end
       object tsMain: TAdvTabSheet
@@ -120,7 +120,7 @@ object RestMainForm: TRestMainForm
           ParentFont = False
           TabOrder = 0
           UseDockManager = True
-          Version = '1.9.0.0'
+          Version = '2.0.1.0'
           BorderColor = clGray
           Caption.Color = 14059353
           Caption.ColorTo = 9648131
@@ -132,7 +132,7 @@ object RestMainForm: TRestMainForm
           Caption.GradientDirection = gdVertical
           Caption.Indent = 2
           Caption.ShadeLight = 255
-          CollapsColor = clHighlight
+          CollapsColor = clNone
           CollapsDelay = 0
           ColorTo = 14986888
           ShadowColor = clBlack
@@ -177,7 +177,7 @@ object RestMainForm: TRestMainForm
                   Color = 16640730
                   TabOrder = 0
                   UseDockManager = True
-                  Version = '1.9.0.0'
+                  Version = '2.0.1.0'
                   BorderColor = clGray
                   Caption.Color = 14059353
                   Caption.ColorTo = 9648131
@@ -189,7 +189,7 @@ object RestMainForm: TRestMainForm
                   Caption.GradientDirection = gdVertical
                   Caption.Indent = 2
                   Caption.ShadeLight = 255
-                  CollapsColor = clHighlight
+                  CollapsColor = clNone
                   CollapsDelay = 0
                   ColorTo = 14986888
                   ShadowColor = clBlack
@@ -217,7 +217,7 @@ object RestMainForm: TRestMainForm
                   Color = 16640730
                   TabOrder = 1
                   UseDockManager = True
-                  Version = '1.9.0.0'
+                  Version = '2.0.1.0'
                   BorderColor = clGray
                   Caption.Color = 14059353
                   Caption.ColorTo = 9648131
@@ -229,7 +229,7 @@ object RestMainForm: TRestMainForm
                   Caption.GradientDirection = gdVertical
                   Caption.Indent = 2
                   Caption.ShadeLight = 255
-                  CollapsColor = clHighlight
+                  CollapsColor = clNone
                   CollapsDelay = 0
                   ColorTo = 14986888
                   ShadowColor = clBlack
@@ -267,7 +267,7 @@ object RestMainForm: TRestMainForm
                   ParentFont = False
                   TabOrder = 0
                   UseDockManager = True
-                  Version = '1.9.0.0'
+                  Version = '2.0.1.0'
                   BorderColor = clGray
                   Caption.Color = 14059353
                   Caption.ColorTo = 9648131
@@ -279,7 +279,7 @@ object RestMainForm: TRestMainForm
                   Caption.GradientDirection = gdVertical
                   Caption.Indent = 2
                   Caption.ShadeLight = 255
-                  CollapsColor = clHighlight
+                  CollapsColor = clNone
                   CollapsDelay = 0
                   ColorTo = 14986888
                   ShadowColor = clBlack
@@ -307,7 +307,7 @@ object RestMainForm: TRestMainForm
                   Color = 16640730
                   TabOrder = 1
                   UseDockManager = True
-                  Version = '1.9.0.0'
+                  Version = '2.0.1.0'
                   BorderColor = clGray
                   Caption.Color = 14059353
                   Caption.ColorTo = 9648131
@@ -319,7 +319,7 @@ object RestMainForm: TRestMainForm
                   Caption.GradientDirection = gdVertical
                   Caption.Indent = 2
                   Caption.ShadeLight = 255
-                  CollapsColor = clHighlight
+                  CollapsColor = clNone
                   CollapsDelay = 0
                   ColorTo = 14986888
                   ShadowColor = clBlack
@@ -364,7 +364,7 @@ object RestMainForm: TRestMainForm
                     Color = 15195349
                     ParentFont = False
                     TabOrder = 0
-                    Version = '1.6.5.2'
+                    Version = '1.6.9.0'
                   end
                 end
               end
@@ -379,7 +379,7 @@ object RestMainForm: TRestMainForm
               Color = 16640730
               TabOrder = 1
               UseDockManager = True
-              Version = '1.9.0.0'
+              Version = '2.0.1.0'
               BorderColor = clGray
               Caption.Color = 14059353
               Caption.ColorTo = 9648131
@@ -391,7 +391,7 @@ object RestMainForm: TRestMainForm
               Caption.GradientDirection = gdVertical
               Caption.Indent = 2
               Caption.ShadeLight = 255
-              CollapsColor = clHighlight
+              CollapsColor = clNone
               CollapsDelay = 0
               ColorTo = 14986888
               ShadowColor = clBlack
@@ -436,7 +436,7 @@ object RestMainForm: TRestMainForm
                 Color = 15195349
                 ParentFont = False
                 TabOrder = 0
-                Version = '1.6.5.2'
+                Version = '1.6.9.0'
               end
               object btnScrollUp: TAdvSmoothButton
                 Left = 126
@@ -466,7 +466,7 @@ object RestMainForm: TRestMainForm
                 Color = 15195349
                 ParentFont = False
                 TabOrder = 1
-                Version = '1.6.5.2'
+                Version = '1.6.9.0'
               end
             end
           end
@@ -480,7 +480,7 @@ object RestMainForm: TRestMainForm
             Color = 16640730
             TabOrder = 1
             UseDockManager = True
-            Version = '1.9.0.0'
+            Version = '2.0.1.0'
             BorderColor = clGray
             Caption.Color = 14059353
             Caption.ColorTo = 9648131
@@ -492,7 +492,7 @@ object RestMainForm: TRestMainForm
             Caption.GradientDirection = gdVertical
             Caption.Indent = 2
             Caption.ShadeLight = 255
-            CollapsColor = clHighlight
+            CollapsColor = clNone
             CollapsDelay = 0
             ColorTo = 14986888
             ShadowColor = clBlack
@@ -537,7 +537,7 @@ object RestMainForm: TRestMainForm
               Color = 15195349
               ParentFont = False
               TabOrder = 0
-              Version = '1.6.5.2'
+              Version = '1.6.9.0'
             end
             object btnCancel: TAdvSmoothButton
               Left = 126
@@ -567,7 +567,7 @@ object RestMainForm: TRestMainForm
               Color = 15195349
               ParentFont = False
               TabOrder = 1
-              Version = '1.6.5.2'
+              Version = '1.6.9.0'
             end
           end
         end
@@ -594,7 +594,7 @@ object RestMainForm: TRestMainForm
             TabBackGroundColor = clBtnFace
             TabMargin.RightMargin = 0
             TabOverlap = 0
-            Version = '1.6.1.1'
+            Version = '1.6.2.1'
             TabOrder = 0
             object tsUserOrder: TAdvTabSheet
               Caption = 'tsUserOrder'
@@ -629,7 +629,7 @@ object RestMainForm: TRestMainForm
                 Color = 15195349
                 ParentFont = False
                 TabOrder = 0
-                Version = '1.6.5.2'
+                Version = '1.6.9.0'
                 OnClick = btnNewOrderClick
               end
             end
@@ -665,7 +665,7 @@ object RestMainForm: TRestMainForm
                   ParentFont = False
                   TabOrder = 0
                   UseDockManager = True
-                  Version = '1.9.0.0'
+                  Version = '2.0.1.0'
                   BorderColor = clGray
                   Caption.Color = 14059353
                   Caption.ColorTo = 9648131
@@ -677,7 +677,7 @@ object RestMainForm: TRestMainForm
                   Caption.GradientDirection = gdVertical
                   Caption.Indent = 2
                   Caption.ShadeLight = 255
-                  CollapsColor = clHighlight
+                  CollapsColor = clNone
                   CollapsDelay = 0
                   ColorTo = 14986888
                   ShadowColor = clBlack
@@ -722,7 +722,7 @@ object RestMainForm: TRestMainForm
                     Color = 15195349
                     ParentFont = False
                     TabOrder = 0
-                    Version = '1.6.5.2'
+                    Version = '1.6.9.0'
                   end
                   object btnGoodDown: TAdvSmoothButton
                     Left = 3
@@ -752,7 +752,7 @@ object RestMainForm: TRestMainForm
                     Color = 15195349
                     ParentFont = False
                     TabOrder = 1
-                    Version = '1.6.5.2'
+                    Version = '1.6.9.0'
                   end
                 end
                 object pnlGood: TAdvPanel
@@ -771,7 +771,7 @@ object RestMainForm: TRestMainForm
                   ParentFont = False
                   TabOrder = 1
                   UseDockManager = True
-                  Version = '1.9.0.0'
+                  Version = '2.0.1.0'
                   BorderColor = clGray
                   Caption.Color = 14059353
                   Caption.ColorTo = 9648131
@@ -783,7 +783,7 @@ object RestMainForm: TRestMainForm
                   Caption.GradientDirection = gdVertical
                   Caption.Indent = 2
                   Caption.ShadeLight = 255
-                  CollapsColor = clHighlight
+                  CollapsColor = clNone
                   CollapsDelay = 0
                   ColorTo = 14986888
                   ShadowColor = clBlack
@@ -1058,7 +1058,7 @@ object RestMainForm: TRestMainForm
             Color = 15195349
             ParentFont = False
             TabOrder = 2
-            Version = '1.6.5.2'
+            Version = '1.6.9.0'
           end
           object btnRestartRest: TAdvSmoothButton
             Left = 0
@@ -1088,7 +1088,7 @@ object RestMainForm: TRestMainForm
             Color = 15195349
             ParentFont = False
             TabOrder = 3
-            Version = '1.6.5.2'
+            Version = '1.6.9.0'
           end
           object btnEditReport: TAdvSmoothButton
             Left = 0
@@ -1118,7 +1118,7 @@ object RestMainForm: TRestMainForm
             Color = 15195349
             ParentFont = False
             TabOrder = 4
-            Version = '1.6.5.2'
+            Version = '1.6.9.0'
           end
         end
         object tsFunctionButton: TTabSheet
@@ -1162,7 +1162,7 @@ object RestMainForm: TRestMainForm
             Color = 15195349
             ParentFont = False
             TabOrder = 1
-            Version = '1.6.5.2'
+            Version = '1.6.9.0'
           end
           object btnRemoveQuantity: TAdvSmoothButton
             Left = 0
@@ -1192,7 +1192,7 @@ object RestMainForm: TRestMainForm
             Color = 15195349
             ParentFont = False
             TabOrder = 2
-            Version = '1.6.5.2'
+            Version = '1.6.9.0'
           end
           object btnDeletePosition: TAdvSmoothButton
             Left = 0
@@ -1222,7 +1222,7 @@ object RestMainForm: TRestMainForm
             Color = 15195349
             ParentFont = False
             TabOrder = 3
-            Version = '1.6.5.2'
+            Version = '1.6.9.0'
           end
           object btnCutCheck: TAdvSmoothButton
             Left = 0
@@ -1252,7 +1252,7 @@ object RestMainForm: TRestMainForm
             Color = 15195349
             ParentFont = False
             TabOrder = 4
-            Version = '1.6.5.2'
+            Version = '1.6.9.0'
           end
           object btnPreCheck: TAdvSmoothButton
             Left = 0
@@ -1282,7 +1282,7 @@ object RestMainForm: TRestMainForm
             Color = 15195349
             ParentFont = False
             TabOrder = 5
-            Version = '1.6.5.2'
+            Version = '1.6.9.0'
           end
           object btnCancelPreCheck: TAdvSmoothButton
             Left = 0
@@ -1312,7 +1312,7 @@ object RestMainForm: TRestMainForm
             Color = 15195349
             ParentFont = False
             TabOrder = 6
-            Version = '1.6.5.2'
+            Version = '1.6.9.0'
           end
           object btnModification: TAdvSmoothButton
             Left = 0
@@ -1342,7 +1342,7 @@ object RestMainForm: TRestMainForm
             Color = 15195349
             ParentFont = False
             TabOrder = 7
-            Version = '1.6.5.2'
+            Version = '1.6.9.0'
           end
           object btnKeyBoard: TAdvSmoothButton
             Left = 0
@@ -1372,7 +1372,7 @@ object RestMainForm: TRestMainForm
             Color = 15195349
             ParentFont = False
             TabOrder = 8
-            Version = '1.6.5.2'
+            Version = '1.6.9.0'
           end
           object btnDiscount: TAdvSmoothButton
             Left = 0
@@ -1402,7 +1402,7 @@ object RestMainForm: TRestMainForm
             Color = 15195349
             ParentFont = False
             TabOrder = 9
-            Version = '1.6.5.2'
+            Version = '1.6.9.0'
           end
           object btnPay: TAdvSmoothButton
             Left = 0
@@ -1432,7 +1432,7 @@ object RestMainForm: TRestMainForm
             Color = 15195349
             ParentFont = False
             TabOrder = 10
-            Version = '1.6.5.2'
+            Version = '1.6.9.0'
           end
           object btnDevide: TAdvSmoothButton
             Left = 0
@@ -1462,7 +1462,7 @@ object RestMainForm: TRestMainForm
             Color = 15195349
             ParentFont = False
             TabOrder = 11
-            Version = '1.6.5.2'
+            Version = '1.6.9.0'
           end
         end
       end

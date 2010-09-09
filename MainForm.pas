@@ -1933,25 +1933,13 @@ end;
 
 procedure TRestMainForm.WritePos(DataSet: TDataSet);
 begin
-{ TODO : Обработка должна быть внутри класса дисплея }
-  try
-    if Assigned(FFrontBase.Display) then
-      FFrontBase.Display.WritePos(DataSet.FieldByName('GOODNAME').AsString,
-        DataSet.FieldByName('usr$quantity').AsCurrency, DataSet.FieldByName('usr$costncu').AsCurrency);
-  except
-    raise;
-  end;
+  FFrontBase.Display.WritePos(DataSet.FieldByName('GOODNAME').AsString,
+    DataSet.FieldByName('usr$quantity').AsCurrency, DataSet.FieldByName('usr$costncu').AsCurrency);
 end;
 
 procedure TRestMainForm.ClearDisplay;
 begin
-{ TODO : Обработка должна быть внутри класса дисплея } 
-  try
-    if Assigned(FFrontBase.Display) then
-      FFrontBase.Display.Clear;
-  except
-    raise;
-  end;
+  FFrontBase.Display.Clear;
 end;
 
 procedure TRestMainForm.DeleteOrderLine(var Amount: Currency;

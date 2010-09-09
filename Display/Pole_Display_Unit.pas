@@ -5,8 +5,9 @@ interface
 uses
   Base_Display_unit, Windows, SysUtils;
 
+
 type
-  // Стандартный дисплей для COM порта.
+  {Posiflex PD2200}
   TPoleDisplay = class(TBaseDisplay)
   private
     procedure Init;
@@ -26,6 +27,7 @@ type
     property ComPort;
     property Initialized;
     property Display;
+    property Self;
   end;
 
 implementation
