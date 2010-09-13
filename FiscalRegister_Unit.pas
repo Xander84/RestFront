@@ -43,7 +43,7 @@ type
 implementation
 
 uses
-  Spark617_Unit, MercFP_Unit;
+  Spark617_Unit, MercFP_Unit, ShtrihFR_Unit;
 
 { TFiscalRegister }
 
@@ -97,7 +97,9 @@ begin
     case FiscalType of
       0: //Штрих-ФР
       begin
-        Assert(False, 'Данный тип кассы не поддерживается');
+        FFiscalRegister := TShtrihFR.Create(nil);
+        FFiscalRegister.FrontBase := FFrontBase;
+        FFiscalRegister.Init;
       end;
 
       2: //Меркурий-Epson 220U
