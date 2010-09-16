@@ -195,10 +195,10 @@ type
     FCompanyKey: Integer;
     FMN_Options: TFrontOptions;
 
-    FDisplay: TBaseDisplay;
+    FDisplay: TDisplay;
     FDisplayInitialized: Boolean;
 
-    function GetDisplay: TBaseDisplay;
+    function GetDisplay: TDisplay;
     function GetCashCode: Integer;
     function GetFiscalComPort: Integer;
     function GetCashNumber: Integer;
@@ -282,7 +282,7 @@ type
     property UserGroup: Integer read FUserGroup;
     property MN_Options: TFrontOptions read FMN_Options write FMN_Options;
 
-    property Display: TBaseDisplay read GetDisplay;
+    property Display: TDisplay read GetDisplay;
     property CashCode: Integer read GetCashCode;
     property FiscalComPort: Integer read GetFiscalComPort;
     property CashNumber: Integer read GetCashNumber;
@@ -352,8 +352,11 @@ begin
   FIDSQL.Transaction := FIDTransaction;
   FIDSQL.SQL.Text := 'SELECT gen_id(gd_g_unique, 1) as id FROM rdb$database';
 
-  InitDB;
-
+  try
+    InitDB;
+  except
+    raise;
+  end;
   FDisplayInitialized := False;
   FCashCode := -1;
   FFiscalComPort := -1;
@@ -776,7 +779,8 @@ begin
   FCheckSQL.Free;
   FCheckTransaction.Free;
 
-  FIDTransaction.Commit;
+  if FIDTransaction.InTransaction then
+    FIDTransaction.Commit;
 
   FIDSQL.Free;
   FIDTransaction.Free;
@@ -1452,9 +1456,9 @@ begin
     begin
       if FReadSQL.FieldByName('USR$DEVICETYPE').AsInteger = 0 then
       begin
-        { TODO : В дальнейшем тут надо работать с COM объектом дисплея }
-        FDisplay := TPoleDisplay.Create;
-        FDisplay.ComPort := 4;
+        FDisplay := TDisplay.Create;
+        FDisplay.ComPort := FReadSQL.FieldByName('USR$COMPORT').AsInteger;
+        FDisplay.Init(True, 1);
 
         Break;
       end;
@@ -1466,14 +1470,11 @@ begin
   end;
 end;
 
-function TFrontBase.GetDisplay: TBaseDisplay;
+function TFrontBase.GetDisplay: TDisplay;
 begin
-  try
-    if not FDisplayInitialized then
-      InitDisplay;
-  finally
+  if not FDisplayInitialized then
+    InitDisplay;
 
-  end;
   Result := FDisplay;
 end;
 
