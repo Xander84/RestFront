@@ -2,8 +2,8 @@ program RestFront;
 
 uses
   FastMM4,
+  ExceptionLog,
   RtlVclOptimize,
-{  ExceptionLog, }
   Forms,
   AppEvnts,
   MainForm in 'MainForm.pas' {RestMainForm},
@@ -11,7 +11,7 @@ uses
   DeleteOrderLine_unit in 'DeleteOrderLine_unit.pas' {DeleteOrderLine},
   OrderNumber_Unit in 'OrderNumber_Unit.pas' {OrderNumber},
   Report_Unit in 'Report_Unit.pas',
-  Base_Display_unit in 'Base_Display_unit.pas',
+  Base_Display_unit in 'Display\Base_Display_unit.pas',
   Modification_Unit in 'Modification_Unit.pas' {ModificationForm},
   DevideForm_Unit in 'DevideForm_Unit.pas' {DevideForm},
   SellParamForm_Unit in 'SellParamForm_Unit.pas' {SellParamForm},
@@ -29,7 +29,8 @@ uses
   FiscalRegister_Unit in 'FiscalRegister_Unit.pas',
   MercFP_Unit in 'Merc\MercFP_Unit.pas',
   CashForm_Unit in 'CashForm_Unit.pas' {CashForm},
-  BaseFrontForm_Unit in 'BaseFrontForm_Unit.pas' {BaseFrontForm};
+  BaseFrontForm_Unit in 'BaseFrontForm_Unit.pas' {BaseFrontForm},
+  ShtrihFR_Unit in 'Shtrih\ShtrihFR_Unit.pas';
 
 {$R *.res}
 
@@ -41,7 +42,7 @@ begin
   ApplicationEventsHandler := TApplicationEventsHandler.Create;
   try
     FApplicationEvents := TApplicationEvents.Create(Application);
-    FApplicationEvents.OnException := ApplicationEventsHandler.ApplicationEventsException;  
+    FApplicationEvents.OnException := ApplicationEventsHandler.ApplicationEventsException;
 
     Application.Initialize;
     Application.CreateForm(TFrontData, FrontData);

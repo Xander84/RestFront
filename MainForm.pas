@@ -202,6 +202,7 @@ type
     procedure actDiscountUpdate(Sender: TObject);
     procedure actDevideUpdate(Sender: TObject);
     procedure actEditReportExecute(Sender: TObject);
+    procedure actPayUpdate(Sender: TObject);
 
   private
     //Компонент обращения к БД
@@ -354,7 +355,7 @@ uses
   {Pole_Display_Unit,} Modification_Unit, DevideForm_Unit,
   SellParamForm_Unit, {Math,} PercOrCardForm_Unit, DiscountTypeForm_Unit,
   ChooseDiscountCardForm_Unit, EditReportForm_Unit, JclMiscel,
-  GDIPPictureContainer;
+  GDIPPictureContainer, IB, GDIPFill;
 
 
 {$R *.dfm}
@@ -395,7 +396,10 @@ begin
   except
     on E: Exception do
     begin
-      AdvTaskMessageDlg('Внимание', 'Ошибка при подключении ' + E.Message, mtError, [mbOK], 0);
+      if (E is EIBClientError) and (EIBClientError(E).SQLCode = Ord(ibxeDatabaseNameMissing)) then
+        AdvTaskMessageDlg('Внимание', 'Путь к базе данных указан неверно', mtError, [mbOK], 0)
+      else
+        AdvTaskMessageDlg('Внимание', 'Ошибка при подключении ' + E.Message, mtError, [mbOK], 0);
       FFrontBase.Free;
       Application.Terminate;
     end;
@@ -599,6 +603,13 @@ begin
   FButton.Tag := FOrderDataSet.FieldByName('ID').AsInteger;
   FButton.Caption := Format('№ %s Сумма %s', [FOrderDataSet.FieldByName('TableName').AsString,
     FOrderDataSet.FieldByName('Summ').AsString]);
+  if FOrderDataSet.FieldByName('Status').AsInteger = Integer(osOrderClose) then
+  begin
+//    FButton.Appearance.Alignment := taLeftJustify;
+    FButton.Picture := FrontData.RestPictureContainer.FindPicture('Lock');
+//    FButton.Appearance.PictureAlignment := taRightJustify;
+    FButton.Appearance.Layout := blPictureRight;
+  end;
 //  FButton.Caption := '№ ' + FOrderDataSet.FieldByName('TableName').AsString +
 //    ' Сумма ' + FOrderDataSet.FieldByName('Summ').AsString;
 
@@ -2217,6 +2228,11 @@ end;
 procedure TRestMainForm.actDevideUpdate(Sender: TObject);
 begin
   actDevide.Enabled := FHeaderTable.FieldByName('usr$timecloseorder').IsNull;
+end;
+
+procedure TRestMainForm.actPayUpdate(Sender: TObject);
+begin
+  actPay.Enabled := not FLineTable.IsEmpty;
 end;
 
 procedure TRestMainForm.actEditReportExecute(Sender: TObject);

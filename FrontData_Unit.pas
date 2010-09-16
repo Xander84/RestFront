@@ -41,6 +41,7 @@ const
   cn_FontSize = 16;
   cn_EvenRowColor = clInfoBk;
   cn_OddRowColor = clGradientActiveCaption;
+  cn_FontType = 'Times New Roman';
   DATA_DIR = '..\data';
   APP_DATA_FILENAME = 'data.ini';
   STYLE_SECTION_NAME = 'STYLE_SECTION';
@@ -64,6 +65,7 @@ procedure SetupGrid(const Grid: TDBGridEh);
 begin
   with Grid do
   begin
+    Font.Name := cn_FontType;
     Font.Size := cn_FontSize;
     TitleFont.Size := cn_TitleFontSize;
     OddRowColor := cn_OddRowColor;

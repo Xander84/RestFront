@@ -414,6 +414,7 @@ object RestMainForm: TRestMainForm
                 Width = 110
                 Height = 37
                 Action = actScrollDown
+                Appearance.PictureAlignment = taCenter
                 Appearance.Font.Charset = DEFAULT_CHARSET
                 Appearance.Font.Color = clWindowText
                 Appearance.Font.Height = -13
@@ -444,6 +445,7 @@ object RestMainForm: TRestMainForm
                 Width = 110
                 Height = 37
                 Action = actScrollUp
+                Appearance.PictureAlignment = taCenter
                 Appearance.Font.Charset = DEFAULT_CHARSET
                 Appearance.Font.Color = clWindowText
                 Appearance.Font.Height = -13
@@ -700,6 +702,7 @@ object RestMainForm: TRestMainForm
                     Width = 33
                     Height = 129
                     Action = actGoodUp
+                    Appearance.PictureAlignment = taCenter
                     Appearance.Font.Charset = DEFAULT_CHARSET
                     Appearance.Font.Color = clWindowText
                     Appearance.Font.Height = -13
@@ -730,6 +733,7 @@ object RestMainForm: TRestMainForm
                     Width = 33
                     Height = 129
                     Action = actGoodDown
+                    Appearance.PictureAlignment = taCenter
                     Appearance.Font.Charset = DEFAULT_CHARSET
                     Appearance.Font.Color = clWindowText
                     Appearance.Font.Height = -13
@@ -1140,11 +1144,13 @@ object RestMainForm: TRestMainForm
             Width = 72
             Height = 50
             Action = actAddQuantity
+            Appearance.PictureAlignment = taCenter
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
             Appearance.Font.Height = -21
             Appearance.Font.Name = 'Times New Roman'
             Appearance.Font.Style = [fsBold]
+            Appearance.Layout = blNone
             Status.Caption = '0'
             Status.Appearance.Fill.Color = clRed
             Status.Appearance.Fill.ColorMirror = clNone
@@ -1170,6 +1176,7 @@ object RestMainForm: TRestMainForm
             Width = 72
             Height = 50
             Action = actRemoveQuantity
+            Appearance.PictureAlignment = taCenter
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
             Appearance.Font.Height = -21
@@ -1561,6 +1568,7 @@ object RestMainForm: TRestMainForm
       Category = 'menu'
       Caption = '$'
       OnExecute = actPayExecute
+      OnUpdate = actPayUpdate
     end
     object actUsersUp: TAction
       Category = 'menu'
