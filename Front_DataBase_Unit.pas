@@ -1452,17 +1452,24 @@ begin
       ' WHERE sd.USR$COMPUTERNAME = :ComputerName and sd.usr$active = 1 ';
     FReadSQL.Params[0].AsString := GetLocalComputerName;
     FReadSQL.ExecQuery;
-    while not FReadSQL.Eof do
+    if not FReadSQL.Eof then
     begin
-      if FReadSQL.FieldByName('USR$DEVICETYPE').AsInteger = 0 then
+      while not FReadSQL.Eof do
       begin
-        FDisplay := TDisplay.Create;
-        FDisplay.ComPort := FReadSQL.FieldByName('USR$COMPORT').AsInteger;
-        FDisplay.Init(True, 1);
+        if FReadSQL.FieldByName('USR$DEVICETYPE').AsInteger = 0 then
+        begin
+          FDisplay := TDisplay.Create;
+          FDisplay.ComPort := FReadSQL.FieldByName('USR$COMPORT').AsInteger;
+          FDisplay.Init(True, 1);
 
-        Break;
+          Break;
+        end;
+        FReadSQL.Next;
       end;
-      FReadSQL.Next;
+    end else
+    begin
+      FDisplay := TDisplay.Create;
+      FDisplay.Init(False, -1);
     end;
     FDisplayInitialized := True;
   finally

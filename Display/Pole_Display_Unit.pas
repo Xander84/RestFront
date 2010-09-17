@@ -10,7 +10,6 @@ type
   {Posiflex PD2200}
   TPoleDisplay = class(TBaseDisplay)
   private
-    procedure Init;
     procedure WriteSingleByte(const Param: Byte);
     procedure WriteString(const S: String);
   public
@@ -23,6 +22,7 @@ type
 
     procedure Payed; override;
     procedure Clear; override;
+    procedure Init; override;
 
     property ComPort;
     property Initialized;

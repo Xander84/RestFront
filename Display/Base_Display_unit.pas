@@ -19,6 +19,7 @@ type
 
     procedure Payed;
     procedure Clear;
+    procedure Init;
 
     function GetDisplay: THandle;
     procedure SetDisplay(const Value: THandle);
@@ -36,7 +37,7 @@ type
     procedure SetErrorInInit(const Value: Boolean);
     property ErrorInInit: Boolean read GetErrorInInit write SetErrorInInit;
 
-    function Get_Self: Integer;    
+    function Get_Self: Integer;
     property Self: Integer read Get_Self;
   end;
 
@@ -69,6 +70,7 @@ type
 
     procedure Payed; virtual; abstract;
     procedure Clear; virtual; abstract;
+    procedure Init; virtual; abstract;
 
     property Display: THandle read GetDisplay write SetDisplay;
     property Initialized: Boolean read GetInitialized write SetInitialized;
@@ -106,7 +108,7 @@ type
 
 implementation
 
-uses SysUtils, Pole_Display_Unit;
+uses SysUtils, Pole_Display_Unit, TaskDialog, Dialogs;
 
 { TBaseDisplay }
 
@@ -227,6 +229,12 @@ begin
       1:
       begin
         FBaseDisplay := TPoleDisplay.Create;
+        try
+          FBaseDisplay.Init;
+        except
+          on E: Exception do
+           AdvTaskMessageDlg('Внимание', 'Ошибка инициализации дисплея покупателя ' + E.Message, mtError, [mbOK], 0);
+        end;
       end;
 
     else
