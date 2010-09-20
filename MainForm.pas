@@ -87,8 +87,6 @@ type
     tsMainButton: TTabSheet;
     tsFunctionButton: TTabSheet;
     Button14: TButton;
-    Button18: TButton;
-    Button19: TButton;
     actBackToMenu: TAction;
     Panel1: TAdvPanel;
     actScrollUp: TAction;
@@ -158,6 +156,8 @@ type
     btnEditReport: TAdvSmoothButton;
     btnGoodUp: TAdvSmoothButton;
     btnGoodDown: TAdvSmoothButton;
+    btnCashForm: TAdvSmoothButton;
+    actCashForm: TAction;
 
     //Проверка введёного пароля
     procedure actPassEnterExecute(Sender: TObject);
@@ -203,11 +203,12 @@ type
     procedure actDevideUpdate(Sender: TObject);
     procedure actEditReportExecute(Sender: TObject);
     procedure actPayUpdate(Sender: TObject);
+    procedure actCashFormExecute(Sender: TObject);
 
   private
     //Компонент обращения к БД
     FFrontBase: TFrontBase;
-    //Спарк
+    //Фискальный
     FFiscal: TFiscalRegister;
     // FR4
     FReport: TRestReport;
@@ -355,7 +356,7 @@ uses
   {Pole_Display_Unit,} Modification_Unit, DevideForm_Unit,
   SellParamForm_Unit, {Math,} PercOrCardForm_Unit, DiscountTypeForm_Unit,
   ChooseDiscountCardForm_Unit, EditReportForm_Unit, JclMiscel,
-  GDIPPictureContainer, IB, GDIPFill;
+  GDIPPictureContainer, IB, GDIPFill, CashForm_Unit;
 
 
 {$R *.dfm}
@@ -428,6 +429,9 @@ begin
 
   if Assigned(FFiscal) then
     FFiscal.Free;
+
+  if Assigned(FSplitForm) then
+    FSplitForm.Free;
 
   FReport.Free;
 
@@ -1559,6 +1563,9 @@ begin
           //5. установки кнопок
           FMenuButtonCount := 0;
 
+          btnCashForm.Visible := False;
+          btnEditReport.Visible := False;
+
           FLastLeftButton := 18 + btnWidth;
           FGroupLastLeftButton := btnFirstTop;
           FLastTopButton  := btnFirstTop;
@@ -1631,6 +1638,8 @@ begin
           FLineTable.CreateTable;
           FLineTable.Open;
           //
+          btnCashForm.Visible := True;
+          btnEditReport.Visible := True;
 
           FLastLeftButton := 18 + btnWidth;
           FLastTopButton  := btnFirstTop;
@@ -1686,6 +1695,9 @@ begin
           pcOrder.ActivePage := tsManagerPage;
           pcExtraButton.ActivePage := tsMainButton;
 
+          btnCashForm.Visible := True;
+          btnEditReport.Visible := True;
+
           FUserFirstTop       := btnFirstTop;
           FUserLastLeftButton := btnFirstTop;
           FUserLastTop        := -(btnHeight - 6);
@@ -1711,6 +1723,10 @@ begin
         try
           RemoveUserButton;
           RemoveUserOrderButton;
+
+          pcMenu.ActivePage := tsMenu;
+          pnlChoose.Visible := False;
+          pnlMainGood.Visible := False;          
 
           if FWithPreCheck then
             btnPredCheck.Caption := 'Без предчека'
@@ -2237,16 +2253,27 @@ end;
 
 procedure TRestMainForm.actEditReportExecute(Sender: TObject);
 var
+  FUserInfo: TUserInfo;
   Form: TEditReport;
 begin
-  Form := TEditReport.Create(nil);
-  try
-    Form.FrontBase := FFrontBase;
-    Form.ShowModal;
-  finally
-    Form.Free;
-    if edPassword.CanFocus then
-      edPassword.SetFocus;
+  FUserInfo := FFrontBase.CheckUserPasswordWithForm;
+  if FUserInfo.CheckedUserPassword then
+  begin
+    if (FUserInfo.UserInGroup and FFrontBase.MN_Options.ManagerGroupMask) <> 0 then
+    else begin
+      AdvTaskMessageDlg('Внимание', 'Данный пользователь не обладает правами менеджера!',
+        mtWarning, [mbOK], 0);
+      exit;
+    end;
+    Form := TEditReport.Create(nil);
+    try
+      Form.FrontBase := FFrontBase;
+      Form.ShowModal;
+    finally
+      Form.Free;
+      if edPassword.CanFocus then
+        edPassword.SetFocus;
+    end;
   end;
 end;
 
@@ -2259,6 +2286,32 @@ procedure TRestMainForm.OnAfterDelete(DataSet: TDataSet);
 begin
   //обновить футер грида
   DBGrMain.SumList.RecalcAll;
+end;
+
+procedure TRestMainForm.actCashFormExecute(Sender: TObject);
+var
+  FUserInfo: TUserInfo;
+  FForm: TCashForm;
+begin
+  FUserInfo := FFrontBase.CheckUserPasswordWithForm;
+  if FUserInfo.CheckedUserPassword then
+  begin
+    if ((FUserInfo.UserInGroup and FFrontBase.MN_Options.ManagerGroupMask) <> 0) or
+      ((FUserInfo.UserInGroup and FFrontBase.MN_Options.KassaGroupMask) <> 0) then
+    else begin
+      AdvTaskMessageDlg('Внимание', 'Данный пользователь не обладает правами менеджера или кассира!',
+        mtWarning, [mbOK], 0);
+      exit;
+    end;
+    FForm := TCashForm.Create(Self);
+    try
+      FForm.FiscalRegistry := FFiscal;
+      FForm.IsManager := ((FUserInfo.UserInGroup and FFrontBase.MN_Options.ManagerGroupMask) <> 0);
+      FForm.ShowModal;
+    finally
+      FForm.Free;
+    end;
+  end;
 end;
 
 end.

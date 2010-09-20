@@ -1013,27 +1013,11 @@ object RestMainForm: TRestMainForm
         Top = 1
         Width = 80
         Height = 718
-        ActivePage = tsFunctionButton
+        ActivePage = tsMainButton
         Align = alClient
         TabOrder = 0
         object tsMainButton: TTabSheet
           Caption = 'tsMainButton'
-          object Button18: TButton
-            Left = 0
-            Top = 164
-            Width = 72
-            Height = 50
-            TabOrder = 0
-            Visible = False
-          end
-          object Button19: TButton
-            Left = 0
-            Top = 218
-            Width = 72
-            Height = 50
-            TabOrder = 1
-            Visible = False
-          end
           object btnExitWindows: TAdvSmoothButton
             Left = 0
             Top = 1
@@ -1061,7 +1045,7 @@ object RestMainForm: TRestMainForm
             Bevel = False
             Color = 15195349
             ParentFont = False
-            TabOrder = 2
+            TabOrder = 0
             Version = '1.6.9.0'
           end
           object btnRestartRest: TAdvSmoothButton
@@ -1091,7 +1075,7 @@ object RestMainForm: TRestMainForm
             Bevel = False
             Color = 15195349
             ParentFont = False
-            TabOrder = 3
+            TabOrder = 1
             Version = '1.6.9.0'
           end
           object btnEditReport: TAdvSmoothButton
@@ -1121,7 +1105,37 @@ object RestMainForm: TRestMainForm
             Bevel = False
             Color = 15195349
             ParentFont = False
-            TabOrder = 4
+            TabOrder = 2
+            Version = '1.6.9.0'
+          end
+          object btnCashForm: TAdvSmoothButton
+            Left = 0
+            Top = 163
+            Width = 72
+            Height = 50
+            Action = actCashForm
+            Appearance.Font.Charset = DEFAULT_CHARSET
+            Appearance.Font.Color = clWindowText
+            Appearance.Font.Height = -13
+            Appearance.Font.Name = 'Times New Roman'
+            Appearance.Font.Style = [fsBold]
+            Status.Caption = '0'
+            Status.Appearance.Fill.Color = clRed
+            Status.Appearance.Fill.ColorMirror = clNone
+            Status.Appearance.Fill.ColorMirrorTo = clNone
+            Status.Appearance.Fill.GradientType = gtSolid
+            Status.Appearance.Fill.BorderColor = clGray
+            Status.Appearance.Fill.Rounding = 0
+            Status.Appearance.Fill.ShadowOffset = 0
+            Status.Appearance.Font.Charset = DEFAULT_CHARSET
+            Status.Appearance.Font.Color = clWhite
+            Status.Appearance.Font.Height = -11
+            Status.Appearance.Font.Name = 'Tahoma'
+            Status.Appearance.Font.Style = []
+            Bevel = False
+            Color = 15195349
+            ParentFont = False
+            TabOrder = 3
             Version = '1.6.9.0'
           end
         end
@@ -1610,6 +1624,11 @@ object RestMainForm: TRestMainForm
       Category = 'menu'
       Caption = #1064#1072#1073#1083#1086#1085#1099
       OnExecute = actEditReportExecute
+    end
+    object actCashForm: TAction
+      Category = 'menu'
+      Caption = #1050#1072#1089#1089#1072
+      OnExecute = actCashFormExecute
     end
   end
   object dsMain: TDataSource

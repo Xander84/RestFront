@@ -42,14 +42,20 @@ type
     procedure actMoneyINExecute(Sender: TObject);
     procedure actMoneyOUTExecute(Sender: TObject);
     procedure actOpenMoneyExecute(Sender: TObject);
+    procedure actStartDayUpdate(Sender: TObject);
+    procedure actStartSessionUpdate(Sender: TObject);
+    procedure actEndSessionUpdate(Sender: TObject);
+    procedure actEndDayUpdate(Sender: TObject);
   private
     FFiscalRegiter: TFiscalRegister;
+    FIsManager: Boolean;
 
     procedure Run(const Act: TActionType);
 
     procedure SetFiscalRegister(const Value: TFiscalRegister);
   public
     property FiscalRegistry: TFiscalRegister read FFiscalRegiter write SetFiscalRegister;
+    property IsManager: Boolean read FIsManager write FIsManager;
   end;
 
 var
@@ -148,6 +154,26 @@ begin
   end else
     MessageBox(Application.Handle, 'В системе не установлен фискальный регистратор!',
      'Внимание', MB_OK or MB_ICONEXCLAMATION);
+end;
+
+procedure TCashForm.actStartDayUpdate(Sender: TObject);
+begin
+  actStartDay.Enabled := FIsManager;
+end;
+
+procedure TCashForm.actStartSessionUpdate(Sender: TObject);
+begin
+  actStartSession.Enabled := FIsManager;
+end;
+
+procedure TCashForm.actEndSessionUpdate(Sender: TObject);
+begin
+  actEndSession.Enabled := FIsManager;
+end;
+
+procedure TCashForm.actEndDayUpdate(Sender: TObject);
+begin
+  actEndDay.Enabled := FIsManager;
 end;
 
 end.

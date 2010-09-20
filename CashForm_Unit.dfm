@@ -1,6 +1,6 @@
 object CashForm: TCashForm
-  Left = 463
-  Top = 117
+  Left = 394
+  Top = 113
   BorderStyle = bsDialog
   Caption = #1050#1072#1089#1089#1072
   ClientHeight = 587
@@ -25,7 +25,7 @@ object CashForm: TCashForm
     Color = 16640730
     TabOrder = 0
     UseDockManager = True
-    Version = '1.9.0.0'
+    Version = '2.0.1.0'
     BorderColor = clGray
     Caption.Color = 14059353
     Caption.ColorTo = 9648131
@@ -37,7 +37,7 @@ object CashForm: TCashForm
     Caption.GradientDirection = gdVertical
     Caption.Indent = 2
     Caption.ShadeLight = 255
-    CollapsColor = clHighlight
+    CollapsColor = clNone
     CollapsDelay = 0
     ColorTo = 14986888
     ShadowColor = clBlack
@@ -82,7 +82,7 @@ object CashForm: TCashForm
       Color = 15195349
       ParentFont = False
       TabOrder = 0
-      Version = '1.6.5.2'
+      Version = '1.6.9.0'
     end
     object btnStartSession: TAdvSmoothButton
       Left = 20
@@ -112,7 +112,7 @@ object CashForm: TCashForm
       Color = 15195349
       ParentFont = False
       TabOrder = 1
-      Version = '1.6.5.2'
+      Version = '1.6.9.0'
     end
     object btnReportWithoutCleaning: TAdvSmoothButton
       Left = 20
@@ -142,7 +142,7 @@ object CashForm: TCashForm
       Color = 15195349
       ParentFont = False
       TabOrder = 2
-      Version = '1.6.5.2'
+      Version = '1.6.9.0'
     end
     object btnReportWithCleaning: TAdvSmoothButton
       Left = 20
@@ -172,7 +172,7 @@ object CashForm: TCashForm
       Color = 15195349
       ParentFont = False
       TabOrder = 3
-      Version = '1.6.5.2'
+      Version = '1.6.9.0'
     end
     object btnEndSession: TAdvSmoothButton
       Left = 20
@@ -202,7 +202,7 @@ object CashForm: TCashForm
       Color = 15195349
       ParentFont = False
       TabOrder = 4
-      Version = '1.6.5.2'
+      Version = '1.6.9.0'
     end
     object btnEndDay: TAdvSmoothButton
       Left = 20
@@ -232,7 +232,7 @@ object CashForm: TCashForm
       Color = 15195349
       ParentFont = False
       TabOrder = 5
-      Version = '1.6.5.2'
+      Version = '1.6.9.0'
     end
     object btnMoneyIN: TAdvSmoothButton
       Left = 20
@@ -262,7 +262,7 @@ object CashForm: TCashForm
       Color = 15195349
       ParentFont = False
       TabOrder = 6
-      Version = '1.6.5.2'
+      Version = '1.6.9.0'
     end
     object btnMoneyOUT: TAdvSmoothButton
       Left = 20
@@ -292,7 +292,7 @@ object CashForm: TCashForm
       Color = 15195349
       ParentFont = False
       TabOrder = 7
-      Version = '1.6.5.2'
+      Version = '1.6.9.0'
     end
     object btnOpenMoney: TAdvSmoothButton
       Left = 20
@@ -322,7 +322,7 @@ object CashForm: TCashForm
       Color = 15195349
       ParentFont = False
       TabOrder = 8
-      Version = '1.6.5.2'
+      Version = '1.6.9.0'
     end
   end
   object alMain: TActionList
@@ -332,11 +332,13 @@ object CashForm: TCashForm
       Caption = #1054#1090#1082#1088#1099#1090#1100' '#1076#1077#1085#1100
       Hint = #1054#1090#1082#1088#1099#1090#1100' '#1076#1077#1085#1100
       OnExecute = actStartDayExecute
+      OnUpdate = actStartDayUpdate
     end
     object actStartSession: TAction
       Caption = #1054#1090#1082#1088#1099#1090#1100' '#1089#1084#1077#1085#1091
       Hint = #1054#1090#1082#1088#1099#1090#1100' '#1089#1084#1077#1085#1091
       OnExecute = actStartSessionExecute
+      OnUpdate = actStartSessionUpdate
     end
     object actReportWithoutCleaning: TAction
       Caption = 'X1 '#1086#1090#1095#1077#1090
@@ -352,11 +354,13 @@ object CashForm: TCashForm
       Caption = #1047#1072#1082#1088#1099#1090#1100' '#1089#1084#1077#1085#1091
       Hint = #1047#1072#1082#1088#1099#1090#1100' '#1089#1084#1077#1085#1091
       OnExecute = actEndSessionExecute
+      OnUpdate = actEndSessionUpdate
     end
     object actEndDay: TAction
       Caption = #1047#1072#1082#1088#1099#1090#1100' '#1076#1077#1085#1100
       Hint = #1047#1072#1082#1088#1099#1090#1100' '#1076#1077#1085#1100
       OnExecute = actEndDayExecute
+      OnUpdate = actEndDayUpdate
     end
     object actMoneyIN: TAction
       Caption = #1042#1085#1077#1089#1077#1085#1080#1077' '#1076#1077#1085#1077#1075
