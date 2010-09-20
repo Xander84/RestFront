@@ -894,96 +894,339 @@ object RestMainForm: TRestMainForm
               ImageIndex = 2
               TabColor = clBtnFace
               TabColorTo = clNone
-              object pnlManagerTop: TPanel
+              object pnlManagerTop: TAdvPanel
                 Left = 0
                 Top = 0
                 Width = 674
                 Height = 65
                 Align = alTop
+                BevelOuter = bvNone
+                Color = 16640730
                 TabOrder = 0
-                DesignSize = (
-                  674
-                  65)
-                object btnUsersUp: TButton
-                  Left = 23
-                  Top = 6
-                  Width = 90
-                  Height = 53
+                UseDockManager = True
+                Version = '2.0.1.0'
+                BorderColor = clGray
+                Caption.Color = 14059353
+                Caption.ColorTo = 9648131
+                Caption.Font.Charset = DEFAULT_CHARSET
+                Caption.Font.Color = clWhite
+                Caption.Font.Height = -11
+                Caption.Font.Name = 'MS Sans Serif'
+                Caption.Font.Style = []
+                Caption.GradientDirection = gdVertical
+                Caption.Indent = 2
+                Caption.ShadeLight = 255
+                CollapsColor = clNone
+                CollapsDelay = 0
+                ColorTo = 14986888
+                ShadowColor = clBlack
+                ShadowOffset = 0
+                StatusBar.BorderColor = clNone
+                StatusBar.BorderStyle = bsSingle
+                StatusBar.Font.Charset = DEFAULT_CHARSET
+                StatusBar.Font.Color = clWhite
+                StatusBar.Font.Height = -11
+                StatusBar.Font.Name = 'Tahoma'
+                StatusBar.Font.Style = []
+                StatusBar.Color = 14716773
+                StatusBar.ColorTo = 16374724
+                StatusBar.GradientDirection = gdVertical
+                Styler = FrontData.FrontPanelStyler
+                FullHeight = 65
+                object btnUsersDown: TAdvSmoothButton
+                  Left = 12
+                  Top = 7
+                  Width = 72
+                  Height = 50
                   Action = actUsersDown
-                  Anchors = [akRight, akBottom]
+                  Appearance.PictureAlignment = taCenter
+                  Appearance.Font.Charset = DEFAULT_CHARSET
+                  Appearance.Font.Color = clWindowText
+                  Appearance.Font.Height = -13
+                  Appearance.Font.Name = 'Times New Roman'
+                  Appearance.Font.Style = [fsBold]
+                  Status.Caption = '0'
+                  Status.Appearance.Fill.Color = clRed
+                  Status.Appearance.Fill.ColorMirror = clNone
+                  Status.Appearance.Fill.ColorMirrorTo = clNone
+                  Status.Appearance.Fill.GradientType = gtSolid
+                  Status.Appearance.Fill.BorderColor = clGray
+                  Status.Appearance.Fill.Rounding = 0
+                  Status.Appearance.Fill.ShadowOffset = 0
+                  Status.Appearance.Font.Charset = DEFAULT_CHARSET
+                  Status.Appearance.Font.Color = clWhite
+                  Status.Appearance.Font.Height = -11
+                  Status.Appearance.Font.Name = 'Tahoma'
+                  Status.Appearance.Font.Style = []
+                  Bevel = False
+                  Color = 15195349
+                  ParentFont = False
                   TabOrder = 0
+                  Version = '1.6.9.0'
                 end
-                object btnUsersDown: TButton
-                  Left = 120
-                  Top = 6
-                  Width = 89
-                  Height = 53
+                object btnUsersUp: TAdvSmoothButton
+                  Left = 104
+                  Top = 7
+                  Width = 72
+                  Height = 50
                   Action = actUsersUp
-                  Anchors = [akRight, akBottom]
+                  Appearance.PictureAlignment = taCenter
+                  Appearance.Font.Charset = DEFAULT_CHARSET
+                  Appearance.Font.Color = clWindowText
+                  Appearance.Font.Height = -13
+                  Appearance.Font.Name = 'Times New Roman'
+                  Appearance.Font.Style = [fsBold]
+                  Status.Caption = '0'
+                  Status.Appearance.Fill.Color = clRed
+                  Status.Appearance.Fill.ColorMirror = clNone
+                  Status.Appearance.Fill.ColorMirrorTo = clNone
+                  Status.Appearance.Fill.GradientType = gtSolid
+                  Status.Appearance.Fill.BorderColor = clGray
+                  Status.Appearance.Fill.Rounding = 0
+                  Status.Appearance.Fill.ShadowOffset = 0
+                  Status.Appearance.Font.Charset = DEFAULT_CHARSET
+                  Status.Appearance.Font.Color = clWhite
+                  Status.Appearance.Font.Height = -11
+                  Status.Appearance.Font.Name = 'Tahoma'
+                  Status.Appearance.Font.Style = []
+                  Bevel = False
+                  Color = 15195349
+                  ParentFont = False
                   TabOrder = 1
+                  Version = '1.6.9.0'
                 end
-                object btnUserLeft: TButton
-                  Left = 495
-                  Top = 6
-                  Width = 90
-                  Height = 53
+                object btnUserLeft: TAdvSmoothButton
+                  Left = 497
+                  Top = 7
+                  Width = 72
+                  Height = 50
                   Action = actUserLeft
-                  Anchors = [akRight, akBottom]
+                  Appearance.PictureAlignment = taCenter
+                  Appearance.Font.Charset = DEFAULT_CHARSET
+                  Appearance.Font.Color = clWindowText
+                  Appearance.Font.Height = -13
+                  Appearance.Font.Name = 'Times New Roman'
+                  Appearance.Font.Style = [fsBold]
+                  Status.Caption = '0'
+                  Status.Appearance.Fill.Color = clRed
+                  Status.Appearance.Fill.ColorMirror = clNone
+                  Status.Appearance.Fill.ColorMirrorTo = clNone
+                  Status.Appearance.Fill.GradientType = gtSolid
+                  Status.Appearance.Fill.BorderColor = clGray
+                  Status.Appearance.Fill.Rounding = 0
+                  Status.Appearance.Fill.ShadowOffset = 0
+                  Status.Appearance.Font.Charset = DEFAULT_CHARSET
+                  Status.Appearance.Font.Color = clWhite
+                  Status.Appearance.Font.Height = -11
+                  Status.Appearance.Font.Name = 'Tahoma'
+                  Status.Appearance.Font.Style = []
+                  Bevel = False
+                  Color = 15195349
+                  ParentFont = False
                   TabOrder = 2
+                  Version = '1.6.9.0'
                 end
-                object btnUserRight: TButton
-                  Left = 592
-                  Top = 6
-                  Width = 89
-                  Height = 53
+                object btnUserRight: TAdvSmoothButton
+                  Left = 589
+                  Top = 7
+                  Width = 72
+                  Height = 50
                   Action = actUserRight
-                  Anchors = [akRight, akBottom]
+                  Appearance.PictureAlignment = taCenter
+                  Appearance.Font.Charset = DEFAULT_CHARSET
+                  Appearance.Font.Color = clWindowText
+                  Appearance.Font.Height = -13
+                  Appearance.Font.Name = 'Times New Roman'
+                  Appearance.Font.Style = [fsBold]
+                  Status.Caption = '0'
+                  Status.Appearance.Fill.Color = clRed
+                  Status.Appearance.Fill.ColorMirror = clNone
+                  Status.Appearance.Fill.ColorMirrorTo = clNone
+                  Status.Appearance.Fill.GradientType = gtSolid
+                  Status.Appearance.Fill.BorderColor = clGray
+                  Status.Appearance.Fill.Rounding = 0
+                  Status.Appearance.Fill.ShadowOffset = 0
+                  Status.Appearance.Font.Charset = DEFAULT_CHARSET
+                  Status.Appearance.Font.Color = clWhite
+                  Status.Appearance.Font.Height = -11
+                  Status.Appearance.Font.Name = 'Tahoma'
+                  Status.Appearance.Font.Style = []
+                  Bevel = False
+                  Color = 15195349
+                  ParentFont = False
                   TabOrder = 3
+                  Version = '1.6.9.0'
                 end
               end
-              object pnlManagerMain: TPanel
+              object pnlManagerMain: TAdvPanel
                 Left = 0
                 Top = 65
                 Width = 674
                 Height = 597
                 Align = alClient
                 TabOrder = 1
-                object pnlUsers: TPanel
+                UseDockManager = True
+                Version = '2.0.1.0'
+                Caption.Color = clHighlight
+                Caption.ColorTo = clNone
+                Caption.Font.Charset = DEFAULT_CHARSET
+                Caption.Font.Color = clHighlightText
+                Caption.Font.Height = -11
+                Caption.Font.Name = 'MS Sans Serif'
+                Caption.Font.Style = []
+                StatusBar.Font.Charset = DEFAULT_CHARSET
+                StatusBar.Font.Color = clWindowText
+                StatusBar.Font.Height = -11
+                StatusBar.Font.Name = 'Tahoma'
+                StatusBar.Font.Style = []
+                FullHeight = 597
+                object pnlUsers: TAdvPanel
                   Left = 1
                   Top = 1
                   Width = 192
                   Height = 528
                   Align = alLeft
+                  BevelOuter = bvNone
+                  Color = 16640730
                   TabOrder = 0
+                  UseDockManager = True
+                  Version = '2.0.1.0'
+                  BorderColor = clGray
+                  Caption.Color = 14059353
+                  Caption.ColorTo = 9648131
+                  Caption.Font.Charset = DEFAULT_CHARSET
+                  Caption.Font.Color = clWhite
+                  Caption.Font.Height = -11
+                  Caption.Font.Name = 'MS Sans Serif'
+                  Caption.Font.Style = []
+                  Caption.GradientDirection = gdVertical
+                  Caption.Indent = 2
+                  Caption.ShadeLight = 255
+                  CollapsColor = clNone
+                  CollapsDelay = 0
+                  ColorTo = 14986888
+                  ShadowColor = clBlack
+                  ShadowOffset = 0
+                  StatusBar.BorderColor = clNone
+                  StatusBar.BorderStyle = bsSingle
+                  StatusBar.Font.Charset = DEFAULT_CHARSET
+                  StatusBar.Font.Color = clWhite
+                  StatusBar.Font.Height = -11
+                  StatusBar.Font.Name = 'Tahoma'
+                  StatusBar.Font.Style = []
+                  StatusBar.Color = 14716773
+                  StatusBar.ColorTo = 16374724
+                  StatusBar.GradientDirection = gdVertical
+                  Styler = FrontData.FrontPanelStyler
+                  FullHeight = 528
                 end
-                object pnlUserOrders: TPanel
+                object pnlUserOrders: TAdvPanel
                   Left = 193
                   Top = 1
                   Width = 480
                   Height = 528
                   Align = alClient
+                  BevelOuter = bvNone
+                  Color = 16640730
                   TabOrder = 1
+                  UseDockManager = True
+                  Version = '2.0.1.0'
+                  BorderColor = clGray
+                  Caption.Color = 14059353
+                  Caption.ColorTo = 9648131
+                  Caption.Font.Charset = DEFAULT_CHARSET
+                  Caption.Font.Color = clWhite
+                  Caption.Font.Height = -11
+                  Caption.Font.Name = 'MS Sans Serif'
+                  Caption.Font.Style = []
+                  Caption.GradientDirection = gdVertical
+                  Caption.Indent = 2
+                  Caption.ShadeLight = 255
+                  CollapsColor = clNone
+                  CollapsDelay = 0
+                  ColorTo = 14986888
+                  ShadowColor = clBlack
+                  ShadowOffset = 0
+                  StatusBar.BorderColor = clNone
+                  StatusBar.BorderStyle = bsSingle
+                  StatusBar.Font.Charset = DEFAULT_CHARSET
+                  StatusBar.Font.Color = clWhite
+                  StatusBar.Font.Height = -11
+                  StatusBar.Font.Name = 'Tahoma'
+                  StatusBar.Font.Style = []
+                  StatusBar.Color = 14716773
+                  StatusBar.ColorTo = 16374724
+                  StatusBar.GradientDirection = gdVertical
+                  Styler = FrontData.FrontPanelStyler
+                  FullHeight = 528
                 end
-                object pnlManagerBottom: TPanel
+                object pnlManagerBottom: TAdvPanel
                   Left = 1
                   Top = 529
                   Width = 672
                   Height = 67
                   Align = alBottom
+                  BevelOuter = bvNone
+                  Color = 16640730
                   TabOrder = 2
-                  object btnPredCheck: TButton
+                  UseDockManager = True
+                  Version = '2.0.1.0'
+                  BorderColor = clGray
+                  Caption.Color = 14059353
+                  Caption.ColorTo = 9648131
+                  Caption.Font.Charset = DEFAULT_CHARSET
+                  Caption.Font.Color = clWhite
+                  Caption.Font.Height = -11
+                  Caption.Font.Name = 'MS Sans Serif'
+                  Caption.Font.Style = []
+                  Caption.GradientDirection = gdVertical
+                  Caption.Indent = 2
+                  Caption.ShadeLight = 255
+                  CollapsColor = clNone
+                  CollapsDelay = 0
+                  ColorTo = 14986888
+                  ShadowColor = clBlack
+                  ShadowOffset = 0
+                  StatusBar.BorderColor = clNone
+                  StatusBar.BorderStyle = bsSingle
+                  StatusBar.Font.Charset = DEFAULT_CHARSET
+                  StatusBar.Font.Color = clWhite
+                  StatusBar.Font.Height = -11
+                  StatusBar.Font.Name = 'Tahoma'
+                  StatusBar.Font.Style = []
+                  StatusBar.Color = 14716773
+                  StatusBar.ColorTo = 16374724
+                  StatusBar.GradientDirection = gdVertical
+                  Styler = FrontData.FrontPanelStyler
+                  FullHeight = 67
+                  object btnPredCheck: TAdvSmoothButton
                     Left = 200
                     Top = 8
-                    Width = 201
-                    Height = 49
-                    Caption = 'btnPredCheck'
-                    Font.Charset = DEFAULT_CHARSET
-                    Font.Color = clWindowText
-                    Font.Height = -19
-                    Font.Name = 'Times New Roman'
-                    Font.Style = []
+                    Width = 145
+                    Height = 50
+                    Appearance.Font.Charset = DEFAULT_CHARSET
+                    Appearance.Font.Color = clWindowText
+                    Appearance.Font.Height = -21
+                    Appearance.Font.Name = 'Times New Roman'
+                    Appearance.Font.Style = []
+                    Status.Caption = '0'
+                    Status.Appearance.Fill.Color = clRed
+                    Status.Appearance.Fill.ColorMirror = clNone
+                    Status.Appearance.Fill.ColorMirrorTo = clNone
+                    Status.Appearance.Fill.GradientType = gtSolid
+                    Status.Appearance.Fill.BorderColor = clGray
+                    Status.Appearance.Fill.Rounding = 0
+                    Status.Appearance.Fill.ShadowOffset = 0
+                    Status.Appearance.Font.Charset = DEFAULT_CHARSET
+                    Status.Appearance.Font.Color = clWhite
+                    Status.Appearance.Font.Height = -11
+                    Status.Appearance.Font.Name = 'Tahoma'
+                    Status.Appearance.Font.Style = []
+                    Caption = #1055#1088#1077#1076#1095#1077#1082
+                    Color = 15195349
                     ParentFont = False
                     TabOrder = 0
+                    Version = '1.6.9.0'
                     OnClick = btnPredCheckClick
                   end
                 end
@@ -1586,12 +1829,10 @@ object RestMainForm: TRestMainForm
     end
     object actUsersUp: TAction
       Category = 'menu'
-      Caption = #1042#1074#1077#1088#1093
       OnExecute = actUsersUpExecute
     end
     object actUsersDown: TAction
       Category = 'menu'
-      Caption = #1042#1085#1080#1079
       OnExecute = actUsersDownExecute
     end
     object actDevide: TAction
@@ -1602,12 +1843,10 @@ object RestMainForm: TRestMainForm
     end
     object actUserLeft: TAction
       Category = 'menu'
-      Caption = '<'
       OnExecute = actUserLeftExecute
     end
     object actUserRight: TAction
       Category = 'menu'
-      Caption = '>'
       OnExecute = actUserRightExecute
     end
     object actExitWindows: TAction

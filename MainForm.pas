@@ -113,19 +113,14 @@ type
     pnlExtraGoodGroup: TAdvPanel;
     DBGrMain: TDBGridEh;
     tsManagerPage: TAdvTabSheet;
-    pnlManagerTop: TPanel;
-    pnlManagerMain: TPanel;
-    pnlUsers: TPanel;
-    pnlUserOrders: TPanel;
-    btnUsersUp: TButton;
-    btnUsersDown: TButton;
+    pnlManagerTop: TAdvPanel;
+    pnlManagerMain: TAdvPanel;
+    pnlUsers: TAdvPanel;
+    pnlUserOrders: TAdvPanel;
     actUsersUp: TAction;
     actUsersDown: TAction;
     actDevide: TAction;
-    pnlManagerBottom: TPanel;
-    btnPredCheck: TButton;
-    btnUserLeft: TButton;
-    btnUserRight: TButton;
+    pnlManagerBottom: TAdvPanel;
     actUserLeft: TAction;
     actUserRight: TAction;
     actExitWindows: TAction;
@@ -158,6 +153,11 @@ type
     btnGoodDown: TAdvSmoothButton;
     btnCashForm: TAdvSmoothButton;
     actCashForm: TAction;
+    btnPredCheck: TAdvSmoothButton;
+    btnUsersDown: TAdvSmoothButton;
+    btnUsersUp: TAdvSmoothButton;
+    btnUserLeft: TAdvSmoothButton;
+    btnUserRight: TAdvSmoothButton;
 
     //Проверка введёного пароля
     procedure actPassEnterExecute(Sender: TObject);
@@ -420,6 +420,10 @@ begin
   btnScrollUp.Picture := FrontData.RestPictureContainer.FindPicture('Up');
   btnGoodDown.Picture := FrontData.RestPictureContainer.FindPicture('Down');
   btnScrollDown.Picture := FrontData.RestPictureContainer.FindPicture('Down');
+  btnUsersDown.Picture := FrontData.RestPictureContainer.FindPicture('Down');
+  btnUsersUp.Picture := FrontData.RestPictureContainer.FindPicture('Up');
+  btnUserLeft.Picture := FrontData.RestPictureContainer.FindPicture('Left');
+  btnUserRight.Picture := FrontData.RestPictureContainer.FindPicture('Right');
 end;
 
 procedure TRestMainForm.FormDestroy(Sender: TObject);
