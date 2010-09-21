@@ -190,6 +190,7 @@ type
     FCashCode: Integer;
     FFiscalComPort: Integer;
     FCashNumber: Integer;
+    FIsMainCash: Boolean;
 
     FOrderTypeKey: Integer;
     FCompanyKey: Integer;
@@ -202,6 +203,7 @@ type
     function GetCashCode: Integer;
     function GetFiscalComPort: Integer;
     function GetCashNumber: Integer;
+    function GetIsMainCash: Boolean;
 
   public
     constructor Create;
@@ -271,6 +273,8 @@ type
       out PrnGrid: Integer): Boolean;
     function GetReportList(var MemTable: TkbmMemTable): Boolean;
 
+    procedure CanCloseDay;
+    procedure CanOpenDay;
 
     class function GetGroupMask(const AGroupID: Integer): Integer;
     class function GetLocalComputerName: String;
@@ -286,6 +290,7 @@ type
     property CashCode: Integer read GetCashCode;
     property FiscalComPort: Integer read GetFiscalComPort;
     property CashNumber: Integer read GetCashNumber;
+    property IsMainCash: Boolean read GetIsMainCash;
 
   end;
 implementation
@@ -361,6 +366,7 @@ begin
   FCashCode := -1;
   FFiscalComPort := -1;
   FCashNumber := -1;
+  FIsMainCash := False;
 end;
 
 function TFrontBase.CreateNewOrder(var HeaderTable,
@@ -1586,11 +1592,13 @@ begin
         FCashCode := FReadSQL.FieldByName('code').AsInteger;
         FFiscalComPort := FReadSQL.FieldByName('comport').AsInteger;
         FCashNumber := FReadSQL.FieldByName('number').AsInteger;
+        FIsMainCash := True;
       end else
       begin
         FCashCode := -1;
         FFiscalComPort := -1;
         FCashNumber := -1;
+        FIsMainCash := False;
       end;
       Result := FCashCode;
     finally
@@ -1627,11 +1635,13 @@ begin
         FCashCode := FReadSQL.FieldByName('code').AsInteger;
         FFiscalComPort := FReadSQL.FieldByName('comport').AsInteger;
         FCashNumber := FReadSQL.FieldByName('number').AsInteger;
+        FIsMainCash := True;
       end else
       begin
         FCashCode := -1;
         FFiscalComPort := -1;
         FCashNumber := -1;
+        FIsMainCash := False;
       end;
       Result := FFiscalComPort;
     finally
@@ -1668,11 +1678,13 @@ begin
         FCashCode := FReadSQL.FieldByName('code').AsInteger;
         FFiscalComPort := FReadSQL.FieldByName('comport').AsInteger;
         FCashNumber := FReadSQL.FieldByName('number').AsInteger;
+        FIsMainCash := True;
       end else
       begin
         FCashCode := -1;
         FFiscalComPort := -1;
         FCashNumber := -1;
+        FIsMainCash := False;
       end;
       Result := FCashNumber;
     finally
@@ -1680,6 +1692,50 @@ begin
     end;
   end;
 end;
+
+function TFrontBase.GetIsMainCash: Boolean;
+begin
+  if FIsMainCash then
+    Result := True
+  else begin
+    FReadSQL.Close;
+    if not FReadSQL.Transaction.InTransaction then
+      FReadSQL.Transaction.StartTransaction;
+    try
+      FReadSQL.SQL.Text :=
+        ' select ' +
+        '   first(1) ' +
+        '   s.usr$cashcode as code, s.USR$COMPORT as comport, s.usr$cashnumber as number, s.id ' +
+        ' from ' +
+        '   usr$mn_pointofsaleset  s  ' +
+        ' where ' +
+        '   upper(s.usr$computer) = upper(:comp) ' +
+        '   and coalesce(s.usr$active, 0) = 0 ' +
+        '   and s.usr$kassa > '''' ' +
+        ' order by  ' +
+        '   s.id desc ';
+      FReadSQL.Params[0].AsString := AnsiUpperCase(GetLocalComputerName);
+      FReadSQL.ExecQuery;
+      if not FReadSQL.Eof then
+      begin
+        FCashCode := FReadSQL.FieldByName('code').AsInteger;
+        FFiscalComPort := FReadSQL.FieldByName('comport').AsInteger;
+        FCashNumber := FReadSQL.FieldByName('number').AsInteger;
+        FIsMainCash := True;
+      end else
+      begin
+        FCashCode := -1;
+        FFiscalComPort := -1;
+        FCashNumber := -1;
+        FIsMainCash := False;
+      end;
+      Result := FIsMainCash;
+    finally
+      FReadSQL.Transaction.Commit;
+    end;
+  end;
+end;
+
 
 function TFrontBase.GetNameWaiterOnID(const ID: Integer; WithGroup,
   TwoRows: Boolean): String;
@@ -1854,7 +1910,7 @@ end;
 class function TFrontBase.GetGroupMask(const AGroupID: Integer): Integer;
 begin
   Assert(AGroupID in [1..32], 'Invalid group ID specified. Must be between 1 and 32.');
-  Result := 1 shl (AGroupID - 1);  
+  Result := 1 shl (AGroupID - 1);
 end;
 
 function TFrontBase.CheckUserPasswordWithForm: TUserInfo;
@@ -2591,6 +2647,186 @@ begin
     Result := True;
   finally
     FReadSQL.Close;
+    FReadSQL.Transaction.Commit;
+  end;
+end;
+
+procedure TFrontBase.CanCloseDay;
+var
+  CanClose: Boolean;
+  NewDate: TDateTime;
+  FUserInfo: TUserInfo;
+  FUpdateSQL: TIBSQL;
+begin
+  CanClose := False;
+  FReadSQL.Close;
+  if not FReadSQL.Transaction.InTransaction then
+    FReadSQL.Transaction.StartTransaction;
+  try
+    FReadSQL.SQL.Text :=
+      'select max(op.usr$logicdate) as LDate ' +
+      '  from usr$mn_options op ';
+    FReadSQL.ExecQuery;
+    if not FReadSQL.EOF then
+    begin
+      NewDate := FReadSQL.FieldByName('LDate').AsDateTime;
+      FReadSQL.Close;
+      FReadSQL.SQL.Text :=
+        'select ' +
+        'op.usr$off, op.usr$open ' +
+        'from ' +
+        'usr$mn_options op ' +
+        'where ' +
+        'op.usr$logicdate = :ldate ';
+      FReadSQL.ParamByName('LDATE').AsDateTime := NewDate;
+      FReadSQL.ExecQuery;
+      if FReadSQL.FieldByName('usr$off').AsInteger = 1 then
+      begin
+        AdvTaskMessageDlg('Внимание', 'Кассовый день ' + DateToStr(NewDate) + ' уже закрыт ',
+          mtInformation, [mbOK], 0);
+        exit;
+      end;
+      CanClose := True;
+    end else
+    begin
+      CanClose := False;
+      NewDate := Date;
+      AdvTaskMessageDlg('Внимание', 'Кассовый день не открыт', mtWarning, [mbOK], 0);
+    end;
+
+    if CanClose then
+      if AdvTaskMessageDlg('Внимание', 'Хотите закрыть день' + DateToStr(NewDate) + '?',
+        mtInformation, [mbYes, mbNo], 0) = IDYES then
+      begin
+        FUserInfo := CheckUserPasswordWithForm;
+        if FUserInfo.CheckedUserPassword then
+        begin
+          if (FUserInfo.UserInGroup and MN_Options.KassaGroupMask) <> 0 then
+          begin
+            FUpdateSQL := TIBSQL.Create(nil);
+            FUpdateSQL.Transaction := FCheckTransaction;
+            FUpdateSQL.SQL.Text :=
+              ' update usr$mn_options ' +
+              ' set usr$off = 1, usr$offuser = :offuser, usr$offdatetime = :offdatetime ' +
+              ' where usr$logicdate = :ldate ';
+            try
+              if not FCheckTransaction.InTransaction then
+                FCheckTransaction.StartTransaction;
+
+              FUpdateSQL.ParamByName('ldate').AsDateTime := NewDate;
+              FUpdateSQL.ParamByName('offuser').AsInteger := FUserInfo.UserKey;
+              FUpdateSQL.ParamByName('offdatetime').AsDateTime := Now;
+              try
+                FUpdateSQL.ExecQuery;
+                FCheckTransaction.Commit;
+              except
+                on E: Exception do
+                begin
+                  AdvTaskMessageDlg('Внимание', 'Ошибка при закрытии дня ' + E.Message, mtError, [mbOK], 0);
+                  FCheckTransaction.Rollback;
+                end;
+              end;
+            finally
+              if FCheckTransaction.InTransaction then
+                FCheckTransaction.Commit;
+              FUpdateSQL.Free;
+            end;
+          end else
+            AdvTaskMessageDlg('Внимание', 'Данный пользователь не обладает правами для закрытия дня!', mtWarning, [mbOK], 0);
+        end else
+          exit;
+      end;
+  finally
+    FReadSQL.Transaction.Commit;
+  end;
+end;
+
+procedure TFrontBase.CanOpenDay;
+var
+  CanStart: Boolean;
+  NewDate: TDateTime;
+  FUserInfo: TUserInfo;
+  FUpdateSQL: TIBSQL;
+begin
+  CanStart := False;
+  FReadSQL.Close;
+  if not FReadSQL.Transaction.InTransaction then
+    FReadSQL.Transaction.StartTransaction;
+  try
+    FReadSQL.SQL.Text :=
+      'select max(op.usr$logicdate) as LDate ' +
+      '  from usr$mn_options op ';
+    FReadSQL.ExecQuery;
+    if not FReadSQL.EOF then
+    begin
+      NewDate := FReadSQL.FieldByName('LDate').AsDateTime;
+      FReadSQL.Close;
+      FReadSQL.SQL.Text :=
+        'select ' +
+        'op.usr$off, op.usr$open ' +
+        'from ' +
+        'usr$mn_options op ' +
+        'where ' +
+        'op.usr$logicdate = :ldate ';
+      FReadSQL.ParamByName('LDATE').AsDateTime := NewDate;
+      FReadSQL.ExecQuery;
+      if (FReadSQL.FieldByName('usr$off').AsInteger = 0) and (FReadSQL.FieldByName('usr$open').AsInteger = 1) then
+      begin
+        AdvTaskMessageDlg('Внимание', 'Кассовый день ' + DateToStr(NewDate) + ' не закрыт!',
+          mtInformation, [mbOK], 0);
+        exit;
+      end;
+      CanStart := True;
+      NewDate := NewDate + 1;
+    end else
+    begin
+      CanStart := True;
+      NewDate := Date;
+    end;
+
+    if CanStart then
+      if AdvTaskMessageDlg('Внимание', 'Хотите открыть день' + DateToStr(NewDate) + '?',
+        mtInformation, [mbYes, mbNo], 0) = IDYES then
+      begin
+        FUserInfo := CheckUserPasswordWithForm;
+        if FUserInfo.CheckedUserPassword then
+        begin
+          if (FUserInfo.UserInGroup and MN_Options.KassaGroupMask) <> 0 then
+          begin
+            FUpdateSQL := TIBSQL.Create(nil);
+            FUpdateSQL.Transaction := FCheckTransaction;
+            FUpdateSQL.SQL.Text :=
+              ' insert into usr$mn_options(usr$logicdate, usr$open, usr$openuser, usr$opendatetime) ' +
+              ' VALUES (:ldate, :open, :openuser, :opendate) ';
+            try
+              if not FCheckTransaction.InTransaction then
+                FCheckTransaction.StartTransaction;
+
+              FUpdateSQL.ParamByName('ldate').AsDateTime := NewDate;
+              FUpdateSQL.ParamByName('open').AsInteger := 1;
+              FUpdateSQL.ParamByName('openuser').AsInteger := FUserInfo.UserKey;
+              FUpdateSQL.ParamByName('opendate').AsDateTime := Now;
+              try
+                FUpdateSQL.ExecQuery;
+                FCheckTransaction.Commit;
+              except
+                on E: Exception do
+                begin
+                  AdvTaskMessageDlg('Внимание', 'Ошибка при закрытии дня ' + E.Message, mtError, [mbOK], 0);
+                  FCheckTransaction.Rollback;
+                end;
+              end;
+            finally
+              if FCheckTransaction.InTransaction then
+                FCheckTransaction.Commit;
+              FUpdateSQL.Free;
+            end;
+          end else
+            AdvTaskMessageDlg('Внимание', 'Данный пользователь не обладает правами для открытия дня!', mtWarning, [mbOK], 0);
+        end else
+          exit;
+      end;
+  finally
     FReadSQL.Transaction.Commit;
   end;
 end;

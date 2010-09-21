@@ -43,7 +43,7 @@ type
 implementation
 
 uses
-  Spark617_Unit, MercFP_Unit, ShtrihFR_Unit;
+  Spark617_Unit, MercFP_Unit, ShtrihFR_Unit, TaskDialog, Dialogs;
 
 { TFiscalRegister }
 
@@ -68,8 +68,18 @@ begin
 end;
 
 procedure TFiscalRegister.EndDay;
+var
+  CanClose: Boolean;
 begin
-{ TODO : Сделать }
+  Assert(Assigned(FFrontBase), 'FrontBase not Assigned');
+
+  if FFrontBase.IsMainCash then
+  begin
+    if AdvTaskMessageDlg('Внимание', 'Закрыть день?', mtInformation, [mbOK, mbCancel], 0) = IDOK then
+      FFrontBase.CanCloseDay;
+
+  end else
+    AdvTaskMessageDlg('Внимание', 'Закрыть день можно только на главной кассе', mtWarning, [mbOK], 0);
 end;
 
 procedure TFiscalRegister.EndSession;
@@ -102,7 +112,7 @@ begin
         FFiscalRegister.Init;
       end;
 
-      2: //Меркурий-Epson 220U
+      2: //Гепард
       begin
         FFiscalRegister := TMercuryRegister.Create(nil);
         FFiscalRegister.FrontBase := FFrontBase;
@@ -114,6 +124,11 @@ begin
         FFiscalRegister := TSpark617Register.Create(nil);
         FFiscalRegister.FrontBase := FFrontBase;
         FFiscalRegister.Init;
+      end;
+
+      4: // для тестов
+      begin
+
       end;
 
     else
@@ -167,12 +182,23 @@ end;
 
 procedure TFiscalRegister.StartDay;
 begin
-{ TODO : Сделать }
+  Assert(Assigned(FFrontBase), 'FrontBase not Assigned');
+
+  if FFrontBase.IsMainCash then
+  begin
+    if AdvTaskMessageDlg('Внимание', 'Открыть день?', mtInformation, [mbOK, mbCancel], 0) = IDOK then
+      FFrontBase.CanOpenDay;
+
+  end else
+    AdvTaskMessageDlg('Внимание', 'Открыть день можно только на главной кассе', mtWarning, [mbOK], 0);
 end;
 
 procedure TFiscalRegister.StartSession;
 begin
-{ TODO : Сделать }
+  InitFiscalRegister(FFrontBase.CashCode);
+  if FFrontBase.CashCode = 2 then
+    if Assigned(FFiscalRegister) then
+      FFiscalRegister.OpenDay;
 end;
 
 end.

@@ -361,7 +361,12 @@ begin
       case CashCode of
         0: //Штрих-ФР
         begin
-          Assert(False, 'Данный тип кассы не поддерживается');
+          FFiscalRegiter.InitFiscalRegister(CashCode);
+          FFiscalRegiter.OpenDrawer;
+          if FFiscalRegiter.PrintCheck(Doc, DocLine, dsPayLine) then
+          begin
+            Self.ModalResult := mrOk;
+          end;
         end;
 
         1: //Дитрон
@@ -369,9 +374,14 @@ begin
           Assert(False, 'Данный тип кассы не поддерживается');
         end;
 
-        2: //Меркурий-Epson 220U
+        2: //Гепард
         begin
-          Assert(False, 'Данный тип кассы не поддерживается');
+          FFiscalRegiter.InitFiscalRegister(CashCode);
+          FFiscalRegiter.OpenDrawer;
+          if FFiscalRegiter.PrintCheck(Doc, DocLine, dsPayLine) then
+          begin
+            Self.ModalResult := mrOk;
+          end;
         end;
 
         3: //Спарк 617 ТФ
