@@ -106,7 +106,7 @@ end;
 function TShtrihFR.Init: Boolean;
 begin
   Result := True;
-  IsInit := True;
+  IsInit := SetParams;
 end;
 
 procedure TShtrihFR.MoneyIn;
@@ -155,7 +155,6 @@ end;
 
 function TShtrihFR.OpenDay: Boolean;
 begin
-//
   Result := True;
 end;
 
