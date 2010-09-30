@@ -68,8 +68,6 @@ begin
 end;
 
 procedure TFiscalRegister.EndDay;
-var
-  CanClose: Boolean;
 begin
   Assert(Assigned(FFrontBase), 'FrontBase not Assigned');
 

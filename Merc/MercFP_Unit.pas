@@ -32,7 +32,7 @@ type
   TMercuryRegister = class(TMercuryFPrtX, IBaseFiscalRegister)
   private
     FFrontBase: TFrontBase;
-    FDriverInit: Boolean;  
+    FDriverInit: Boolean;
     IsInit: Boolean;
 
     FLastErrorNumber: Integer;
@@ -40,6 +40,7 @@ type
     FLastWarning: String;
     //вертикальное смещение строки на чековой ленте
     FIV: Integer;
+    FFRRoundOption: Integer;
 
     // очищение последней ошибки
     procedure ClearLastError;
@@ -57,11 +58,31 @@ type
     function PrintCashier: Boolean;
     function Print: Boolean;
 
-    procedure MoneyOperation(const Param: Integer; const Summ: Currency);    
+    procedure MoneyOperation(const Param: Integer);
 
     function GetFrontBase: TFrontBase;
     function Get_Self: Integer;
     procedure SetFrontBase(const Value: TFrontBase);
+
+    function Close(const Summ: Currency): Boolean;
+    // прогон ленты на LineCount строк
+    function Feed(const LineCount: Integer): Boolean;
+    function Cut(const LineCount: Integer): Boolean;
+
+  { позиция чека
+    Quantity - кол-во (допускает 3 знака после запятой)
+    Price - цена
+    GoodName - наименование ТМЦ
+    Summ = Quantity * Price, округленная по правилам, установленным в кассовой системе
+    DepNumber - номер отдела
+    BarCode - шифр товара
+    ValueName - единица измерения }
+    function Sale(const Quantity, Price: Currency;
+      const GoodName: String; const Summ: Currency;
+      const DepNumber, BarCode: Integer;
+      const ValueName: String; const SumDiscount: Currency): Boolean;
+    procedure SetFRRoundOption(const Value: Integer);
+    function GetFRRoundOption: Integer;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -84,6 +105,8 @@ type
 
     property FrontBase: TFrontBase read GetFrontBase write SetFrontBase;
     property Self: Integer read Get_Self;
+
+    property FRRoundOption: Integer read GetFRRoundOption write SetFRRoundOption;
   end;
 
 implementation
@@ -215,12 +238,12 @@ end;
 
 procedure TMercuryRegister.MoneyIn;
 begin
-
+  MoneyOperation(5);
 end;
 
 procedure TMercuryRegister.MoneyOut;
 begin
-
+  MoneyOperation(6);
 end;
 
 procedure TMercuryRegister.OpenDrawer;
@@ -235,10 +258,58 @@ end;
 
 function TMercuryRegister.PrintCheck(const Doc, DocLine,
   PayLine: TkbmMemTable): Boolean;
+var
+  TotalDiscount: Currency;
+  GoodName: String;
+  Quantity, Price, SumDiscount, Summ: Currency;
 begin
+  Result := False;
+  Assert(Assigned(FFrontBase), 'FrontBase not Assigned');
 
+  if FDriverInit then
+  begin
+    OpenCheck(1);
+    if SetLastError then
+      exit;
 
+    DocLine.First;
+    TotalDiscount := 0;
+    while not DocLine.Eof do
+    begin
+      GoodName := DocLine.FieldByName('GOODNAME').AsString;
+      Quantity := DocLine.FieldByName('usr$quantity').AsCurrency * 1000;
+      Price := DocLine.FieldByName('usr$costncu').AsCurrency;
+      Summ := DocLine.FieldByName('usr$sumncuwithdiscount').AsCurrency;
+      SumDiscount := Round(DocLine.FieldByName('usr$sumdiscount').AsCurrency  + 0.0001);
+      TotalDiscount := TotalDiscount + SumDiscount;
 
+      Sale(Quantity, Price, GoodName, Summ, 1, 0, '', SumDiscount);
+
+      DocLine.Next;
+    end;
+
+    Summ := 0;
+    PayLine.DisableControls;
+    try
+      PayLine.First;
+      while not PayLine.Eof do
+      begin
+        Summ := Summ + PayLine.FieldByName('SUM').AsInteger;
+        PayLine.Next;
+      end;
+    finally
+      PayLine.EnableControls;
+    end;
+
+    Close(Summ);
+    if SetLastError then
+      exit;
+    Cut(0);
+    Result := True;
+
+  end else
+    MessageBox(Application.Handle, PChar('Не установлен драйвер для ФР !'),
+     'Внимание', MB_OK or MB_ICONEXCLAMATION);
 end;
 
 function TMercuryRegister.PrintX1ReportWithOutCleaning: Boolean;
@@ -318,7 +389,7 @@ end;
 destructor TMercuryRegister.Destroy;
 begin
   if FDriverInit and IsInit then
-    Close(True);
+    inherited Close(True);
 
   inherited;
 end;
@@ -410,11 +481,9 @@ begin
   end;
 end;
 
-procedure TMercuryRegister.MoneyOperation(const Param: Integer;
-  const Summ: Currency);
+procedure TMercuryRegister.MoneyOperation(const Param: Integer);
 var
   Form: TDevideForm;
-  Res: Integer;
 begin
   Form := TDevideForm.Create(nil);
   try
@@ -428,10 +497,17 @@ begin
 
         ClearLastError;
         try
-          AddItem(0, Summ, False, 0, 0,
+          AddItem(0, StrToCurr(Form.Number), False, 0, 0,
                   0, 0, 0, 0, '', cn_FontFlagPosition, 0, FIV, 0);
-          { TODO : доделать }
 
+          if SetLastError then
+            exit;
+          Inc(FIV);
+
+          if Param = 5 then
+            Close(0)
+          else
+            Close(StrToCurr(Form.Number));
         except
           ShowLastError;
         end;
@@ -498,8 +574,27 @@ begin
 end;
 
 function TMercuryRegister.PrintTop: Boolean;
+var
+  I : Integer;
+  Res: Boolean;
 begin
-//
+  ClearLastError;
+  Result := False;
+  if FDriverInit then
+  begin
+    try
+      for I := 1 to 4 do
+      begin
+        AddHeaderLine(1, 3, 0, FIV + I - 1);
+        Res := not SetLastError;
+        Result := Res;
+        if not Res then
+          break;
+      end;
+    except
+      ShowLastError;
+    end;
+  end;
 end;
 
 function TMercuryRegister.PrintCashier: Boolean;
@@ -537,6 +632,202 @@ begin
     end;
   end else
     Result := True;
+end;
+
+function TMercuryRegister.Close(const Summ: Currency): Boolean;
+begin
+  ClearLastError;
+  Result := False;
+  if FDriverInit then
+  begin
+    try
+      AddTotal(cn_FontFlagTotal, 0, FIV, 0);
+      if SetLastError then
+        exit;
+
+      Inc(FIV);
+      if CurrentOper = 1 then
+      begin
+        AddPay(0, Summ, 0, '', cn_FontFlagPay, 0, FIV, 0);
+        if SetLastError then
+          exit;
+        Inc(FIV);
+        // печать уплаченной суммы
+        AddChange(cn_FontFlagChange, 0, FIV, 0);
+        if SetLastError then
+          exit;
+        Inc(FIV);
+      end;
+      CloseFiscalDoc;
+      if SetLastError then
+        exit;
+      if not Feed(5) then
+        exit;
+      Result := True;
+    except
+      ShowLastError;
+    end;
+  end
+end;
+
+function TMercuryRegister.Feed(const LineCount: Integer): Boolean;
+begin
+  ClearLastError;
+  Result := False;
+  if FDriverInit then
+  begin
+    try
+      FeedAndCut(LineCount, False);
+      if SetLastError then
+        exit;
+      FIV := FIV + LineCount;
+      Result := True;
+    except
+      ShowLastError;
+    end;
+  end;
+end;
+
+function TMercuryRegister.Sale(const Quantity, Price: Currency;
+  const GoodName: String; const Summ: Currency; const DepNumber,
+  BarCode: Integer; const ValueName: String;
+  const SumDiscount: Currency): Boolean;
+var
+  ToQuantity{, ToSumm, ToAdd}: Currency;
+  FValueName: String;
+  {R: Integer;}
+begin
+  ClearLastError;
+  Result := False;
+  if FDriverInit then
+  begin
+    try
+      ToQuantity := 1;
+      FValueName := Copy(ValueName, 1, 5);
+//      R := FRRoundOption;
+      if SetLastError then
+        exit;
+
+//      ToSumm := Round(ToQuantity * Price / R + 0.0000000001) * R;
+//      ToAdd := Summ - ToSumm;
+      // print goodname
+      AddCustom(GoodName + ' x' + CurrToStr(Quantity), cn_FontFlagGoodName, 0, FIV);
+      if SetLastError then
+        exit;
+      Inc(FIV);
+
+      if CurrentOper = 1 then // продажа
+        if Quantity >= 0 then
+        begin
+          if SumDiscount = 0 then
+          begin
+            AddItem(0, Summ, False, DepNumber, BarCode,
+                0, Round(-1 * (ToQuantity * 1000)), 3, 0, ValueName,
+                cn_FontFlagPosition, 0, FIV, 0);
+            if SetLastError then
+              exit;
+          end;
+
+          if SumDiscount <> 0 then
+          begin
+            AddItem(0, Summ + SumDiscount, False, DepNumber, BarCode,
+                0, Round(-1 * (ToQuantity * 1000)), 3, 0, ValueName,
+                cn_FontFlagPosition, 0, FIV, 0);
+            if SetLastError then
+              exit;
+            Inc(FIV);
+            //скидка
+            AddItem(2, -SumDiscount, False, DepNumber, BarCode,
+                0, 0, 3, 0, '',
+                cn_FontFlagPosition, 0, FIV, 0);
+            if SetLastError then
+              exit;
+          end;
+        end else // отмена позиции
+        begin
+          AddItem(3, Summ, False, DepNumber, BarCode,
+              0, Round(-1 * (ToQuantity * 1000)), 3, 0, ValueName,
+              cn_FontFlagPosition, 0, FIV, 0);
+          if SetLastError then
+            exit;
+        end
+      else if CurrentOper = 2 then // возврат
+      begin
+        AddItem(0, Summ, False, DepNumber, BarCode,
+            0, Round(-1 * (ToQuantity * 1000)), 3, 0, ValueName,
+            cn_FontFlagPosition, 0, FIV, 0);
+        if SetLastError then
+          exit;
+      end;
+      Inc(FIV);
+
+      if not Print then
+        exit;
+      Result := True;
+    except
+      ShowLastError;
+    end;
+  end;
+end;
+
+procedure TMercuryRegister.SetFRRoundOption(const Value: Integer);
+begin
+  if FDriverInit then
+  begin
+    ClearLastError;
+    if Value = 0 then
+      SetParameterInt(13, 0)
+    else if Value = 5 then
+      SetParameterInt(13, 1)
+    else if Value = 10 then
+      SetParameterInt(13, 2)
+    else if Value = 100 then
+      SetParameterInt(13, 3)
+    else
+      SetParameterInt(13, 0);
+
+    SetLastError;
+  end;
+  FFRRoundOption := Value;
+end;
+
+function TMercuryRegister.GetFRRoundOption: Integer;
+var
+  TempRO: Integer;
+begin
+  if FDriverInit then
+  begin
+    TempRO := QueryParameterInt(13);
+    if TempRO = 0 then
+      FRRoundOption := 0
+    else if TempRO = 1 then
+      FRRoundOption := 5
+    else if TempRO = 2 then
+      FRRoundOption := 10
+    else if TempRO = 3 then
+      FRRoundOption := 100;
+
+    Result := FFRRoundOption;
+  end else
+    Result := 0;
+end;
+
+function TMercuryRegister.Cut(const LineCount: Integer): Boolean;
+begin
+  ClearLastError;
+  Result := False;
+  if FDriverInit then
+  begin
+    try
+      FeedAndCut(LineCount, False);
+      if SetLastError then
+        exit;
+      FIV := FIV + LineCount;
+      Result := True;
+    except
+      ShowLastError;
+    end;
+  end;
 end;
 
 end.
