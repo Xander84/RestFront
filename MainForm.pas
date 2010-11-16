@@ -10,7 +10,7 @@ uses
   Contnrs, kbmMemTable, DBGridEh, GridsEh, FiscalRegister_Unit,
   SplitOrderForm_Unit, Report_Unit, FrontData_Unit, BaseFrontForm_Unit,
   AdvSmoothButton, AdvPanel, AdvPageControl, AdvSmoothTouchKeyBoard,
-  TaskDialog, FrontLog_Unit, Grids;
+  TaskDialog, FrontLog_Unit, Grids, Menus;
 
 const
   btnHeight = 51;
@@ -587,7 +587,7 @@ var
 begin
   //Создание кнопки
   FButton := TAdvSmoothButton.Create(tsUserOrder);
-  FButton.Appearance.Font.Name := 'Times New Roman';
+  FButton.Appearance.Font.Name := cn_FontType;
   FButton.Color := btnColor;
   FButton.Appearance.Font.Size := 14;
   FButton.Parent := tsUserOrder;
@@ -609,17 +609,20 @@ begin
     FButton.Top  := FLastTopButton;
   end;
   FButton.Tag := FOrderDataSet.FieldByName('ID').AsInteger;
-  FButton.Caption := Format('№ %s Сумма %s', [FOrderDataSet.FieldByName('TableName').AsString,
-    FOrderDataSet.FieldByName('Summ').AsString]);
+  FButton.Caption := Format('№ %s', [FOrderDataSet.FieldByName('TableName').AsString]);
+  FButton.Status.Caption := FOrderDataSet.FieldByName('Summ').AsString;
+  FButton.Status.Visible := True;
+  FButton.Status.Appearance.Font.Size := 9;
   if FOrderDataSet.FieldByName('Status').AsInteger = Integer(osOrderClose) then
   begin
-//    FButton.Appearance.Alignment := taLeftJustify;
-    FButton.Picture := FrontData.RestPictureContainer.FindPicture('Lock');
-//    FButton.Appearance.PictureAlignment := taRightJustify;
-    FButton.Appearance.Layout := blPictureRight;
+    FButton.Status.Appearance.Fill.Color := clRed;
+    FButton.Status.Appearance.Fill.ColorTo := clRed;
   end;
-//  FButton.Caption := '№ ' + FOrderDataSet.FieldByName('TableName').AsString +
-//    ' Сумма ' + FOrderDataSet.FieldByName('Summ').AsString;
+//  if FOrderDataSet.FieldByName('Status').AsInteger = Integer(osOrderClose) then
+//  begin
+//    FButton.Picture := FrontData.RestPictureContainer.FindPicture('Lock');
+//    FButton.Appearance.Layout := blPictureRight;
+//  end;
 
   FLastLeftButton := FLastLeftButton + btnWidth + 10;
 
@@ -647,7 +650,7 @@ var
 begin
   //Создание кнопки
   FButton := TAdvSmoothButton.Create(pnlGood);
-  FButton.Appearance.Font.Name := 'Times New Roman';
+  FButton.Appearance.Font.Name := cn_FontType;
   FButton.Color := btnColor;
   FButton.Parent := pnlGood;
   FButton.OnClick := GoodButtonOnClick;
@@ -691,7 +694,7 @@ begin
 
   //Создание кнопки
   FButton := TAdvSmoothButton.Create(pnlGood);
-  FButton.Appearance.Font.Name := 'Times New Roman';
+  FButton.Appearance.Font.Name := cn_FontType;
   FButton.Appearance.Font.Size := 11;
   FButton.Color := btnColor;
   FButton.Parent := FPanel;
@@ -728,7 +731,7 @@ var
 begin
   //Создание кнопки
   FButton := TAdvSmoothButton.Create(pnlGood);
-  FButton.Appearance.Font.Name := 'Times New Roman';
+  FButton.Appearance.Font.Name := cn_FontType;
   FButton.Appearance.Font.Size := 14;
   FButton.Color := btnColor;
   FButton.Parent := pnlMenu;
@@ -1768,7 +1771,7 @@ var
 begin
   //Создание кнопки
   FButton := TAdvSmoothButton.Create(pnlUsers);
-  FButton.Appearance.Font.Name := 'Times New Roman';
+  FButton.Appearance.Font.Name := cn_FontType;
   FButton.Color := btnColor;
   FButton.Appearance.Font.Size := 12;
   FButton.Parent := pnlUsers;
@@ -1863,7 +1866,7 @@ var
 begin
   //Создание кнопки
   FButton := TAdvSmoothButton.Create(pnlUserOrders);
-  FButton.Appearance.Font.Name := 'Times New Roman';
+  FButton.Appearance.Font.Name := cn_FontType;
   FButton.Color := btnColor;
   FButton.Appearance.Font.Size := 14;
   FButton.Parent := pnlUserOrders;
