@@ -5,13 +5,14 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, FrontData_Unit, AdvSmoothButton, ExtCtrls, AdvPanel,
-  BaseFrontForm_Unit;
+  BaseFrontForm_Unit, AdvSmoothTouchKeyBoard;
 
 type
   TCardCode = class(TBaseFrontForm)
     AdvPanel1: TAdvPanel;
     edPass: TEdit;
     btnOK: TAdvSmoothButton;
+    AdvSmoothTouchKeyBoard1: TAdvSmoothTouchKeyBoard;
     procedure edPassKeyPress(Sender: TObject; var Key: Char);
     procedure btnOKClick(Sender: TObject);
   private

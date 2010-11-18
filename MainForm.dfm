@@ -1257,7 +1257,7 @@ object RestMainForm: TRestMainForm
         Top = 1
         Width = 80
         Height = 719
-        ActivePage = tsMainButton
+        ActivePage = tsFunctionButton
         Align = alClient
         TabOrder = 0
         object tsMainButton: TTabSheet
@@ -1322,12 +1322,12 @@ object RestMainForm: TRestMainForm
             TabOrder = 1
             Version = '1.6.9.0'
           end
-          object btnEditReport: TAdvSmoothButton
+          object AdvSmoothButton1: TAdvSmoothButton
             Left = 0
-            Top = 109
+            Top = 112
             Width = 72
             Height = 50
-            Action = actEditReport
+            Action = actKeyBoard
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
             Appearance.Font.Height = -13
@@ -1350,36 +1350,7 @@ object RestMainForm: TRestMainForm
             Color = 15195349
             ParentFont = False
             TabOrder = 2
-            Version = '1.6.9.0'
-          end
-          object btnCashForm: TAdvSmoothButton
-            Left = 0
-            Top = 163
-            Width = 72
-            Height = 50
-            Action = actCashForm
-            Appearance.Font.Charset = DEFAULT_CHARSET
-            Appearance.Font.Color = clWindowText
-            Appearance.Font.Height = -13
-            Appearance.Font.Name = 'Times New Roman'
-            Appearance.Font.Style = [fsBold]
-            Status.Caption = '0'
-            Status.Appearance.Fill.Color = clRed
-            Status.Appearance.Fill.ColorMirror = clNone
-            Status.Appearance.Fill.ColorMirrorTo = clNone
-            Status.Appearance.Fill.GradientType = gtSolid
-            Status.Appearance.Fill.BorderColor = clGray
-            Status.Appearance.Fill.Rounding = 0
-            Status.Appearance.Fill.ShadowOffset = 0
-            Status.Appearance.Font.Charset = DEFAULT_CHARSET
-            Status.Appearance.Font.Color = clWhite
-            Status.Appearance.Font.Height = -11
-            Status.Appearance.Font.Name = 'Tahoma'
-            Status.Appearance.Font.Style = []
-            Bevel = False
-            Color = 15195349
-            ParentFont = False
-            TabOrder = 3
+            TabStop = False
             Version = '1.6.9.0'
           end
         end
@@ -1637,6 +1608,7 @@ object RestMainForm: TRestMainForm
             Color = 15195349
             ParentFont = False
             TabOrder = 8
+            TabStop = False
             Version = '1.6.9.0'
           end
           object btnDiscount: TAdvSmoothButton
@@ -1727,6 +1699,70 @@ object RestMainForm: TRestMainForm
             Color = 15195349
             ParentFont = False
             TabOrder = 11
+            Version = '1.6.9.0'
+          end
+        end
+        object tsOrderButton: TTabSheet
+          Caption = 'tsOrderButton'
+          ImageIndex = 2
+          object btnEditReport: TAdvSmoothButton
+            Left = 0
+            Top = 1
+            Width = 72
+            Height = 50
+            Action = actEditReport
+            Appearance.Font.Charset = DEFAULT_CHARSET
+            Appearance.Font.Color = clWindowText
+            Appearance.Font.Height = -13
+            Appearance.Font.Name = 'Times New Roman'
+            Appearance.Font.Style = [fsBold]
+            Status.Caption = '0'
+            Status.Appearance.Fill.Color = clRed
+            Status.Appearance.Fill.ColorMirror = clNone
+            Status.Appearance.Fill.ColorMirrorTo = clNone
+            Status.Appearance.Fill.GradientType = gtSolid
+            Status.Appearance.Fill.BorderColor = clGray
+            Status.Appearance.Fill.Rounding = 0
+            Status.Appearance.Fill.ShadowOffset = 0
+            Status.Appearance.Font.Charset = DEFAULT_CHARSET
+            Status.Appearance.Font.Color = clWhite
+            Status.Appearance.Font.Height = -11
+            Status.Appearance.Font.Name = 'Tahoma'
+            Status.Appearance.Font.Style = []
+            Bevel = False
+            Color = 15195349
+            ParentFont = False
+            TabOrder = 0
+            Version = '1.6.9.0'
+          end
+          object btnCashForm: TAdvSmoothButton
+            Left = 0
+            Top = 56
+            Width = 72
+            Height = 50
+            Action = actCashForm
+            Appearance.Font.Charset = DEFAULT_CHARSET
+            Appearance.Font.Color = clWindowText
+            Appearance.Font.Height = -13
+            Appearance.Font.Name = 'Times New Roman'
+            Appearance.Font.Style = [fsBold]
+            Status.Caption = '0'
+            Status.Appearance.Fill.Color = clRed
+            Status.Appearance.Fill.ColorMirror = clNone
+            Status.Appearance.Fill.ColorMirrorTo = clNone
+            Status.Appearance.Fill.GradientType = gtSolid
+            Status.Appearance.Fill.BorderColor = clGray
+            Status.Appearance.Fill.Rounding = 0
+            Status.Appearance.Fill.ShadowOffset = 0
+            Status.Appearance.Font.Charset = DEFAULT_CHARSET
+            Status.Appearance.Font.Color = clWhite
+            Status.Appearance.Font.Height = -11
+            Status.Appearance.Font.Name = 'Tahoma'
+            Status.Appearance.Font.Style = []
+            Bevel = False
+            Color = 15195349
+            ParentFont = False
+            TabOrder = 1
             Version = '1.6.9.0'
           end
         end

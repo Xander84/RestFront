@@ -148,16 +148,18 @@ type
     btnExitWindows: TAdvSmoothButton;
     btnRestartRest: TAdvSmoothButton;
     actEditReport: TAction;
-    btnEditReport: TAdvSmoothButton;
     btnGoodUp: TAdvSmoothButton;
     btnGoodDown: TAdvSmoothButton;
-    btnCashForm: TAdvSmoothButton;
     actCashForm: TAction;
     btnPredCheck: TAdvSmoothButton;
     btnUsersDown: TAdvSmoothButton;
     btnUsersUp: TAdvSmoothButton;
     btnUserLeft: TAdvSmoothButton;
     btnUserRight: TAdvSmoothButton;
+    tsOrderButton: TTabSheet;
+    btnEditReport: TAdvSmoothButton;
+    btnCashForm: TAdvSmoothButton;
+    AdvSmoothButton1: TAdvSmoothButton;
 
     //Проверка введёного пароля
     procedure actPassEnterExecute(Sender: TObject);
@@ -589,7 +591,7 @@ begin
   FButton := TAdvSmoothButton.Create(tsUserOrder);
   FButton.Appearance.Font.Name := cn_FontType;
   FButton.Color := btnColor;
-  FButton.Appearance.Font.Size := 14;
+  FButton.Appearance.Font.Size := cn_ButtonFontSize;
   FButton.Parent := tsUserOrder;
   FButton.OnClick := OrderButtonOnClick;
   FButton.Name := Format(btnOrderName, [FOrderButtonNumber]);
@@ -732,7 +734,7 @@ begin
   //Создание кнопки
   FButton := TAdvSmoothButton.Create(pnlGood);
   FButton.Appearance.Font.Name := cn_FontType;
-  FButton.Appearance.Font.Size := 14;
+  FButton.Appearance.Font.Size := cn_ButtonFontSize;
   FButton.Color := btnColor;
   FButton.Parent := pnlMenu;
   FButton.OnClick := MenuButtonOnClick;
@@ -1056,19 +1058,21 @@ begin
       FGuestForm := TGuestForm.Create(nil);
       try
         FGuestForm.ShowModal;
+        if FOrderForm.Number <> '' then
+        begin
+          if not Assigned(dsMain.DataSet) then
+            dsMain.DataSet := FLineTable;
+          FormState := MenuInfo;
 
-        if not Assigned(dsMain.DataSet) then
-          dsMain.DataSet := FLineTable;
-        FormState := MenuInfo;
-
-        FHeaderTable.Insert;
-        FHeaderTable.FieldByName('NUMBER').AsString := FOrderForm.Number;
-        if FGuestForm.ModalResult = mrOK then
-          FHeaderTable.FieldByName('USR$GUESTCOUNT').AsInteger := FGuestForm.GuestCount
-        else
-          FHeaderTable.FieldByName('USR$GUESTCOUNT').AsInteger := 1;
-        FHeaderTable.FieldByName('USR$TIMEORDER').Value := Time;
-        FHeaderTable.Post;
+          FHeaderTable.Insert;
+          FHeaderTable.FieldByName('NUMBER').AsString := FOrderForm.Number;
+          if FGuestForm.ModalResult = mrOK then
+            FHeaderTable.FieldByName('USR$GUESTCOUNT').AsInteger := FGuestForm.GuestCount
+          else
+            FHeaderTable.FieldByName('USR$GUESTCOUNT').AsInteger := 1;
+          FHeaderTable.FieldByName('USR$TIMEORDER').Value := Time;
+          FHeaderTable.Post;
+        end;  
       finally
         FGuestForm.Free;
       end;
@@ -1550,6 +1554,7 @@ begin
           tsPassWord.TabVisible := False;
           tsMainButton.TabVisible := False;
           tsFunctionButton.TabVisible := False;
+          tsOrderButton.TabVisible := False;
           tsMenu.TabVisible := False;
           tsManagerPage.TabVisible := False;
           tsGroup.TabVisible := False;
@@ -1630,7 +1635,7 @@ begin
 
           pcMain.ActivePage := tsMain;
           pcOrder.ActivePage := tsUserOrder;
-          pcExtraButton.ActivePage := tsMainButton;
+          pcExtraButton.ActivePage := tsOrderButton;
           pcMenu.ActivePage := tsMenu;
           pnlChoose.Visible := False;
           pnlMainGood.Visible := False;
@@ -1700,7 +1705,7 @@ begin
 
           FFormState := Value;
           pcOrder.ActivePage := tsManagerPage;
-          pcExtraButton.ActivePage := tsMainButton;
+          pcExtraButton.ActivePage := tsOrderButton;
 
           btnCashForm.Visible := True;
           btnEditReport.Visible := True;
@@ -1742,7 +1747,7 @@ begin
 
           FFormState := Value;
           pcOrder.ActivePage := tsManagerPage;
-          pcExtraButton.ActivePage := tsMainButton;
+          pcExtraButton.ActivePage := tsOrderButton;
 
           FUserFirstTop       := btnFirstTop;
           FUserLastLeftButton := btnFirstTop;
@@ -1868,7 +1873,7 @@ begin
   FButton := TAdvSmoothButton.Create(pnlUserOrders);
   FButton.Appearance.Font.Name := cn_FontType;
   FButton.Color := btnColor;
-  FButton.Appearance.Font.Size := 14;
+  FButton.Appearance.Font.Size := cn_ButtonFontSize;
   FButton.Parent := pnlUserOrders;
   if FormState = ManagerPage then
     FButton.OnClick := OrderButtonOnClick
@@ -1882,8 +1887,16 @@ begin
   FButton.Top  := FUserOrderLastTop;
 
   FButton.Tag := MemTable.FieldByName('ID').AsInteger;
-  FButton.Caption := Format('№ %s Сумма %s', [MemTable.FieldByName('TableName').AsString,
-    MemTable.FieldByName('Summ').AsString]);
+  FButton.Caption := Format('№ %s', [FOrderDataSet.FieldByName('TableName').AsString]);
+  FButton.Status.Caption := FOrderDataSet.FieldByName('Summ').AsString;
+  FButton.Status.Visible := True;
+  FButton.Status.Appearance.Font.Size := 9;
+  if FOrderDataSet.FieldByName('Status').AsInteger = Integer(osOrderClose) then
+  begin
+    FButton.Status.Appearance.Fill.Color := clRed;
+    FButton.Status.Appearance.Fill.ColorTo := clRed;
+  end;
+
 //  FButton.Caption := '№ ' + MemTable.FieldByName('TableName').AsString +
 //    ' Сумма ' + MemTable.FieldByName('Summ').AsString;
 
