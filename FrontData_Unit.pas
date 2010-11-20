@@ -39,6 +39,7 @@ type
 const
   cn_TitleFontSize = 10;
   cn_FontSize = 16;
+  cn_ButtonFontSize = 14;
   cn_EvenRowColor = clInfoBk;
   cn_OddRowColor = clGradientActiveCaption;
   cn_FontType = 'Times New Roman';
