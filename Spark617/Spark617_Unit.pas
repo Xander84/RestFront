@@ -169,29 +169,28 @@ begin
       Res := SetDeviceOpt(25, 1);
       ErrMessage(Res);
 
-  { TODO : В дальнейшем параметры брать из БД }
-      Res := SetOrderHeader(1, '****************', 0);
+      Res := SetOrderHeader(1, FrontBase.MN_Options.CheckLine1, 0);
       ErrMessage(Res);
 
-      Res := SetOrderHeader(2, 'Ресторан', 0);
+      Res := SetOrderHeader(2, FrontBase.MN_Options.CheckLine2, 0);
       ErrMessage(Res);
 
-      Res := SetOrderHeader(3, 'Название', 0);
+      Res := SetOrderHeader(3, FrontBase.MN_Options.CheckLine3, 0);
       ErrMessage(Res);
 
-      Res := SetOrderHeader(4, '****************', 0);
+      Res := SetOrderHeader(4, FrontBase.MN_Options.CheckLine4, 0);
       ErrMessage(Res);
 
-      Res := SetOrderHeader(5, '             ', 0);
+      Res := SetOrderHeader(5, FrontBase.MN_Options.CheckLine5, 0);
       ErrMessage(Res);
 
-      Res := SetOrderHeader(6, 'Адрес', 0);
+      Res := SetOrderHeader(6, FrontBase.MN_Options.CheckLine6, 0);
       ErrMessage(Res);
 
-      Res := SetOrderHeader(7, 'Тел', 0);
+      Res := SetOrderHeader(7, FrontBase.MN_Options.CheckLine7, 0);
       ErrMessage(Res);
 
-      Res := SetOrderHeader(8, 'ежедневно с 12.00 до 24.00', 0);
+      Res := SetOrderHeader(8, FrontBase.MN_Options.CheckLine8, 0);
       ErrMessage(Res);
 
       Res := SetDescriptorText(42, 'Стол №');
@@ -236,7 +235,7 @@ end;
 destructor TSpark617Register.Destroy;
 begin
   if FDriverInit and IsInit then
-      DeinitDevice;
+    DeinitDevice;
 
   inherited;
 end;
@@ -261,7 +260,7 @@ begin
   begin
     ErrStr := WideCharToString(PWideChar(GetErrorComment(Err)));
     MessageBox(Application.Handle, PChar(ErrStr),
-     'Внимание', MB_OK or MB_ICONEXCLAMATION);
+      'Внимание', MB_OK or MB_ICONEXCLAMATION);
   end;
 end;
 
