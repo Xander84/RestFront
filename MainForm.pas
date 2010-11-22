@@ -697,7 +697,6 @@ begin
   //Создание кнопки
   FButton := TAdvSmoothButton.Create(pnlGood);
   FButton.Appearance.Font.Name := cn_FontType;
-  FButton.Appearance.Font.Size := 11;
   FButton.Color := btnColor;
   FButton.Parent := FPanel;
   FButton.OnClick := GroupButtonOnClick;
@@ -720,6 +719,10 @@ begin
   end;
 
   FButton.Tag := FGroupDataSet.FieldByName('ID').AsInteger;
+  if Length(FGroupDataSet.FieldByName('NAME').AsString) > 16 then
+    FButton.Appearance.Font.Size := 9
+  else
+    FButton.Appearance.Font.Size := 11;
   FButton.Caption := FGroupDataSet.FieldByName('NAME').AsString;
 
   FGroupLastLeftButton := FGroupLastLeftButton + btnHalfWidth + 10;
@@ -1048,37 +1051,64 @@ procedure TRestMainForm.btnNewOrderClick(Sender: TObject);
 var
   FOrderForm: TOrderNumber;
   FGuestForm: TGuestForm;
+  FOrderNumber: String;
+  FGuestCount: Integer;
 begin
-  FFrontBase.GetOrder(FHeaderTable, FLineTable, FModificationDataSet, -1);
-  FOrderForm := TOrderNumber.Create(nil);
-  try
-    FOrderForm.ShowModal;
-    if FOrderForm.ModalResult = mrOK then
+{ TODO : Проверка на Max кол-во гостей }
+  if (FFrontBase.UserGroup and FFrontBase.MN_Options.ManagerGroupMask) <> 0 then
+    // входит в группу менеджеры
+  else begin
+    if FFrontBase.CheckCountOrderByResp(FFrontBase.ContactKey) then
     begin
-      FGuestForm := TGuestForm.Create(nil);
-      try
-        FGuestForm.ShowModal;
-        if FOrderForm.Number <> '' then
-        begin
-          if not Assigned(dsMain.DataSet) then
-            dsMain.DataSet := FLineTable;
-          FormState := MenuInfo;
-
-          FHeaderTable.Insert;
-          FHeaderTable.FieldByName('NUMBER').AsString := FOrderForm.Number;
-          if FGuestForm.ModalResult = mrOK then
-            FHeaderTable.FieldByName('USR$GUESTCOUNT').AsInteger := FGuestForm.GuestCount
-          else
-            FHeaderTable.FieldByName('USR$GUESTCOUNT').AsInteger := 1;
-          FHeaderTable.FieldByName('USR$TIMEORDER').Value := Time;
-          FHeaderTable.Post;
-        end;  
-      finally
-        FGuestForm.Free;
-      end;
+      AdvTaskMessageDlg('Внимание', 'Превышено максимально возможное число открытых заказов!', mtWarning, [mbOK], 0);
+      exit;
     end;
-  finally
-    FOrderForm.Free
+  end;
+
+  FOrderNumber := '';
+  FFrontBase.GetOrder(FHeaderTable, FLineTable, FModificationDataSet, -1);
+  if FFrontBase.MN_Options.NoPassword then
+    FOrderNumber := IntToStr(FFrontBase.GetNextOrderNum)
+  else begin
+    FOrderForm := TOrderNumber.Create(nil);
+    try
+      FOrderForm.ShowModal;
+      if FOrderForm.ModalResult = mrOK then
+        FOrderNumber := FOrderForm.Number;
+    finally
+      FOrderForm.Free;
+    end;
+  end;
+
+  if FOrderNumber = '' then
+    exit;
+
+  if FFrontBase.MN_Options.MinGuestCount < 0 then
+    FGuestCount := 1
+  else begin
+    FGuestForm := TGuestForm.Create(nil);
+    try
+      FGuestForm.ShowModal;
+      if FGuestForm.ModalResult = mrOK then
+        FGuestCount := FGuestForm.GuestCount
+      else
+        FGuestCount := 1;
+    finally
+      FGuestForm.Free;
+    end;
+  end;
+
+  if (FGuestCount >= FFrontBase.MN_Options.MinGuestCount) and (FOrderNumber <> '') then
+  begin
+    if not Assigned(dsMain.DataSet) then
+      dsMain.DataSet := FLineTable;
+    FormState := MenuInfo;
+
+    FHeaderTable.Insert;
+    FHeaderTable.FieldByName('NUMBER').AsString := FOrderNumber;
+    FHeaderTable.FieldByName('USR$GUESTCOUNT').AsInteger := FGuestCount;
+    FHeaderTable.FieldByName('USR$TIMEORDER').Value := Time;
+    FHeaderTable.Post;
   end;
 end;
 

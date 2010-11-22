@@ -262,6 +262,7 @@ type
 
     function GetIDByRUID(const XID: Integer; const DBID: Integer): Integer;
     function GetNextOrderNum: Integer;
+    function CheckCountOrderByResp(const RespID: Integer): Boolean;
 
     function GetDiscount(const DiscKey, GoodKey: Integer;
       DocDate: TDateTime; PersDiscount: Currency): Currency;
@@ -2820,7 +2821,7 @@ begin
             FUpdateSQL := TIBSQL.Create(nil);
             FUpdateSQL.Transaction := FCheckTransaction;
             FUpdateSQL.SQL.Text :=
-              ' insert into usr$mn_options(usr$logicdate, usr$open, usr$openuser, usr$opendatetime) ' +
+              ' INSERT INTO usr$mn_options(usr$logicdate, usr$open, usr$openuser, usr$opendatetime) ' +
               ' VALUES (:ldate, :open, :openuser, :opendate) ';
             try
               if not FCheckTransaction.InTransaction then
@@ -3062,10 +3063,38 @@ begin
       FReadSQL.Transaction.StartTransaction;
 
     FReadSQL.Close;
-    FReadSQL.SQL.Text := 'SELECT gen_id(USR$MN_CHECKNUMBER, 1) id from rdb$database ';
+    FReadSQL.SQL.Text := 'SELECT gen_id(USR$MN_CHECKNUMBER, 1) id FROM rdb$database ';
     FReadSQL.ExecQuery;
 
     Result := FReadSQL.FieldByName('ID').AsInteger;
+
+    FReadSQL.Transaction.Commit;
+  except
+    on E: Exception do
+      AdvTaskMessageDlg('Внимание', 'Ошибка ' + E.Message, mtError, [mbOK], 0);
+  end;
+end;
+
+function TFrontBase.CheckCountOrderByResp(const RespID: Integer): Boolean;
+begin
+  Result := True;
+
+  try
+    if not FReadSQL.Transaction.InTransaction then
+      FReadSQL.Transaction.StartTransaction;
+
+    FReadSQL.Close;
+    FReadSQL.SQL.Text :=
+      ' SELECT COUNT(*) AS countOrder ' +
+      ' FROM usr$mn_order o  ' +
+      ' WHERE o.usr$logicdate = :ldate ' +
+      '   AND o.usr$respkey = :respkey ' +
+      '   AND o.USR$TIMECLOSEORDER IS NULL ';
+    FReadSQL.ParamByName('ldate').AsDateTime := GetLogicDate;
+    FReadSQL.ParamByName('respkey').AsInteger := RespID;
+    FReadSQL.ExecQuery;
+
+    Result := (FReadSQL.FieldByName('countOrder').AsInteger > mn_Options.MaxOpenedOrders - 1);
 
     FReadSQL.Transaction.Commit;
   except

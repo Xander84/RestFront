@@ -10,8 +10,6 @@ uses
   AdvSmoothToggleButton, Grids, BaseFrontForm_Unit, BaseGrid, AdvGrid,
   DBAdvGrid, AdvObj;
 
-{ TODO : Подключить табло покупателя }  
-
 const
   cn_maxpay = 1000000;
   mn_nalXID = 147142772;
@@ -109,7 +107,7 @@ var
 implementation
 
 uses
-  PayForm_Unit;
+  PayForm_Unit, TaskDialog;
 
 {$R *.dfm}
 
@@ -327,31 +325,23 @@ procedure TSellParamForm.actPayExecute(Sender: TObject);
 var
   CashCode: Integer;
 begin
-  if lblChange.Caption = '' then
+  if (lblChange.Caption = '') or (FChange > 0) then
   begin
-    MessageBox(Self.Handle, PChar('Сумма оплаты меньше суммы чека!'),
-     'Внимание', MB_OK or MB_ICONEXCLAMATION);
-    exit;
-  end;
-  if FChange > 0 then
-  begin
-    MessageBox(Self.Handle, PChar('Сумма оплаты меньше суммы чека!'),
-     'Внимание', MB_OK or MB_ICONEXCLAMATION);
+    AdvTaskMessageDlg('Внимание', 'Сумма оплаты меньше суммы чека!', mtWarning, [mbOK], 0);
     exit;
   end;
   if (FChange > 0) and (FSumToPay = 0) then
   begin
-    MessageBox(Self.Handle, PChar('Сумма оплаты больше суммы чека!'),
-     'Внимание', MB_OK or MB_ICONEXCLAMATION);
+    AdvTaskMessageDlg('Внимание', 'Сумма оплаты больше суммы чека!', mtWarning, [mbOK], 0);
     exit;
   end;
   if (-FChange >= cn_maxpay) then
   begin
-    MessageBox(Self.Handle, PChar('Неверная сумма оплаты!'),
-     'Внимание', MB_OK or MB_ICONEXCLAMATION);
+    AdvTaskMessageDlg('Внимание', 'Неверная сумма оплаты!', mtWarning, [mbOK], 0);
     exit;
   end;
 
+  FFrontBase.Display.Payed;
   if Assigned(FFiscalRegiter) then
   begin
     if FFrontBase.MN_Options.PrintFiscalChek then
@@ -527,6 +517,11 @@ begin
       Curr := Curr + DBAdvGrMain.Floats[ACol, I];
 
     FPaySum := Curr;
+    if FPaySum - FSumToPay > 0 then
+      FFrontBase.Display.WriteSum(FSumToPay, FPaySum, FPaySum - FSumToPay)
+    else
+      FFrontBase.Display.WriteSum(FSumToPay, FPaySum, 0);
+
     Value := Format(DBAdvGrMain.FloatFormat, [Curr]);
   end;
 end;
