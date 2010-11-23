@@ -361,7 +361,7 @@ begin
   DS.FieldDefs.Add('number', ftString, 20);
   DS.FieldDefs.Add('GOODNAME', ftString, 40);
   DS.FieldDefs.Add('usr$mn_printdate', ftDateTime, 0);
-  DS.FieldDefs.Add('usr$quantity', ftCurrency, 0);
+  DS.FieldDefs.Add('usr$quantity', ftFloat, 0);
   DS.FieldDefs.Add('usr$costncu', ftCurrency, 0);
   DS.FieldDefs.Add('usr$goodkey', ftInteger, 0);
   DS.FieldDefs.Add('usr$sumncuwithdiscount', ftCurrency, 0);
@@ -374,10 +374,11 @@ begin
   DS.FieldDefs.Add('usr$doublebonus', ftInteger, 0);
   DS.FieldDefs.Add('editorkey', ftInteger, 0);
   DS.FieldDefs.Add('editiondate', ftTimeStamp, 0);
-  DS.FieldDefs.Add('oldquantity', ftCurrency, 0);
+  DS.FieldDefs.Add('oldquantity', ftFloat, 0);
   DS.FieldDefs.Add('LINEKEY', ftInteger, 0);
   DS.FieldDefs.Add('STATEFIELD', ftInteger, 0);
   DS.FieldDefs.Add('MODIFYSTRING', ftString, 1024);
+  DS.FieldDefs.Add('PARENT', ftInteger, 0);
   DS.CreateTable;
 end;
 

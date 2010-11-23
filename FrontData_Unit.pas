@@ -82,10 +82,14 @@ begin
   begin
     DefaultRowHeight := 2 * cn_FontSize;
     FixedFont.Size := cn_FontSize;
+    Bands.PrimaryColor := cn_EvenRowColor;
+    Bands.SecondaryColor := cn_OddRowColor;
+    Bands.Active := True;
     for I := 0 to Columns.Count - 1 do
     begin
       Columns[I].Font.Size := cn_FontSize;
       Columns[I].HeaderFont.Size := cn_FontSize;
+      Columns[I].ShowBands := True;
     end;
   end;
 end;

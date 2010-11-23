@@ -4,8 +4,9 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, ExtCtrls, Front_DataBase_Unit, DB, GridsEh, DBGridEh, kbmMemTable,
-  StdCtrls, FrontData_Unit, AdvPanel, AdvSmoothButton, Grids, BaseFrontForm_Unit;
+  Dialogs, ExtCtrls, Front_DataBase_Unit, DB, kbmMemTable,
+  StdCtrls, FrontData_Unit, AdvPanel, AdvSmoothButton, Grids, BaseFrontForm_Unit,
+  AdvObj, BaseGrid, AdvGrid, DBAdvGrid;
 
 
 type
@@ -13,8 +14,6 @@ type
     pnlLeft: TAdvPanel;
     pnlRight: TAdvPanel;
     pnlBottom: TAdvPanel;
-    DBGrLeft: TDBGridEh;
-    DBGrRight: TDBGridEh;
     pnlLeftTop: TAdvPanel;
     pnlRightTop: TAdvPanel;
     dsLeft: TDataSource;
@@ -25,6 +24,8 @@ type
     btnLeft: TAdvSmoothButton;
     btnAllLeft: TAdvSmoothButton;
     btnOK: TAdvSmoothButton;
+    DBGrLeft: TDBAdvGrid;
+    DBGrRight: TDBAdvGrid;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -235,8 +236,8 @@ begin
   btnRight.Picture := FrontData.RestPictureContainer.FindPicture('Right');
   btnAllRight.Picture := FrontData.RestPictureContainer.FindPicture('AllRight');
 
-  SetupGrid(DBGrLeft);
-  SetupGrid(DBGrRight);
+  SetupAdvGrid(DBGrLeft);
+  SetupAdvGrid(DBGrRight);
 end;
 
 procedure TSplitOrder.FormDestroy(Sender: TObject);
@@ -256,7 +257,14 @@ begin
   Assert(Assigned(FFrontBase), 'FrontBase not assigned!');
 
   FFrontBase.GetOrder(FLeftDoc, FLeftDocLine, FLeftModificationDataSet, MainOrderKey);
+  pnlLeftTop.Text := '<FONT  size="14" face="Times New Roman">' + '¹ ' +
+    FLeftDoc.FieldByName('NUMBER').AsString + '. ' +
+    FFrontBase.GetNameWaiterOnID(FLeftDoc.FieldByName('usr$respkey').AsInteger, False, False) + '</FONT>';
+
   FFrontBase.GetOrder(FRightDoc, FRightDocLine, FRightModificationDataSet, OrderKey);
+  pnlRightTop.Text := '<FONT  size="14" face="Times New Roman">' + '¹ ' +
+    FRightDoc.FieldByName('NUMBER').AsString + '. ' +
+    FFrontBase.GetNameWaiterOnID(FRightDoc.FieldByName('usr$respkey').AsInteger, False, False) + '</FONT>';
 end;
 
 procedure TSplitOrder.SetFrontBase(const Value: TFrontBase);

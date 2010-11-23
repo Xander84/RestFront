@@ -1865,18 +1865,15 @@ begin
   FButton.Top  := FUserOrderLastTop;
 
   FButton.Tag := MemTable.FieldByName('ID').AsInteger;
-  FButton.Caption := Format('π %s', [FOrderDataSet.FieldByName('TableName').AsString]);
-  FButton.Status.Caption := FOrderDataSet.FieldByName('Summ').AsString;
+  FButton.Caption := Format('π %s', [MemTable.FieldByName('TableName').AsString]);
+  FButton.Status.Caption := MemTable.FieldByName('Summ').AsString;
   FButton.Status.Visible := True;
   FButton.Status.Appearance.Font.Size := 9;
-  if FOrderDataSet.FieldByName('Status').AsInteger = Integer(osOrderClose) then
+  if MemTable.FieldByName('Status').AsInteger = Integer(osOrderClose) then
   begin
     FButton.Status.Appearance.Fill.Color := clRed;
     FButton.Status.Appearance.Fill.ColorTo := clRed;
   end;
-
-//  FButton.Caption := 'π ' + MemTable.FieldByName('TableName').AsString +
-//    ' —ÛÏÏ‡ ' + MemTable.FieldByName('Summ').AsString;
 
   FUserOrderLastLeftButton := FUserOrderLastLeftButton + btnWidth + 10;
 
