@@ -315,11 +315,80 @@ type
     property IsMainCash: Boolean read GetIsMainCash;
 
   end;
+
+  procedure GetHeaderTable(var DS: TkbmMemTable);
+  procedure GetLineTable(var DS: TkbmMemTable);
+  procedure GetModificationTable(var DS: TkbmMemTable);
+
 implementation
 
 uses
   Windows, Sysutils, CardCodeForm_Unit, TaskDialog, Dialogs;
 
+
+procedure GetHeaderTable(var DS: TkbmMemTable);
+begin
+  DS := TkbmMemTable.Create(nil);
+  DS.FieldDefs.Add('ID', ftInteger, 0);
+  DS.FieldDefs.Add('NUMBER', ftString, 20);
+  DS.FieldDefs.Add('SUMNCU', ftCurrency, 0);
+  DS.FieldDefs.Add('usr$mn_printdate', ftDateTime, 0);
+  DS.FieldDefs.Add('usr$sumncuwithdiscount', ftCurrency, 0);
+  DS.FieldDefs.Add('usr$respkey', ftInteger, 0);
+  DS.FieldDefs.Add('usr$guestcount', ftInteger, 0);
+  DS.FieldDefs.Add('usr$pay', ftInteger, 0);
+  DS.FieldDefs.Add('usr$timeorder', ftTime, 0);
+  DS.FieldDefs.Add('usr$timecloseorder', ftTime, 0);
+  DS.FieldDefs.Add('usr$logicdate', ftDate, 0);
+  DS.FieldDefs.Add('usr$discountncu', ftCurrency, 0);
+  DS.FieldDefs.Add('usr$sysnum', ftInteger, 0);
+  DS.FieldDefs.Add('usr$register', ftString, 8);
+  DS.FieldDefs.Add('usr$whopayoffkey', ftInteger, 0);
+  DS.FieldDefs.Add('usr$vip', ftInteger, 0);
+  DS.FieldDefs.Add('usr$disccardkey', ftInteger, 0);
+  DS.FieldDefs.Add('usr$userdisckey', ftInteger, 0);
+  DS.FieldDefs.Add('usr$discountkey', ftInteger, 0);
+  DS.FieldDefs.Add('usr$bonussum', ftCurrency, 0);
+  DS.FieldDefs.Add('editorkey', ftInteger, 0);
+  DS.FieldDefs.Add('editiondate', ftTimeStamp, 0);
+  DS.CreateTable;
+end;
+
+procedure GetLineTable(var DS: TkbmMemTable);
+begin
+  DS := TkbmMemTable.Create(nil);
+  DS.FieldDefs.Add('ID', ftInteger, 0);
+  DS.FieldDefs.Add('number', ftString, 20);
+  DS.FieldDefs.Add('GOODNAME', ftString, 40);
+  DS.FieldDefs.Add('usr$mn_printdate', ftDateTime, 0);
+  DS.FieldDefs.Add('usr$quantity', ftCurrency, 0);
+  DS.FieldDefs.Add('usr$costncu', ftCurrency, 0);
+  DS.FieldDefs.Add('usr$goodkey', ftInteger, 0);
+  DS.FieldDefs.Add('usr$sumncuwithdiscount', ftCurrency, 0);
+  DS.FieldDefs.Add('usr$sumncu', ftCurrency, 0);
+  DS.FieldDefs.Add('usr$costncuwithdiscount', ftCurrency, 0);
+  DS.FieldDefs.Add('usr$sumdiscount', ftCurrency, 0);
+  DS.FieldDefs.Add('usr$persdiscount', ftCurrency, 0);
+  DS.FieldDefs.Add('usr$causedeletekey', ftInteger, 0);
+  DS.FieldDefs.Add('usr$deleteamount', ftCurrency, 0);
+  DS.FieldDefs.Add('usr$doublebonus', ftInteger, 0);
+  DS.FieldDefs.Add('editorkey', ftInteger, 0);
+  DS.FieldDefs.Add('editiondate', ftTimeStamp, 0);
+  DS.FieldDefs.Add('oldquantity', ftCurrency, 0);
+  DS.FieldDefs.Add('LINEKEY', ftInteger, 0);
+  DS.FieldDefs.Add('STATEFIELD', ftInteger, 0);
+  DS.FieldDefs.Add('MODIFYSTRING', ftString, 1024);
+  DS.CreateTable;
+end;
+
+procedure GetModificationTable(var DS: TkbmMemTable);
+begin
+  DS := TkbmMemTable.Create(nil);
+  DS.FieldDefs.Add('MASTERKEY', ftInteger, 0);
+  DS.FieldDefs.Add('MODIFYKEY', ftInteger, 0);
+  DS.FieldDefs.Add('NAME', ftString, 40);
+  DS.CreateTable;
+end;
 
 { TFrontBase }
 

@@ -271,7 +271,6 @@ type
 
     //Текущее выбраное меню
     FMenuKey: Integer;
-    //
 
     FFormState: TRestState;
 
@@ -281,20 +280,16 @@ type
 
   //  FFrontLog: TFrontLog;
 
-
-
     //Создание первичных наборов данных
     procedure CreateDataSets;
 
     //нужно расчитывать сколько button-ов может поместится на закладке
     //отрисовываем btn от датасета
-
     procedure CreateOrderButtonList;
     procedure AddOrderButton;
     procedure RemoveOrderButton;
     //нажатие на кнопку с заказом
     procedure OrderButtonOnClick(Sender: TObject);
-
     //
     procedure SplitButtonOnClick(Sender: TObject);
 
@@ -511,56 +506,11 @@ begin
   FGoodDataSet.Open;
 
   //шапка и позиция
-  FHeaderTable := TkbmMemTable.Create(nil);
-  FHeaderTable.FieldDefs.Add('ID', ftInteger, 0);
-  FHeaderTable.FieldDefs.Add('NUMBER', ftString, 20);
-  FHeaderTable.FieldDefs.Add('SUMNCU', ftCurrency, 0);
-  FHeaderTable.FieldDefs.Add('usr$mn_printdate', ftDateTime, 0);
-  FHeaderTable.FieldDefs.Add('usr$sumncuwithdiscount', ftCurrency, 0);
-  FHeaderTable.FieldDefs.Add('usr$respkey', ftInteger, 0);
-  FHeaderTable.FieldDefs.Add('usr$guestcount', ftInteger, 0);
-  FHeaderTable.FieldDefs.Add('usr$pay', ftInteger, 0);
-  FHeaderTable.FieldDefs.Add('usr$timeorder', ftTime, 0);
-  FHeaderTable.FieldDefs.Add('usr$timecloseorder', ftTime, 0);
-  FHeaderTable.FieldDefs.Add('usr$logicdate', ftDate, 0);
-  FHeaderTable.FieldDefs.Add('usr$discountncu', ftCurrency, 0);
-  FHeaderTable.FieldDefs.Add('usr$sysnum', ftInteger, 0);
-  FHeaderTable.FieldDefs.Add('usr$register', ftString, 8);
-  FHeaderTable.FieldDefs.Add('usr$whopayoffkey', ftInteger, 0);
-  FHeaderTable.FieldDefs.Add('usr$vip', ftInteger, 0);
-  FHeaderTable.FieldDefs.Add('usr$disccardkey', ftInteger, 0);
-  FHeaderTable.FieldDefs.Add('usr$userdisckey', ftInteger, 0);
-  FHeaderTable.FieldDefs.Add('usr$discountkey', ftInteger, 0);
-  FHeaderTable.FieldDefs.Add('usr$bonussum', ftCurrency, 0);
-  FHeaderTable.FieldDefs.Add('editorkey', ftInteger, 0);
-  FHeaderTable.FieldDefs.Add('editiondate', ftTimeStamp, 0);
-  FHeaderTable.CreateTable;
+  GetHeaderTable(FHeaderTable);
   FHeaderTable.AfterPost := OnAfterPostHeader;
   FHeaderTable.Open;
 
-  FLineTable := TkbmMemTable.Create(nil);
-  FLineTable.FieldDefs.Add('ID', ftInteger, 0);
-  FLineTable.FieldDefs.Add('number', ftString, 20);
-  FLineTable.FieldDefs.Add('GOODNAME', ftString, 40);
-  FLineTable.FieldDefs.Add('usr$mn_printdate', ftDateTime, 0);
-  FLineTable.FieldDefs.Add('usr$quantity', ftCurrency, 0);
-  FLineTable.FieldDefs.Add('usr$costncu', ftCurrency, 0);
-  FLineTable.FieldDefs.Add('usr$goodkey', ftInteger, 0);
-  FLineTable.FieldDefs.Add('usr$sumncuwithdiscount', ftCurrency, 0);
-  FLineTable.FieldDefs.Add('usr$sumncu', ftCurrency, 0);
-  FLineTable.FieldDefs.Add('usr$costncuwithdiscount', ftCurrency, 0);
-  FLineTable.FieldDefs.Add('usr$sumdiscount', ftCurrency, 0);
-  FLineTable.FieldDefs.Add('usr$persdiscount', ftCurrency, 0);
-  FLineTable.FieldDefs.Add('usr$causedeletekey', ftInteger, 0);
-  FLineTable.FieldDefs.Add('usr$deleteamount', ftCurrency, 0);
-  FLineTable.FieldDefs.Add('usr$doublebonus', ftInteger, 0);
-  FLineTable.FieldDefs.Add('editorkey', ftInteger, 0);
-  FLineTable.FieldDefs.Add('editiondate', ftTimeStamp, 0);
-  FLineTable.FieldDefs.Add('oldquantity', ftCurrency, 0);
-  FLineTable.FieldDefs.Add('LINEKEY', ftInteger, 0);
-  FLineTable.FieldDefs.Add('STATEFIELD', ftInteger, 0);
-  FLineTable.FieldDefs.Add('MODIFYSTRING', ftString, 1024);
-  FLineTable.CreateTable;
+  GetLineTable(FLineTable);
   FLineTable.OnFilterRecord := OnFilterLine;
   FLineTable.BeforePost := OnBeforePostLine;
   FLineTable.AfterDelete := OnAfterDelete;
@@ -571,11 +521,7 @@ begin
   FMasterDataSource := TDataSource.Create(nil);
   FMasterDataSource.DataSet := FLineTable;
 
-  FModificationDataSet := TkbmMemTable.Create(nil);
-  FModificationDataSet.FieldDefs.Add('MASTERKEY', ftInteger, 0);
-  FModificationDataSet.FieldDefs.Add('MODIFYKEY', ftInteger, 0);
-  FModificationDataSet.FieldDefs.Add('NAME', ftString, 40);
-  FModificationDataSet.CreateTable;
+  GetModificationTable(FModificationDataSet);
   FModificationDataSet.MasterSource := FMasterDataSource;
   FModificationDataSet.MasterFields := 'LINEKEY';
   FModificationDataSet.DetailFields := 'MASTERKEY';
@@ -1054,6 +1000,8 @@ var
   FOrderNumber: String;
   FGuestCount: Integer;
 begin
+  ClearDisplay;
+
 { TODO : Проверка на Max кол-во гостей }
   if (FFrontBase.UserGroup and FFrontBase.MN_Options.ManagerGroupMask) <> 0 then
     // входит в группу менеджеры
