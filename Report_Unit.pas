@@ -6,8 +6,8 @@ uses
   Classes, Front_DataBase_Unit, Printers, SysUtils,
   frxDesgn, frxClass, frxDCtrl, frxChart,
   frxRich, frxBarcode, ImgList, ComCtrls, ExtCtrls, frxOLE,
-  frxCross, frxDMPExport, frxExportRTF, frxExportTXT,
-  frxGZip, frxChBox, frxExportText, frxPrinter,
+  frxCross, frxDMPExport, frxExportRTF, frxExportTXT, TaskDialog,
+  frxGZip, frxChBox, frxExportText, frxPrinter, Dialogs,
   frxDBSet, frxPreview, frxIBXComponents, IBQuery, kbmMemTable, DB, Variants;
 
 type
@@ -66,6 +66,9 @@ type
     procedure SaveTemplateStreamByRuid(const XID: Integer;
       const DBID: Integer;var Stream: TStream);
 
+    procedure InitReportParams(const FReport: Tgs_fr4SingleReport;
+      const PrinterName: String);
+
   public
     constructor Create(AOwner: TComponent);
     destructor Destroy; override;
@@ -75,7 +78,6 @@ type
     function PrintDeleteServiceCheck(const ReportType, PrnGrID, DocumentKey, MasterKey: Integer;
       PrinterName: String): Boolean;
     function EditTemplate(const ID: Integer): Boolean;
-
 
     property FrontBase: TFrontBase read FFrontBase write FFrontBase;
   end;
@@ -117,7 +119,7 @@ end;
 
 constructor TRestReport.Create(AOwner: TComponent);
 begin
-//
+  inherited Create;
 end;
 
 destructor TRestReport.Destroy;
@@ -145,8 +147,8 @@ begin
     end;
     FReport.DesignReport;
 
-    if MessageBox(Application.Handle, 'Сохранить шаблон?',
-      'Внимание', MB_YESNO) = IDYES then
+    if AdvTaskMessageDlg('Внимание', 'Сохранить шаблон?',
+      mtInformation, [mbYes, mbNo], 0) = IDYES then
     begin
       Str.Position := 0;
       Str.Size := 0;
@@ -173,6 +175,18 @@ begin
   FFrontBase.GetReportTemplate(Stream, ID);
 end;
 
+procedure TRestReport.InitReportParams(const FReport: Tgs_fr4SingleReport;
+  const PrinterName: String);
+begin
+  if PrinterName > '' then
+    FReport.PrintOptions.Printer := PrinterName;
+  FReport.PrintOptions.ShowDialog := False;
+  FReport.PrintOptions.PageNumbers := '';
+  FReport.PrintOptions.Copies := 1;
+  FReport.PrintOptions.Collate := True;
+  FReport.PrintOptions.PrintPages := ppAll;
+end;
+
 function TRestReport.PrintDeleteServiceCheck(const ReportType, PrnGrID,
   DocumentKey, MasterKey: Integer; PrinterName: String): Boolean;
 var
@@ -189,12 +203,7 @@ begin
 
   FReport := Tgs_fr4SingleReport.Create(nil);
   try
-    if Assigned(Printer.Printers) then
-    begin
-      if Printer.Printers.IndexOf(PrinterName) < 0 then
-        raise Exception.Create('Принтер "' + PrinterName + '" не доступен.');
-      Printer.PrinterIndex := Printer.Printers.IndexOf(PrinterName);
-    end;
+    InitReportParams(FReport, PrinterName);
 
     Str := TMemoryStream.Create;
     Query := TIBQuery.Create(nil);
@@ -251,12 +260,6 @@ begin
         FReport.Variables.AddVariable(cn_RestParam, 'DocID', '''' + VarToStr(MasterKey) + '''');
         FReport.Variables.AddVariable(cn_RestParam, 'LineID', '''' + VarToStr(DocumentKey) + '''');
         FReport.Variables.AddVariable(cn_RestParam, 'PrinterName', '''' + VarToStr(PrinterName) + '''');
-        //
-        FReport.PrintOptions.ShowDialog := False;
-        FReport.PrintOptions.PageNumbers := '';
-        FReport.PrintOptions.Copies := 1;
-        FReport.PrintOptions.Collate := True;
-        FReport.PrintOptions.PrintPages := ppAll;
         if FReport.PrepareReport then
           FReport.Print;
 
@@ -291,19 +294,13 @@ begin
   PrinterName := FFrontBase.GetPrinterName;
   if PrinterName = '' then
   begin
-    MessageBox(0, 'Для данной рабочей станции не указан пречековый принтер!',
-      'Внимание', MB_OK or MB_ICONEXCLAMATION);
+    AdvTaskMessageDlg('Внимание', 'Для данной рабочей станции не указан пречековый принтер!', mtWarning, [mbOK], 0);
     exit;
   end;
 
   FReport := Tgs_fr4SingleReport.Create(nil);
   try
-    if Assigned(Printer.Printers) then
-    begin
-      if Printer.Printers.IndexOf(PrinterName) < 0 then
-        raise Exception.Create('Принтер "' + PrinterName + '" не доступен.');
-      Printer.PrinterIndex := Printer.Printers.IndexOf(PrinterName);
-    end;
+    InitReportParams(FReport, PrinterName);
 
     Str := TMemoryStream.Create;
     Query := TIBQuery.Create(nil);
@@ -363,12 +360,6 @@ begin
         FReport.Variables.Clear;
         FReport.Variables[' ' + cn_RestParam] := Null;
         FReport.Variables.AddVariable(cn_RestParam, 'DocID', '''' + VarToStr(DocID) + '''');
-        //
-        FReport.PrintOptions.ShowDialog := False;
-        FReport.PrintOptions.PageNumbers := '';
-        FReport.PrintOptions.Copies := 1;
-        FReport.PrintOptions.Collate := True;
-        FReport.PrintOptions.PrintPages := ppAll;
         if FReport.PrepareReport then
           FReport.Print;
 
@@ -404,12 +395,7 @@ begin
 
   FReport := Tgs_fr4SingleReport.Create(nil);
   try
-    if Assigned(Printer.Printers) then
-    begin
-      if Printer.Printers.IndexOf(PrinterName) < 0 then
-        raise Exception.Create('Принтер "' + PrinterName + '" не доступен.');
-      Printer.PrinterIndex := Printer.Printers.IndexOf(PrinterName);
-    end;
+    InitReportParams(FReport, PrinterName);
 
     Str := TMemoryStream.Create;
     Query := TIBQuery.Create(nil);
@@ -521,12 +507,6 @@ begin
         FReport.Variables.AddVariable(cn_RestParam, 'PrnGrID', '''' + VarToStr(PrnGrID) + '''');
         FReport.Variables.AddVariable(cn_RestParam, 'DocID', '''' + VarToStr(DocID) + '''');
         FReport.Variables.AddVariable(cn_RestParam, 'PrinterName', '''' + VarToStr(PrinterName) + '''');
-        //
-        FReport.PrintOptions.ShowDialog := False;
-        FReport.PrintOptions.PageNumbers := '';
-        FReport.PrintOptions.Copies := 1;
-        FReport.PrintOptions.Collate := True;
-        FReport.PrintOptions.PrintPages := ppAll;
         if FReport.PrepareReport then
           FReport.Print;
 

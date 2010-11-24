@@ -4,24 +4,24 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, FrontData_Unit, ExtCtrls, AdvPanel, DB, kbmMemTable, GridsEh,
-  DBGridEh, Front_DataBase_Unit, Report_Unit, AdvSmoothButton, Grids,
-  BaseFrontForm_Unit;
+  Dialogs, FrontData_Unit, ExtCtrls, AdvPanel, DB, kbmMemTable,
+  Front_DataBase_Unit, Report_Unit, AdvSmoothButton, Grids,
+  BaseFrontForm_Unit, AdvObj, BaseGrid, AdvGrid, DBAdvGrid;
 
 type
   TEditReport = class(TBaseFrontForm)
     pnlMain: TAdvPanel;
-    DBGrMain: TDBGridEh;
     MemTable: TkbmMemTable;
     dsMain: TDataSource;
     btnOK: TAdvSmoothButton;
     btnEdit: TAdvSmoothButton;
+    DBGrLeft: TDBAdvGrid;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
-    procedure DBGrMainDblClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure btnEditClick(Sender: TObject);
     procedure btnOKClick(Sender: TObject);
+    procedure DBGrLeftDblClick(Sender: TObject);
   private
     FFrontBase: TFrontBase;
     FReport: TRestReport;
@@ -47,13 +47,7 @@ begin
   FReport := TRestReport.Create(Self);
   FReport.FrontBase := FFrontBase;
 
-  with DBGrMain do
-  begin
-    Font.Size := cn_FontSize;
-    TitleFont.Size := cn_TitleFontSize;
-    OddRowColor := cn_OddRowColor;
-    EvenRowColor := cn_EvenRowColor;
-  end;
+  SetupAdvGrid(DBGrLeft);
 end;
 
 procedure TEditReport.FormShow(Sender: TObject);
@@ -61,11 +55,7 @@ begin
   Assert(Assigned(FFrontBase), 'FrontBase not assigned');
 
   FFrontBase.GetReportList(MemTable);
-end;
-
-procedure TEditReport.DBGrMainDblClick(Sender: TObject);
-begin
-  FReport.EditTemplate(MemTable.FieldByName('ID').AsInteger);
+  MemTable.First;
 end;
 
 procedure TEditReport.FormClose(Sender: TObject; var Action: TCloseAction);
@@ -87,6 +77,11 @@ procedure TEditReport.SetFrontBase(const Value: TFrontBase);
 begin
   FFrontBase := Value;
   FReport.FrontBase := Value;
+end;
+
+procedure TEditReport.DBGrLeftDblClick(Sender: TObject);
+begin
+  FReport.EditTemplate(MemTable.FieldByName('ID').AsInteger);
 end;
 
 end.

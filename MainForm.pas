@@ -1806,23 +1806,25 @@ begin
         try
           while not UserTable.Eof do
           begin
-            //1. Отрисовываем кнопку
-            AddUserButton(UserTable);
-            //2. Смотрим для контакта список заказов
-            FFrontBase.GetUserOrders(UserTable.FieldByName('ID').AsInteger, OrderTable);
-            OrderTable.First;
-            //3. Отрисовываем заказы
-            FUserOrderLastTop := FUserLastTop;
-            FUserOrderLastLeftButton := btnFirstTop;
-            while not OrderTable.Eof do
+            if (UserTable.FieldByName('InGroup').AsInteger and FFrontBase.MN_Options.WaiterGroupMask) <> 0 then
             begin
-              AddUserOrderButton(OrderTable);
+              //1. Отрисовываем кнопку
+              AddUserButton(UserTable);
+              //2. Смотрим для контакта список заказов
+              FFrontBase.GetUserOrders(UserTable.FieldByName('ID').AsInteger, OrderTable);
+              OrderTable.First;
+              //3. Отрисовываем заказы
+              FUserOrderLastTop := FUserLastTop;
+              FUserOrderLastLeftButton := btnFirstTop;
+              while not OrderTable.Eof do
+              begin
+                AddUserOrderButton(OrderTable);
 
-              OrderTable.Next;
+                OrderTable.Next;
+              end;
+              if FMaxUserOrderButtonLeft < FUserOrderLastLeftButton then
+                FMaxUserOrderButtonLeft := FUserOrderLastLeftButton;
             end;
-            if FMaxUserOrderButtonLeft < FUserOrderLastLeftButton then
-              FMaxUserOrderButtonLeft := FUserOrderLastLeftButton;
-
             UserTable.Next;
           end;
           FUserOrderLastLeftButton := btnFirstTop;
