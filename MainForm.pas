@@ -14,7 +14,7 @@ uses
 
 const
   btnHeight = 51;
-  btnWidth  = 145;
+  btnWidth  = 140;
   btnHalfWidth = 102;
   btnLongWidth = 215;
   btnOrderName = 'btnOrder%d';
@@ -378,6 +378,12 @@ end;
 
 procedure TRestMainForm.FormCreate(Sender: TObject);
 begin
+  //восстанавливаем начальные размеры
+  btnNewOrder.Top := btnFirstTop;
+  btnNewOrder.Left := btnFirstTop;
+  btnNewOrder.Width := btnWidth;
+  btnNewOrder.Height := btnHeight;
+
   //начальные даные
   FMenuButtonList  := TObjectList.Create;
   FOrderButtonList := TObjectList.Create;
@@ -648,10 +654,10 @@ begin
   FButton.OnClick := GroupButtonOnClick;
   FButton.Name := Format(btnGroupName, [FGroupButtonNumber]);
   FButton.Height := btnHeight;
-  FButton.Width  := btnHalfWidth;
+  FButton.Width  := AdjustWidth(btnHalfWidth); //btnHalfWidth;
 
   //проверяем, есть ли ещё место в ряду
-  if (FGroupLastLeftButton + btnHalfWidth) > FPanel.Width then
+  if (FGroupLastLeftButton + AdjustWidth(btnHalfWidth)) > FPanel.Width then
   begin
     FGroupLastTop := FGroupLastTop + btnHeight + btnFirstTop;
     FGroupLastLeftButton := btnFirstTop;
@@ -671,7 +677,7 @@ begin
     FButton.Appearance.Font.Size := 11;
   FButton.Caption := FGroupDataSet.FieldByName('NAME').AsString;
 
-  FGroupLastLeftButton := FGroupLastLeftButton + btnHalfWidth + 10;
+  FGroupLastLeftButton := FGroupLastLeftButton + AdjustWidth(btnHalfWidth) + AdjustWidth(10);
   FGroupButtonList.Add(FButton);
   Inc(FGroupButtonNumber);
 end;
@@ -689,7 +695,7 @@ begin
   FButton.OnClick := MenuButtonOnClick;
   FButton.Name := Format(btnMenuName, [FMenuButtonNumber]);
   FButton.Height := btnHeight;
-  FButton.Width  := btnLongWidth;
+  FButton.Width  := AdjustWidth(btnLongWidth); //btnLongWidth;
 
   FMenuLastTop := FMenuLastTop + btnHeight + 2;
 

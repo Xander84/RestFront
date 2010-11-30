@@ -1,6 +1,6 @@
 object RestMainForm: TRestMainForm
-  Left = 143
-  Top = 0
+  Left = 279
+  Top = 57
   Width = 1024
   Height = 767
   Caption = 'RestMainForm'
@@ -47,15 +47,11 @@ object RestMainForm: TRestMainForm
         ColorTo = 14986888
         TabColor = clBtnFace
         TabColorTo = clNone
-        DesignSize = (
-          926
-          693)
         object edPassword: TEdit
           Left = 265
           Top = 299
           Width = 257
           Height = 31
-          Anchors = []
           Font.Charset = RUSSIAN_CHARSET
           Font.Color = clWindowText
           Font.Height = -19
@@ -72,7 +68,6 @@ object RestMainForm: TRestMainForm
           Width = 72
           Height = 50
           Action = actPassEnter
-          Anchors = []
           Appearance.Font.Charset = DEFAULT_CHARSET
           Appearance.Font.Color = clWindowText
           Appearance.Font.Height = -13

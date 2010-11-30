@@ -7,7 +7,7 @@ interface
 uses
   SysUtils, Windows, Classes, AdvPanel, AdvSmoothMessageDialog, AdvStyleIF,
   SysConst, Graphics, ImgList, Controls, AdvAppStyler, GDIPPictureContainer,
-  DBGridEh, AdvGrid, DBAdvGrid;
+  DBGridEh, AdvGrid, DBAdvGrid, Forms;
 
 type
   TApplicationFile = (afApplicationData);
@@ -34,6 +34,8 @@ type
   procedure SetupGrid(const Grid: TDBGridEh);
   procedure SetupAdvGrid(const AnGrid: TDBAdvGrid);
   function GetFrontStyle: TTMSStyle;
+  procedure AdjustResolution(const FForm: TForm);
+  function AdjustWidth(const FWidth: Integer): Integer;
 
 // настройки для гридов
 const
@@ -47,11 +49,18 @@ const
   APP_DATA_FILENAME = 'data.ini';
   STYLE_SECTION_NAME = 'STYLE_SECTION';
   DEFAULT_STYLE_IDENT = 'STYLE';
+  RES_SECTION_NAME = 'RESOLUTION_SECTION';
+  RES_IDENT = 'RESOLUTION';
+  cn_defaultHeight = 768;
+  cn_defaultWidth = 1024;
 
 var
   FrontData: TFrontData;
   FFormatSettings: TFormatSettings;
   FFrontStyle: TTMSStyle;
+  cn_Height: Integer;
+  cn_Width: Integer;
+  cn_MainPercent: Integer;
   
 implementation
 
@@ -108,6 +117,10 @@ var
   IconID: PChar;
   FPicture: TPicture;
 begin
+  cn_Height := Screen.Height;
+  cn_Width := Screen.Width;
+  cn_MainPercent := 100; 
+
   ApStyler.Style := GetDefaultTheme;
   FrontPanelStyler.SetComponentStyle(GetDefaultTheme);
   FPanelColor := FrontPanelStyler.Settings.Color;
@@ -201,6 +214,7 @@ function TFrontData.GetDefaultTheme: TTMSStyle;
 var
   FunctionFile: TIniFile;
   ValueText: String;
+  Pos: Integer;
 begin
   Result := tsOffice2003Blue;
   FunctionFile := TIniFile.Create(GetUserApplicationFileName(afApplicationData));
@@ -231,11 +245,72 @@ begin
 
     end else
       FunctionFile.WriteString(STYLE_SECTION_NAME, DEFAULT_STYLE_IDENT, 'tsOffice2003Blue');
+
+    if FunctionFile.ValueExists(RES_SECTION_NAME, RES_IDENT) then
+    begin
+      ValueText := FunctionFile.ReadString(RES_SECTION_NAME, RES_IDENT, 'DEFAULT');
+      if ValueText = 'DEFAULT' then
+      begin
+        cn_Height := 768;
+        cn_Width := 1024;
+      end else
+      if ValueText = 'CLIENT' then
+      begin
+        cn_Height := Screen.Height;
+        cn_Width := Screen.Width;
+      end else
+      if AnsiPos(':', ValueText) > 0 then
+      begin
+        Pos := AnsiPos(':', ValueText);
+        try
+          cn_Width := StrToInt(Copy(ValueText, 1, Pos - 1));
+          cn_Height := StrToInt(Copy(ValueText, Pos + 1, 255));
+        except
+          cn_Height := cn_defaultHeight;
+          cn_Width := cn_defaultWidth;
+          raise;
+        end;
+      end else
+      begin
+        cn_Height := cn_defaultHeight;
+        cn_Width := cn_defaultWidth;
+      end;
+    end else
+      FunctionFile.WriteString(RES_SECTION_NAME, RES_IDENT, 'DEFAULT');
+
   finally
     FreeAndNil(FunctionFile);
   end;
   FFrontStyle := Result;
 end;
+
+procedure AdjustResolution(const FForm: TForm);
+var
+  Perc: Integer;
+  Perc2: Integer;
+begin
+  cn_MainPercent := 100;
+  if Screen.Width <> cn_defaultWidth then
+  begin
+    Perc := Round(((cn_Width - cn_defaultWidth) / cn_defaultWidth) * 100) + 100;
+    Perc2 := Round(((cn_Height - cn_defaultHeight) / cn_defaultHeight) * 100) + 100;
+    if Perc2 >= Perc then
+    begin
+      FForm.ScaleBy(Perc, 100);
+      cn_MainPercent := Perc;
+    end else
+    begin
+      FForm.ScaleBy(Perc2, 100);
+      cn_MainPercent := Perc2;
+    end;
+  end;
+end;
+
+function AdjustWidth(const FWidth: Integer): Integer;
+begin
+  Result := Round(FWidth / 100 * cn_MainPercent);
+end;
+
 
 initialization
   FFrontStyle := tsOffice2003Blue;
