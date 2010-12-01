@@ -11,13 +11,14 @@ object PayForm: TPayForm
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
+  Position = poScreenCenter
   OnDestroy = FormDestroy
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
   object pnlBottom: TAdvPanel
     Left = 0
-    Top = 415
+    Top = 416
     Width = 646
     Height = 57
     Align = alBottom
@@ -25,7 +26,7 @@ object PayForm: TPayForm
     Color = 16640730
     TabOrder = 0
     UseDockManager = True
-    Version = '1.9.0.0'
+    Version = '2.0.1.0'
     BorderColor = clGray
     Caption.Color = 14059353
     Caption.ColorTo = 9648131
@@ -37,7 +38,7 @@ object PayForm: TPayForm
     Caption.GradientDirection = gdVertical
     Caption.Indent = 2
     Caption.ShadeLight = 255
-    CollapsColor = clHighlight
+    CollapsColor = clNone
     CollapsDelay = 0
     ColorTo = 14986888
     ShadowColor = clBlack
@@ -82,7 +83,7 @@ object PayForm: TPayForm
       Color = 15195349
       ParentFont = False
       TabOrder = 0
-      Version = '1.6.5.2'
+      Version = '1.6.9.0'
     end
     object btnCancel: TAdvSmoothButton
       Left = 436
@@ -112,7 +113,7 @@ object PayForm: TPayForm
       Color = 15195349
       ParentFont = False
       TabOrder = 1
-      Version = '1.6.5.2'
+      Version = '1.6.9.0'
       OnClick = btnCancelClick
     end
   end
@@ -120,13 +121,13 @@ object PayForm: TPayForm
     Left = 0
     Top = 0
     Width = 497
-    Height = 415
+    Height = 416
     Align = alClient
     BevelOuter = bvNone
     Color = 16640730
     TabOrder = 1
     UseDockManager = True
-    Version = '1.9.0.0'
+    Version = '2.0.1.0'
     BorderColor = clGray
     Caption.Color = 14059353
     Caption.ColorTo = 9648131
@@ -138,7 +139,7 @@ object PayForm: TPayForm
     Caption.GradientDirection = gdVertical
     Caption.Indent = 2
     Caption.ShadeLight = 255
-    CollapsColor = clHighlight
+    CollapsColor = clNone
     CollapsDelay = 0
     ColorTo = 14986888
     ShadowColor = clBlack
@@ -160,13 +161,13 @@ object PayForm: TPayForm
     Left = 497
     Top = 0
     Width = 149
-    Height = 415
+    Height = 416
     Align = alRight
     BevelOuter = bvNone
     Color = 16640730
     TabOrder = 2
     UseDockManager = True
-    Version = '1.9.0.0'
+    Version = '2.0.1.0'
     BorderColor = clGray
     Caption.Color = 14059353
     Caption.ColorTo = 9648131
@@ -178,7 +179,7 @@ object PayForm: TPayForm
     Caption.GradientDirection = gdVertical
     Caption.Indent = 2
     Caption.ShadeLight = 255
-    CollapsColor = clHighlight
+    CollapsColor = clNone
     CollapsDelay = 0
     ColorTo = 14986888
     ShadowColor = clBlack
