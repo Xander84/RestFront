@@ -34,7 +34,7 @@ type
   procedure SetupGrid(const Grid: TDBGridEh);
   procedure SetupAdvGrid(const AnGrid: TDBAdvGrid);
   function GetFrontStyle: TTMSStyle;
-  procedure AdjustResolution(const FForm: TForm);
+  procedure AdjustResolution(const FForm: TWinControl);
   function AdjustWidth(const FWidth: Integer): Integer;
 
 // настройки для гридов
@@ -251,8 +251,8 @@ begin
       ValueText := FunctionFile.ReadString(RES_SECTION_NAME, RES_IDENT, 'DEFAULT');
       if ValueText = 'DEFAULT' then
       begin
-        cn_Height := 768;
-        cn_Width := 1024;
+        cn_Height := cn_defaultHeight;
+        cn_Width := cn_defaultWidth;
       end else
       if ValueText = 'CLIENT' then
       begin
@@ -284,7 +284,7 @@ begin
   FFrontStyle := Result;
 end;
 
-procedure AdjustResolution(const FForm: TForm);
+procedure AdjustResolution(const FForm: TWinControl);
 var
   Perc: Integer;
   Perc2: Integer;

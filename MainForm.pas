@@ -378,6 +378,10 @@ end;
 
 procedure TRestMainForm.FormCreate(Sender: TObject);
 begin
+  Height := cn_Height;
+  Width := cn_Width;
+  AdjustResolution(Self);
+
   //восстанавливаем начальные размеры
   btnNewOrder.Top := btnFirstTop;
   btnNewOrder.Left := btnFirstTop;
