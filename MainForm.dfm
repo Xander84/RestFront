@@ -582,13 +582,14 @@ object RestMainForm: TRestMainForm
             Top = 1
             Width = 682
             Height = 691
-            ActivePage = tsUserOrder
+            ActivePage = tsOrderInfo
             ActiveFont.Charset = DEFAULT_CHARSET
             ActiveFont.Color = clWindowText
             ActiveFont.Height = -11
             ActiveFont.Name = 'Tahoma'
             ActiveFont.Style = []
             Align = alClient
+            TabSheetBorderColor = 14986888
             TabBackGroundColor = clBtnFace
             TabMargin.RightMargin = 0
             TabOverlap = 0
@@ -809,9 +810,11 @@ object RestMainForm: TRestMainForm
                 Height = 392
                 Align = alClient
                 AutoFitColWidths = True
+                BorderStyle = bsNone
                 DataSource = dsMain
                 DrawMemoText = True
                 EvenRowColor = clInfoBk
+                Flat = True
                 Font.Charset = DEFAULT_CHARSET
                 Font.Color = clWindowText
                 Font.Height = -21
@@ -825,7 +828,7 @@ object RestMainForm: TRestMainForm
                 FooterFont.Style = []
                 FooterRowCount = 1
                 OddRowColor = clGradientActiveCaption
-                Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit]
+                Options = [dgTitles, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit]
                 ParentFont = False
                 ReadOnly = True
                 RowHeight = 2
@@ -843,10 +846,23 @@ object RestMainForm: TRestMainForm
                   item
                     EditButtons = <>
                     FieldName = 'GOODNAME'
+                    Footer.Alignment = taCenter
+                    Footer.Font.Charset = DEFAULT_CHARSET
+                    Footer.Font.Color = clWindowText
+                    Footer.Font.Height = -21
+                    Footer.Font.Name = 'Times New Roman'
+                    Footer.Font.Style = []
                     Footer.Value = #1048#1090#1086#1075#1086
                     Footer.ValueType = fvtStaticText
+                    Footer.WordWrap = True
                     Footers = <>
+                    Title.Alignment = taCenter
                     Title.Caption = #1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077
+                    Title.Font.Charset = DEFAULT_CHARSET
+                    Title.Font.Color = clWindowText
+                    Title.Font.Height = -15
+                    Title.Font.Name = 'Times New Roman'
+                    Title.Font.Style = []
                     Width = 203
                     WordWrap = True
                     OnGetCellParams = DBGridEh2Columns0GetCellParams
@@ -857,29 +873,55 @@ object RestMainForm: TRestMainForm
                     FieldName = 'USR$QUANTITY'
                     Footer.DisplayFormat = '# ##0'
                     Footer.FieldName = 'USR$QUANTITY'
+                    Footer.Font.Charset = DEFAULT_CHARSET
+                    Footer.Font.Color = clWindowText
+                    Footer.Font.Height = -21
+                    Footer.Font.Name = 'Times New Roman'
+                    Footer.Font.Style = []
                     Footer.ValueType = fvtSum
                     Footers = <>
+                    Title.Alignment = taCenter
                     Title.Caption = #1050#1086#1083'-'#1074#1086
+                    Title.Font.Charset = DEFAULT_CHARSET
+                    Title.Font.Color = clWindowText
+                    Title.Font.Height = -15
+                    Title.Font.Name = 'Times New Roman'
+                    Title.Font.Style = []
+                    Width = 55
                   end
                   item
                     DisplayFormat = '# ##0'
                     EditButtons = <>
                     FieldName = 'usr$costncuwithdiscount'
-                    Footer.DisplayFormat = '# ##0'
-                    Footer.FieldName = 'usr$costncuwithdiscount'
-                    Footer.ValueType = fvtSum
                     Footers = <>
+                    Title.Alignment = taCenter
                     Title.Caption = #1062#1077#1085#1072' '#1089#1086' '#1089#1082#1080#1076#1082#1086#1081
+                    Title.Font.Charset = DEFAULT_CHARSET
+                    Title.Font.Color = clWindowText
+                    Title.Font.Height = -15
+                    Title.Font.Name = 'Times New Roman'
+                    Title.Font.Style = []
                   end
                   item
-                    DisplayFormat = '# ##0'
+                    DisplayFormat = ',#0'
                     EditButtons = <>
                     FieldName = 'usr$sumncuwithdiscount'
-                    Footer.DisplayFormat = '# ##0'
+                    Footer.DisplayFormat = ',#0'
                     Footer.FieldName = 'usr$sumncuwithdiscount'
+                    Footer.Font.Charset = DEFAULT_CHARSET
+                    Footer.Font.Color = clWindowText
+                    Footer.Font.Height = -21
+                    Footer.Font.Name = 'Times New Roman'
+                    Footer.Font.Style = []
                     Footer.ValueType = fvtSum
                     Footers = <>
+                    Title.Alignment = taCenter
                     Title.Caption = #1057#1091#1084#1084#1072' '#1089#1086' '#1089#1082#1080#1076#1082#1086#1081
+                    Title.Font.Charset = DEFAULT_CHARSET
+                    Title.Font.Color = clWindowText
+                    Title.Font.Height = -15
+                    Title.Font.Name = 'Times New Roman'
+                    Title.Font.Style = []
                   end>
               end
             end

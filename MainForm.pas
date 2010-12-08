@@ -271,6 +271,8 @@ type
 
     //Текущее выбраное меню
     FMenuKey: Integer;
+    //Указатель на нажатую кнопку
+    FSelectedButton: TObject;
 
     FFormState: TRestState;
 
@@ -813,12 +815,17 @@ procedure TRestMainForm.GroupButtonOnClick(Sender: TObject);
 begin
   LockWindowUpdate(TForm(Self).Handle);
   try
+    if FSelectedButton <> nil then
+      TAdvSmoothButton(FSelectedButton).Enabled := True;
+    FSelectedButton := Sender;
+    TAdvSmoothButton(Sender).Enabled := False;
+
     RemoveGoodButton;
     FGoodLastTop := btnFirstTop;
     FGoodFirstTop := btnFirstTop;
     FGoodLastLeftButton := btnFirstTop;
     pnlMainGood.Visible := True;
-    CreateGoodButtonList(FMenuKey, TButton(Sender).Tag);
+    CreateGoodButtonList(FMenuKey, TAdvSmoothButton(Sender).Tag);
   finally
     LockWindowUpdate(0);
   end;
