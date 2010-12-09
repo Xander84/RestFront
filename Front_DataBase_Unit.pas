@@ -9,6 +9,10 @@ uses
 const
   MN_OrderXID = 147014509;
   MN_OrderDBID = 9263644;
+  cn_StateNothing = 0;
+  cn_StateInsert = 1;
+  cn_StateUpdate = 2;
+  cn_StateUpdateParent = 3;
 
 //константы с запросами
 const
@@ -736,11 +740,11 @@ begin
       begin
         LineState := LineTable.FieldByName('STATEFIELD').AsInteger;
         case LineState of
-          0:
+          cn_StateNothing:
             begin
               //ничего не делаем
             end;
-          1:
+          cn_StateInsert:
             begin
               //добавляем запись
               InsDoc.Close;
@@ -794,7 +798,7 @@ begin
                 ModifyTable.Next;
               end;
             end;
-          2:
+          cn_StateUpdate:
             begin
               //обновляем запись
               UpdOrderLine.Close;
@@ -830,7 +834,7 @@ begin
               end;
             end;
 
-          3: // обновить parent
+          cn_StateUpdateParent: // обновить parent
             begin
               UpdParent.Close;
               UpdParent.SQL.Text := Format(UpdateParent,
@@ -1337,7 +1341,6 @@ begin
     FReadSQL.Close;
     FReadSQL.Transaction.Commit;
   end;
-
 end;
 
 procedure TFrontBase.InitDB;
@@ -1386,33 +1389,6 @@ begin
     else
       FCompanyKey := -1;
     FReadSQL.Close;
-
-    
-{    FReadSQL.SQL.Text :=
-      'SELECT * FROM USR$MN_SETTINGS';
-    FReadSQL.ExecQuery;
-    if not FReadSQL.Eof then
-    begin
-      FMN_Options.KassaGroupMask := GetGroupMask(FReadSQL.FieldByName('USR$KASSAGROUP').AsInteger);
-      FMN_Options.ManagerGroupMask := GetGroupMask(FReadSQL.FieldByName('USR$MANAGERGROUP').AsInteger);
-      FMN_Options.WaiterGroupMask := GetGroupMask(FReadSQL.FieldByName('USR$WAITERGROUP').AsInteger);
-      FMN_Options.MaxGuestCount := FReadSQL.FieldByName('USR$MAXGUESTCOUNT').AsInteger;
-      FMN_Options.MaxOpenedOrders := FReadSQL.FieldByName('USR$MAXOPENEDORDERS').AsInteger;
-      FMN_Options.MinGuestCount := FReadSQL.FieldByName('USR$MINGUESTCOUNT').AsInteger;
-      FMN_Options.PLFileFolder := FReadSQL.FieldByName('USR$PLFILEFOLDER').AsString;
-      FMN_Options.PLSingleFile := (FReadSQL.FieldByName('USR$PLSINGLEFILE').AsInteger = 1);
-      FMN_Options.PrintFiscalChek := (FReadSQL.FieldByName('USR$PRINTFISCALCHEK').AsInteger = 1);
-      FMN_Options.PrintLog := (FReadSQL.FieldByName('USR$PRINTLOG').AsInteger = 1);
-      FMN_Options.DiscountType := FReadSQL.FieldByName('USR$DISCOUNTTYPE').AsInteger;
-      FMN_Options.OrderCurrentLDate := (FReadSQL.FieldByName('USR$OrderCurrentLDate').AsInteger = 1);
-      FMN_Options.UseCurrentDate := (FReadSQL.FieldByName('USR$USECURRENTDATE').AsInteger = 1);
-      FMN_Options.LastPrintOrder := -1;
-      // опции Лога
-      FMN_Options.DoLog := True;
-      FMN_Options.LinesLimit := 0;
-      FMN_Options.LogToFile := True;
-      //
-    end;    }
 
     FReadSQL.Transaction.Commit;
   except
@@ -1888,18 +1864,18 @@ begin
   FSQL := TIBSQL.Create(nil);
   FSQL.Transaction := FCheckTransaction;
   FSQL.SQL.Text :=
-  'insert into usr$mn_payment ( ' +
-  '    editorkey, ' +
-  '    usr$orderkey, ' +
-  '    usr$paykindkey, ' +
-  '    usr$sumncu, ' +
-  '    usr$datetime) ' +
-  '  values ( ' +
-  '    :editorkey, ' +
-  '    :usr$orderkey, ' +
-  '    :usr$paykindkey, ' +
-  '    :usr$sumncu, ' +
-  '    :usr$datetime) ';
+    'insert into usr$mn_payment ( ' +
+    '    editorkey, ' +
+    '    usr$orderkey, ' +
+    '    usr$paykindkey, ' +
+    '    usr$sumncu, ' +
+    '    usr$datetime) ' +
+    '  values ( ' +
+    '    :editorkey, ' +
+    '    :usr$orderkey, ' +
+    '    :usr$paykindkey, ' +
+    '    :usr$sumncu, ' +
+    '    :usr$datetime) ';
   try
     if not FCheckTransaction.InTransaction then
       FCheckTransaction.StartTransaction;
@@ -2164,9 +2140,9 @@ begin
     FReadSQL.Transaction.StartTransaction;
   try
     FReadSQL.SQL.Text :=
-     'SELECT USR$TEMPLATEDATA AS TEMPLATEDATA '  +
-     'FROM USR$MN_REPORT  ' +
-     'WHERE ID = :ID ';
+      'SELECT USR$TEMPLATEDATA AS TEMPLATEDATA '  +
+      'FROM USR$MN_REPORT  ' +
+      'WHERE ID = :ID ';
 {      'SELECT TM.TEMPLATEDATA ' +
       'FROM RP_REPORTLIST L ' +
       'JOIN RP_REPORTTEMPLATE TM ON L.TEMPLATEKEY = TM.ID ' +
@@ -2469,7 +2445,7 @@ begin
     FReadSQL.SQL.Text :=
       'select ' +
       '  DISTINCT   ' +
-      '  iif(setprn.usr$concatchecks = 0, prn.id, null) as prngrid, prn.usr$divide,  ' +
+      '  IIF(setprn.usr$concatchecks = 0, prn.id, null) as prngrid, prn.usr$divide,  ' +
       '  setprn.usr$printername, setprn.usr$printerid, o.documentkey, setprn.USR$DOSPRINTER  ' +
       'from   ' +
       '  usr$mn_order o  ' +
@@ -2684,7 +2660,7 @@ begin
     FReadSQL.SQL.Text :=
       'select ' +
       '  DISTINCT  ' +
-      '  iif(setprn.usr$concatchecks = 0, prn.id, null) as prngrid, ' +
+      '  IIF(setprn.usr$concatchecks = 0, prn.id, null) as prngrid, ' +
       '  setprn.usr$printername,                                    ' +
       '  o.documentkey, prn.usr$name, setprn.usr$PRINTERID          ' +
       'from                                                         ' +

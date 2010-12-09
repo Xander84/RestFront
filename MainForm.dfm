@@ -1822,18 +1822,22 @@ object RestMainForm: TRestMainForm
     object actScrollUp: TAction
       Category = 'menu'
       OnExecute = actScrollUpExecute
+      OnUpdate = actScrollUpUpdate
     end
     object actScrollDown: TAction
       Category = 'menu'
       OnExecute = actScrollDownExecute
+      OnUpdate = actScrollDownUpdate
     end
     object actGoodUp: TAction
       Category = 'menu'
       OnExecute = actGoodUpExecute
+      OnUpdate = actGoodUpUpdate
     end
     object actGoodDown: TAction
       Category = 'menu'
       OnExecute = actGoodDownExecute
+      OnUpdate = actGoodDownUpdate
     end
     object actOK: TAction
       Category = 'menu'

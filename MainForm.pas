@@ -13,7 +13,7 @@ uses
   TaskDialog, FrontLog_Unit, Grids, Menus;
 
 const
-  btnHeight = 51;
+  btnHeight = 65;
   btnWidth  = 140;
   btnHalfWidth = 102;
   btnLongWidth = 215;
@@ -206,6 +206,10 @@ type
     procedure actEditReportExecute(Sender: TObject);
     procedure actPayUpdate(Sender: TObject);
     procedure actCashFormExecute(Sender: TObject);
+    procedure actGoodUpUpdate(Sender: TObject);
+    procedure actGoodDownUpdate(Sender: TObject);
+    procedure actScrollUpUpdate(Sender: TObject);
+    procedure actScrollDownUpdate(Sender: TObject);
 
   private
     //Компонент обращения к БД
@@ -570,20 +574,16 @@ begin
   end;
   FButton.Tag := FOrderDataSet.FieldByName('ID').AsInteger;
   FButton.Caption := Format('№ %s', [FOrderDataSet.FieldByName('TableName').AsString]);
-  FButton.Status.Caption := FOrderDataSet.FieldByName('Summ').AsString;
+  FButton.Status.Caption := FormatFloat('#,##0', FOrderDataSet.FieldByName('Summ').AsFloat);
   FButton.Status.Visible := True;
   FButton.Status.Appearance.Font.Size := 9;
+  FButton.Status.OffsetTop := -2;
+  FButton.VerticalSpacing := 10;
   if FOrderDataSet.FieldByName('Status').AsInteger = Integer(osOrderClose) then
   begin
     FButton.Status.Appearance.Fill.Color := clRed;
     FButton.Status.Appearance.Fill.ColorTo := clRed;
   end;
-//  if FOrderDataSet.FieldByName('Status').AsInteger = Integer(osOrderClose) then
-//  begin
-//    FButton.Picture := FrontData.RestPictureContainer.FindPicture('Lock');
-//    FButton.Appearance.Layout := blPictureRight;
-//  end;
-
   FLastLeftButton := FLastLeftButton + btnWidth + 10;
 
   FOrderButtonList.Add(FButton);
@@ -634,7 +634,9 @@ begin
 
   FButton.Tag := FGoodDataSet.FieldByName('ID').AsInteger;
   FButton.Caption := FGoodDataSet.FieldByName('NAME').AsString;
-  FButton.Status.Caption := FGoodDataSet.FieldByName('COST').AsString;
+  FButton.Status.Caption :=  FormatFloat('#,##0', FGoodDataSet.FieldByName('COST').AsFloat);
+  FButton.Status.OffsetTop := -2;
+  FButton.VerticalSpacing := 10;
   FButton.Status.Visible := True;
 
   FGoodLastLeftButton := FGoodLastLeftButton + btnHalfWidth + 2;
@@ -853,7 +855,7 @@ begin
   begin
     FLineTable.Append;
     FLineTable.FieldByName('LINEKEY').AsInteger := FLineID;
-    FLineTable.FieldByName('STATEFIELD').AsInteger := 1; //добавление
+    FLineTable.FieldByName('STATEFIELD').AsInteger := cn_StateInsert;
     FLineTable.FieldByName('usr$quantity').AsInteger := 1;
     FLineTable.Post;
 
@@ -1143,8 +1145,8 @@ begin
     FLineTable.Edit;
     FLineTable.FieldByName('USR$QUANTITY').AsCurrency :=
       FLineTable.FieldByName('USR$QUANTITY').AsCurrency + 1;
-    if FLineTable.FieldByName('STATEFIELD').AsInteger = 0 then
-      FLineTable.FieldByName('STATEFIELD').AsInteger := 2; //обновили поле
+    if FLineTable.FieldByName('STATEFIELD').AsInteger = cn_StateNothing then
+      FLineTable.FieldByName('STATEFIELD').AsInteger := cn_StateUpdate; 
     FLineTable.Post;
     WritePos(FLineTable);
   end;
@@ -1165,8 +1167,8 @@ begin
     begin
       FLineTable.Edit;
       FLineTable.FieldByName('USR$QUANTITY').AsCurrency := Quantity;
-      if FLineTable.FieldByName('STATEFIELD').AsInteger = 0 then
-        FLineTable.FieldByName('STATEFIELD').AsInteger := 2; //обновили поле
+      if FLineTable.FieldByName('STATEFIELD').AsInteger = cn_StateNothing then
+        FLineTable.FieldByName('STATEFIELD').AsInteger := cn_StateUpdate; 
       FLineTable.Post;
       WritePos(FLineTable);
       //обновить футер грида
@@ -1282,8 +1284,8 @@ begin
             end;
             FLineTable.Edit;
             FLineTable.FieldByName('MODIFYSTRING').AsString := S;
-            if FLineTable.FieldByName('STATEFIELD').AsInteger = 0 then
-              FLineTable.FieldByName('STATEFIELD').AsInteger := 2; //обновили поле
+            if FLineTable.FieldByName('STATEFIELD').AsInteger = cn_StateNothing then
+              FLineTable.FieldByName('STATEFIELD').AsInteger := cn_StateInsert;
             FLineTable.Post;
           end;
         finally
@@ -2001,8 +2003,8 @@ begin
 
   FLineTable.Edit;
   FLineTable.FieldByName('usr$quantity').AsCurrency := OldQuantity - Amount;
-  if FLineTable.FieldByName('STATEFIELD').AsInteger = 0 then
-    FLineTable.FieldByName('STATEFIELD').AsInteger := 2; //обновили поле
+  if FLineTable.FieldByName('STATEFIELD').AsInteger = cn_StateNothing then
+    FLineTable.FieldByName('STATEFIELD').AsInteger := cn_StateUpdate;
   FLineTable.Post;
 
   SetLength(V, FLineTable.FieldCount);
@@ -2026,7 +2028,7 @@ begin
   FLineTable.FieldByName('ID').AsInteger := DocumentKey;
   FLineTable.FieldByName('LINEKEY').AsInteger := FLineID;
   FLineTable.FieldByName('USR$QUANTITY').AsCurrency := Amount;
-  FLineTable.FieldByName('STATEFIELD').AsInteger := 1; //добавили
+  FLineTable.FieldByName('STATEFIELD').AsInteger := cn_StateInsert;
   FLineTable.FieldByName('usr$causedeletekey').AsInteger := CauseKey;
   FLineTable.Post;
 
@@ -2175,8 +2177,8 @@ begin
     DataSet.FieldByName('USR$PERSDISCOUNT').AsCurrency := 0;
 
 { TODO : Двойной бонус? }
-  if DataSet.FieldByName('STATEFIELD').AsInteger = 0 then
-    DataSet.FieldByName('STATEFIELD').AsInteger := 2; //обновление
+  if DataSet.FieldByName('STATEFIELD').AsInteger = cn_StateNothing then
+    DataSet.FieldByName('STATEFIELD').AsInteger := cn_StateUpdate;
 
   DataSet.FieldByName('USR$SUMNCU').AsCurrency :=
     DataSet.FieldBYName('USR$COSTNCU').AsCurrency *
@@ -2326,6 +2328,38 @@ begin
       FForm.Free;
     end;
   end;
+end;
+
+procedure TRestMainForm.actGoodUpUpdate(Sender: TObject);
+begin
+  actGoodUp.Enabled := (FGoodFirstTop > 8);
+end;
+
+procedure TRestMainForm.actGoodDownUpdate(Sender: TObject);
+begin
+  actGoodDown.Enabled := (FGoodLastTop + btnHeight > pnlGood.Height);
+end;
+
+procedure TRestMainForm.actScrollUpUpdate(Sender: TObject);
+begin
+  if pcMenu.ActivePage = tsMenu then
+    if FMenuButtonCount > 6 then
+      actScrollUp.Enabled := (FMenuFirstTop > 8)
+    else
+      actScrollUp.Enabled := (FGroupFirstTop > 8)
+  else
+    actScrollUp.Enabled := (FGroupFirstTop > 8);
+end;
+
+procedure TRestMainForm.actScrollDownUpdate(Sender: TObject);
+begin
+  if pcMenu.ActivePage = tsMenu then
+    if FMenuButtonCount > 6 then
+      actScrollDown.Enabled := (FMenuLastTop + btnHeight > pnlMenu.Height)
+    else
+      actScrollDown.Enabled := (FGroupLastTop + btnHeight > pnlExtraGoodGroup.Height)
+  else
+    actScrollDown.Enabled := (FGroupLastTop + btnHeight > pnlGoodGroup.Height);
 end;
 
 end.
