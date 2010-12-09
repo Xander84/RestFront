@@ -27,7 +27,7 @@ object DeleteOrderLine: TDeleteOrderLine
     Color = 16640730
     TabOrder = 0
     UseDockManager = True
-    Version = '1.9.0.0'
+    Version = '2.0.1.0'
     BorderColor = clGray
     Caption.Color = 14059353
     Caption.ColorTo = 9648131
@@ -39,7 +39,7 @@ object DeleteOrderLine: TDeleteOrderLine
     Caption.GradientDirection = gdVertical
     Caption.Indent = 2
     Caption.ShadeLight = 255
-    CollapsColor = clHighlight
+    CollapsColor = clNone
     CollapsDelay = 0
     ColorTo = 14986888
     ShadowColor = clBlack
@@ -88,6 +88,7 @@ object DeleteOrderLine: TDeleteOrderLine
       Top = 2
       Width = 73
       Height = 42
+      Appearance.PictureAlignment = taCenter
       Appearance.Font.Charset = DEFAULT_CHARSET
       Appearance.Font.Color = clWindowText
       Appearance.Font.Height = -19
@@ -110,7 +111,7 @@ object DeleteOrderLine: TDeleteOrderLine
       Color = 15195349
       ParentFont = False
       TabOrder = 0
-      Version = '1.6.5.2'
+      Version = '1.6.9.0'
       OnClick = btnAddQuantityClick
     end
     object btnRemoveQuantity: TAdvSmoothButton
@@ -118,6 +119,7 @@ object DeleteOrderLine: TDeleteOrderLine
       Top = 2
       Width = 73
       Height = 42
+      Appearance.PictureAlignment = taCenter
       Appearance.Font.Charset = DEFAULT_CHARSET
       Appearance.Font.Color = clWindowText
       Appearance.Font.Height = -19
@@ -140,7 +142,7 @@ object DeleteOrderLine: TDeleteOrderLine
       Color = 15195349
       ParentFont = False
       TabOrder = 1
-      Version = '1.6.5.2'
+      Version = '1.6.9.0'
       OnClick = btnRemoveQuantityClick
     end
   end
@@ -154,7 +156,7 @@ object DeleteOrderLine: TDeleteOrderLine
     Color = 16640730
     TabOrder = 1
     UseDockManager = True
-    Version = '1.9.0.0'
+    Version = '2.0.1.0'
     BorderColor = clGray
     Caption.Color = 14059353
     Caption.ColorTo = 9648131
@@ -166,7 +168,7 @@ object DeleteOrderLine: TDeleteOrderLine
     Caption.GradientDirection = gdVertical
     Caption.Indent = 2
     Caption.ShadeLight = 255
-    CollapsColor = clHighlight
+    CollapsColor = clNone
     CollapsDelay = 0
     ColorTo = 14986888
     ShadowColor = clBlack
@@ -211,7 +213,7 @@ object DeleteOrderLine: TDeleteOrderLine
       Color = 15195349
       ParentFont = False
       TabOrder = 0
-      Version = '1.6.5.2'
+      Version = '1.6.9.0'
     end
     object btnCancel: TAdvSmoothButton
       Left = 276
@@ -241,7 +243,7 @@ object DeleteOrderLine: TDeleteOrderLine
       Color = 15195349
       ParentFont = False
       TabOrder = 1
-      Version = '1.6.5.2'
+      Version = '1.6.9.0'
       OnClick = btnCancelClick
     end
   end
@@ -255,7 +257,7 @@ object DeleteOrderLine: TDeleteOrderLine
     Color = 16640730
     TabOrder = 2
     UseDockManager = True
-    Version = '1.9.0.0'
+    Version = '2.0.1.0'
     BorderColor = clGray
     Caption.Color = 14059353
     Caption.ColorTo = 9648131
@@ -267,7 +269,7 @@ object DeleteOrderLine: TDeleteOrderLine
     Caption.GradientDirection = gdVertical
     Caption.Indent = 2
     Caption.ShadeLight = 255
-    CollapsColor = clHighlight
+    CollapsColor = clNone
     CollapsDelay = 0
     ColorTo = 14986888
     ShadowColor = clBlack
