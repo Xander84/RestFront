@@ -51,6 +51,11 @@ const
   DEFAULT_STYLE_IDENT = 'STYLE';
   RES_SECTION_NAME = 'RESOLUTION_SECTION';
   RES_IDENT = 'RESOLUTION';
+  SYS_SECTION_NAME = 'SYSTEM_SECTION';
+  SYS_SHUTDOWN_ON_EXIT = 'SHUTDOWN_ON_EXIT';
+  GRID_FONT_SECTION_NAME = 'GRID_FONT';
+  GRID_HEADER_FONT_SIZE = 'HEADER_FONT_SIZE';
+  GRID_FONT_SIZE = 'FONT_SIZE';
   cn_defaultHeight = 768;
   cn_defaultWidth = 1024;
 
@@ -61,6 +66,7 @@ var
   cn_Height: Integer;
   cn_Width: Integer;
   cn_MainPercent: Integer;
+  cn_ShutDownOnExit: Boolean;
   
 implementation
 
@@ -119,7 +125,8 @@ var
 begin
   cn_Height := Screen.Height;
   cn_Width := Screen.Width;
-  cn_MainPercent := 100; 
+  cn_MainPercent := 100;
+  cn_ShutDownOnExit := False;
 
   ApStyler.Style := GetDefaultTheme;
   FrontPanelStyler.SetComponentStyle(GetDefaultTheme);
@@ -248,7 +255,7 @@ begin
 
     if FunctionFile.ValueExists(RES_SECTION_NAME, RES_IDENT) then
     begin
-      ValueText := FunctionFile.ReadString(RES_SECTION_NAME, RES_IDENT, 'DEFAULT');
+      ValueText := AnsiUpperCase(FunctionFile.ReadString(RES_SECTION_NAME, RES_IDENT, 'DEFAULT'));
       if ValueText = 'DEFAULT' then
       begin
         cn_Height := cn_defaultHeight;
@@ -278,6 +285,15 @@ begin
     end else
       FunctionFile.WriteString(RES_SECTION_NAME, RES_IDENT, 'DEFAULT');
 
+    if FunctionFile.ValueExists(SYS_SECTION_NAME, SYS_SHUTDOWN_ON_EXIT) then
+    begin
+      ValueText := AnsiUpperCase(FunctionFile.ReadString(SYS_SECTION_NAME, SYS_SHUTDOWN_ON_EXIT, 'FALSE'));
+      if ValueText = 'TRUE' then
+        cn_ShutDownOnExit := True
+      else
+        cn_ShutDownOnExit := False;
+    end else
+      FunctionFile.WriteString(SYS_SECTION_NAME, SYS_SHUTDOWN_ON_EXIT, 'FALSE');
   finally
     FreeAndNil(FunctionFile);
   end;

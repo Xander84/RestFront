@@ -2,6 +2,8 @@ unit MainForm;
 
 {$WARN SYMBOL_PLATFORM OFF}
 
+{Были сделаны изменения в компоненте TAdvPageControl что бы не отображалась граница}
+
 interface
 
 uses
@@ -29,7 +31,6 @@ const
   btnColor = $00E7DCD5;
 
 
-{ TODO -oAlexander : Запросы в front_database_unit вынести в константы }
 { TODO -oAlexander :
 Сейчас размеры кнопок заданы константами, посмотреть,
 может их определять в зависимости от размера экрана. }
@@ -39,10 +40,6 @@ const
 панелей, будут кнопки ОК и Отмена }
 { TODO -oAlexander : Реализовать форму выбора параметров }
 { TODO -oAlexander : Реализовать форму добавления сотрудника }
-{ TODO 1 -oAlexander : Сделать режим менеджера (доделать) }
-{ TODO -cInterface : 
-Для поддержки цветовых гамм, нужно создать базовую форму, 
-которая будет проставлять нужный Color для компонентов при создании }
 
 {
 Для удаления мерцания компонентов использую
@@ -79,13 +76,13 @@ type
     actPassEnter: TAction;
     dsMain: TDataSource;
     pnlChoose: TPanel;
-    pcMenu: TPageControl;
-    tsMenu: TTabSheet;
-    tsGroup: TTabSheet;
+    pcMenu: TAdvPageControl;
+    tsMenu: TAdvTabSheet;
+    tsGroup: TAdvTabSheet;
     Panel3: TAdvPanel;
-    pcExtraButton: TPageControl;
-    tsMainButton: TTabSheet;
-    tsFunctionButton: TTabSheet;
+    pcExtraButton: TAdvPageControl;
+    tsMainButton: TAdvTabSheet;
+    tsFunctionButton: TAdvTabSheet;
     Button14: TButton;
     actBackToMenu: TAction;
     Panel1: TAdvPanel;
@@ -156,7 +153,7 @@ type
     btnUsersUp: TAdvSmoothButton;
     btnUserLeft: TAdvSmoothButton;
     btnUserRight: TAdvSmoothButton;
-    tsOrderButton: TTabSheet;
+    tsOrderButton: TAdvTabSheet;
     btnEditReport: TAdvSmoothButton;
     btnCashForm: TAdvSmoothButton;
     AdvSmoothButton1: TAdvSmoothButton;
@@ -552,40 +549,44 @@ begin
   //Создание кнопки
   FButton := TAdvSmoothButton.Create(tsUserOrder);
   FButton.Appearance.Font.Name := cn_FontType;
-  FButton.Color := btnColor;
-  FButton.Appearance.Font.Size := cn_ButtonFontSize;
-  FButton.Parent := tsUserOrder;
-  FButton.OnClick := OrderButtonOnClick;
-  FButton.Name := Format(btnOrderName, [FOrderButtonNumber]);
-  FButton.Height := btnHeight;
-  FButton.Width  := btnWidth;
-  //проверяем, есть ли ещё место в ряду
-  if (FLastLeftButton + {btnFirstTop} + btnWidth) > tsUserOrder.Width then
-  begin
-    FLastTopButton := FLastTopButton + btnHeight + btnFirstTop;
-    FLastLeftButton := btnFirstTop;
+  FButton.Appearance.BeginUpdate;
+  try
+    FButton.Color := btnColor;
+    FButton.Appearance.Font.Size := cn_ButtonFontSize;
+    FButton.Parent := tsUserOrder;
+    FButton.OnClick := OrderButtonOnClick;
+    FButton.Name := Format(btnOrderName, [FOrderButtonNumber]);
+    FButton.Height := btnHeight;
+    FButton.Width  := btnWidth;
+    //проверяем, есть ли ещё место в ряду
+    if (FLastLeftButton + {btnFirstTop} + btnWidth) > tsUserOrder.Width then
+    begin
+      FLastTopButton := FLastTopButton + btnHeight + btnFirstTop;
+      FLastLeftButton := btnFirstTop + 4;
 
-    FButton.Left := FLastLeftButton;
-    FButton.Top  := FLastTopButton;
-  end else
-  begin
-    FButton.Left := FLastLeftButton;
-    FButton.Top  := FLastTopButton;
+      FButton.Left := FLastLeftButton;
+      FButton.Top  := FLastTopButton;
+    end else
+    begin
+      FButton.Left := FLastLeftButton;
+      FButton.Top  := FLastTopButton;
+    end;
+    FButton.Tag := FOrderDataSet.FieldByName('ID').AsInteger;
+    FButton.Caption := Format('№ %s', [FOrderDataSet.FieldByName('TableName').AsString]);
+    FButton.Status.Caption := FormatFloat('#,##0', FOrderDataSet.FieldByName('Summ').AsFloat);
+    FButton.Status.Visible := True;
+    FButton.Status.Appearance.Font.Size := 9;
+    FButton.Status.OffsetTop := -2;
+    FButton.VerticalSpacing := 10;
+    if FOrderDataSet.FieldByName('Status').AsInteger = Integer(osOrderClose) then
+    begin
+      FButton.Status.Appearance.Fill.Color := clRed;
+      FButton.Status.Appearance.Fill.ColorTo := clRed;
+    end;
+    FLastLeftButton := FLastLeftButton + btnWidth + 10;
+  finally
+    FButton.Appearance.EndUpdate;
   end;
-  FButton.Tag := FOrderDataSet.FieldByName('ID').AsInteger;
-  FButton.Caption := Format('№ %s', [FOrderDataSet.FieldByName('TableName').AsString]);
-  FButton.Status.Caption := FormatFloat('#,##0', FOrderDataSet.FieldByName('Summ').AsFloat);
-  FButton.Status.Visible := True;
-  FButton.Status.Appearance.Font.Size := 9;
-  FButton.Status.OffsetTop := -2;
-  FButton.VerticalSpacing := 10;
-  if FOrderDataSet.FieldByName('Status').AsInteger = Integer(osOrderClose) then
-  begin
-    FButton.Status.Appearance.Fill.Color := clRed;
-    FButton.Status.Appearance.Fill.ColorTo := clRed;
-  end;
-  FLastLeftButton := FLastLeftButton + btnWidth + 10;
-
   FOrderButtonList.Add(FButton);
   Inc(FOrderButtonNumber);
 end;
@@ -611,34 +612,38 @@ begin
   //Создание кнопки
   FButton := TAdvSmoothButton.Create(pnlGood);
   FButton.Appearance.Font.Name := cn_FontType;
-  FButton.Color := btnColor;
-  FButton.Parent := pnlGood;
-  FButton.OnClick := GoodButtonOnClick;
-  FButton.Name := Format(btnGoodName, [FGoodButtonNumber]);
-  FButton.Height := btnHeight;
-  FButton.Width  := btnHalfWidth;
+  FButton.Appearance.BeginUpdate;
+  try
+    FButton.Color := btnColor;
+    FButton.Parent := pnlGood;
+    FButton.OnClick := GoodButtonOnClick;
+    FButton.Name := Format(btnGoodName, [FGoodButtonNumber]);
+    FButton.Height := btnHeight;
+    FButton.Width  := btnHalfWidth;
 
-  //проверяем, есть ли ещё место в ряду
-  if (FGoodLastLeftButton + btnHalfWidth) > pnlGood.Width then
-  begin
-    FGoodLastTop := FGoodLastTop + btnHeight + 2;
-    FGoodLastLeftButton := btnFirstTop;
+    //проверяем, есть ли ещё место в ряду
+    if (FGoodLastLeftButton + btnHalfWidth) > pnlGood.Width then
+    begin
+      FGoodLastTop := FGoodLastTop + btnHeight + 2;
+      FGoodLastLeftButton := btnFirstTop;
 
-    FButton.Left := FGoodLastLeftButton;
-    FButton.Top  := FGoodLastTop;
-  end else
-  begin
-    FButton.Left := FGoodLastLeftButton;
-    FButton.Top  := FGoodLastTop;
+      FButton.Left := FGoodLastLeftButton;
+      FButton.Top  := FGoodLastTop;
+    end else
+    begin
+      FButton.Left := FGoodLastLeftButton;
+      FButton.Top  := FGoodLastTop;
+    end;
+
+    FButton.Tag := FGoodDataSet.FieldByName('ID').AsInteger;
+    FButton.Caption := FGoodDataSet.FieldByName('NAME').AsString;
+    FButton.Status.Caption :=  FormatFloat('#,##0', FGoodDataSet.FieldByName('COST').AsFloat);
+    FButton.Status.OffsetTop := -2;
+    FButton.VerticalSpacing := 10;
+    FButton.Status.Visible := True;
+  finally
+    FButton.Appearance.EndUpdate;
   end;
-
-  FButton.Tag := FGoodDataSet.FieldByName('ID').AsInteger;
-  FButton.Caption := FGoodDataSet.FieldByName('NAME').AsString;
-  FButton.Status.Caption :=  FormatFloat('#,##0', FGoodDataSet.FieldByName('COST').AsFloat);
-  FButton.Status.OffsetTop := -2;
-  FButton.VerticalSpacing := 10;
-  FButton.Status.Visible := True;
-
   FGoodLastLeftButton := FGoodLastLeftButton + btnHalfWidth + 2;
   FGoodButtonList.Add(FButton);
   Inc(FGoodButtonNumber);
@@ -657,34 +662,38 @@ begin
   //Создание кнопки
   FButton := TAdvSmoothButton.Create(pnlGood);
   FButton.Appearance.Font.Name := cn_FontType;
-  FButton.Color := btnColor;
-  FButton.Parent := FPanel;
-  FButton.OnClick := GroupButtonOnClick;
-  FButton.Name := Format(btnGroupName, [FGroupButtonNumber]);
-  FButton.Height := btnHeight;
-  FButton.Width  := AdjustWidth(btnHalfWidth); //btnHalfWidth;
+  FButton.Appearance.BeginUpdate;
+  try
+    FButton.Color := btnColor;
+    FButton.Parent := FPanel;
+    FButton.OnClick := GroupButtonOnClick;
+    FButton.Name := Format(btnGroupName, [FGroupButtonNumber]);
+    FButton.Height := btnHeight;
+    FButton.Width  := AdjustWidth(btnHalfWidth); //btnHalfWidth;
 
-  //проверяем, есть ли ещё место в ряду
-  if (FGroupLastLeftButton + AdjustWidth(btnHalfWidth)) > FPanel.Width then
-  begin
-    FGroupLastTop := FGroupLastTop + btnHeight + btnFirstTop;
-    FGroupLastLeftButton := btnFirstTop;
+    //проверяем, есть ли ещё место в ряду
+    if (FGroupLastLeftButton + AdjustWidth(btnHalfWidth)) > FPanel.Width then
+    begin
+      FGroupLastTop := FGroupLastTop + btnHeight + btnFirstTop;
+      FGroupLastLeftButton := btnFirstTop + 4;
 
-    FButton.Left := FGroupLastLeftButton;
-    FButton.Top  := FGroupLastTop;
-  end else
-  begin
-    FButton.Left := FGroupLastLeftButton;
-    FButton.Top  := FGroupLastTop;
+      FButton.Left := FGroupLastLeftButton;
+      FButton.Top  := FGroupLastTop;
+    end else
+    begin
+      FButton.Left := FGroupLastLeftButton;
+      FButton.Top  := FGroupLastTop;
+    end;
+
+    FButton.Tag := FGroupDataSet.FieldByName('ID').AsInteger;
+    if Length(FGroupDataSet.FieldByName('NAME').AsString) > 16 then
+      FButton.Appearance.Font.Size := 9
+    else
+      FButton.Appearance.Font.Size := 11;
+    FButton.Caption := FGroupDataSet.FieldByName('NAME').AsString;
+  finally
+    FButton.Appearance.EndUpdate;
   end;
-
-  FButton.Tag := FGroupDataSet.FieldByName('ID').AsInteger;
-  if Length(FGroupDataSet.FieldByName('NAME').AsString) > 16 then
-    FButton.Appearance.Font.Size := 9
-  else
-    FButton.Appearance.Font.Size := 11;
-  FButton.Caption := FGroupDataSet.FieldByName('NAME').AsString;
-
   FGroupLastLeftButton := FGroupLastLeftButton + AdjustWidth(btnHalfWidth) + AdjustWidth(10);
   FGroupButtonList.Add(FButton);
   Inc(FGroupButtonNumber);
@@ -696,23 +705,27 @@ var
 begin
   //Создание кнопки
   FButton := TAdvSmoothButton.Create(pnlGood);
-  FButton.Appearance.Font.Name := cn_FontType;
-  FButton.Appearance.Font.Size := cn_ButtonFontSize;
-  FButton.Color := btnColor;
-  FButton.Parent := pnlMenu;
-  FButton.OnClick := MenuButtonOnClick;
-  FButton.Name := Format(btnMenuName, [FMenuButtonNumber]);
-  FButton.Height := btnHeight;
-  FButton.Width  := AdjustWidth(btnLongWidth); //btnLongWidth;
+  FButton.Appearance.BeginUpdate;
+  try
+    FButton.Appearance.Font.Name := cn_FontType;
+    FButton.Appearance.Font.Size := cn_ButtonFontSize;
+    FButton.Color := btnColor;
+    FButton.Parent := pnlMenu;
+    FButton.OnClick := MenuButtonOnClick;
+    FButton.Name := Format(btnMenuName, [FMenuButtonNumber]);
+    FButton.Height := btnHeight;
+    FButton.Width  := AdjustWidth(btnLongWidth); //btnLongWidth;
 
-  FMenuLastTop := FMenuLastTop + btnHeight + 2;
+    FMenuLastTop := FMenuLastTop + btnHeight + 2;
 
-  FButton.Left := btnFirstTop;
-  FButton.Top  := FMenuLastTop;
+    FButton.Left := btnFirstTop + 4;
+    FButton.Top  := FMenuLastTop;
 
-  FButton.Tag := FMenuDataSet.FieldByName('ID').AsInteger;
-  FButton.Caption := FMenuDataSet.FieldByName('NAME').AsString;
-
+    FButton.Tag := FMenuDataSet.FieldByName('ID').AsInteger;
+    FButton.Caption := FMenuDataSet.FieldByName('NAME').AsString;
+  finally
+    FButton.Appearance.EndUpdate;
+  end;
   FMenuButtonList.Add(FButton);
   Inc(FMenuButtonNumber);
 end;
@@ -805,7 +818,7 @@ procedure TRestMainForm.MenuButtonOnClick(Sender: TObject);
 begin
   FGroupLastTop := btnFirstTop;
   FGroupFirstTop := btnFirstTop;
-  FGroupLastLeftButton := btnFirstTop;
+  FGroupLastLeftButton := btnFirstTop + 4;
   RemoveGroupButton;
   FMenuKey := TButton(Sender).Tag;
   CreateGroupButtonList(FMenuKey);
@@ -1774,21 +1787,25 @@ begin
   //Создание кнопки
   FButton := TAdvSmoothButton.Create(pnlUsers);
   FButton.Appearance.Font.Name := cn_FontType;
-  FButton.Color := btnColor;
-  FButton.Appearance.Font.Size := 12;
-  FButton.Parent := pnlUsers;
-  FButton.Name := Format(btnUserName, [FUserButtonNumber]);
-  FButton.Height := btnHeight;
-  FButton.Width  := btnLongWidth - 40;
+  FButton.Appearance.BeginUpdate;
+  try
+    FButton.Color := btnColor;
+    FButton.Appearance.Font.Size := 12;
+    FButton.Parent := pnlUsers;
+    FButton.Name := Format(btnUserName, [FUserButtonNumber]);
+    FButton.Height := btnHeight;
+    FButton.Width  := btnLongWidth - 40;
 
-  FUserLastTop := FUserLastTop + btnHeight + 2;
+    FUserLastTop := FUserLastTop + btnHeight + 2;
 
-  FButton.Left := btnFirstTop;
-  FButton.Top  := FUserLastTop;
+    FButton.Left := btnFirstTop;
+    FButton.Top  := FUserLastTop;
 
-  FButton.Tag := MemTable.FieldByName('ID').AsInteger;
-  FButton.Caption := MemTable.FieldByName('NAME').AsString;
-
+    FButton.Tag := MemTable.FieldByName('ID').AsInteger;
+    FButton.Caption := MemTable.FieldByName('NAME').AsString;
+  finally
+    FButton.Appearance.EndUpdate;
+  end;
   FUsersButtonList.Add(FButton);
   Inc(FUserButtonNumber);
 end;
@@ -1871,30 +1888,35 @@ begin
   //Создание кнопки
   FButton := TAdvSmoothButton.Create(pnlUserOrders);
   FButton.Appearance.Font.Name := cn_FontType;
-  FButton.Color := btnColor;
-  FButton.Appearance.Font.Size := cn_ButtonFontSize;
-  FButton.Parent := pnlUserOrders;
-  if FormState = ManagerPage then
-    FButton.OnClick := OrderButtonOnClick
-  else
-    FButton.OnClick := SplitButtonOnClick;  
-  FButton.Name := Format(btnUserOrderName, [FUserOrderButtonNumber]);
-  FButton.Height := btnHeight;
-  FButton.Width  := btnWidth;
+  FButton.Appearance.BeginUpdate;
+  try
+    FButton.Color := btnColor;
+    FButton.Appearance.Font.Size := cn_ButtonFontSize;
+    FButton.Parent := pnlUserOrders;
+    if FormState = ManagerPage then
+      FButton.OnClick := OrderButtonOnClick
+    else
+      FButton.OnClick := SplitButtonOnClick;
+    FButton.Name := Format(btnUserOrderName, [FUserOrderButtonNumber]);
+    FButton.Height := btnHeight;
+    FButton.Width  := btnWidth;
 
-  FButton.Left := FUserOrderLastLeftButton;
-  FButton.Top  := FUserOrderLastTop;
+    FButton.Left := FUserOrderLastLeftButton;
+    FButton.Top  := FUserOrderLastTop;
 
-  FButton.Tag := MemTable.FieldByName('ID').AsInteger;
-  FButton.Caption := Format('№ %s', [MemTable.FieldByName('TableName').AsString]);
-  FButton.Status.Caption := MemTable.FieldByName('Summ').AsString;
-  FButton.Status.Visible := True;
-  FButton.Status.Appearance.Font.Size := 9;
-  if MemTable.FieldByName('Status').AsInteger = Integer(osOrderClose) then
-  begin
-    FButton.Status.Appearance.Fill.Color := clRed;
-    FButton.Status.Appearance.Fill.ColorTo := clRed;
-  end;
+    FButton.Tag := MemTable.FieldByName('ID').AsInteger;
+    FButton.Caption := Format('№ %s', [MemTable.FieldByName('TableName').AsString]);
+    FButton.Status.Caption := MemTable.FieldByName('Summ').AsString;
+    FButton.Status.Visible := True;
+    FButton.Status.Appearance.Font.Size := 9;
+    if MemTable.FieldByName('Status').AsInteger = Integer(osOrderClose) then
+    begin
+      FButton.Status.Appearance.Fill.Color := clRed;
+      FButton.Status.Appearance.Fill.ColorTo := clRed;
+    end;
+  finally
+    FButton.Appearance.EndUpdate;
+  end;    
 
   FUserOrderLastLeftButton := FUserOrderLastLeftButton + btnWidth + 10;
 
@@ -2147,9 +2169,13 @@ end;
 procedure TRestMainForm.actExitWindowsExecute(Sender: TObject);
 begin
   if AdvTaskMessageDlg('Внимание', 'Выключить рабочую станцию?',
-    mtInformation, [mbYes, mbNo], 0) = IDYES
-  then
-    ShutDownOS(klNormal);
+    mtInformation, [mbYes, mbNo], 0) = IDYES then
+  begin
+    if cn_ShutDownOnExit then
+      ShutDownOS(klNormal)
+    else
+      Application.Terminate;
+  end;
 end;
 
 procedure TRestMainForm.actRestartRestExecute(Sender: TObject);

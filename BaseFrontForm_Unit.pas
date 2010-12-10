@@ -30,13 +30,17 @@ begin
   for I := 0 to ComponentCount - 1 do
   begin
     if (Components[I] is TAdvPanel) then
-      TAdvPanel(Components[I]).Styler := FrontData.FrontPanelStyler
-    else if (Components[I] is TPanel) then
+    begin
+      TAdvPanel(Components[I]).Styler := FrontData.FrontPanelStyler;
+      TAdvPanel(Components[I]).Buffered := False;
+      TAdvPanel(Components[I]).BevelOuter := bvNone;
+    end else
+    if (Components[I] is TPanel) then
       TPanel(Components[I]).Color := FrontData.PanelColorTo
     else if (Components[I] is TAdvTabSheet) then
     begin
-       TAdvTabSheet(Components[I]).Color := FrontData.PanelColor;
-       TAdvTabSheet(Components[I]).ColorTo := FrontData.PanelColorTo;
+      TAdvTabSheet(Components[I]).Color := FrontData.PanelColor;
+      TAdvTabSheet(Components[I]).ColorTo := FrontData.PanelColorTo;
     end;
   end;
 

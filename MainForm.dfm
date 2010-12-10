@@ -3,6 +3,7 @@ object RestMainForm: TRestMainForm
   Top = 57
   Width = 1024
   Height = 767
+  BorderIcons = []
   Caption = 'RestMainForm'
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -153,16 +154,29 @@ object RestMainForm: TRestMainForm
             Align = alClient
             BevelOuter = bvNone
             TabOrder = 0
-            object pcMenu: TPageControl
+            object pcMenu: TAdvPageControl
               Left = 0
               Top = 0
               Width = 242
               Height = 611
-              ActivePage = tsMenu
+              ActivePage = tsGroup
+              ActiveFont.Charset = DEFAULT_CHARSET
+              ActiveFont.Color = clWindowText
+              ActiveFont.Height = -11
+              ActiveFont.Name = 'Tahoma'
+              ActiveFont.Style = []
               Align = alClient
+              TabBackGroundColor = clBtnFace
+              TabMargin.RightMargin = 0
+              TabOverlap = 0
+              Version = '1.6.2.1'
               TabOrder = 0
-              object tsMenu: TTabSheet
+              object tsMenu: TAdvTabSheet
                 Caption = #1052#1077#1085#1102
+                Color = clBtnFace
+                ColorTo = clNone
+                TabColor = clBtnFace
+                TabColorTo = clNone
                 object pnlMenu: TAdvPanel
                   Left = 0
                   Top = 0
@@ -175,6 +189,7 @@ object RestMainForm: TRestMainForm
                   UseDockManager = True
                   Version = '2.0.1.0'
                   BorderColor = clGray
+                  Buffered = False
                   Caption.Color = 14059353
                   Caption.ColorTo = 9648131
                   Caption.Font.Charset = DEFAULT_CHARSET
@@ -215,6 +230,7 @@ object RestMainForm: TRestMainForm
                   UseDockManager = True
                   Version = '2.0.1.0'
                   BorderColor = clGray
+                  Buffered = False
                   Caption.Color = 14059353
                   Caption.ColorTo = 9648131
                   Caption.Font.Charset = DEFAULT_CHARSET
@@ -244,9 +260,13 @@ object RestMainForm: TRestMainForm
                   FullHeight = 295
                 end
               end
-              object tsGroup: TTabSheet
+              object tsGroup: TAdvTabSheet
                 Caption = #1043#1088#1091#1087#1087#1099
+                Color = clBtnFace
+                ColorTo = clNone
                 ImageIndex = 1
+                TabColor = clBtnFace
+                TabColorTo = clNone
                 object pnlGoodGroup: TAdvPanel
                   Left = 0
                   Top = 58
@@ -333,7 +353,7 @@ object RestMainForm: TRestMainForm
                   Styler = FrontData.FrontPanelStyler
                   FullHeight = 58
                   object btnBackToMenu: TAdvSmoothButton
-                    Left = 10
+                    Left = 14
                     Top = 7
                     Width = 212
                     Height = 43
@@ -774,6 +794,7 @@ object RestMainForm: TRestMainForm
                   UseDockManager = True
                   Version = '2.0.1.0'
                   BorderColor = clGray
+                  Buffered = False
                   Caption.Color = 14059353
                   Caption.ColorTo = 9648131
                   Caption.Font.Charset = DEFAULT_CHARSET
@@ -1289,18 +1310,31 @@ object RestMainForm: TRestMainForm
       Align = alLeft
       Color = 14986888
       TabOrder = 2
-      object pcExtraButton: TPageControl
+      object pcExtraButton: TAdvPageControl
         Left = 1
         Top = 1
         Width = 80
         Height = 719
         ActivePage = tsFunctionButton
+        ActiveFont.Charset = DEFAULT_CHARSET
+        ActiveFont.Color = clWindowText
+        ActiveFont.Height = -11
+        ActiveFont.Name = 'Tahoma'
+        ActiveFont.Style = []
         Align = alClient
+        TabBackGroundColor = clBtnFace
+        TabMargin.RightMargin = 0
+        TabOverlap = 0
+        Version = '1.6.2.1'
         TabOrder = 0
-        object tsMainButton: TTabSheet
+        object tsMainButton: TAdvTabSheet
           Caption = 'tsMainButton'
+          Color = 14986888
+          ColorTo = clNone
+          TabColor = clBtnFace
+          TabColorTo = clNone
           object btnExitWindows: TAdvSmoothButton
-            Left = 0
+            Left = 4
             Top = 1
             Width = 72
             Height = 50
@@ -1330,7 +1364,7 @@ object RestMainForm: TRestMainForm
             Version = '1.6.9.0'
           end
           object btnRestartRest: TAdvSmoothButton
-            Left = 0
+            Left = 4
             Top = 55
             Width = 72
             Height = 50
@@ -1360,7 +1394,7 @@ object RestMainForm: TRestMainForm
             Version = '1.6.9.0'
           end
           object AdvSmoothButton1: TAdvSmoothButton
-            Left = 0
+            Left = 4
             Top = 112
             Width = 72
             Height = 50
@@ -1391,11 +1425,15 @@ object RestMainForm: TRestMainForm
             Version = '1.6.9.0'
           end
         end
-        object tsFunctionButton: TTabSheet
+        object tsFunctionButton: TAdvTabSheet
           Caption = 'tsFunctionButton'
+          Color = 14986888
+          ColorTo = clNone
           ImageIndex = 1
+          TabColor = clBtnFace
+          TabColorTo = clNone
           object Button14: TButton
-            Left = 0
+            Left = 4
             Top = 620
             Width = 72
             Height = 50
@@ -1405,7 +1443,7 @@ object RestMainForm: TRestMainForm
             OnClick = Button14Click
           end
           object btnAddQuantity: TAdvSmoothButton
-            Left = 0
+            Left = 4
             Top = 1
             Width = 72
             Height = 50
@@ -1437,7 +1475,7 @@ object RestMainForm: TRestMainForm
             Version = '1.6.9.0'
           end
           object btnRemoveQuantity: TAdvSmoothButton
-            Left = 0
+            Left = 4
             Top = 56
             Width = 72
             Height = 50
@@ -1468,7 +1506,7 @@ object RestMainForm: TRestMainForm
             Version = '1.6.9.0'
           end
           object btnDeletePosition: TAdvSmoothButton
-            Left = 0
+            Left = 4
             Top = 112
             Width = 72
             Height = 50
@@ -1498,7 +1536,7 @@ object RestMainForm: TRestMainForm
             Version = '1.6.9.0'
           end
           object btnCutCheck: TAdvSmoothButton
-            Left = 0
+            Left = 4
             Top = 168
             Width = 72
             Height = 50
@@ -1528,7 +1566,7 @@ object RestMainForm: TRestMainForm
             Version = '1.6.9.0'
           end
           object btnPreCheck: TAdvSmoothButton
-            Left = 0
+            Left = 4
             Top = 224
             Width = 72
             Height = 50
@@ -1558,7 +1596,7 @@ object RestMainForm: TRestMainForm
             Version = '1.6.9.0'
           end
           object btnCancelPreCheck: TAdvSmoothButton
-            Left = 0
+            Left = 4
             Top = 280
             Width = 72
             Height = 50
@@ -1588,7 +1626,7 @@ object RestMainForm: TRestMainForm
             Version = '1.6.9.0'
           end
           object btnModification: TAdvSmoothButton
-            Left = 0
+            Left = 4
             Top = 336
             Width = 72
             Height = 50
@@ -1618,7 +1656,7 @@ object RestMainForm: TRestMainForm
             Version = '1.6.9.0'
           end
           object btnKeyBoard: TAdvSmoothButton
-            Left = 0
+            Left = 4
             Top = 392
             Width = 72
             Height = 50
@@ -1649,7 +1687,7 @@ object RestMainForm: TRestMainForm
             Version = '1.6.9.0'
           end
           object btnDiscount: TAdvSmoothButton
-            Left = 0
+            Left = 4
             Top = 448
             Width = 72
             Height = 50
@@ -1679,7 +1717,7 @@ object RestMainForm: TRestMainForm
             Version = '1.6.9.0'
           end
           object btnPay: TAdvSmoothButton
-            Left = 0
+            Left = 4
             Top = 504
             Width = 72
             Height = 50
@@ -1709,7 +1747,7 @@ object RestMainForm: TRestMainForm
             Version = '1.6.9.0'
           end
           object btnDevide: TAdvSmoothButton
-            Left = 0
+            Left = 4
             Top = 560
             Width = 72
             Height = 50
@@ -1739,11 +1777,15 @@ object RestMainForm: TRestMainForm
             Version = '1.6.9.0'
           end
         end
-        object tsOrderButton: TTabSheet
+        object tsOrderButton: TAdvTabSheet
           Caption = 'tsOrderButton'
+          Color = 14986888
+          ColorTo = clNone
           ImageIndex = 2
+          TabColor = clBtnFace
+          TabColorTo = clNone
           object btnEditReport: TAdvSmoothButton
-            Left = 0
+            Left = 4
             Top = 1
             Width = 72
             Height = 50
@@ -1773,7 +1815,7 @@ object RestMainForm: TRestMainForm
             Version = '1.6.9.0'
           end
           object btnCashForm: TAdvSmoothButton
-            Left = 0
+            Left = 4
             Top = 56
             Width = 72
             Height = 50

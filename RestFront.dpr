@@ -2,7 +2,6 @@ program RestFront;
 
 uses
   FastMM4,
-  ExceptionLog,
   RtlVclOptimize,
   Forms,
   AppEvnts,
