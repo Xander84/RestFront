@@ -73,7 +73,7 @@ begin
       try
         Display := CreateFile(PChar('COM' + IntToStr(ComPort)), GENERIC_READ or GENERIC_WRITE, 0, nil, OPEN_EXISTING, 0, 0);
         if Display = INVALID_HANDLE_VALUE then
-          raise Exception.Create('Error opening port');
+          raise Exception.Create('Ошибка открытия порта');
         if not SetCommMask(Display, EV_RXCHAR) then
           raise Exception.Create('Error setting port mask');
         if not GetCommState(Display, Dcb) then
