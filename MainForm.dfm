@@ -353,7 +353,7 @@ object RestMainForm: TRestMainForm
                   Styler = FrontData.FrontPanelStyler
                   FullHeight = 58
                   object btnBackToMenu: TAdvSmoothButton
-                    Left = 14
+                    Left = 10
                     Top = 7
                     Width = 212
                     Height = 43
@@ -1315,7 +1315,7 @@ object RestMainForm: TRestMainForm
         Top = 1
         Width = 80
         Height = 719
-        ActivePage = tsFunctionButton
+        ActivePage = tsMainButton
         ActiveFont.Charset = DEFAULT_CHARSET
         ActiveFont.Color = clWindowText
         ActiveFont.Height = -11
@@ -1334,7 +1334,7 @@ object RestMainForm: TRestMainForm
           TabColor = clBtnFace
           TabColorTo = clNone
           object btnExitWindows: TAdvSmoothButton
-            Left = 4
+            Left = 0
             Top = 1
             Width = 72
             Height = 50
@@ -1364,7 +1364,7 @@ object RestMainForm: TRestMainForm
             Version = '1.6.9.0'
           end
           object btnRestartRest: TAdvSmoothButton
-            Left = 4
+            Left = 0
             Top = 55
             Width = 72
             Height = 50
@@ -1393,8 +1393,8 @@ object RestMainForm: TRestMainForm
             TabOrder = 1
             Version = '1.6.9.0'
           end
-          object AdvSmoothButton1: TAdvSmoothButton
-            Left = 4
+          object btnShowKeyBoard: TAdvSmoothButton
+            Left = 0
             Top = 112
             Width = 72
             Height = 50
@@ -1433,7 +1433,7 @@ object RestMainForm: TRestMainForm
           TabColor = clBtnFace
           TabColorTo = clNone
           object Button14: TButton
-            Left = 4
+            Left = 0
             Top = 620
             Width = 72
             Height = 50
@@ -1443,7 +1443,7 @@ object RestMainForm: TRestMainForm
             OnClick = Button14Click
           end
           object btnAddQuantity: TAdvSmoothButton
-            Left = 4
+            Left = 0
             Top = 1
             Width = 72
             Height = 50
@@ -1475,7 +1475,7 @@ object RestMainForm: TRestMainForm
             Version = '1.6.9.0'
           end
           object btnRemoveQuantity: TAdvSmoothButton
-            Left = 4
+            Left = 0
             Top = 56
             Width = 72
             Height = 50
@@ -1506,7 +1506,7 @@ object RestMainForm: TRestMainForm
             Version = '1.6.9.0'
           end
           object btnDeletePosition: TAdvSmoothButton
-            Left = 4
+            Left = 0
             Top = 112
             Width = 72
             Height = 50
@@ -1536,7 +1536,7 @@ object RestMainForm: TRestMainForm
             Version = '1.6.9.0'
           end
           object btnCutCheck: TAdvSmoothButton
-            Left = 4
+            Left = 0
             Top = 168
             Width = 72
             Height = 50
@@ -1566,7 +1566,7 @@ object RestMainForm: TRestMainForm
             Version = '1.6.9.0'
           end
           object btnPreCheck: TAdvSmoothButton
-            Left = 4
+            Left = 0
             Top = 224
             Width = 72
             Height = 50
@@ -1596,7 +1596,7 @@ object RestMainForm: TRestMainForm
             Version = '1.6.9.0'
           end
           object btnCancelPreCheck: TAdvSmoothButton
-            Left = 4
+            Left = 0
             Top = 280
             Width = 72
             Height = 50
@@ -1626,7 +1626,7 @@ object RestMainForm: TRestMainForm
             Version = '1.6.9.0'
           end
           object btnModification: TAdvSmoothButton
-            Left = 4
+            Left = 0
             Top = 336
             Width = 72
             Height = 50
@@ -1656,7 +1656,7 @@ object RestMainForm: TRestMainForm
             Version = '1.6.9.0'
           end
           object btnKeyBoard: TAdvSmoothButton
-            Left = 4
+            Left = 0
             Top = 392
             Width = 72
             Height = 50
@@ -1687,7 +1687,7 @@ object RestMainForm: TRestMainForm
             Version = '1.6.9.0'
           end
           object btnDiscount: TAdvSmoothButton
-            Left = 4
+            Left = 0
             Top = 448
             Width = 72
             Height = 50
@@ -1717,7 +1717,7 @@ object RestMainForm: TRestMainForm
             Version = '1.6.9.0'
           end
           object btnPay: TAdvSmoothButton
-            Left = 4
+            Left = 0
             Top = 504
             Width = 72
             Height = 50
@@ -1747,7 +1747,7 @@ object RestMainForm: TRestMainForm
             Version = '1.6.9.0'
           end
           object btnDevide: TAdvSmoothButton
-            Left = 4
+            Left = 0
             Top = 560
             Width = 72
             Height = 50
@@ -1785,7 +1785,7 @@ object RestMainForm: TRestMainForm
           TabColor = clBtnFace
           TabColorTo = clNone
           object btnEditReport: TAdvSmoothButton
-            Left = 4
+            Left = 0
             Top = 1
             Width = 72
             Height = 50
@@ -1815,7 +1815,7 @@ object RestMainForm: TRestMainForm
             Version = '1.6.9.0'
           end
           object btnCashForm: TAdvSmoothButton
-            Left = 4
+            Left = 0
             Top = 56
             Width = 72
             Height = 50

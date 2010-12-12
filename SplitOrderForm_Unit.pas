@@ -321,7 +321,7 @@ begin
   FRightDocLine.First;
   while not FRightDocLine.Eof do
   begin
-      CopyDS(FRightDocLine, FLeftDocLine, FMainOrderKey, True);
+    CopyDS(FRightDocLine, FLeftDocLine, FMainOrderKey, True);
 //    FLeftDocLine.Next;
   end;
   RefreshDataSets;

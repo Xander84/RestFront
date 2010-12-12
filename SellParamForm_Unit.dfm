@@ -1,10 +1,10 @@
 object SellParamForm: TSellParamForm
-  Left = 135
-  Top = 150
+  Left = 413
+  Top = 54
   BorderStyle = bsDialog
   Caption = #1055#1072#1088#1072#1084#1077#1090#1088#1099' '#1087#1088#1086#1076#1072#1078#1080
-  ClientHeight = 505
-  ClientWidth = 800
+  ClientHeight = 741
+  ClientWidth = 1016
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -13,13 +13,15 @@ object SellParamForm: TSellParamForm
   Font.Style = []
   OldCreateOrder = False
   Position = poScreenCenter
+  OnCreate = FormCreate
+  OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
   object pnlMain: TAdvPanel
     Left = 0
     Top = 0
-    Width = 800
-    Height = 505
+    Width = 1016
+    Height = 741
     Align = alClient
     BevelOuter = bvNone
     Color = 16640730
@@ -55,9 +57,9 @@ object SellParamForm: TSellParamForm
     Styler = FrontData.FrontPanelStyler
     FullHeight = 0
     object lblToPay: TLabel
-      Left = 568
-      Top = 61
-      Width = 225
+      Left = 688
+      Top = 125
+      Width = 277
       Height = 33
       Alignment = taRightJustify
       AutoSize = False
@@ -69,9 +71,9 @@ object SellParamForm: TSellParamForm
       ParentFont = False
     end
     object lblChange: TLabel
-      Left = 567
-      Top = 364
-      Width = 225
+      Left = 687
+      Top = 452
+      Width = 282
       Height = 33
       Alignment = taRightJustify
       AutoSize = False
@@ -83,9 +85,9 @@ object SellParamForm: TSellParamForm
       ParentFont = False
     end
     object Label1: TLabel
-      Left = 456
-      Top = 61
-      Width = 103
+      Left = 576
+      Top = 125
+      Width = 102
       Height = 31
       Caption = #1082' '#1086#1087#1083#1072#1090#1077':'
       Font.Charset = DEFAULT_CHARSET
@@ -96,9 +98,9 @@ object SellParamForm: TSellParamForm
       ParentFont = False
     end
     object Label2: TLabel
-      Left = 492
-      Top = 364
-      Width = 70
+      Left = 612
+      Top = 452
+      Width = 69
       Height = 31
       Caption = #1089#1076#1072#1095#1072':'
       Font.Charset = DEFAULT_CHARSET
@@ -118,247 +120,9 @@ object SellParamForm: TSellParamForm
       OnChange = edMainChange
       OnKeyPress = edMainKeyPress
     end
-    object TouchKeyBoard: TAdvSmoothTouchKeyBoard
-      Left = 24
-      Top = 69
-      Width = 273
-      Height = 305
-      AutoCompletion.Font.Charset = DEFAULT_CHARSET
-      AutoCompletion.Font.Color = clWhite
-      AutoCompletion.Font.Height = -19
-      AutoCompletion.Font.Name = 'Tahoma'
-      AutoCompletion.Font.Style = []
-      AutoCompletion.Color = clBlack
-      Fill.ColorMirror = clNone
-      Fill.ColorMirrorTo = clNone
-      Fill.BorderColor = clNone
-      Fill.Rounding = 0
-      Fill.ShadowOffset = 0
-      AutoPostKey = False
-      KeyboardType = ktCELLPHONE
-      Keys = <
-        item
-          Caption = '7'
-          KeyValue = -1
-          ShiftKeyValue = -1
-          AltGrKeyValue = -1
-          SpecialKey = skNone
-          X = 3
-          Y = 2
-          Height = 76
-          Width = 89
-          SubKeys = <>
-        end
-        item
-          Caption = '8'
-          KeyValue = -1
-          ShiftKeyValue = -1
-          AltGrKeyValue = -1
-          SpecialKey = skNone
-          X = 92
-          Y = 2
-          Height = 76
-          Width = 89
-          SubKeys = <>
-        end
-        item
-          Caption = '9'
-          KeyValue = -1
-          ShiftKeyValue = -1
-          AltGrKeyValue = -1
-          SpecialKey = skNone
-          X = 181
-          Y = 2
-          Height = 76
-          Width = 89
-          SubKeys = <>
-        end
-        item
-          Caption = '4'
-          KeyValue = -1
-          ShiftKeyValue = -1
-          AltGrKeyValue = -1
-          SpecialKey = skNone
-          X = 3
-          Y = 78
-          Height = 76
-          Width = 89
-          SubKeys = <>
-        end
-        item
-          Caption = '5'
-          KeyValue = -1
-          ShiftKeyValue = -1
-          AltGrKeyValue = -1
-          SpecialKey = skNone
-          X = 92
-          Y = 78
-          Height = 76
-          Width = 89
-          SubKeys = <>
-        end
-        item
-          Caption = '6'
-          KeyValue = -1
-          ShiftKeyValue = -1
-          AltGrKeyValue = -1
-          SpecialKey = skNone
-          X = 181
-          Y = 78
-          Height = 76
-          Width = 89
-          SubKeys = <>
-        end
-        item
-          Caption = '1'
-          KeyValue = -1
-          ShiftKeyValue = -1
-          AltGrKeyValue = -1
-          SpecialKey = skNone
-          X = 3
-          Y = 152
-          Height = 76
-          Width = 89
-          SubKeys = <>
-        end
-        item
-          Caption = '2'
-          KeyValue = -1
-          ShiftKeyValue = -1
-          AltGrKeyValue = -1
-          SpecialKey = skNone
-          X = 92
-          Y = 152
-          Height = 76
-          Width = 89
-          SubKeys = <>
-        end
-        item
-          Caption = '3'
-          KeyValue = -1
-          ShiftKeyValue = -1
-          AltGrKeyValue = -1
-          SpecialKey = skNone
-          X = 181
-          Y = 152
-          Height = 76
-          Width = 89
-          SubKeys = <>
-        end
-        item
-          Caption = ','
-          KeyValue = -1
-          ShiftKeyValue = -1
-          AltGrKeyValue = -1
-          SpecialKey = skNone
-          X = 3
-          Y = 227
-          Height = 76
-          Width = 89
-          SubKeys = <>
-        end
-        item
-          Caption = '0'
-          KeyValue = -1
-          ShiftKeyValue = -1
-          AltGrKeyValue = -1
-          SpecialKey = skNone
-          X = 92
-          Y = 227
-          Height = 76
-          Width = 89
-          SubKeys = <>
-        end
-        item
-          Caption = 'Back'
-          KeyValue = 8
-          ShiftKeyValue = -1
-          AltGrKeyValue = -1
-          SpecialKey = skBackSpace
-          Color = 10526880
-          X = 181
-          Y = 227
-          Height = 76
-          Width = 89
-          SubKeys = <>
-        end>
-      SmallFont.Charset = DEFAULT_CHARSET
-      SmallFont.Color = clWindowText
-      SmallFont.Height = -13
-      SmallFont.Name = 'Times New Roman'
-      SmallFont.Style = []
-      Version = '1.5.0.0'
-      OnKeyClick = TouchKeyBoardKeyClick
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -21
-      Font.Name = 'Times New Roman'
-      Font.Style = []
-    end
-    object btnPay: TAdvSmoothButton
-      Left = 29
-      Top = 420
-      Width = 268
-      Height = 57
-      Action = actPay
-      Appearance.Font.Charset = DEFAULT_CHARSET
-      Appearance.Font.Color = clWindowText
-      Appearance.Font.Height = -19
-      Appearance.Font.Name = 'Times New Roman'
-      Appearance.Font.Style = [fsBold]
-      Status.Caption = '0'
-      Status.Appearance.Fill.Color = clRed
-      Status.Appearance.Fill.ColorMirror = clNone
-      Status.Appearance.Fill.ColorMirrorTo = clNone
-      Status.Appearance.Fill.GradientType = gtSolid
-      Status.Appearance.Fill.BorderColor = clGray
-      Status.Appearance.Fill.Rounding = 0
-      Status.Appearance.Fill.ShadowOffset = 0
-      Status.Appearance.Font.Charset = DEFAULT_CHARSET
-      Status.Appearance.Font.Color = clWhite
-      Status.Appearance.Font.Height = -11
-      Status.Appearance.Font.Name = 'Tahoma'
-      Status.Appearance.Font.Style = []
-      Bevel = False
-      Color = 15195349
-      ParentFont = False
-      TabOrder = 2
-      Version = '1.6.9.0'
-    end
-    object btnCancel: TAdvSmoothButton
-      Left = 524
-      Top = 420
-      Width = 268
-      Height = 57
-      Appearance.Font.Charset = DEFAULT_CHARSET
-      Appearance.Font.Color = clWindowText
-      Appearance.Font.Height = -19
-      Appearance.Font.Name = 'Times New Roman'
-      Appearance.Font.Style = [fsBold]
-      Status.Caption = '0'
-      Status.Appearance.Fill.Color = clRed
-      Status.Appearance.Fill.ColorMirror = clNone
-      Status.Appearance.Fill.ColorMirrorTo = clNone
-      Status.Appearance.Fill.GradientType = gtSolid
-      Status.Appearance.Fill.BorderColor = clGray
-      Status.Appearance.Fill.Rounding = 0
-      Status.Appearance.Fill.ShadowOffset = 0
-      Status.Appearance.Font.Charset = DEFAULT_CHARSET
-      Status.Appearance.Font.Color = clWhite
-      Status.Appearance.Font.Height = -11
-      Status.Appearance.Font.Name = 'Tahoma'
-      Status.Appearance.Font.Style = []
-      Bevel = False
-      Caption = #1054#1090#1084#1077#1085#1072
-      Color = 15195349
-      ParentFont = False
-      TabOrder = 3
-      Version = '1.6.9.0'
-      OnClick = btnCancelClick
-    end
     object btnCashPay: TAdvSmoothToggleButton
-      Left = 320
-      Top = 97
+      Left = 368
+      Top = 169
       Width = 174
       Height = 59
       Color = 15195349
@@ -389,12 +153,12 @@ object SellParamForm: TSellParamForm
       Status.Appearance.Font.Style = []
       GroupIndex = 1
       ParentFont = False
-      TabOrder = 4
+      TabOrder = 1
       OnClick = btnCashPayClick
     end
     object btnBeznalPay: TAdvSmoothToggleButton
-      Left = 320
-      Top = 163
+      Left = 368
+      Top = 235
       Width = 174
       Height = 59
       Color = 15195349
@@ -425,12 +189,12 @@ object SellParamForm: TSellParamForm
       Status.Appearance.Font.Style = []
       GroupIndex = 1
       ParentFont = False
-      TabOrder = 5
+      TabOrder = 2
       OnClick = btnBeznalPayClick
     end
     object btnCardPay: TAdvSmoothToggleButton
-      Left = 320
-      Top = 229
+      Left = 368
+      Top = 301
       Width = 174
       Height = 59
       Color = 15195349
@@ -461,12 +225,12 @@ object SellParamForm: TSellParamForm
       Status.Appearance.Font.Style = []
       GroupIndex = 1
       ParentFont = False
-      TabOrder = 6
+      TabOrder = 3
       OnClick = btnCardPayClick
     end
     object btnDelPay: TAdvSmoothButton
-      Left = 321
-      Top = 296
+      Left = 369
+      Top = 368
       Width = 172
       Height = 57
       Action = actDeletePay
@@ -491,14 +255,14 @@ object SellParamForm: TSellParamForm
       BevelColor = clSilver
       Color = 15195349
       ParentFont = False
-      TabOrder = 7
+      TabOrder = 4
       Version = '1.6.9.0'
     end
     object DBAdvGrMain: TDBAdvGrid
-      Left = 504
-      Top = 96
-      Width = 289
-      Height = 257
+      Left = 576
+      Top = 168
+      Width = 393
+      Height = 273
       Cursor = crDefault
       ColCount = 3
       DefaultRowHeight = 30
@@ -511,7 +275,7 @@ object SellParamForm: TSellParamForm
       Font.Style = [fsBold]
       ParentFont = False
       ScrollBars = ssBoth
-      TabOrder = 8
+      TabOrder = 5
       OnFooterCalc = DBAdvGrMainFooterCalc
       ActiveCellFont.Charset = DEFAULT_CHARSET
       ActiveCellFont.Color = clWindowText
@@ -667,7 +431,7 @@ object SellParamForm: TSellParamForm
           PrintFont.Height = -11
           PrintFont.Name = 'Tahoma'
           PrintFont.Style = []
-          Width = 131
+          Width = 235
         end>
       DataSource = dsMain
       InvalidPicture.Data = {
@@ -700,7 +464,91 @@ object SellParamForm: TSellParamForm
       ColWidths = (
         20
         133
-        131)
+        235)
+    end
+    object AdvPanel1: TAdvPanel
+      Left = 0
+      Top = 616
+      Width = 1016
+      Height = 125
+      Align = alBottom
+      TabOrder = 6
+      UseDockManager = True
+      Version = '2.0.1.0'
+      Caption.Color = clHighlight
+      Caption.ColorTo = clNone
+      Caption.Font.Charset = DEFAULT_CHARSET
+      Caption.Font.Color = clHighlightText
+      Caption.Font.Height = -11
+      Caption.Font.Name = 'MS Sans Serif'
+      Caption.Font.Style = []
+      StatusBar.Font.Charset = DEFAULT_CHARSET
+      StatusBar.Font.Color = clWindowText
+      StatusBar.Font.Height = -11
+      StatusBar.Font.Name = 'Tahoma'
+      StatusBar.Font.Style = []
+      FullHeight = 0
+      object btnPay: TAdvSmoothButton
+        Left = 45
+        Top = 37
+        Width = 268
+        Height = 57
+        Action = actPay
+        Appearance.Font.Charset = DEFAULT_CHARSET
+        Appearance.Font.Color = clWindowText
+        Appearance.Font.Height = -19
+        Appearance.Font.Name = 'Times New Roman'
+        Appearance.Font.Style = [fsBold]
+        Status.Caption = '0'
+        Status.Appearance.Fill.Color = clRed
+        Status.Appearance.Fill.ColorMirror = clNone
+        Status.Appearance.Fill.ColorMirrorTo = clNone
+        Status.Appearance.Fill.GradientType = gtSolid
+        Status.Appearance.Fill.BorderColor = clGray
+        Status.Appearance.Fill.Rounding = 0
+        Status.Appearance.Fill.ShadowOffset = 0
+        Status.Appearance.Font.Charset = DEFAULT_CHARSET
+        Status.Appearance.Font.Color = clWhite
+        Status.Appearance.Font.Height = -11
+        Status.Appearance.Font.Name = 'Tahoma'
+        Status.Appearance.Font.Style = []
+        Bevel = False
+        Color = 15195349
+        ParentFont = False
+        TabOrder = 0
+        Version = '1.6.9.0'
+      end
+      object btnCancel: TAdvSmoothButton
+        Left = 676
+        Top = 37
+        Width = 268
+        Height = 57
+        Appearance.Font.Charset = DEFAULT_CHARSET
+        Appearance.Font.Color = clWindowText
+        Appearance.Font.Height = -19
+        Appearance.Font.Name = 'Times New Roman'
+        Appearance.Font.Style = [fsBold]
+        Status.Caption = '0'
+        Status.Appearance.Fill.Color = clRed
+        Status.Appearance.Fill.ColorMirror = clNone
+        Status.Appearance.Fill.ColorMirrorTo = clNone
+        Status.Appearance.Fill.GradientType = gtSolid
+        Status.Appearance.Fill.BorderColor = clGray
+        Status.Appearance.Fill.Rounding = 0
+        Status.Appearance.Fill.ShadowOffset = 0
+        Status.Appearance.Font.Charset = DEFAULT_CHARSET
+        Status.Appearance.Font.Color = clWhite
+        Status.Appearance.Font.Height = -11
+        Status.Appearance.Font.Name = 'Tahoma'
+        Status.Appearance.Font.Style = []
+        Bevel = False
+        Caption = #1054#1090#1084#1077#1085#1072
+        Color = 15195349
+        ParentFont = False
+        TabOrder = 1
+        Version = '1.6.9.0'
+        OnClick = btnCancelClick
+      end
     end
   end
   object dsMain: TDataSource

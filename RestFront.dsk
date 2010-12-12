@@ -1,59 +1,51 @@
 [Closed Files]
-File_0=SourceModule,'D:\Front\Source\Components\FastReport 4\Source\frxDBSet.pas',0,1,305,16,325,0,0
-File_1=SourceModule,'D:\Front\Source\Components\FastReport 4\LibD5\frxDCtrl.pas',0,1,169,3,209,0,0
-File_2=SourceModule,'D:\Front\Source\Components\FastReport 4\LibD5\frxCtrls.pas',0,1,1175,3,1183,0,0
-File_3=SourceModule,'D:\Front\Source\Components\FastReport 4\LibD5\frxADOComponents.pas',0,1,576,3,584,0,0
-File_4=SourceModule,'D:\Front\Source\Components\FastReport 4\Demos\ClientServer\Server\Main.pas',0,1,101,3,109,0,0
-File_5=SourceModule,'D:\Front\Source\Components\FastReport 4\FastQB\fqbClass.pas',0,1,990,13,998,0,0
-File_6=SourceModule,'d:\front\source\TMS\TodoList.pas',0,1,1409,1,1,0,0
-File_7=SourceModule,'c:\program files\borland\delphi7\source\vcl\Dialogs.pas',0,1,374,51,388,0,0
-File_8=SourceModule,'D:\Front\Source\TMS\AdvDateTimePicker.pas',0,1,73,11,2,0,0
-File_9=SourceModule,'c:\program files\borland\delphi7\source\vcl\grids.pas',0,1,663,1,676,0,0
+File_0=SourceModule,'d:\front\gepard\DrvFRLib_TLB.pas',0,1,11699,25,11707,0,0
+File_1=SourceModule,'c:\program files\borland\delphi7\source\rtl\Sys\system.pas',0,1,8152,28,8169,0,0
+File_2=SourceModule,'c:\program files\borland\delphi7\source\vcl\OleCtrls.pas',0,1,31,11,48,0,0
+File_3=SourceModule,'D:\Front\Source\Components\kbmMemTable\Source\kbmMemTable.pas',0,1,13733,13,13345,0,0
+File_4=SourceModule,'c:\program files\borland\delphi7\source\rtl\Win\Windows.pas',0,1,29162,21,29179,0,0
+File_5=SourceModule,'D:\Front\Source\MainForm.dfm',0,1,880,41,897,0,0
+File_6=SourceModule,'D:\Front\Source\SplitOrderForm_Unit.pas',0,1,1,1,1,0,0
+File_7=SourceModule,'D:\Front\Source\Display\Base_Display_unit.pas',0,1,77,1,77,0,0
 
 [Modules]
-Module0=D:\Front\Source\CardCodeForm_Unit.pas
-Module1=D:\Front\Source\SplitOrderForm_Unit.pas
-Module2=D:\Front\Source\PayForm_Unit.pas
-Module3=D:\Front\Source\ChooseDiscountCardForm_Unit.pas
-Module4=D:\Front\Source\SellParamForm_Unit.pas
+Module0=D:\Front\Source\CashForm_Unit.pas
+Module1=D:\Front\Source\MainForm.pas
+Module2=D:\Front\Source\FiscalRegister_Unit.pas
+Module3=D:\Front\Source\Spark617\Spark617_Unit.pas
+Module4=d:\front\gepard\MercFPrtX_TLB.pas
 Module5=D:\Front\Source\Front_DataBase_Unit.pas
-Module6=D:\Front\Source\RestBaseForm_Unit.pas
-Module7=D:\Front\Source\FrontData_Unit.pas
-Module8=D:\Front\Source\EditReportForm_Unit.pas
-Module9=D:\Front\Source\PercOrCardForm_Unit.pas
-Module10=D:\Front\Source\TMS\BaseGrid.pas
-Module11=D:\Front\Source\TMS\AdvGrid.pas
-Module12=D:\Front\Source\TMS\DBAdvGrid.pas
-Module13=D:\Front\Source\DiscountTypeForm_Unit.pas
-Module14=D:\Front\Source\Report_Unit.pas
-Module15=D:\Front\Source\TMS\TaskDialog.pas
-Module16=D:\Front\Source\MainForm.pas
-Count=17
+Module6=D:\Front\Source\Merc\MercFP_Unit.pas
+Module7=D:\Front\Source\RestFront.dpr
+Module8=D:\Front\Source\SellParamForm_Unit.pas
+Module9=D:\Front\Source\Display\Pole_Display_Unit.pas
+Module10=D:\Front\Source\Shtrih\ShtrihFR_Unit.pas
+Count=11
 EditWindowCount=1
 
-[D:\Front\Source\CardCodeForm_Unit.pas]
+[D:\Front\Source\CashForm_Unit.pas]
 ModuleType=SourceModule
 FormState=1
 FormOnTop=0
 
-[D:\Front\Source\SplitOrderForm_Unit.pas]
+[D:\Front\Source\MainForm.pas]
 ModuleType=SourceModule
 FormState=1
 FormOnTop=1
 
-[D:\Front\Source\PayForm_Unit.pas]
+[D:\Front\Source\FiscalRegister_Unit.pas]
 ModuleType=SourceModule
-FormState=1
-FormOnTop=1
-
-[D:\Front\Source\ChooseDiscountCardForm_Unit.pas]
-ModuleType=SourceModule
-FormState=1
+FormState=0
 FormOnTop=0
 
-[D:\Front\Source\SellParamForm_Unit.pas]
+[D:\Front\Source\Spark617\Spark617_Unit.pas]
 ModuleType=SourceModule
-FormState=1
+FormState=0
+FormOnTop=0
+
+[d:\front\gepard\MercFPrtX_TLB.pas]
+ModuleType=SourceModule
+FormState=0
 FormOnTop=0
 
 [D:\Front\Source\Front_DataBase_Unit.pas]
@@ -61,57 +53,27 @@ ModuleType=SourceModule
 FormState=0
 FormOnTop=0
 
-[D:\Front\Source\RestBaseForm_Unit.pas]
+[D:\Front\Source\Merc\MercFP_Unit.pas]
 ModuleType=SourceModule
 FormState=0
 FormOnTop=0
 
-[D:\Front\Source\FrontData_Unit.pas]
+[D:\Front\Source\RestFront.dpr]
 ModuleType=SourceModule
 FormState=0
 FormOnTop=0
 
-[D:\Front\Source\EditReportForm_Unit.pas]
+[D:\Front\Source\SellParamForm_Unit.pas]
 ModuleType=SourceModule
 FormState=0
 FormOnTop=0
 
-[D:\Front\Source\PercOrCardForm_Unit.pas]
+[D:\Front\Source\Display\Pole_Display_Unit.pas]
 ModuleType=SourceModule
 FormState=0
 FormOnTop=0
 
-[D:\Front\Source\TMS\BaseGrid.pas]
-ModuleType=SourceModule
-FormState=0
-FormOnTop=0
-
-[D:\Front\Source\TMS\AdvGrid.pas]
-ModuleType=SourceModule
-FormState=0
-FormOnTop=0
-
-[D:\Front\Source\TMS\DBAdvGrid.pas]
-ModuleType=SourceModule
-FormState=0
-FormOnTop=0
-
-[D:\Front\Source\DiscountTypeForm_Unit.pas]
-ModuleType=SourceModule
-FormState=0
-FormOnTop=0
-
-[D:\Front\Source\Report_Unit.pas]
-ModuleType=SourceModule
-FormState=0
-FormOnTop=0
-
-[D:\Front\Source\TMS\TaskDialog.pas]
-ModuleType=SourceModule
-FormState=0
-FormOnTop=0
-
-[D:\Front\Source\MainForm.pas]
+[D:\Front\Source\Shtrih\ShtrihFR_Unit.pas]
 ModuleType=SourceModule
 FormState=0
 FormOnTop=0
@@ -120,13 +82,17 @@ FormOnTop=0
 FormState=0
 FormOnTop=0
 
-[D:\Front\Source\RestFront.dpr]
+[D:\Front\Source\FrontData_Unit.pas]
+FormState=0
+FormOnTop=0
+
+[D:\Front\Source\BaseFrontForm_Unit.pas]
 FormState=0
 FormOnTop=0
 
 [EditWindow0]
-ViewCount=17
-CurrentView=3
+ViewCount=11
+CurrentView=0
 View0=0
 View1=1
 View2=2
@@ -138,20 +104,14 @@ View7=7
 View8=8
 View9=9
 View10=10
-View11=11
-View12=12
-View13=13
-View14=14
-View15=15
-View16=16
 CodeExplorer=CodeExplorer@EditWindow0
 MessageView=MessageView@EditWindow0
 Create=1
 Visible=1
 State=2
-Left=527
-Top=135
-Width=753
+Left=661
+Top=236
+Width=619
 Height=502
 MaxLeft=-4
 MaxTop=102
@@ -161,142 +121,103 @@ ClientWidth=1280
 ClientHeight=646
 LeftPanelSize=318
 LeftPanelClients=CodeExplorer@EditWindow0,WatchWindow,CallStackWindow
-LeftPanelData=00000400000000008602000000000000013E010000000000000100000000420100000C000000436F64654578706C6F7265720100000000E30100000B000000576174636857696E646F770100000000860200000F00000043616C6C537461636B57696E646F7701000000008802000000000000FFFFFFFF
+LeftPanelData=00000400000000008602000000000000013E010000000000000100000000420100000C000000436F64654578706C6F7265720100000000D40100000B000000576174636857696E646F770100000000860200000F00000043616C6C537461636B57696E646F7701000000008802000000000000FFFFFFFF
 RightPanelSize=0
 BottomPanelSize=0
 BottomPanelClients=MessageView@EditWindow0
-BottomPanelData=00000400010000000B0000004D657373616765566965770005000000000000022E0100000000000001000000000000000000000000010000000000050000000000000100000000F80400000000000001000000000005000000000000010000000000050000000000000100000000000500000000000001000000007C04000000000000010000000000050000000000000100000000000500000000000001000000000005000000000000010000000000050000000000000100000000000500000000000001000000000005000000000000010000000000050000000000000100000000F80400000000000001000000000005000000000000010000000000050000000000000100000000000500000000000001000000000005000000000000010000000000050000000000000100000000000500000000000001000000000005000000000000010000000000050000000000000100000000000500000000000001000000000005000000000000010000000000050000000000000100000000F80400000000000001000000000005000000000000010000000000050000000000000100000000000500000000000001000000000005000000000000010000000000050000000000000100000000000500000000000001000000000005000000000000010000000000050000000000000100000000F80400000000000001000000000005000000000000010000000000050000000000000100000000000500000000000001000000000005000000000000010000000000050000000000000100000000F804000000000000010000000000050000000000000100000000000500000B0000004D65737361676556696577FFFFFFFF
+BottomPanelData=00000400010000000B0000004D657373616765566965770005000000000000022E0100000000000001000000000000000000000000010000000000050000000000000100000000F80400000000000001000000000005000000000000010000000000050000000000000100000000000500000000000001000000007C04000000000000010000000000050000000000000100000000000500000000000001000000000005000000000000010000000000050000000000000100000000000500000000000001000000000005000000000000010000000000050000000000000100000000F80400000000000001000000000005000000000000010000000000050000000000000100000000000500000000000001000000000005000000000000010000000000050000000000000100000000000500000000000001000000000005000000000000010000000000050000000000000100000000000500000000000001000000000005000000000000010000000000050000000000000100000000F80400000000000001000000000005000000000000010000000000050000000000000100000000000500000000000001000000000005000000000000010000000000050000000000000100000000000500000000000001000000000005000000000000010000000000050000000000000100000000F80400000000000001000000000005000000000000010000000000050000000000000100000000000500000000000001000000000005000000000000010000000000050000000000000100000000F804000000000000010000000000050000000000000100000000000500000000000001000000000005000000000000FFFFFFFF
 
 [View0]
-Module=D:\Front\Source\MainForm.pas
-CursorX=20
-CursorY=12
+Module=D:\Front\Source\CashForm_Unit.pas
+CursorX=31
+CursorY=4
 TopLine=1
 LeftCol=1
 
 [View1]
-Module=D:\Front\Source\TMS\TaskDialog.pas
-CursorX=18
-CursorY=539
-TopLine=523
+Module=D:\Front\Source\Shtrih\ShtrihFR_Unit.pas
+CursorX=73
+CursorY=335
+TopLine=329
 LeftCol=1
 
 [View2]
-Module=D:\Front\Source\Report_Unit.pas
-CursorX=54
-CursorY=375
-TopLine=348
+Module=D:\Front\Source\MainForm.pas
+CursorX=49
+CursorY=2313
+TopLine=2206
 LeftCol=1
 
 [View3]
-Module=D:\Front\Source\CardCodeForm_Unit.pas
-CursorX=35
-CursorY=11
-TopLine=1
+Module=D:\Front\Source\Display\Pole_Display_Unit.pas
+CursorX=72
+CursorY=84
+TopLine=162
 LeftCol=1
 
 [View4]
-Module=D:\Front\Source\DiscountTypeForm_Unit.pas
-CursorX=35
-CursorY=16
-TopLine=1
+Module=D:\Front\Source\SellParamForm_Unit.pas
+CursorX=52
+CursorY=366
+TopLine=349
 LeftCol=1
 
 [View5]
-Module=D:\Front\Source\SellParamForm_Unit.pas
-CursorX=24
-CursorY=10
-TopLine=1
+Module=D:\Front\Source\FiscalRegister_Unit.pas
+CursorX=29
+CursorY=70
+TopLine=48
 LeftCol=1
 
 [View6]
-Module=D:\Front\Source\TMS\DBAdvGrid.pas
-CursorX=1
-CursorY=1
-TopLine=1
+Module=D:\Front\Source\RestFront.dpr
+CursorX=4
+CursorY=49
+TopLine=9
 LeftCol=1
 
 [View7]
-Module=D:\Front\Source\TMS\AdvGrid.pas
+Module=D:\Front\Source\Merc\MercFP_Unit.pas
 CursorX=43
-CursorY=46996
-TopLine=46983
+CursorY=301
+TopLine=263
 LeftCol=1
 
 [View8]
-Module=D:\Front\Source\TMS\BaseGrid.pas
-CursorX=1
-CursorY=929
-TopLine=924
+Module=D:\Front\Source\Front_DataBase_Unit.pas
+CursorX=33
+CursorY=94
+TopLine=80
 LeftCol=1
 
 [View9]
-Module=D:\Front\Source\PayForm_Unit.pas
-CursorX=13
-CursorY=142
-TopLine=1
+Module=d:\front\gepard\MercFPrtX_TLB.pas
+CursorX=1
+CursorY=6036
+TopLine=6028
 LeftCol=1
 
 [View10]
-Module=D:\Front\Source\PercOrCardForm_Unit.pas
-CursorX=25
-CursorY=9
-TopLine=1
-LeftCol=1
-
-[View11]
-Module=D:\Front\Source\ChooseDiscountCardForm_Unit.pas
-CursorX=6
-CursorY=94
-TopLine=153
-LeftCol=1
-
-[View12]
-Module=D:\Front\Source\EditReportForm_Unit.pas
-CursorX=1
-CursorY=1
-TopLine=1
-LeftCol=1
-
-[View13]
-Module=D:\Front\Source\FrontData_Unit.pas
-CursorX=21
-CursorY=206
-TopLine=201
-LeftCol=1
-
-[View14]
-Module=D:\Front\Source\RestBaseForm_Unit.pas
-CursorX=39
-CursorY=14
-TopLine=1
-LeftCol=1
-
-[View15]
-Module=D:\Front\Source\SplitOrderForm_Unit.pas
-CursorX=85
-CursorY=24
-TopLine=1
-LeftCol=1
-
-[View16]
-Module=D:\Front\Source\Front_DataBase_Unit.pas
-CursorX=57
-CursorY=824
-TopLine=818
+Module=D:\Front\Source\Spark617\Spark617_Unit.pas
+CursorX=50
+CursorY=421
+TopLine=405
 LeftCol=1
 
 [Watches]
-Count=9
-Watch0='Result',256,0,18,1,0,'Watches'
-Watch1='Text',256,0,18,1,0,'Watches'
-Watch2='Name',256,0,18,1,0,'Watches'
-Watch3='DataSet.FieldByName(''USR$PERSDISCOUNT'').AsCurrency',256,0,18,1,0,'Watches'
-Watch4='s',256,0,18,1,0,'Watches'
-Watch5='Count',256,0,18,1,0,'Watches'
-Watch6='FReport.Variables.Count',256,0,18,1,0,'Watches'
-Watch7='Variables.Count',256,0,18,1,0,'Watches'
-Watch8='Report.Variables.Count',256,0,18,1,0,'Watches'
+Count=12
+Watch0='Form.Components[i].Name',256,0,18,1,0,'Watches'
+Watch1='TCustomAdvPanel(Owner.Components[i - 1]).Name',256,0,18,1,0,'Watches'
+Watch2='DBAdvGrMain.FixedRows',256,0,18,1,0,'Watches'
+Watch3='FLineTable.Eof',256,0,18,1,0,'Watches'
+Watch4='FLineTable.RecordCount',256,0,18,1,0,'Watches'
+Watch5='LineTable.RecordCount',256,0,18,1,0,'Watches'
+Watch6='FDataLink.DataSet.Eof',256,0,18,1,0,'Watches'
+Watch7='FLineTable.State',256,0,18,1,0,'Watches'
+Watch8='self.State',256,0,18,1,0,'Watches'
+Watch9='DataSource.State',256,0,18,1,0,'Watches'
+Watch10='FDataLink.DataSet.State',256,0,18,1,0,'Watches'
+Watch11='E',256,0,18,1,0,'Watches'
 
 [WatchWindow]
 WatchColumnWidth=100
@@ -307,27 +228,19 @@ State=0
 Left=0
 Top=334
 Width=318
-Height=145
+Height=130
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=318
-ClientHeight=145
+ClientHeight=130
 TBDockHeight=149
 LRDockWidth=318
 Dockable=1
 
 [Breakpoints]
-Count=10
-Breakpoint0='c:\program files\borland\delphi7\source\vcl\dbctrls.pas',5239,'',0,1,'',1,0,0,'',1,'','',''
-Breakpoint1='D:\Front\Source\Components\FastReport 4\Source\frxVariables.pas',298,'',0,1,'',1,0,0,'',1,'','',''
-Breakpoint2='D:\Front\Source\Components\FastReport 4\Source\frxVariables.pas',129,'',0,1,'',1,0,0,'',1,'','',''
-Breakpoint3='D:\Front\Source\Components\FastReport 4\Source\frxVariables.pas',142,'',0,1,'',1,0,0,'',1,'','',''
-Breakpoint4='D:\Front\Source\Components\FastReport 4\Source\frxVariables.pas',236,'',0,1,'',1,0,0,'',1,'','',''
-Breakpoint5='D:\Front\Source\Components\FastReport 4\Source\frxVariables.pas',285,'',0,1,'',1,0,0,'',1,'','',''
-Breakpoint6='D:\Front\Source\Components\FastReport 4\Source\frxVariables.pas',270,'',0,1,'',1,0,0,'',1,'','',''
-Breakpoint7='D:\Front\Source\TMS\AdvGrid.pas',11467,'',0,1,'',1,0,0,'',1,'','',''
-Breakpoint8='D:\Front\Source\TMS\AdvGrid.pas',15588,'',0,1,'',1,0,0,'',1,'','',''
-Breakpoint9='D:\Front\Source\TMS\AdvGrid.pas',38518,'',0,1,'',1,0,0,'',1,'','',''
+Count=2
+Breakpoint0='D:\Front\Source\TMS\DBAdvGrid.pas',5309,'',0,1,'',1,0,0,'',1,'','',''
+Breakpoint1='D:\Front\Source\Display\Base_Display_unit.pas',198,'',0,1,'',1,0,0,'',1,'','',''
 
 [AddressBreakpoints]
 Count=0
@@ -367,7 +280,7 @@ Top=151
 Width=461
 Height=445
 Create=1
-Visible=1
+Visible=0
 State=0
 MaxLeft=-1
 MaxTop=-1
@@ -455,20 +368,20 @@ Create=1
 Visible=1
 State=0
 Left=0
-Top=495
+Top=480
 Width=318
-Height=151
+Height=166
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=318
-ClientHeight=151
+ClientHeight=166
 TBDockHeight=161
 LRDockWidth=318
 Dockable=1
 
 [ObjectTree]
 Create=1
-Visible=1
+Visible=0
 State=0
 Left=100
 Top=204

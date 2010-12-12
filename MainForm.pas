@@ -1,7 +1,7 @@
 unit MainForm;
 
 {$WARN SYMBOL_PLATFORM OFF}
-
+{$I RestFront.Inc}
 {Были сделаны изменения в компоненте TAdvPageControl что бы не отображалась граница}
 
 interface
@@ -156,7 +156,7 @@ type
     tsOrderButton: TAdvTabSheet;
     btnEditReport: TAdvSmoothButton;
     btnCashForm: TAdvSmoothButton;
-    AdvSmoothButton1: TAdvSmoothButton;
+    btnShowKeyBoard: TAdvSmoothButton;
 
     //Проверка введёного пароля
     procedure actPassEnterExecute(Sender: TObject);
@@ -381,6 +381,29 @@ end;
 
 procedure TRestMainForm.FormCreate(Sender: TObject);
 begin
+  {$IFDEF NEW_TABCONTROL}
+  btnBackToMenu.Left := btnBackToMenu.Left + 4;
+
+  btnEditReport.Left := btnEditReport.Left + 4;
+  btnCashForm.Left := btnCashForm.Left + 4;
+
+  btnAddQuantity.Left := btnAddQuantity.Left + 4;
+  btnRemoveQuantity.Left := btnRemoveQuantity.Left + 4;
+  btnDeletePosition.Left := btnDeletePosition.Left + 4;
+  btnCutCheck.Left := btnCutCheck.Left + 4;
+  btnPreCheck.Left := btnPreCheck.Left + 4;
+  btnCancelPreCheck.Left := btnCancelPreCheck.Left + 4;
+  btnModification.Left := btnModification.Left + 4;
+  btnKeyBoard.Left := btnKeyBoard.Left + 4;
+  btnDiscount.Left := btnDiscount.Left + 4;
+  btnPay.Left := btnPay.Left + 4;
+  btnDevide.Left := btnDevide.Left + 4;
+
+  btnExitWindows.Left := btnExitWindows.Left + 4;
+  btnRestartRest.Left := btnRestartRest.Left + 4;
+  btnShowKeyBoard.Left := btnShowKeyBoard.Left + 4;
+  {$ENDIF}
+
   Height := cn_Height;
   Width := cn_Width;
   AdjustResolution(Self);
@@ -562,7 +585,7 @@ begin
     if (FLastLeftButton + {btnFirstTop} + btnWidth) > tsUserOrder.Width then
     begin
       FLastTopButton := FLastTopButton + btnHeight + btnFirstTop;
-      FLastLeftButton := btnFirstTop + 4;
+      FLastLeftButton := btnFirstTop {$IFDEF NEW_TABCONTROL} + 4 {$ENDIF};
 
       FButton.Left := FLastLeftButton;
       FButton.Top  := FLastTopButton;
@@ -675,7 +698,7 @@ begin
     if (FGroupLastLeftButton + AdjustWidth(btnHalfWidth)) > FPanel.Width then
     begin
       FGroupLastTop := FGroupLastTop + btnHeight + btnFirstTop;
-      FGroupLastLeftButton := btnFirstTop + 4;
+      FGroupLastLeftButton := btnFirstTop {$IFDEF NEW_TABCONTROL} + 4 {$ENDIF};
 
       FButton.Left := FGroupLastLeftButton;
       FButton.Top  := FGroupLastTop;
@@ -718,7 +741,7 @@ begin
 
     FMenuLastTop := FMenuLastTop + btnHeight + 2;
 
-    FButton.Left := btnFirstTop + 4;
+    FButton.Left := btnFirstTop {$IFDEF NEW_TABCONTROL} + 4 {$ENDIF};
     FButton.Top  := FMenuLastTop;
 
     FButton.Tag := FMenuDataSet.FieldByName('ID').AsInteger;
@@ -818,7 +841,7 @@ procedure TRestMainForm.MenuButtonOnClick(Sender: TObject);
 begin
   FGroupLastTop := btnFirstTop;
   FGroupFirstTop := btnFirstTop;
-  FGroupLastLeftButton := btnFirstTop + 4;
+  FGroupLastLeftButton := btnFirstTop {$IFDEF NEW_TABCONTROL} + 4 {$ENDIF};
   RemoveGroupButton;
   FMenuKey := TButton(Sender).Tag;
   CreateGroupButtonList(FMenuKey);

@@ -258,7 +258,7 @@ object OrderNumber: TOrderNumber
       OnKeyClick = TouchKeyBoardKeyClick
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
-      Font.Height = -21
+      Font.Height = -35
       Font.Name = 'Times New Roman'
       Font.Style = []
     end

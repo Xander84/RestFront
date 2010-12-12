@@ -5,7 +5,20 @@ interface
 uses
   Front_DataBase_Unit, Classes, SysUtils, Forms;
 
+{
+Что должен уметь лог:
+1. Лог ошибок, писать все ошибки и время, когда это случалось. Время брать локальное или сервера?
+2. Лог операций.
+3. Лог позиций чека.
+
+Работать с логом должен объект работы с БД TFrontBase
+При подлючении создаём класс, при отключении - убиваем.
+
+ }
 {type
+  TFrontLogType = (LogIn, Exit, ErrorPass);     }
+
+type
   TFrontLog = class(TObject)
   private
     FFrontBase: TFrontBase;
@@ -18,12 +31,12 @@ uses
     procedure WriteLogToFile(const Str: String; const UserKey: Integer);
   public
     constructor Create;
-    procedure WriteLog(const LogType: TFrontLogType; const Msg: String);
+    destructor Destroy; override;
+//    procedure WriteLog(const LogType: TFrontLogType; const Msg: String);
     property FrontBase: TFrontBase read FFrontBase write SetFrontBase;
-  end;   }
+  end;
 
-{type
-  TFrontLogType = (LogIn, Exit, ErrorPass); }
+
 
 const
   LogFileName = 'FrontLog.log';
@@ -98,6 +111,42 @@ begin
         WriteLogToBase(Str, UserKey);
     end;
   end;  
+end;
+
+{ TFrontLog }
+
+constructor TFrontLog.Create;
+begin
+  FFrontBase := nil;
+end;
+
+destructor TFrontLog.Destroy;
+begin
+//
+  inherited;
+end;
+
+procedure TFrontLog.SetFrontBase(const Value: TFrontBase);
+begin
+  FFrontBase := Value;
+end;
+
+{procedure TFrontLog.WriteLog(const LogType: TFrontLogType;
+  const Msg: String);
+begin
+//
+end;  }
+
+procedure TFrontLog.WriteLogToBase(const Str: String;
+  const UserKey: Integer);
+begin
+//
+end;
+
+procedure TFrontLog.WriteLogToFile(const Str: String;
+  const UserKey: Integer);
+begin
+//
 end;
 
 end.

@@ -59,7 +59,7 @@ object ChooseDiscountCard: TChooseDiscountCard
     object Label1: TLabel
       Left = 16
       Top = 19
-      Width = 40
+      Width = 42
       Height = 23
       Caption = #1050#1086#1076':'
       Font.Charset = DEFAULT_CHARSET
@@ -156,7 +156,7 @@ object ChooseDiscountCard: TChooseDiscountCard
     object Label5: TLabel
       Left = 16
       Top = 260
-      Width = 169
+      Width = 170
       Height = 23
       Caption = #1054#1087#1083#1072#1090#1080#1090#1100' '#1073#1086#1085#1091#1089#1086#1084':'
       Font.Charset = DEFAULT_CHARSET
