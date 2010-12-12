@@ -1568,7 +1568,11 @@ var
   ComputerNameSize: DWORD;
 begin
   ComputerNameSize := SizeOf(ComputerName);
+{$IFDEF VER150}
   if GetComputerName(ComputerName, ComputerNameSize) = BOOL(0) then
+{$ELSE}
+  if GetComputerNameA(ComputerName, ComputerNameSize) = BOOL(0) then
+{$ENDIF}
     Result := ''
   else
     Result := AnsiUpperCase(ComputerName);

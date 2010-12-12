@@ -1,3 +1,11 @@
+{**************************************************************************************************}
+{                                                                                                  }
+{ Last modified: $Date:: 2010-09-10 17:52:34 +0200 (ven., 10 sept. 2010)                         $ }
+{ Revision:      $Rev:: 3333                                                                     $ }
+{ Author:        $Author:: outchy                                                                $ }
+{                                                                                                  }
+{**************************************************************************************************}
+
 (*****************************************************************************
   This IDL-file has been converted by "the fIDLer".
   [written by -=Assarbad=- <oliver at assarbad dot net> Sept-2004] under MPL
@@ -27,12 +35,25 @@ unit MSTask;
 
 {$ALIGN ON}
 {$MINENUMSIZE 4}
-{$WEAKPACKAGEUNIT}
+
 interface
 
+{$I jcl.inc}
+
+{$IFDEF SUPPORTS_WEAKPACKAGEUNIT}
+  {$IFDEF UNITVERSIONING}
+    {$WEAKPACKAGEUNIT OFF}
+  {$ELSE ~UNITVERSIONING}
+    {$WEAKPACKAGEUNIT ON}
+  {$ENDIF ~UNITVERSIONING}
+{$ENDIF SUPPORTS_WEAKPACKAGEUNIT}
+
 uses
-  Windows,
-  ActiveX;
+  {$IFDEF UNITVERSIONING}
+  JclUnitVersioning,
+  {$ENDIF UNITVERSIONING}
+  ActiveX,
+  Windows;
 
 
 (*$HPPEMIT '#include <MSTask.h>' *)
@@ -319,6 +340,12 @@ type
 
   end;
 {$EXTERNALSYM TASK_TRIGGER}
+  {$IFDEF COMPILER15_UP}
+  (*$HPPEMIT 'namespace Mstask {'*)
+  (*$HPPEMIT 'typedef struct _TAST_TRIGGER _TASK_TRIGGER;'*)
+  (*$HPPEMIT '}'*)
+  {$ENDIF COMPILER15_UP}
+
   TASK_TRIGGER = _TASK_TRIGGER;
   TTaskTrigger = _TASK_TRIGGER;
 
@@ -360,6 +387,11 @@ type
     function GetTriggerString(out ppwszTrigger: LPWSTR): HRESULT; stdcall;
     (*| Parameter(s) was/were [CPP]: {out} LPWSTR * ppwszTrigger |*)
   end;
+  {$IFDEF COMPILER15_UP}
+  (*$HPPEMIT 'namespace Mstask {'*)
+  (*$HPPEMIT 'typedef interface ITaskTrigger ITaskTrigger;'*)
+  (*$HPPEMIT '}'*)
+  {$ENDIF COMPILER15_UP}
 
 //+----------------------------------------------------------------------------
 //
@@ -440,6 +472,11 @@ type
     function GetAccountInformation(out ppwszAccountName: LPWSTR): HRESULT; stdcall;
     (*| Parameter(s) was/were [CPP]: {out} LPWSTR * ppwszAccountName |*)
   end;
+  {$IFDEF COMPILER15_UP}
+  (*$HPPEMIT 'namespace Mstask {'*)
+  (*$HPPEMIT 'typedef interface IScheduledWorkItem IScheduledWorkItem;'*)
+  (*$HPPEMIT '}'*)
+  {$ENDIF COMPILER15_UP}
 
 //+----------------------------------------------------------------------------
 //
@@ -487,6 +524,11 @@ type
     function GetMaxRunTime(out pdwMaxRunTimeMS: DWORD): HRESULT; stdcall;
     (*| Parameter(s) was/were [CPP]: {out} DWORD * pdwMaxRunTimeMS |*)
   end;
+  {$IFDEF COMPILER15_UP}
+  (*$HPPEMIT 'namespace Mstask {'*)
+  (*$HPPEMIT 'typedef interface ITask ITask;'*)
+  (*$HPPEMIT '}'*)
+  {$ENDIF COMPILER15_UP}
 
 //+----------------------------------------------------------------------------
 //
@@ -555,6 +597,11 @@ type
     function IsOfType(pwszName: LPCWSTR; const riid: TIID): HRESULT; stdcall;
     (*| Parameter(s) was/were [CPP]: {in} LPCWSTR pwszName, {in} REFIID riid |*)
   end;
+  {$IFDEF COMPILER15_UP}
+  (*$HPPEMIT 'namespace Mstask {'*)
+  (*$HPPEMIT 'typedef interface ITaskScheduler ITaskScheduler;'*)
+  (*$HPPEMIT '}'*)
+  {$ENDIF COMPILER15_UP}
 
 // EXTERN_C const CLSID CLSID_CTask;
 // EXTERN_C const CLSID CLSID_CTaskScheduler;
@@ -580,9 +627,11 @@ type
 {$EXTERNALSYM _PSP}
   _PSP = record end;
 
+{$IFNDEF FPC}
 type
 {$EXTERNALSYM HPROPSHEETPAGE}
   HPROPSHEETPAGE = ^_PSP;
+{$ENDIF ~FPC}
 
 type
 {$EXTERNALSYM _TASKPAGE}
@@ -642,7 +691,27 @@ const
 {$EXTERNALSYM CLSID_CSchedulingAgent}
   CLSID_CSchedulingAgent: TCLSID = (D1: $148BD52A; D2: $A2AB; D3: $11CE; D4: ($B1, $1F, $00, $AA, $00, $53, $05, $03));
 
+{$IFDEF UNITVERSIONING}
+const
+  UnitVersioning: TUnitVersionInfo = (
+    RCSfile: '$URL: https://jcl.svn.sourceforge.net:443/svnroot/jcl/tags/JCL-2.2-Build3886/jcl/source/windows/MSTask.pas $';
+    Revision: '$Revision: 3333 $';
+    Date: '$Date: 2010-09-10 17:52:34 +0200 (ven., 10 sept. 2010) $';
+    LogPath: 'JCL\source\windows';
+    Extra: '';
+    Data: nil
+    );
+{$ENDIF UNITVERSIONING}
+
 implementation
+
+{$IFDEF UNITVERSIONING}
+initialization
+  RegisterUnitVersion(HInstance, UnitVersioning);
+
+finalization
+  UnregisterUnitVersion(HInstance);
+{$ENDIF UNITVERSIONING}
 
 end.
 

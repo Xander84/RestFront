@@ -39,7 +39,6 @@ type
 
 // настройки для гридов
 const
-  cn_TitleFontSize = 10;
   cn_FontSize = 16;
   cn_ButtonFontSize = 14;
   cn_EvenRowColor = clInfoBk;
@@ -56,6 +55,8 @@ const
   GRID_FONT_SECTION_NAME = 'GRID_FONT';
   GRID_HEADER_FONT_SIZE = 'HEADER_FONT_SIZE';
   GRID_FONT_SIZE = 'FONT_SIZE';
+  BTN_FONT_SECTION_NAME = 'BUTTON_FONT';
+  BTN_STATUS_FONT_SIZE = 'STATUS_FONT_SIZE';
   cn_defaultHeight = 768;
   cn_defaultWidth = 1024;
 
@@ -67,7 +68,9 @@ var
   cn_Width: Integer;
   cn_MainPercent: Integer;
   cn_ShutDownOnExit: Boolean;
-  
+  cn_TitleFontSize: Integer;
+  cn_GridFontSize: Integer;
+
 implementation
 
 uses
@@ -78,14 +81,23 @@ uses
 { TFrontData }
 
 procedure SetupGrid(const Grid: TDBGridEh);
+var
+  I: Integer;
 begin
   with Grid do
   begin
     Font.Name := cn_FontType;
-    Font.Size := cn_FontSize;
+    Font.Size := cn_GridFontSize;
     TitleFont.Size := cn_TitleFontSize;
     OddRowColor := cn_OddRowColor;
     EvenRowColor := cn_EvenRowColor;
+    for I := 0 to Columns.Count - 1 do
+    begin
+      Columns[I].Font.Name := cn_FontType;
+      Columns[I].Font.Size := cn_GridFontSize;
+      Columns[I].Title.Font.Name := cn_FontType;
+      Columns[I].Title.Font.Size := cn_TitleFontSize;
+    end;
   end;
 end;
 
@@ -95,15 +107,15 @@ var
 begin
   with AnGrid do
   begin
-    DefaultRowHeight := 2 * cn_FontSize;
-    FixedFont.Size := cn_FontSize;
+    DefaultRowHeight := 2 * cn_GridFontSize;
+    FixedFont.Size := cn_GridFontSize;
     Bands.PrimaryColor := cn_EvenRowColor;
     Bands.SecondaryColor := cn_OddRowColor;
     Bands.Active := True;
     for I := 0 to Columns.Count - 1 do
     begin
-      Columns[I].Font.Size := cn_FontSize;
-      Columns[I].HeaderFont.Size := cn_FontSize;
+      Columns[I].Font.Size := cn_GridFontSize;
+      Columns[I].HeaderFont.Size := cn_TitleFontSize;
       Columns[I].ShowBands := True;
     end;
   end;
@@ -278,6 +290,18 @@ begin
           raise;
         end;
       end else
+      if AnsiPos('x', ValueText) > 0 then
+      begin
+        Pos := AnsiPos('x', ValueText);
+        try
+          cn_Width := StrToInt(Copy(ValueText, 1, Pos - 1));
+          cn_Height := StrToInt(Copy(ValueText, Pos + 1, 255));
+        except
+          cn_Height := cn_defaultHeight;
+          cn_Width := cn_defaultWidth;
+          raise;
+        end;
+      end else
       begin
         cn_Height := cn_defaultHeight;
         cn_Width := cn_defaultWidth;
@@ -294,6 +318,31 @@ begin
         cn_ShutDownOnExit := False;
     end else
       FunctionFile.WriteString(SYS_SECTION_NAME, SYS_SHUTDOWN_ON_EXIT, 'FALSE');
+
+    if FunctionFile.ValueExists(GRID_FONT_SECTION_NAME, GRID_HEADER_FONT_SIZE) then
+    begin
+      ValueText := AnsiUpperCase(FunctionFile.ReadString(GRID_FONT_SECTION_NAME, GRID_HEADER_FONT_SIZE, '11'));
+      try
+        cn_TitleFontSize := StrToInt(ValueText);
+      except
+        cn_TitleFontSize := 11;
+      end;
+    end else
+      FunctionFile.WriteString(GRID_FONT_SECTION_NAME, GRID_HEADER_FONT_SIZE, '11');
+
+    if FunctionFile.ValueExists(GRID_FONT_SECTION_NAME, GRID_FONT_SIZE) then
+    begin
+      ValueText := AnsiUpperCase(FunctionFile.ReadString(GRID_FONT_SECTION_NAME, GRID_FONT_SIZE, '14'));
+      try
+        cn_GridFontSize := StrToInt(ValueText);
+      except
+        cn_GridFontSize := 14;
+      end;
+    end else
+      FunctionFile.WriteString(GRID_FONT_SECTION_NAME, GRID_FONT_SIZE, '14');
+
+
+
   finally
     FreeAndNil(FunctionFile);
   end;

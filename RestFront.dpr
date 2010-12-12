@@ -1,8 +1,10 @@
 program RestFront;
 
 uses
+{$IFDEF VER150}
   FastMM4,
   RtlVclOptimize,
+{$ENDIF}
   Forms,
   AppEvnts,
   MainForm in 'MainForm.pas' {RestMainForm},

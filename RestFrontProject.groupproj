@@ -1,0 +1,120 @@
+﻿	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+		<PropertyGroup>
+			<ProjectGuid>{385EB4DC-9FB6-4AF2-AE97-302402C24A18}</ProjectGuid>
+		</PropertyGroup>
+		<ItemGroup>
+			<Projects Include="RestFront.dproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="TMS\tmsd2010.dproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="TMS\tmsded2010.dproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="TMS\tmsexd2010.dproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="Components\kbmMemTable\Source\kbmMemRunD2010Std.dproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="Components\kbmMemTable\Source\kbmMemDesD2010Std.dproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="Components\EhLib\RADStudio2009\EhLib120.dproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="Components\EhLib\RADStudio2009\DclEhLib120.dproj">
+				<Dependencies/>
+			</Projects>
+		</ItemGroup>
+		<ProjectExtensions>
+			<Borland.Personality>Default.Personality.12</Borland.Personality>
+			<Borland.ProjectType/>
+			<BorlandProject>
+				<Default.Personality/>
+			</BorlandProject>
+		</ProjectExtensions>
+		<Target Name="RestFront">
+			<MSBuild Projects="RestFront.dproj"/>
+		</Target>
+		<Target Name="RestFront:Clean">
+			<MSBuild Targets="Clean" Projects="RestFront.dproj"/>
+		</Target>
+		<Target Name="RestFront:Make">
+			<MSBuild Targets="Make" Projects="RestFront.dproj"/>
+		</Target>
+		<Target Name="tmsd2010">
+			<MSBuild Projects="TMS\tmsd2010.dproj"/>
+		</Target>
+		<Target Name="tmsd2010:Clean">
+			<MSBuild Targets="Clean" Projects="TMS\tmsd2010.dproj"/>
+		</Target>
+		<Target Name="tmsd2010:Make">
+			<MSBuild Targets="Make" Projects="TMS\tmsd2010.dproj"/>
+		</Target>
+		<Target Name="tmsded2010">
+			<MSBuild Projects="TMS\tmsded2010.dproj"/>
+		</Target>
+		<Target Name="tmsded2010:Clean">
+			<MSBuild Targets="Clean" Projects="TMS\tmsded2010.dproj"/>
+		</Target>
+		<Target Name="tmsded2010:Make">
+			<MSBuild Targets="Make" Projects="TMS\tmsded2010.dproj"/>
+		</Target>
+		<Target Name="tmsexd2010">
+			<MSBuild Projects="TMS\tmsexd2010.dproj"/>
+		</Target>
+		<Target Name="tmsexd2010:Clean">
+			<MSBuild Targets="Clean" Projects="TMS\tmsexd2010.dproj"/>
+		</Target>
+		<Target Name="tmsexd2010:Make">
+			<MSBuild Targets="Make" Projects="TMS\tmsexd2010.dproj"/>
+		</Target>
+		<Target Name="kbmMemRunD2010Std">
+			<MSBuild Projects="Components\kbmMemTable\Source\kbmMemRunD2010Std.dproj"/>
+		</Target>
+		<Target Name="kbmMemRunD2010Std:Clean">
+			<MSBuild Targets="Clean" Projects="Components\kbmMemTable\Source\kbmMemRunD2010Std.dproj"/>
+		</Target>
+		<Target Name="kbmMemRunD2010Std:Make">
+			<MSBuild Targets="Make" Projects="Components\kbmMemTable\Source\kbmMemRunD2010Std.dproj"/>
+		</Target>
+		<Target Name="kbmMemDesD2010Std">
+			<MSBuild Projects="Components\kbmMemTable\Source\kbmMemDesD2010Std.dproj"/>
+		</Target>
+		<Target Name="kbmMemDesD2010Std:Clean">
+			<MSBuild Targets="Clean" Projects="Components\kbmMemTable\Source\kbmMemDesD2010Std.dproj"/>
+		</Target>
+		<Target Name="kbmMemDesD2010Std:Make">
+			<MSBuild Targets="Make" Projects="Components\kbmMemTable\Source\kbmMemDesD2010Std.dproj"/>
+		</Target>
+		<Target Name="EhLib120">
+			<MSBuild Projects="Components\EhLib\RADStudio2009\EhLib120.dproj"/>
+		</Target>
+		<Target Name="EhLib120:Clean">
+			<MSBuild Targets="Clean" Projects="Components\EhLib\RADStudio2009\EhLib120.dproj"/>
+		</Target>
+		<Target Name="EhLib120:Make">
+			<MSBuild Targets="Make" Projects="Components\EhLib\RADStudio2009\EhLib120.dproj"/>
+		</Target>
+		<Target Name="DclEhLib120">
+			<MSBuild Projects="Components\EhLib\RADStudio2009\DclEhLib120.dproj"/>
+		</Target>
+		<Target Name="DclEhLib120:Clean">
+			<MSBuild Targets="Clean" Projects="Components\EhLib\RADStudio2009\DclEhLib120.dproj"/>
+		</Target>
+		<Target Name="DclEhLib120:Make">
+			<MSBuild Targets="Make" Projects="Components\EhLib\RADStudio2009\DclEhLib120.dproj"/>
+		</Target>
+		<Target Name="Build">
+			<CallTarget Targets="RestFront;tmsd2010;tmsded2010;tmsexd2010;kbmMemRunD2010Std;kbmMemDesD2010Std;EhLib120;DclEhLib120"/>
+		</Target>
+		<Target Name="Clean">
+			<CallTarget Targets="RestFront:Clean;tmsd2010:Clean;tmsded2010:Clean;tmsexd2010:Clean;kbmMemRunD2010Std:Clean;kbmMemDesD2010Std:Clean;EhLib120:Clean;DclEhLib120:Clean"/>
+		</Target>
+		<Target Name="Make">
+			<CallTarget Targets="RestFront:Make;tmsd2010:Make;tmsded2010:Make;tmsexd2010:Make;kbmMemRunD2010Std:Make;kbmMemDesD2010Std:Make;EhLib120:Make;DclEhLib120:Make"/>
+		</Target>
+		<Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+	</Project>

@@ -404,6 +404,8 @@ begin
   btnShowKeyBoard.Left := btnShowKeyBoard.Left + 4;
   {$ENDIF}
 
+  SetupGrid(DBGrMain); 
+
   Height := cn_Height;
   Width := cn_Width;
   AdjustResolution(Self);

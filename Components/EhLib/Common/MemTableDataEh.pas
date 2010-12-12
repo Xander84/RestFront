@@ -4782,6 +4782,9 @@ const
     , fldINT32, fldUNKNOWN, fldUNKNOWN, fldFLOAT,
       fldUnknown, fldUnknown, fldUnknown //42..48
     {$ENDIF}
+{$IFDEF EH_LIB_13}
+    , fldUnknown, fldUnknown, fldUnknown
+{$ENDIF}
     );
 
   DataTypeMap: array[0..MAXLOGFLDTYPES - 1] of TFieldType = (

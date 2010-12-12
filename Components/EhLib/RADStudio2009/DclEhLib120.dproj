@@ -23,14 +23,14 @@
 			<Base>true</Base>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Base)'!=''">
+			<DCC_UnitSearchPath>D:\Front\Source\Components\EhLib\Common;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
 			<DCC_CBuilderOutput>All</DCC_CBuilderOutput>
 			<DCC_ImageBase>00400000</DCC_ImageBase>
-			<DCC_DependencyCheckOutputName>C:\Documents and Settings\All Users\Документы\RAD Studio\6.0\Bpl\DclEhLib120.bpl</DCC_DependencyCheckOutputName>
+			<DCC_DependencyCheckOutputName>C:\Users\Public\Documents\RAD Studio\7.0\Bpl\DclEhLib120.bpl</DCC_DependencyCheckOutputName>
 			<DCC_Description>EhLib 4.5 Components</DCC_Description>
 			<DesignOnlyPackage>true</DesignOnlyPackage>
 			<GenDll>true</GenDll>
 			<GenPackage>true</GenPackage>
-			<DCC_SymbolReferenceInfo>1</DCC_SymbolReferenceInfo>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_1)'!=''">
 			<Version>7.0</Version>
@@ -53,37 +53,33 @@
 			<DCCReference Include="rtl.dcp"/>
 			<DCCReference Include="designide.dcp"/>
 			<DCCReference Include="dcldb.dcp"/>
-			<DCCReference Include="RichEdEh.pas">
+			<DCCReference Include="..\Common\RichEdEh.pas">
 				<Form>RichStrEditDlgEh</Form>
 			</DCCReference>
-			<DCCReference Include="EhLibReg.pas"/>
-			<DCCReference Include="GridEhEd.pas"/>
-			<DCCReference Include="PropStorageEditEh.pas">
+			<DCCReference Include="..\Common\EhLibReg.pas"/>
+			<DCCReference Include="..\Common\GridEhEd.pas"/>
+			<DCCReference Include="..\Common\PropStorageEditEh.pas">
 				<Form>PropStorageEditEhForm</Form>
 			</DCCReference>
-			<DCCReference Include="UpdateSQLEditEh.pas"/>
-			<DCCReference Include="FormSelectFromList.pas">
+			<DCCReference Include="..\Common\UpdateSQLEditEh.pas"/>
+			<DCCReference Include="..\Common\FormSelectFromList.pas">
 				<Form>fSelectFromList</Form>
 			</DCCReference>
-			<DCCReference Include="MemTableDesignEh.pas"/>
-			<DCCReference Include="SelectFromListDialog.pas">
+			<DCCReference Include="..\Common\MemTableDesignEh.pas"/>
+			<DCCReference Include="..\Common\SelectFromListDialog.pas">
 				<Form>fSelectFromListDialog</Form>
 			</DCCReference>
-			<DCCReference Include="SQLDriverEditEh.pas"/>
-			<DCCReference Include="SQLEditFrameEh.pas"/>
-			<DCCReference Include="DesignConnectionListEh.pas">
+			<DCCReference Include="..\Common\SQLDriverEditEh.pas"/>
+			<DCCReference Include="..\Common\SQLEditFrameEh.pas"/>
+			<DCCReference Include="..\Common\DesignConnectionListEh.pas">
 				<Form>fDesignConnectionListEh</Form>
 			</DCCReference>
-			<DCCReference Include="MemTableEditEh.pas">
+			<DCCReference Include="..\Common\MemTableEditEh.pas">
 				<Form>MemTableDataForm</Form>
 			</DCCReference>
-			<DCCReference Include="MTCreateDataDriver.pas">
+			<DCCReference Include="..\Common\MTCreateDataDriver.pas">
 				<Form>fMTCreateDataDriver</Form>
 			</DCCReference>
-			<DCCReference Include="EhLibReg.dcr"/>
-			<DCCReference Include="EhLib10.dcp"/>
-			<DCCReference Include="EhLib110.dcp"/>
-			<DCCReference Include="EhLib100.dcp"/>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>

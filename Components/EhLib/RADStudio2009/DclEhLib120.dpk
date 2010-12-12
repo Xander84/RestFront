@@ -34,18 +34,18 @@ requires
   dcldb;
 
 contains
-  RichEdEh in 'RichEdEh.pas' {RichStrEditDlgEh},
-  EhLibReg in 'EhLibReg.pas',
-  GridEhEd in 'GridEhEd.pas',
-  PropStorageEditEh in 'PropStorageEditEh.pas' {PropStorageEditEhForm},
-  UpdateSQLEditEh in 'UpdateSQLEditEh.pas',
-  FormSelectFromList in 'FormSelectFromList.pas' {fSelectFromList},
-  MemTableDesignEh in 'MemTableDesignEh.pas',
-  SelectFromListDialog in 'SelectFromListDialog.pas' {fSelectFromListDialog},
-  SQLDriverEditEh in 'SQLDriverEditEh.pas',
-  SQLEditFrameEh in 'SQLEditFrameEh.pas',
-  DesignConnectionListEh in 'DesignConnectionListEh.pas' {fDesignConnectionListEh},
-  MemTableEditEh in 'MemTableEditEh.pas' {MemTableDataForm},
-  MTCreateDataDriver in 'MTCreateDataDriver.pas' {fMTCreateDataDriver};
+  RichEdEh in '..\Common\RichEdEh.pas' {RichStrEditDlgEh},
+  EhLibReg in '..\Common\EhLibReg.pas',
+  GridEhEd in '..\Common\GridEhEd.pas',
+  PropStorageEditEh in '..\Common\PropStorageEditEh.pas' {PropStorageEditEhForm},
+  UpdateSQLEditEh in '..\Common\UpdateSQLEditEh.pas',
+  FormSelectFromList in '..\Common\FormSelectFromList.pas' {fSelectFromList},
+  MemTableDesignEh in '..\Common\MemTableDesignEh.pas',
+  SelectFromListDialog in '..\Common\SelectFromListDialog.pas' {fSelectFromListDialog},
+  SQLDriverEditEh in '..\Common\SQLDriverEditEh.pas',
+  SQLEditFrameEh in '..\Common\SQLEditFrameEh.pas',
+  DesignConnectionListEh in '..\Common\DesignConnectionListEh.pas' {fDesignConnectionListEh},
+  MemTableEditEh in '..\Common\MemTableEditEh.pas' {MemTableDataForm},
+  MTCreateDataDriver in '..\Common\MTCreateDataDriver.pas' {fMTCreateDataDriver};
 
 end.
