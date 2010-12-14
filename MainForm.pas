@@ -412,7 +412,11 @@ begin
 
   //восстанавливаем начальные размеры
   btnNewOrder.Top := btnFirstTop;
+  {$IFDEF NEW_TABCONTROL}
+  btnNewOrder.Left := btnFirstTop + 6;
+  {$ELSE}
   btnNewOrder.Left := btnFirstTop;
+  {$ENDIF}
   btnNewOrder.Width := btnWidth;
   btnNewOrder.Height := btnHeight;
 
@@ -560,6 +564,8 @@ begin
   FMasterDataSource.DataSet := FLineTable;
 
   GetModificationTable(FModificationDataSet);
+  FModificationDataSet.Common.EnableVersioning := True;
+  FModificationDataSet.Common.VersioningMode := mtvmAllSinceCheckPoint;
   FModificationDataSet.MasterSource := FMasterDataSource;
   FModificationDataSet.MasterFields := 'LINEKEY';
   FModificationDataSet.DetailFields := 'MASTERKEY';
@@ -1157,6 +1163,7 @@ end;
 
 procedure TRestMainForm.actCancelExecute(Sender: TObject);
 begin
+  FSelectedButton := nil;
   case FFormState of
     Pass: Assert(False, 'Что мы тут делаем');
 
@@ -1613,7 +1620,7 @@ begin
           btnCashForm.Visible := False;
           btnEditReport.Visible := False;
 
-          FLastLeftButton := 18 + btnWidth;
+          FLastLeftButton := 18 + btnWidth {$IFDEF NEW_TABCONTROL} + 4 {$ENDIF};;
           FGroupLastLeftButton := btnFirstTop;
           FLastTopButton  := btnFirstTop;
           FGroupLastTop   := btnFirstTop;
@@ -1688,7 +1695,7 @@ begin
           btnCashForm.Visible := True;
           btnEditReport.Visible := True;
 
-          FLastLeftButton := 18 + btnWidth;
+          FLastLeftButton := 18 + btnWidth {$IFDEF NEW_TABCONTROL} + 4 {$ENDIF};;
           FLastTopButton  := btnFirstTop;
           FMenuLastTop    := -(btnHeight);
           FMenuButtonCount := 0;

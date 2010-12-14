@@ -170,6 +170,11 @@ end;
 procedure TModificationForm.SetLineModifyTable(const Value: TkbmMemTable);
 begin
   FLineModifyTable := Value;
+  try
+    FLineModifyTable.StartTransaction;
+  except
+    raise;
+  end;
   FIsEmptyLine := FLineModifyTable.IsEmpty;
 end;
 
@@ -193,6 +198,11 @@ end;
 
 procedure TModificationForm.actOKExecute(Sender: TObject);
 begin
+  try
+    FLineModifyTable.Commit;
+  except
+    Raise;
+  end;
   ModalResult := mrOk;
 end;
 
@@ -212,6 +222,11 @@ begin
     FLineModifyTable.First;
     while not FLineModifyTable.Eof do
       FLineModifyTable.Delete;
+  end;
+  try
+    FLineModifyTable.Rollback;
+  except
+    Raise;
   end;
 
   ModalResult := mrCancel;

@@ -27,7 +27,7 @@ object ModificationForm: TModificationForm
     Color = 16640730
     TabOrder = 0
     UseDockManager = True
-    Version = '1.9.0.0'
+    Version = '2.0.1.0'
     BorderColor = clGray
     Caption.Color = 14059353
     Caption.ColorTo = 9648131
@@ -39,7 +39,7 @@ object ModificationForm: TModificationForm
     Caption.GradientDirection = gdVertical
     Caption.Indent = 2
     Caption.ShadeLight = 255
-    CollapsColor = clHighlight
+    CollapsColor = clNone
     CollapsDelay = 0
     ColorTo = 14986888
     ShadowColor = clBlack
@@ -83,7 +83,7 @@ object ModificationForm: TModificationForm
     Color = 16640730
     TabOrder = 1
     UseDockManager = True
-    Version = '1.9.0.0'
+    Version = '2.0.1.0'
     BorderColor = clGray
     Caption.Color = 14059353
     Caption.ColorTo = 9648131
@@ -95,7 +95,7 @@ object ModificationForm: TModificationForm
     Caption.GradientDirection = gdVertical
     Caption.Indent = 2
     Caption.ShadeLight = 255
-    CollapsColor = clHighlight
+    CollapsColor = clNone
     CollapsDelay = 0
     ColorTo = 14986888
     ShadowColor = clBlack
@@ -140,7 +140,7 @@ object ModificationForm: TModificationForm
       Color = 15195349
       ParentFont = False
       TabOrder = 0
-      Version = '1.6.5.2'
+      Version = '1.6.9.0'
     end
     object btnCancel: TAdvSmoothButton
       Left = 17
@@ -170,7 +170,7 @@ object ModificationForm: TModificationForm
       Color = 15195349
       ParentFont = False
       TabOrder = 1
-      Version = '1.6.5.2'
+      Version = '1.6.9.0'
     end
   end
   object pnlMain: TAdvPanel
@@ -183,7 +183,7 @@ object ModificationForm: TModificationForm
     Color = 16640730
     TabOrder = 2
     UseDockManager = True
-    Version = '1.9.0.0'
+    Version = '2.0.1.0'
     BorderColor = clGray
     Caption.Color = 14059353
     Caption.ColorTo = 9648131
@@ -195,7 +195,7 @@ object ModificationForm: TModificationForm
     Caption.GradientDirection = gdVertical
     Caption.Indent = 2
     Caption.ShadeLight = 255
-    CollapsColor = clHighlight
+    CollapsColor = clNone
     CollapsDelay = 0
     ColorTo = 14986888
     ShadowColor = clBlack

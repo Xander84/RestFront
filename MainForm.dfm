@@ -1,10 +1,10 @@
 object RestMainForm: TRestMainForm
   Left = 279
   Top = 57
-  Width = 1024
-  Height = 767
   BorderIcons = []
   Caption = 'RestMainForm'
+  ClientHeight = 740
+  ClientWidth = 1016
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -102,10 +102,10 @@ object RestMainForm: TRestMainForm
         TabColor = clBtnFace
         TabColorTo = clNone
         object pnlRight: TAdvPanel
-          Left = 684
+          Left = 692
           Top = 0
           Width = 242
-          Height = 693
+          Height = 701
           Align = alRight
           BevelOuter = bvNone
           Color = 16640730
@@ -150,7 +150,7 @@ object RestMainForm: TRestMainForm
             Left = 0
             Top = 0
             Width = 242
-            Height = 652
+            Height = 660
             Align = alClient
             BevelOuter = bvNone
             TabOrder = 0
@@ -158,7 +158,7 @@ object RestMainForm: TRestMainForm
               Left = 0
               Top = 0
               Width = 242
-              Height = 611
+              Height = 619
               ActivePage = tsGroup
               ActiveFont.Charset = DEFAULT_CHARSET
               ActiveFont.Color = clWindowText
@@ -180,8 +180,8 @@ object RestMainForm: TRestMainForm
                 object pnlMenu: TAdvPanel
                   Left = 0
                   Top = 0
-                  Width = 234
-                  Height = 288
+                  Width = 242
+                  Height = 304
                   Align = alClient
                   BevelOuter = bvNone
                   Color = 16640730
@@ -220,8 +220,8 @@ object RestMainForm: TRestMainForm
                 end
                 object pnlExtraGoodGroup: TAdvPanel
                   Left = 0
-                  Top = 288
-                  Width = 234
+                  Top = 304
+                  Width = 242
                   Height = 295
                   Align = alBottom
                   BevelOuter = bvNone
@@ -270,8 +270,8 @@ object RestMainForm: TRestMainForm
                 object pnlGoodGroup: TAdvPanel
                   Left = 0
                   Top = 58
-                  Width = 234
-                  Height = 525
+                  Width = 242
+                  Height = 541
                   Align = alClient
                   BevelOuter = bvNone
                   Color = 16640730
@@ -316,7 +316,7 @@ object RestMainForm: TRestMainForm
                 object Panel4: TAdvPanel
                   Left = 0
                   Top = 0
-                  Width = 234
+                  Width = 242
                   Height = 58
                   Align = alTop
                   BevelOuter = bvNone
@@ -387,7 +387,7 @@ object RestMainForm: TRestMainForm
             end
             object Panel1: TAdvPanel
               Left = 0
-              Top = 611
+              Top = 619
               Width = 242
               Height = 41
               Align = alBottom
@@ -490,7 +490,7 @@ object RestMainForm: TRestMainForm
           end
           object Panel3: TAdvPanel
             Left = 0
-            Top = 652
+            Top = 660
             Width = 242
             Height = 41
             Align = alBottom
@@ -528,8 +528,8 @@ object RestMainForm: TRestMainForm
             Styler = FrontData.FrontPanelStyler
             FullHeight = 41
             object btnOK: TAdvSmoothButton
-              Left = 7
-              Top = 3
+              Left = 6
+              Top = 2
               Width = 110
               Height = 37
               Action = actOK
@@ -559,7 +559,7 @@ object RestMainForm: TRestMainForm
             end
             object btnCancel: TAdvSmoothButton
               Left = 126
-              Top = 3
+              Top = 2
               Width = 110
               Height = 37
               Action = actCancel
@@ -592,17 +592,17 @@ object RestMainForm: TRestMainForm
         object pnlLeft: TPanel
           Left = 0
           Top = 0
-          Width = 684
-          Height = 693
+          Width = 692
+          Height = 701
           Align = alClient
           Color = 14986888
           TabOrder = 1
           object pcOrder: TAdvPageControl
             Left = 1
             Top = 1
-            Width = 682
-            Height = 691
-            ActivePage = tsOrderInfo
+            Width = 690
+            Height = 699
+            ActivePage = tsUserOrder
             ActiveFont.Charset = DEFAULT_CHARSET
             ActiveFont.Color = clWindowText
             ActiveFont.Height = -11
@@ -622,7 +622,7 @@ object RestMainForm: TRestMainForm
               TabColor = clBtnFace
               TabColorTo = clNone
               object btnNewOrder: TAdvSmoothButton
-                Left = 8
+                Left = 16
                 Top = 8
                 Width = 145
                 Height = 50
@@ -661,15 +661,15 @@ object RestMainForm: TRestMainForm
               TabColorTo = clNone
               object pnlMainGood: TPanel
                 Left = 0
-                Top = 392
-                Width = 674
+                Top = 408
+                Width = 690
                 Height = 271
                 Align = alBottom
                 BevelOuter = bvNone
                 Color = 14986888
                 TabOrder = 0
                 object Panel6: TAdvPanel
-                  Left = 634
+                  Left = 650
                   Top = 0
                   Width = 40
                   Height = 271
@@ -779,7 +779,7 @@ object RestMainForm: TRestMainForm
                 object pnlGood: TAdvPanel
                   Left = 0
                   Top = 0
-                  Width = 634
+                  Width = 650
                   Height = 271
                   Align = alClient
                   BevelOuter = bvNone
@@ -827,8 +827,8 @@ object RestMainForm: TRestMainForm
               object DBGrMain: TDBGridEh
                 Left = 0
                 Top = 0
-                Width = 674
-                Height = 392
+                Width = 690
+                Height = 408
                 Align = alClient
                 AutoFitColWidths = True
                 BorderStyle = bsNone
@@ -956,7 +956,7 @@ object RestMainForm: TRestMainForm
               object pnlManagerTop: TAdvPanel
                 Left = 0
                 Top = 0
-                Width = 674
+                Width = 690
                 Height = 65
                 Align = alTop
                 BevelOuter = bvNone
@@ -1120,8 +1120,8 @@ object RestMainForm: TRestMainForm
               object pnlManagerMain: TAdvPanel
                 Left = 0
                 Top = 65
-                Width = 674
-                Height = 598
+                Width = 690
+                Height = 614
                 Align = alClient
                 TabOrder = 1
                 UseDockManager = True
@@ -1143,7 +1143,7 @@ object RestMainForm: TRestMainForm
                   Left = 1
                   Top = 1
                   Width = 192
-                  Height = 529
+                  Height = 545
                   Align = alLeft
                   BevelOuter = bvNone
                   Color = 16640730
@@ -1182,8 +1182,8 @@ object RestMainForm: TRestMainForm
                 object pnlUserOrders: TAdvPanel
                   Left = 193
                   Top = 1
-                  Width = 480
-                  Height = 529
+                  Width = 496
+                  Height = 545
                   Align = alClient
                   BevelOuter = bvNone
                   Color = 16640730
@@ -1221,8 +1221,8 @@ object RestMainForm: TRestMainForm
                 end
                 object pnlManagerBottom: TAdvPanel
                   Left = 1
-                  Top = 530
-                  Width = 672
+                  Top = 546
+                  Width = 688
                   Height = 67
                   Align = alBottom
                   BevelOuter = bvNone
