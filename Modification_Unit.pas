@@ -38,6 +38,7 @@ type
     FModificationButtonNumber: Integer;
     //
     FButtonList : TObjectList;
+    FGoodName: String;
 
     procedure SetFrontBase(Value: TFrontBase);
 
@@ -47,6 +48,7 @@ type
     procedure SetLineModifyTable(const Value: TkbmMemTable);
 
     procedure ModifyButtonOnClick(Sender: TObject);
+    procedure SetGoodName(const Value: String);
   public
     property FrontBase: TFrontBase read FFrontBase write SetFrontBase;
     //Если модификатор обязателен, то смотрим GoodKey
@@ -55,6 +57,7 @@ type
     property ModifyGroupKey: Integer read FModifyGroupKey write FModifyGroupKey;
     //
     property LineModifyTable: TkbmMemTable read FLineModifyTable write SetLineModifyTable;
+    property GoodName: String read FGoodName write SetGoodName;
 
     constructor CreateWithFrontBase(AOwner: TComponent; FBase: TFrontBase);
 
@@ -95,6 +98,12 @@ end;
 procedure TModificationForm.SetFrontBase(Value: TFrontBase);
 begin
   FFrontBase := Value;
+end;
+
+procedure TModificationForm.SetGoodName(const Value: String);
+begin
+  FGoodName := Value;
+  Label1.Caption := 'Модификаторы для: ' + FGoodName;
 end;
 
 procedure TModificationForm.AddModificationButton;

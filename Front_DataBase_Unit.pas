@@ -4,7 +4,7 @@ interface
 
 uses
   IBDatabase, Db, Classes, IBSQL, kbmMemTable, Base_Display_unit,
-  Pole_Display_Unit, IBQuery;
+  Pole_Display_Unit, IBQuery, IB, IBErrorCodes;
 
 const
   MN_OrderXID = 147014509;
@@ -140,7 +140,6 @@ const
 type
   TOrderState = (osOrderOpen, osOrderClose, osOrderPayed);
 
-
   TFrontOptions = packed record
     OrderCurrentLDate: Boolean;
     UseCurrentDate:    Boolean;
@@ -227,7 +226,6 @@ type
     function GetFiscalComPort: Integer;
     function GetCashNumber: Integer;
     function GetIsMainCash: Boolean;
-
   public
     constructor Create;
     destructor Destroy; override;
@@ -302,6 +300,9 @@ type
     procedure CanCloseDay;
     procedure CanOpenDay;
 
+    procedure DoOnDisconnect;
+    function TryToConnect(const Count: Integer): Boolean;
+
     class function GetGroupMask(const AGroupID: Integer): Integer;
     class function GetLocalComputerName: String;
     class function RoundCost(const Cost: Currency): Currency;
@@ -317,7 +318,6 @@ type
     property FiscalComPort: Integer read GetFiscalComPort;
     property CashNumber: Integer read GetCashNumber;
     property IsMainCash: Boolean read GetIsMainCash;
-
   end;
 
   procedure GetHeaderTable(var DS: TkbmMemTable);
@@ -675,11 +675,11 @@ begin
   LineTable.BlockReadSize := 1;
 //  LineTable.DisableControls;
   try
-    if not FCheckTransaction.InTransaction then
-      FCheckTransaction.StartTransaction;
-
-    MasterID := -1;
     try
+      if not FCheckTransaction.InTransaction then
+        FCheckTransaction.StartTransaction;
+
+      MasterID := -1;
       HeaderTable.First;
       if not HeaderTable.Eof then
       begin
@@ -842,7 +842,7 @@ begin
               UpdParent.ExecQuery;
             end;
         else
-          Assert(False, 'wrong type statefield');
+          Assert(False, 'wrong type state field');
         end;
 
         LineTable.Next;
@@ -850,6 +850,16 @@ begin
       Result := True;
       OrderKey := MasterID;
     except
+      on E: EIBInterBaseError do
+      begin
+        if (E.IBErrorCode = isc_lost_db_connection) or (E.IBErrorCode = isc_net_read_err)
+          or (E.IBErrorCode = isc_net_read_err) or (E.IBErrorCode = isc_net_write_err) then
+            DoOnDisconnect
+        else begin
+          AdvTaskMessageDlg('Внимание', 'Ошибка при сохранении чека ' + E.Message, mtError, [mbOK], 0);
+          FCheckTransaction.Rollback;
+        end;
+      end;
       on E: Exception do
       begin
         AdvTaskMessageDlg('Внимание', 'Ошибка при сохранении чека ' + E.Message, mtError, [mbOK], 0);
@@ -857,8 +867,19 @@ begin
       end;
     end;
   finally
-    if FCheckTransaction.InTransaction then
-      FCheckTransaction.Commit;
+    try
+      if FCheckTransaction.InTransaction then
+        FCheckTransaction.Commit;
+    except
+      on E: EIBInterBaseError do
+      begin
+        if (E.IBErrorCode = isc_lost_db_connection) or (E.IBErrorCode = isc_net_read_err)
+          or (E.IBErrorCode = isc_net_read_err) or (E.IBErrorCode = isc_net_write_err) then
+          // ничего не делаем
+        else
+          raise;
+      end;
+    end;
 
     InsDoc.Free;
     InsOrder.Free;
@@ -870,7 +891,6 @@ begin
     UpdParent.Free;
     LineTable.Filtered := True;
     LineTable.BlockReadSize := 0;
-//    LineTable.EnableControls;
   end;
 end;
 
@@ -894,6 +914,14 @@ begin
     FDisplay.Free;
 
   inherited;
+end;
+
+procedure TFrontBase.DoOnDisconnect;
+begin
+  FDataBase.ForceClose;
+  if not TryToConnect(5) then
+{ TODO : Обработать }
+    ;
 end;
 
 function TFrontBase.GetCauseDeleteList(
@@ -1039,6 +1067,9 @@ end;
 
 function TFrontBase.GetNextID: Integer;
 begin
+  if not FIDSQL.Transaction.InTransaction then
+   FIDSQL.Transaction.StartTransaction;
+
   FIDSQL.Close;
   FIDSQL.ExecQuery;
   Result := FIDSQL.FieldByName('ID').AsInteger;
@@ -1564,15 +1595,11 @@ end;
 
 class function TFrontBase.GetLocalComputerName: String;
 var
-  ComputerName: array[0..MAX_COMPUTERNAME_LENGTH + 1] of AnsiChar;
+  ComputerName: array[0..MAX_COMPUTERNAME_LENGTH + 1] of Char;
   ComputerNameSize: DWORD;
 begin
   ComputerNameSize := SizeOf(ComputerName);
-{$IFDEF VER150}
   if GetComputerName(ComputerName, ComputerNameSize) = BOOL(0) then
-{$ELSE}
-  if GetComputerNameA(ComputerName, ComputerNameSize) = BOOL(0) then
-{$ENDIF}
     Result := ''
   else
     Result := AnsiUpperCase(ComputerName);
@@ -2513,6 +2540,29 @@ begin
       FCheckTransaction.Commit;
 
     FSQL.Free;
+  end;
+end;
+
+function TFrontBase.TryToConnect(const Count: Integer): Boolean;
+var
+  N: Integer;
+begin
+  Result := False;
+  if Count <= 0 then
+    exit;
+  N := 0;
+
+  while N <> Count - 1 do
+  begin
+    Sleep(1000);
+    try
+      FDataBase.Open;
+      Result := True;
+      break;
+    except
+      Result := False;
+    end;
+    Inc(N);
   end;
 end;
 

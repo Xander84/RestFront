@@ -3,12 +3,11 @@ unit Report_Unit;
 interface
 
 uses
-  Classes, Front_DataBase_Unit, Printers, SysUtils,
-  frxDesgn, frxClass, frxDCtrl, frxChart,
-  frxRich, frxBarcode, ImgList, ComCtrls, ExtCtrls, frxOLE,
-  frxCross, frxDMPExport, frxExportRTF, frxExportTXT, TaskDialog,
-  frxGZip, frxChBox, frxExportText, frxPrinter, Dialogs,
-  frxDBSet, frxPreview, frxIBXComponents, IBQuery, kbmMemTable, DB, Variants;
+  Classes, Front_DataBase_Unit, Printers, SysUtils, ComCtrls, ExtCtrls, frxOLE,
+  frxDesgn, frxClass, frxDCtrl, frxChart, frxRich, frxBarcode, ImgList,
+  frxCross, frxDMPExport, frxExportRTF, TaskDialog, frxGZip, frxChBox,
+  frxExportText, frxPrinter, Dialogs, frxDBSet, frxPreview, frxIBXComponents,
+  IBQuery, kbmMemTable, DB, Variants;
 
 type
   Tgs_fr4Report = class(TfrxReport)
@@ -16,7 +15,6 @@ type
     //Фильтры экспорта
     FrxRTFExport:  TfrxRTFExport;
     FrxSimpleTextExport: TfrxSimpleTextExport;
-    FrxTXTExport:  TfrxTXTExport;
     FrxDMPExport:  TfrxDotMatrixExport;
 
   public
@@ -98,7 +96,6 @@ begin
 
   FrxRTFExport  := TfrxRTFExport.Create(Self);
   FrxSimpleTextExport := TfrxSimpleTextExport.Create(Self);
-  FrxTXTExport  := TfrxTXTExport.Create(Self);
   FrxDMPExport  := TfrxDotMatrixExport.Create(Self);
 end;
 
@@ -110,7 +107,6 @@ begin
 
   inherited;
 end;
-
 
 { Tgs_fr4SingleReport }
 

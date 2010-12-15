@@ -34,7 +34,7 @@ implementation
 
 { TPoleDisplay }
 
-function StrAnsiToOem(const S: AnsiString): AnsiString;
+function StrAnsiToOem(const S: String): String;
 begin
   SetLength(Result, Length(S));
   AnsiToOemBuff(@S[1], @Result[1], Length(S));

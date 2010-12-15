@@ -120,8 +120,8 @@
 #define JclResources_RsIntelCacheDescr05 64877
 #define JclResources_RsIntelCacheDescr06 64878
 #define JclResources_RsIntelCacheDescr08 64879
-#define DbUtilsEh_SIncorrectExpressionEh 64880
-#define DbUtilsEh_SUnexpectedANDorOREh 64881
+#define bdeconst_SUntitled 64880
+#define bdeconst_SLocalTransDirty 64881
 #define pnglang_EPngInvalidCRCText 64882
 #define pnglang_EPNGInvalidIHDRText 64883
 #define pnglang_EPNGMissingMultipleIDATText 64884
@@ -136,86 +136,86 @@
 #define pnglang_EPNGUnknownInterlaceText 64893
 #define pnglang_EPNGCannotAssignChunkText 64894
 #define pnglang_EPNGUnexpectedEndText 64895
-#define EhLibConsts_SSTFilterListItem_All 64896
-#define EhLibConsts_SSTFilterListItem_ClearFilter 64897
-#define EhLibConsts_SSTFilterListItem_SortingByDescend 64898
-#define EhLibConsts_SSTFilterListItem_SortingByAscend 64899
-#define DbUtilsEh_SNotOperatorEh 64900
-#define DbUtilsEh_SAndOperatorEh 64901
-#define DbUtilsEh_SOrOperatorEh 64902
-#define DbUtilsEh_SLikePredicatEh 64903
-#define DbUtilsEh_SInPredicatEh 64904
-#define DbUtilsEh_SNullConstEh 64905
-#define DbUtilsEh_SQuoteIsAbsentEh 64906
-#define DbUtilsEh_SLeftBracketExpectedEh 64907
-#define DbUtilsEh_SRightBracketExpectedEh 64908
-#define DbUtilsEh_SErrorInExpressionEh 64909
-#define DbUtilsEh_SUnexpectedExpressionBeforeNullEh 64910
-#define DbUtilsEh_SUnexpectedExpressionAfterOperatorEh 64911
-#define VDBConsts_SPropDefByLookup 64912
-#define VDBConsts_SRemoteLogin 64913
-#define EhLibConsts_SClearSelectedCellsEh 64914
-#define EhLibConsts_SInvalidTextFormatEh 64915
-#define EhLibConsts_SInvalidVCLDBIFFormatEh 64916
-#define EhLibConsts_SErrorDuringInsertValueEh 64917
-#define EhLibConsts_SIgnoreErrorEh 64918
-#define EhLibConsts_SFieldNameNotFoundEh 64919
-#define EhLibConsts_SVisibleColumnsEh 64920
-#define EhLibConsts_SCutEh 64921
-#define EhLibConsts_SCopyEh 64922
-#define EhLibConsts_SPasteEh 64923
-#define EhLibConsts_SDeleteEh 64924
-#define EhLibConsts_SSelectAllEh 64925
-#define EhLibConsts_SSTFilterListItem_Empties 64926
-#define EhLibConsts_SSTFilterListItem_NotEmpties 64927
-#define OleConst_SPropDlgCaption 64928
-#define OleConst_SInvalidStreamFormat 64929
-#define OleConst_SInvalidLicense 64930
-#define OleConst_SNotLicensed 64931
-#define OleConst_sNoRunningObject 64932
-#define VDBConsts_SFirstRecord 64933
-#define VDBConsts_SPriorRecord 64934
-#define VDBConsts_SNextRecord 64935
-#define VDBConsts_SLastRecord 64936
-#define VDBConsts_SInsertRecord 64937
-#define VDBConsts_SDeleteRecord 64938
-#define VDBConsts_SEditRecord 64939
-#define VDBConsts_SPostEdit 64940
-#define VDBConsts_SCancelEdit 64941
-#define VDBConsts_SRefreshRecord 64942
-#define VDBConsts_SDataSourceFixed 64943
-#define bdeconst_SLoginError 64944
-#define bdeconst_SInitError 64945
-#define bdeconst_SIDAPILangID 64946
-#define bdeconst_SBDEError 64947
-#define bdeconst_SNoDataSetField 64948
-#define bdeconst_SNoCachedUpdates 64949
-#define bdeconst_SNoFieldAccess 64950
-#define bdeconst_SUntitled 64951
-#define bdeconst_SLocalTransDirty 64952
-#define OleConst_SCannotActivate 64953
-#define OleConst_SNoWindowHandle 64954
-#define OleConst_SLinkProperties 64955
-#define OleConst_SInvalidLinkSource 64956
-#define OleConst_SCannotBreakLink 64957
-#define OleConst_SEmptyContainer 64958
-#define OleConst_SInvalidVerb 64959
-#define JConsts_sJPEGImageFile 64960
-#define bdeconst_SAutoSessionExclusive 64961
-#define bdeconst_SAutoSessionExists 64962
-#define bdeconst_SAutoSessionActive 64963
-#define bdeconst_SDuplicateDatabaseName 64964
-#define bdeconst_SDuplicateSessionName 64965
-#define bdeconst_SInvalidSessionName 64966
-#define bdeconst_SDatabaseNameMissing 64967
-#define bdeconst_SSessionNameMissing 64968
-#define bdeconst_SDatabaseOpen 64969
-#define bdeconst_SDatabaseClosed 64970
-#define bdeconst_SDatabaseHandleSet 64971
-#define bdeconst_SSessionActive 64972
-#define bdeconst_SHandleError 64973
-#define bdeconst_SNoReferenceTableName 64974
-#define bdeconst_SNoParameterValue 64975
+#define bdeconst_SDatabaseNameMissing 64896
+#define bdeconst_SSessionNameMissing 64897
+#define bdeconst_SDatabaseOpen 64898
+#define bdeconst_SDatabaseClosed 64899
+#define bdeconst_SDatabaseHandleSet 64900
+#define bdeconst_SSessionActive 64901
+#define bdeconst_SHandleError 64902
+#define bdeconst_SNoReferenceTableName 64903
+#define bdeconst_SNoParameterValue 64904
+#define bdeconst_SLoginError 64905
+#define bdeconst_SInitError 64906
+#define bdeconst_SIDAPILangID 64907
+#define bdeconst_SBDEError 64908
+#define bdeconst_SNoDataSetField 64909
+#define bdeconst_SNoCachedUpdates 64910
+#define bdeconst_SNoFieldAccess 64911
+#define OleConst_SEmptyContainer 64912
+#define OleConst_SInvalidVerb 64913
+#define OleConst_SPropDlgCaption 64914
+#define OleConst_SInvalidStreamFormat 64915
+#define OleConst_SInvalidLicense 64916
+#define OleConst_SNotLicensed 64917
+#define OleConst_sNoRunningObject 64918
+#define JConsts_sChangeJPGSize 64919
+#define JConsts_sJPEGError 64920
+#define JConsts_sJPEGImageFile 64921
+#define bdeconst_SAutoSessionExclusive 64922
+#define bdeconst_SAutoSessionExists 64923
+#define bdeconst_SAutoSessionActive 64924
+#define bdeconst_SDuplicateDatabaseName 64925
+#define bdeconst_SDuplicateSessionName 64926
+#define bdeconst_SInvalidSessionName 64927
+#define DbUtilsEh_SLikePredicatEh 64928
+#define DbUtilsEh_SInPredicatEh 64929
+#define DbUtilsEh_SNullConstEh 64930
+#define DbUtilsEh_SQuoteIsAbsentEh 64931
+#define DbUtilsEh_SLeftBracketExpectedEh 64932
+#define DbUtilsEh_SRightBracketExpectedEh 64933
+#define DbUtilsEh_SErrorInExpressionEh 64934
+#define DbUtilsEh_SUnexpectedExpressionBeforeNullEh 64935
+#define DbUtilsEh_SUnexpectedExpressionAfterOperatorEh 64936
+#define DbUtilsEh_SIncorrectExpressionEh 64937
+#define DbUtilsEh_SUnexpectedANDorOREh 64938
+#define OleConst_SCannotActivate 64939
+#define OleConst_SNoWindowHandle 64940
+#define OleConst_SLinkProperties 64941
+#define OleConst_SInvalidLinkSource 64942
+#define OleConst_SCannotBreakLink 64943
+#define EhLibConsts_SFieldNameNotFoundEh 64944
+#define EhLibConsts_SVisibleColumnsEh 64945
+#define EhLibConsts_SCutEh 64946
+#define EhLibConsts_SCopyEh 64947
+#define EhLibConsts_SPasteEh 64948
+#define EhLibConsts_SDeleteEh 64949
+#define EhLibConsts_SSelectAllEh 64950
+#define EhLibConsts_SSTFilterListItem_Empties 64951
+#define EhLibConsts_SSTFilterListItem_NotEmpties 64952
+#define EhLibConsts_SSTFilterListItem_All 64953
+#define EhLibConsts_SSTFilterListItem_ClearFilter 64954
+#define EhLibConsts_SSTFilterListItem_SortingByDescend 64955
+#define EhLibConsts_SSTFilterListItem_SortingByAscend 64956
+#define DbUtilsEh_SNotOperatorEh 64957
+#define DbUtilsEh_SAndOperatorEh 64958
+#define DbUtilsEh_SOrOperatorEh 64959
+#define VDBConsts_SNextRecord 64960
+#define VDBConsts_SLastRecord 64961
+#define VDBConsts_SInsertRecord 64962
+#define VDBConsts_SDeleteRecord 64963
+#define VDBConsts_SEditRecord 64964
+#define VDBConsts_SPostEdit 64965
+#define VDBConsts_SCancelEdit 64966
+#define VDBConsts_SRefreshRecord 64967
+#define VDBConsts_SDataSourceFixed 64968
+#define VDBConsts_SPropDefByLookup 64969
+#define VDBConsts_SRemoteLogin 64970
+#define EhLibConsts_SClearSelectedCellsEh 64971
+#define EhLibConsts_SInvalidTextFormatEh 64972
+#define EhLibConsts_SInvalidVCLDBIFFormatEh 64973
+#define EhLibConsts_SErrorDuringInsertValueEh 64974
+#define EhLibConsts_SIgnoreErrorEh 64975
 #define IBSQLMonitor_StrStart 64976
 #define IBSQLMonitor_StrExecute 64977
 #define IBSQLMonitor_StrNULL 64978
@@ -230,8 +230,8 @@
 #define IBSQLMonitor_StrRollbackRetainin 64987
 #define IBSQLMonitor_StrStartTransaction 64988
 #define IBSQLMonitor_StrApplication 64989
-#define JConsts_sChangeJPGSize 64990
-#define JConsts_sJPEGError 64991
+#define VDBConsts_SFirstRecord 64990
+#define VDBConsts_SPriorRecord 64991
 #define IBXConst_SFieldSizeMismatch 64992
 #define IBXConst_SEventAlreadyRegistered 64993
 #define IBXConst_SStringTooLarge 64994
@@ -890,8 +890,8 @@ BEGIN
 	JclResources_RsIntelCacheDescr05,	"Data TLB1: 4 MByte pages, 4-way set associative, 32 entries"
 	JclResources_RsIntelCacheDescr06,	"1st level instruction cache: 8 KBytes, 4-way set associative, 32 byte line size"
 	JclResources_RsIntelCacheDescr08,	"1st level instruction cache: 16 KBytes, 4-way set associative, 32 byte line size"
-	DbUtilsEh_SIncorrectExpressionEh,	"Incorrect expression: "
-	DbUtilsEh_SUnexpectedANDorOREh,	"Unexpected AND or OR: "
+	bdeconst_SUntitled,	"Untitled Application"
+	bdeconst_SLocalTransDirty,	"The transaction isolation level must be dirty read for local databases"
 	pnglang_EPngInvalidCRCText,	"This \"Portable Network Graphics\" image is not valid because it contains invalid pieces of data (crc error)"
 	pnglang_EPNGInvalidIHDRText,	"The \"Portable Network Graphics\" image could not be loaded because one of its main piece of data (ihdr) might be corrupted"
 	pnglang_EPNGMissingMultipleIDATText,	"This \"Portable Network Graphics\" image is invalid because it has missing image parts."
@@ -906,77 +906,6 @@ BEGIN
 	pnglang_EPNGUnknownInterlaceText,	"This \"Portable Network Graphics\" image uses an unknown interlace scheme which could not be decoded."
 	pnglang_EPNGCannotAssignChunkText,	"The chunks must be compatible to be assigned."
 	pnglang_EPNGUnexpectedEndText,	"This \"Portable Network Graphics\" image is invalid because the decoder found an unexpected end of the file."
-	EhLibConsts_SSTFilterListItem_All,	"(All)"
-	EhLibConsts_SSTFilterListItem_ClearFilter,	"(Clear filter)"
-	EhLibConsts_SSTFilterListItem_SortingByDescend,	"(Order by ascending)"
-	EhLibConsts_SSTFilterListItem_SortingByAscend,	"(Order by descending)"
-	DbUtilsEh_SNotOperatorEh,	"Not"
-	DbUtilsEh_SAndOperatorEh,	"AND"
-	DbUtilsEh_SOrOperatorEh,	"OR"
-	DbUtilsEh_SLikePredicatEh,	""
-	DbUtilsEh_SInPredicatEh,	"In"
-	DbUtilsEh_SNullConstEh,	"Null"
-	DbUtilsEh_SQuoteIsAbsentEh,	"Quote is absent: "
-	DbUtilsEh_SLeftBracketExpectedEh,	"'(' expected: "
-	DbUtilsEh_SRightBracketExpectedEh,	"')' expected: "
-	DbUtilsEh_SErrorInExpressionEh,	"Error in expression: "
-	DbUtilsEh_SUnexpectedExpressionBeforeNullEh,	"Unexpected expression before Null: "
-	DbUtilsEh_SUnexpectedExpressionAfterOperatorEh,	"Unexpected expression after operator: "
-	VDBConsts_SPropDefByLookup,	"Property already defined by lookup field"
-	VDBConsts_SRemoteLogin,	"Remote Login"
-	EhLibConsts_SClearSelectedCellsEh,	"Clear selected cells?"
-	EhLibConsts_SInvalidTextFormatEh,	"Invalid text format"
-	EhLibConsts_SInvalidVCLDBIFFormatEh,	"Invalid VCLDBIF format"
-	EhLibConsts_SErrorDuringInsertValueEh,	"Error during insert value:"
-	EhLibConsts_SIgnoreErrorEh,	"Ignore error?"
-	EhLibConsts_SFieldNameNotFoundEh,	"Field name '%s' not found"
-	EhLibConsts_SVisibleColumnsEh,	"Visible columns"
-	EhLibConsts_SCutEh,	"Cut"
-	EhLibConsts_SCopyEh,	"Copy"
-	EhLibConsts_SPasteEh,	"Paste"
-	EhLibConsts_SDeleteEh,	"Delete"
-	EhLibConsts_SSelectAllEh,	"Select All"
-	EhLibConsts_SSTFilterListItem_Empties,	"(Empty)"
-	EhLibConsts_SSTFilterListItem_NotEmpties,	"(Not empty)"
-	OleConst_SPropDlgCaption,	"%s Properties"
-	OleConst_SInvalidStreamFormat,	"Invalid stream format"
-	OleConst_SInvalidLicense,	"License information for %s is invalid"
-	OleConst_SNotLicensed,	"License information for %s not found. You cannot use this control in design mode"
-	OleConst_sNoRunningObject,	"Unable to retrieve a pointer to a running object registered with OLE for %s/%s"
-	VDBConsts_SFirstRecord,	"First record"
-	VDBConsts_SPriorRecord,	"Prior record"
-	VDBConsts_SNextRecord,	"Next record"
-	VDBConsts_SLastRecord,	"Last record"
-	VDBConsts_SInsertRecord,	"Insert record"
-	VDBConsts_SDeleteRecord,	"Delete record"
-	VDBConsts_SEditRecord,	"Edit record"
-	VDBConsts_SPostEdit,	"Post edit"
-	VDBConsts_SCancelEdit,	"Cancel edit"
-	VDBConsts_SRefreshRecord,	"Refresh data"
-	VDBConsts_SDataSourceFixed,	"Operation not allowed in a DBCtrlGrid"
-	bdeconst_SLoginError,	"Cannot connect to database '%s'"
-	bdeconst_SInitError,	"An error occurred while attempting to initialize the Borland Database Engine (error $%.4x)"
-	bdeconst_SIDAPILangID,	"0009"
-	bdeconst_SBDEError,	"BDE error $%.4x"
-	bdeconst_SNoDataSetField,	"Missing DataSetField property"
-	bdeconst_SNoCachedUpdates,	"Not in cached update mode"
-	bdeconst_SNoFieldAccess,	"Cannot access field '%s' in a filter"
-	bdeconst_SUntitled,	"Untitled Application"
-	bdeconst_SLocalTransDirty,	"The transaction isolation level must be dirty read for local databases"
-	OleConst_SCannotActivate,	"OLE control activation failed"
-	OleConst_SNoWindowHandle,	"Could not obtain OLE control window handle"
-	OleConst_SLinkProperties,	"Link Properties"
-	OleConst_SInvalidLinkSource,	"Cannot link to an invalid source."
-	OleConst_SCannotBreakLink,	"Break link operation is not supported."
-	OleConst_SEmptyContainer,	"Operation not allowed on an empty OLE container"
-	OleConst_SInvalidVerb,	"Invalid object verb"
-	JConsts_sJPEGImageFile,	"JPEG Image File"
-	bdeconst_SAutoSessionExclusive,	"Cannot enable AutoSessionName property with more than one session on a form or data-module"
-	bdeconst_SAutoSessionExists,	"Cannot add a session to the form or data-module while session '%s' has AutoSessionName enabled"
-	bdeconst_SAutoSessionActive,	"Cannot modify SessionName while AutoSessionName is enabled"
-	bdeconst_SDuplicateDatabaseName,	"Duplicate database name '%s'"
-	bdeconst_SDuplicateSessionName,	"Duplicate session name '%s'"
-	bdeconst_SInvalidSessionName,	"Invalid session name %s"
 	bdeconst_SDatabaseNameMissing,	"Database name missing"
 	bdeconst_SSessionNameMissing,	"Session name missing"
 	bdeconst_SDatabaseOpen,	"Cannot perform this operation on an open database"
@@ -986,6 +915,77 @@ BEGIN
 	bdeconst_SHandleError,	"Error creating cursor handle"
 	bdeconst_SNoReferenceTableName,	"ReferenceTableName not specified for field '%s'"
 	bdeconst_SNoParameterValue,	"No value for parameter '%s'"
+	bdeconst_SLoginError,	"Cannot connect to database '%s'"
+	bdeconst_SInitError,	"An error occurred while attempting to initialize the Borland Database Engine (error $%.4x)"
+	bdeconst_SIDAPILangID,	"0009"
+	bdeconst_SBDEError,	"BDE error $%.4x"
+	bdeconst_SNoDataSetField,	"Missing DataSetField property"
+	bdeconst_SNoCachedUpdates,	"Not in cached update mode"
+	bdeconst_SNoFieldAccess,	"Cannot access field '%s' in a filter"
+	OleConst_SEmptyContainer,	"Operation not allowed on an empty OLE container"
+	OleConst_SInvalidVerb,	"Invalid object verb"
+	OleConst_SPropDlgCaption,	"%s Properties"
+	OleConst_SInvalidStreamFormat,	"Invalid stream format"
+	OleConst_SInvalidLicense,	"License information for %s is invalid"
+	OleConst_SNotLicensed,	"License information for %s not found. You cannot use this control in design mode"
+	OleConst_sNoRunningObject,	"Unable to retrieve a pointer to a running object registered with OLE for %s/%s"
+	JConsts_sChangeJPGSize,	"Cannot change the size of a JPEG image"
+	JConsts_sJPEGError,	"JPEG error #%d"
+	JConsts_sJPEGImageFile,	"JPEG Image File"
+	bdeconst_SAutoSessionExclusive,	"Cannot enable AutoSessionName property with more than one session on a form or data-module"
+	bdeconst_SAutoSessionExists,	"Cannot add a session to the form or data-module while session '%s' has AutoSessionName enabled"
+	bdeconst_SAutoSessionActive,	"Cannot modify SessionName while AutoSessionName is enabled"
+	bdeconst_SDuplicateDatabaseName,	"Duplicate database name '%s'"
+	bdeconst_SDuplicateSessionName,	"Duplicate session name '%s'"
+	bdeconst_SInvalidSessionName,	"Invalid session name %s"
+	DbUtilsEh_SLikePredicatEh,	""
+	DbUtilsEh_SInPredicatEh,	"In"
+	DbUtilsEh_SNullConstEh,	"Null"
+	DbUtilsEh_SQuoteIsAbsentEh,	"Quote is absent: "
+	DbUtilsEh_SLeftBracketExpectedEh,	"'(' expected: "
+	DbUtilsEh_SRightBracketExpectedEh,	"')' expected: "
+	DbUtilsEh_SErrorInExpressionEh,	"Error in expression: "
+	DbUtilsEh_SUnexpectedExpressionBeforeNullEh,	"Unexpected expression before Null: "
+	DbUtilsEh_SUnexpectedExpressionAfterOperatorEh,	"Unexpected expression after operator: "
+	DbUtilsEh_SIncorrectExpressionEh,	"Incorrect expression: "
+	DbUtilsEh_SUnexpectedANDorOREh,	"Unexpected AND or OR: "
+	OleConst_SCannotActivate,	"OLE control activation failed"
+	OleConst_SNoWindowHandle,	"Could not obtain OLE control window handle"
+	OleConst_SLinkProperties,	"Link Properties"
+	OleConst_SInvalidLinkSource,	"Cannot link to an invalid source."
+	OleConst_SCannotBreakLink,	"Break link operation is not supported."
+	EhLibConsts_SFieldNameNotFoundEh,	"Field name '%s' not found"
+	EhLibConsts_SVisibleColumnsEh,	"Visible columns"
+	EhLibConsts_SCutEh,	"Cut"
+	EhLibConsts_SCopyEh,	"Copy"
+	EhLibConsts_SPasteEh,	"Paste"
+	EhLibConsts_SDeleteEh,	"Delete"
+	EhLibConsts_SSelectAllEh,	"Select All"
+	EhLibConsts_SSTFilterListItem_Empties,	"(Empty)"
+	EhLibConsts_SSTFilterListItem_NotEmpties,	"(Not empty)"
+	EhLibConsts_SSTFilterListItem_All,	"(All)"
+	EhLibConsts_SSTFilterListItem_ClearFilter,	"(Clear filter)"
+	EhLibConsts_SSTFilterListItem_SortingByDescend,	"(Order by ascending)"
+	EhLibConsts_SSTFilterListItem_SortingByAscend,	"(Order by descending)"
+	DbUtilsEh_SNotOperatorEh,	"Not"
+	DbUtilsEh_SAndOperatorEh,	"AND"
+	DbUtilsEh_SOrOperatorEh,	"OR"
+	VDBConsts_SNextRecord,	"Next record"
+	VDBConsts_SLastRecord,	"Last record"
+	VDBConsts_SInsertRecord,	"Insert record"
+	VDBConsts_SDeleteRecord,	"Delete record"
+	VDBConsts_SEditRecord,	"Edit record"
+	VDBConsts_SPostEdit,	"Post edit"
+	VDBConsts_SCancelEdit,	"Cancel edit"
+	VDBConsts_SRefreshRecord,	"Refresh data"
+	VDBConsts_SDataSourceFixed,	"Operation not allowed in a DBCtrlGrid"
+	VDBConsts_SPropDefByLookup,	"Property already defined by lookup field"
+	VDBConsts_SRemoteLogin,	"Remote Login"
+	EhLibConsts_SClearSelectedCellsEh,	"Clear selected cells?"
+	EhLibConsts_SInvalidTextFormatEh,	"Invalid text format"
+	EhLibConsts_SInvalidVCLDBIFFormatEh,	"Invalid VCLDBIF format"
+	EhLibConsts_SErrorDuringInsertValueEh,	"Error during insert value:"
+	EhLibConsts_SIgnoreErrorEh,	"Ignore error?"
 	IBSQLMonitor_StrStart,	": [Start]"
 	IBSQLMonitor_StrExecute,	": [Execute] "
 	IBSQLMonitor_StrNULL,	"<NULL>"
@@ -1000,8 +1000,8 @@ BEGIN
 	IBSQLMonitor_StrRollbackRetainin,	": [Rollback retaining (Soft rollback)]"
 	IBSQLMonitor_StrStartTransaction,	": [Start transaction]"
 	IBSQLMonitor_StrApplication,	"[Application: "
-	JConsts_sChangeJPGSize,	"Cannot change the size of a JPEG image"
-	JConsts_sJPEGError,	"JPEG error #%d"
+	VDBConsts_SFirstRecord,	"First record"
+	VDBConsts_SPriorRecord,	"Prior record"
 	IBXConst_SFieldSizeMismatch,	"Size Mismatch - Field %s size is too small for data"
 	IBXConst_SEventAlreadyRegistered,	"Events already registered"
 	IBXConst_SStringTooLarge,	"Trying to store a string of length %d into a field that can only contain %d"
@@ -1551,102 +1551,100 @@ END
 /* c:\program files (x86)\embarcadero\rad studio\7.0\Lib\Debug\character.res */
 /* c:\program files (x86)\embarcadero\rad studio\7.0\lib\Controls.res */
 /* D:\Front\Source\TMS\TASKDIALOG.RES */
-/* D:\Front\Source\TMS\AdvSmoothTouchKeyBoard.res */
 /* c:\program files (x86)\embarcadero\rad studio\7.0\lib\Buttons.res */
-/* D:\Front\Source\TMS\AdvColorPickerDropDown.RES */
-/* D:\Front\Source\TMS\ASGSPIN.RES */
-/* D:\Front\Source\TMS\ADVGRID.RES */
-/* D:\Front\Source\TMS\ASGRES.RES */
 /* c:\program files (x86)\embarcadero\rad studio\7.0\lib\DBPWDlg.dfm */
 /* c:\program files (x86)\embarcadero\rad studio\7.0\lib\DBLogDlg.dfm */
 /* c:\program files (x86)\embarcadero\rad studio\7.0\lib\DBCtrls.res */
 /* D:\Front\Source\Components\EhLib\Common\CalculatorEh.DFM */
 /* D:\Front\Source\Components\EhLib\Common\DBGridEhFindDlgs.dfm */
 /* D:\Front\Source\Components\EhLib\Common\DBGRIDEH.RES */
-/* FrontData_Unit.dfm */
-/* BaseFrontForm_Unit.dfm */
-/* CardCodeForm_Unit.dfm */
-/* OrderNumber_Unit.dfm */
-/* DevideForm_Unit.dfm */
-/* SplitOrderForm_Unit.dfm */
+/* D:\Front\Source\TMS\ASGSPIN.RES */
+/* D:\Front\Source\TMS\AdvColorPickerDropDown.RES */
+/* D:\Front\Source\TMS\ADVGRID.RES */
+/* D:\Front\Source\TMS\ASGRES.RES */
+/* D:\Front\Source\FrontData_Unit.dfm */
+/* D:\Front\Source\BaseFrontForm_Unit.dfm */
+/* D:\Front\Source\TMS\AdvSmoothTouchKeyBoard.res */
+/* D:\Front\Source\CardCodeForm_Unit.dfm */
+/* D:\Front\Source\OrderNumber_Unit.dfm */
+/* D:\Front\Source\DevideForm_Unit.dfm */
+/* D:\Front\Source\SplitOrderForm_Unit.dfm */
 /* c:\program files (x86)\embarcadero\rad studio\7.0\lib\FileCtrl.res */
-/* D:\Front\Source\Components\FastReport 4\Source\frxInheritError.dfm */
 /* D:\Front\Source\Components\FastReport 4\Source\frxCtrls.RES */
-/* D:\Front\Source\Components\FastReport 4\Source\frxPrintDialog.DFM */
-/* D:\Front\Source\Components\FastReport 4\Source\frxPreviewPageSettings.DFM */
 /* D:\Front\Source\Components\FastReport 4\Source\frxSearchDialog.DFM */
+/* D:\Front\Source\Components\FastReport 4\Source\frxPreviewPageSettings.DFM */
 /* D:\Front\Source\Components\FastReport 4\Source\frxPreview.DFM */
 /* D:\Front\Source\Components\FastReport 4\Source\frxPreview.RES */
-/* D:\Front\Source\Components\FastReport 4\Source\frxDialogForm.DFM */
+/* D:\Front\Source\Components\FastReport 4\Source\frxPrintDialog.DFM */
 /* D:\Front\Source\Components\FastReport 4\Source\frxPassw.dfm */
-/* D:\Front\Source\Components\FastReport 4\Source\frxProgress.DFM */
+/* D:\Front\Source\Components\FastReport 4\Source\frxDialogForm.DFM */
+/* D:\Front\Source\Components\FastReport 4\Source\frxInheritError.dfm */
 /* D:\Front\Source\Components\FastReport 4\Source\frxClass.RES */
-/* D:\Front\Source\Components\FastReport 4\Source\frxPopupForm.DFM */
-/* D:\Front\Source\Components\FastReport 4\Source\frxEditQueryParams.DFM */
-/* D:\Front\Source\Components\FastReport 4\Source\frxConnWizard.DFM */
-/* D:\Front\Source\Components\FastReport 4\Source\frxConnWizard.RES */
-/* D:\Front\Source\Components\FastReport 4\Source\frxEditSQL.DFM */
-/* D:\Front\Source\Components\FastReport 4\Source\frxEditAliases.DFM */
-/* D:\Front\Source\Components\FastReport 4\Source\frxEditMD.DFM */
-/* D:\Front\Source\Components\FastReport 4\Source\ExportPack\frxExportText.dfm */
-/* D:\Front\Source\Components\FastReport 4\Source\ExportPack\frxExportTxtPrn.dfm */
-/* D:\Front\Source\Components\FastReport 4\Source\ExportPack\frxExportTXT.dfm */
-/* D:\Front\Source\Components\FastReport 4\Source\ExportPack\frxExportRTF.dfm */
-/* D:\Front\Source\Components\FastReport 4\Source\frxDMPExport.dfm */
+/* D:\Front\Source\Components\FastReport 4\Source\frxProgress.DFM */
 /* D:\Front\Source\Components\FastReport 4\Source\frxEditFormat.DFM */
 /* D:\Front\Source\Components\FastReport 4\Source\frxEditHighlight.DFM */
 /* D:\Front\Source\Components\FastReport 4\Source\frxEditSysMemo.DFM */
 /* D:\Front\Source\Components\FastReport 4\Source\frxEditMemo.DFM */
-/* D:\Front\Source\Components\FastReport 4\Source\frxEditFrame.DFM */
-/* D:\Front\Source\Components\FastReport 4\Source\frxCrossEditor.DFM */
 /* D:\Front\Source\Components\FastReport 4\Source\frxOLEEditor.DFM */
-/* D:\Front\Source\Components\FastReport 4\Source\frxBarcodeEditor.DFM */
-/* D:\Front\Source\Components\FastReport 4\Source\frxRichEditor.DFM */
+/* D:\Front\Source\Components\FastReport 4\Source\frxPopupForm.DFM */
+/* D:\Front\Source\Components\FastReport 4\Source\frxDesgnWorkspace.res */
+/* c:\program files (x86)\embarcadero\rad studio\7.0\lib\Tabs.res */
+/* D:\Front\Source\Components\FastReport 4\Source\frxInsp.DFM */
+/* D:\Front\Source\Components\FastReport 4\Source\frxDataTree.DFM */
+/* D:\Front\Source\Components\FastReport 4\Source\frxEvaluateForm.DFM */
+/* D:\Front\Source\Components\FastReport 4\Source\frxWatchForm.DFM */
+/* D:\Front\Source\Components\FastReport 4\Source\frxEditPage.DFM */
+/* D:\Front\Source\Components\FastReport 4\Source\frxEditDataBand.DFM */
+/* D:\Front\Source\Components\FastReport 4\Source\frxEditStrings.DFM */
+/* D:\Front\Source\Components\FastReport 4\Source\frxEditGroup.DFM */
+/* D:\Front\Source\Components\FastReport 4\Source\frxEditPicture.DFM */
+/* D:\Front\Source\Components\FastReport 4\Source\frxEditFrame.DFM */
+/* D:\Front\Source\Components\FastReport 4\Source\frxEditOptions.DFM */
+/* D:\Front\Source\Components\FastReport 4\Source\frxEditReport.DFM */
+/* D:\Front\Source\Components\FastReport 4\Source\frxAbout.DFM */
+/* D:\Front\Source\Components\FastReport 4\Source\frxEditReportData.DFM */
+/* D:\Front\Source\Components\FastReport 4\Source\frxEditVar.DFM */
+/* D:\Front\Source\Components\FastReport 4\Source\frxEditExpr.DFM */
+/* D:\Front\Source\Components\FastReport 4\Source\frxEditStyle.DFM */
+/* D:\Front\Source\Components\FastReport 4\Source\frxNewItem.DFM */
+/* D:\Front\Source\Components\FastReport 4\Source\frxStdWizard.DFM */
+/* D:\Front\Source\Components\FastReport 4\Source\frxStdWizard.RES */
+/* D:\Front\Source\Components\FastReport 4\Source\frxEditTabOrder.DFM */
+/* D:\Front\Source\Components\FastReport 4\Source\frxConnItemEdit.dfm */
+/* D:\Front\Source\Components\FastReport 4\Source\frxConnEditor.DFM */
+/* D:\Front\Source\Components\FastReport 4\Source\frxDesgn.DFM */
+/* D:\Front\Source\Components\FastReport 4\Source\frxDesgn.RES */
+/* D:\Front\Source\Components\FastReport 4\Source\frxReportTree.DFM */
 /* c:\program files (x86)\embarcadero\rad studio\7.0\lib\TeeResou.res */
 /* c:\program files (x86)\embarcadero\rad studio\7.0\lib\ExtDlgs.res */
 /* c:\program files (x86)\embarcadero\rad studio\7.0\lib\TeePenDlg.DFM */
 /* c:\program files (x86)\embarcadero\rad studio\7.0\lib\TeeBmps.res */
 /* c:\program files (x86)\embarcadero\rad studio\7.0\lib\TeeGalleryAlternate.DFM */
-/* c:\program files (x86)\embarcadero\rad studio\7.0\lib\Tabs.res */
-/* D:\Front\Source\Components\FastReport 4\Source\frxInsp.DFM */
 /* D:\Front\Source\Components\FastReport 4\Source\frxChartEditor.DFM */
-/* D:\Front\Source\Components\FastReport 4\Source\frxEvaluateForm.DFM */
-/* D:\Front\Source\Components\FastReport 4\Source\frxWatchForm.DFM */
-/* D:\Front\Source\Components\FastReport 4\Source\frxDataTree.DFM */
-/* D:\Front\Source\Components\FastReport 4\Source\frxDesgnWorkspace.res */
-/* D:\Front\Source\Components\FastReport 4\Source\frxConnItemEdit.dfm */
-/* D:\Front\Source\Components\FastReport 4\Source\frxConnEditor.DFM */
-/* D:\Front\Source\Components\FastReport 4\Source\frxEditTabOrder.DFM */
-/* D:\Front\Source\Components\FastReport 4\Source\frxEditReportData.DFM */
-/* D:\Front\Source\Components\FastReport 4\Source\frxStdWizard.DFM */
-/* D:\Front\Source\Components\FastReport 4\Source\frxStdWizard.RES */
-/* D:\Front\Source\Components\FastReport 4\Source\frxNewItem.DFM */
-/* D:\Front\Source\Components\FastReport 4\Source\frxEditStyle.DFM */
-/* D:\Front\Source\Components\FastReport 4\Source\frxEditExpr.DFM */
-/* D:\Front\Source\Components\FastReport 4\Source\frxEditStrings.DFM */
-/* D:\Front\Source\Components\FastReport 4\Source\frxEditVar.DFM */
-/* D:\Front\Source\Components\FastReport 4\Source\frxAbout.DFM */
-/* D:\Front\Source\Components\FastReport 4\Source\frxEditPage.DFM */
-/* D:\Front\Source\Components\FastReport 4\Source\frxEditPicture.DFM */
-/* D:\Front\Source\Components\FastReport 4\Source\frxEditReport.DFM */
-/* D:\Front\Source\Components\FastReport 4\Source\frxEditOptions.DFM */
-/* D:\Front\Source\Components\FastReport 4\Source\frxEditGroup.DFM */
-/* D:\Front\Source\Components\FastReport 4\Source\frxEditDataBand.DFM */
-/* D:\Front\Source\Components\FastReport 4\Source\frxReportTree.DFM */
-/* D:\Front\Source\Components\FastReport 4\Source\frxDesgn.DFM */
-/* D:\Front\Source\Components\FastReport 4\Source\frxDesgn.RES */
-/* GuestForm_unit.dfm */
-/* DeleteOrderLine_unit.dfm */
-/* Modification_Unit.dfm */
-/* PayForm_Unit.dfm */
-/* SellParamForm_Unit.dfm */
-/* PercOrCardForm_Unit.dfm */
+/* D:\Front\Source\Components\FastReport 4\Source\frxRichEditor.DFM */
+/* D:\Front\Source\Components\FastReport 4\Source\frxBarcodeEditor.DFM */
+/* D:\Front\Source\Components\FastReport 4\Source\frxCrossEditor.DFM */
+/* D:\Front\Source\Components\FastReport 4\Source\frxDMPExport.dfm */
+/* D:\Front\Source\Components\FastReport 4\Source\ExportPack\frxExportRTF.dfm */
+/* D:\Front\Source\Components\FastReport 4\Source\ExportPack\frxExportText.dfm */
+/* D:\Front\Source\Components\FastReport 4\Source\frxEditMD.DFM */
+/* D:\Front\Source\Components\FastReport 4\Source\frxEditAliases.DFM */
+/* D:\Front\Source\Components\FastReport 4\Source\frxEditQueryParams.DFM */
+/* D:\Front\Source\Components\FastReport 4\Source\frxEditSQL.DFM */
+/* D:\Front\Source\Components\FastReport 4\Source\frxConnWizard.DFM */
+/* D:\Front\Source\Components\FastReport 4\Source\frxConnWizard.RES */
+/* D:\Front\Source\GuestForm_unit.dfm */
+/* D:\Front\Source\DeleteOrderLine_unit.dfm */
+/* D:\Front\Source\Modification_Unit.dfm */
+/* D:\Front\Source\PayForm_Unit.dfm */
+/* D:\Front\Source\SellParamForm_Unit.dfm */
+/* D:\Front\Source\PercOrCardForm_Unit.dfm */
 /* c:\program files (x86)\embarcadero\rad studio\7.0\lib\DBGrids.res */
-/* DiscountTypeForm_Unit.dfm */
-/* ChooseDiscountCardForm_Unit.dfm */
-/* EditReportForm_Unit.dfm */
+/* D:\Front\Source\DiscountTypeForm_Unit.dfm */
+/* D:\Front\Source\ChooseDiscountCardForm_Unit.dfm */
+/* D:\Front\Source\EditReportForm_Unit.dfm */
 /* D:\Front\Source\jcl\source\common\JclUnicode.res */
-/* CashForm_Unit.dfm */
+/* D:\Front\Source\CashForm_Unit.dfm */
 /* D:\Front\Source\MainForm.dfm */
 /* D:\Front\Source\RestFront.res */
 /* D:\Front\Source\RestFront.drf */

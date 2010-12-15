@@ -25,6 +25,7 @@ const
   btnGoodName  = 'btnGood%d';
   btnUserName  = 'btnUser%d';
   btnUserOrderName = 'btnUserOrder%d';
+  cn_dontManagerPermission = 'Данный пользователь не обладает правами менеджера!';
 
 const
   btnFirstTop = 8;
@@ -1034,9 +1035,9 @@ begin
         if FUserInfo.CheckedUserPassword then
         begin
           if (FUserInfo.UserInGroup and FFrontBase.MN_Options.ManagerGroupMask) <> 0 then
-
+            //
           else begin
-            AdvTaskMessageDlg('Внимание', 'Данный пользователь не обладает правами менеджера!', mtWarning, [mbOK], 0);
+            AdvTaskMessageDlg('Внимание', cn_dontManagerPermission, mtWarning, [mbOK], 0);
             exit;
           end;
         end else
@@ -1144,17 +1145,20 @@ begin
         if AdvTaskMessageDlg('Внимание', 'Закрыть заказ?',
           mtInformation, [mbYes, mbNo], 0) = IDYES then
         begin
-          if FFrontBase.CreateNewOrder(FHeaderTable, FLineTable, FModificationDataSet, OrderKey) then
-          begin
-            if FFrontBase.MN_Options.LastPrintOrder <> OrderKey then
+          DBGrMain.DataSource := nil;
+          try
+            if FFrontBase.CreateNewOrder(FHeaderTable, FLineTable, FModificationDataSet, OrderKey) then
             begin
-//              FFrontBase.MN_Options.LastPrintOrder := OrderKey;
-              if FFrontBase.GetServiceCheckOptions(OrderKey, PrinterName, PrnGrid) then
-                if FReport.PrintServiceCheck(1, PrnGrid, OrderKey, PrinterName) then
-                  FFrontBase.SavePrintDate(OrderKey);
+              if FFrontBase.MN_Options.LastPrintOrder <> OrderKey then
+              begin
+                if FFrontBase.GetServiceCheckOptions(OrderKey, PrinterName, PrnGrid) then
+                  if FReport.PrintServiceCheck(1, PrnGrid, OrderKey, PrinterName) then
+                    FFrontBase.SavePrintDate(OrderKey);
+              end;
+              FormState := OrderMenu;
             end;
-//            FFrontBase.MN_Options.LastPrintOrder := -1;
-            FormState := OrderMenu;
+          finally
+            DBGrMain.DataSource := dsMain;
           end;
         end;
       end;
@@ -1225,10 +1229,9 @@ begin
       if FUserInfo.CheckedUserPassword then
       begin
         if (FUserInfo.UserInGroup and FFrontBase.MN_Options.ManagerGroupMask) <> 0 then
-
+          //
         else begin
-          AdvTaskMessageDlg('Внимание', 'Данный пользователь не обладает правами менеджера!',
-            mtWarning, [mbOK], 0);
+          AdvTaskMessageDlg('Внимание', cn_dontManagerPermission, mtWarning, [mbOK], 0);
           exit;
         end;
 
@@ -1272,10 +1275,9 @@ begin
       if FUserInfo.CheckedUserPassword then
       begin
         if (FUserInfo.UserInGroup and FFrontBase.MN_Options.ManagerGroupMask) <> 0 then
-
+          //
         else begin
-          AdvTaskMessageDlg('Внимание', 'Данный пользователь не обладает правами менеджера!',
-            mtWarning, [mbOK], 0);
+          AdvTaskMessageDlg('Внимание', cn_dontManagerPermission, mtWarning, [mbOK], 0);
           exit;
         end;
         FDeleteForm := TDeleteOrderLine.CreateWithFrontBase(nil, FFrontBase);
@@ -1316,6 +1318,7 @@ begin
         try
           FForm.ModifyGroupKey := FGoodDataSet.FieldByName('MODIFYGROUPKEY').AsInteger;
           FForm.LineModifyTable := FModificationDataSet;
+          FForm.GoodName := FGoodDataSet.FieldByName('NAME').AsString;
           FForm.ShowModal;
           if FForm.ModalResult = mrOK then
           begin
@@ -1356,15 +1359,19 @@ begin
   if FUserInfo.CheckedUserPassword then
   begin
     if (FUserInfo.UserInGroup and FFrontBase.MN_Options.ManagerGroupMask) <> 0 then
-
+      //
     else begin
-      AdvTaskMessageDlg('Внимание', 'Данный пользователь не обладает правами менеджера!',
-        mtWarning, [mbOK], 0);
+      AdvTaskMessageDlg('Внимание', cn_dontManagerPermission, mtWarning, [mbOK], 0);
       exit;
     end;
 
     //2. сохраняем заказ, получаем его ID
-    FFrontBase.CreateNewOrder(FHeaderTable, FLineTable, FModificationDataSet, MainOrderKey);
+    DBGrMain.DataSource := nil;
+    try
+      FFrontBase.CreateNewOrder(FHeaderTable, FLineTable, FModificationDataSet, MainOrderKey);
+    finally
+      DBGrMain.DataSource := dsMain;
+    end;
 
     //3. переход на форму менеджера
     FormState := ManagerChooseOrder;
@@ -1386,8 +1393,13 @@ begin
   begin
     ClearDisplay;
     OrderKey := FHeaderTable.FieldByName('ID').AsInteger;
-    FFrontBase.SaveAndReloadOrder(FHeaderTable, FLineTable,
-      FModificationDataSet, OrderKey);
+    DBGrMain.DataSource := nil;
+    try
+      FFrontBase.SaveAndReloadOrder(FHeaderTable, FLineTable,
+        FModificationDataSet, OrderKey);
+    finally
+      DBGrMain.DataSource := dsMain;
+    end;
 
     if FReport.PrintPreCheck(1, OrderKey) then
     begin
@@ -1397,7 +1409,7 @@ begin
     end;  
   end else
   begin
-    AdvTaskMessageDlg('Внимание', 'Пречек распечатан!',
+    AdvTaskMessageDlg('Внимание', 'Пречек уже был распечатан!',
       mtInformation, [mbOK], 0);
   end;
 end;
@@ -1412,7 +1424,7 @@ begin
     if (FUserInfo.UserInGroup and FFrontBase.MN_Options.ManagerGroupMask) <> 0 then
     begin
       if FFrontBase.OrderIsPayed(FHeaderTable.FieldByName('ID').AsInteger) then
-        AdvTaskMessageDlg('Внимание', 'Этот заказ уже оплачен',
+        AdvTaskMessageDlg('Внимание', 'Этот заказ уже был оплачен',
           mtInformation, [mbOK], 0)
       else begin
         FHeaderTable.Edit;
@@ -1423,8 +1435,7 @@ begin
       FFrontBase.SaveOrderLog(FFrontBase.ContactKey, FUserInfo.UserKey,
         FHeaderTable.FieldByName('ID').AsInteger, 0, 1);
     end else
-      AdvTaskMessageDlg('Внимание', 'Данный пользователь не обладает правами менеджера!',
-        mtWarning, [mbOK], 0);
+      AdvTaskMessageDlg('Внимание', cn_dontManagerPermission, mtWarning, [mbOK], 0);
   end;
 end;
 
@@ -1494,8 +1505,7 @@ begin
         end;
       end
       else begin
-        AdvTaskMessageDlg('Внимание', 'Данный пользователь не обладает правами менеджера!',
-          mtWarning, [mbOK], 0);
+        AdvTaskMessageDlg('Внимание', cn_dontManagerPermission, mtWarning, [mbOK], 0);
         exit;
       end;
     end;  
@@ -1549,8 +1559,13 @@ var
   OrderKey: Integer;
 begin
   OrderKey := FHeaderTable.FieldByName('ID').AsInteger;
-  FFrontBase.SaveAndReloadOrder(FHeaderTable, FLineTable,
-    FModificationDataSet, OrderKey);
+  DBGrMain.DataSource := nil;
+  try
+    FFrontBase.SaveAndReloadOrder(FHeaderTable, FLineTable,
+      FModificationDataSet, OrderKey);
+  finally
+    DBGrMain.DataSource := dsMain;
+  end;
 
   SumToPay := 0;
   FLineTable.DisableControls;
@@ -2090,9 +2105,13 @@ begin
 
   MasterKey := FHeaderTable.FieldByName('ID').AsInteger;
   OrderKey := FHeaderTable.FieldByName('ID').AsInteger;
-
-  FFrontBase.SaveAndReloadOrder(FHeaderTable, FLineTable,
-    FModificationDataSet, OrderKey);
+  DBGrMain.DataSource := nil;
+  try
+    FFrontBase.SaveAndReloadOrder(FHeaderTable, FLineTable,
+      FModificationDataSet, OrderKey);
+  finally
+    DBGrMain.DataSource := dsMain;
+  end;
   //обновить футер грида
   DBGrMain.SumList.RecalcAll;
 
@@ -2335,8 +2354,7 @@ begin
   begin
     if (FUserInfo.UserInGroup and FFrontBase.MN_Options.ManagerGroupMask) <> 0 then
     else begin
-      AdvTaskMessageDlg('Внимание', 'Данный пользователь не обладает правами менеджера!',
-        mtWarning, [mbOK], 0);
+      AdvTaskMessageDlg('Внимание', cn_dontManagerPermission, mtWarning, [mbOK], 0);
       exit;
     end;
     Form := TEditReport.Create(nil);

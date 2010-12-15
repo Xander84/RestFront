@@ -1,6 +1,8 @@
 object ModificationForm: TModificationForm
-  Left = 315
-  Top = 163
+  Left = 343
+  Top = 193
+  ActiveControl = btnOK
+  BorderIcons = []
   BorderStyle = bsDialog
   Caption = #1052#1086#1076#1080#1092#1080#1082#1072#1090#1086#1088#1099
   ClientHeight = 473
@@ -67,10 +69,13 @@ object ModificationForm: TModificationForm
       Caption = #1052#1086#1076#1080#1092#1080#1082#1072#1090#1086#1088#1099
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
-      Font.Height = -27
+      Font.Height = -19
       Font.Name = 'Times New Roman'
       Font.Style = []
       ParentFont = False
+      Transparent = False
+      Layout = tlCenter
+      WordWrap = True
     end
   end
   object plnRight: TAdvPanel
@@ -211,6 +216,8 @@ object ModificationForm: TModificationForm
     StatusBar.ColorTo = 16374724
     StatusBar.GradientDirection = gdVertical
     Styler = FrontData.FrontPanelStyler
+    ExplicitLeft = -6
+    ExplicitTop = 46
     FullHeight = 432
   end
   object aclModify: TActionList
