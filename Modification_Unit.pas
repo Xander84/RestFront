@@ -285,11 +285,14 @@ begin
   FLineModifyTable.First;
   while not FLineModifyTable.Eof do
   begin
-    for I := 0 to ComponentCount - 1 do
+    if FLineModifyTable.FieldByName('CLOSETIME').AsString = '' then
     begin
-      if (Components[I] is TAdvSmoothToggleButton) then
-        if TAdvSmoothToggleButton(Components[I]).Tag = FLineModifyTable.FieldByName('MODIFYKEY').AsInteger then
-          TAdvSmoothToggleButton(Components[I]).Down := True;
+      for I := 0 to ComponentCount - 1 do
+      begin
+        if (Components[I] is TAdvSmoothToggleButton) then
+          if TAdvSmoothToggleButton(Components[I]).Tag = FLineModifyTable.FieldByName('MODIFYKEY').AsInteger then
+            TAdvSmoothToggleButton(Components[I]).Down := True;
+      end;
     end;
     FLineModifyTable.Next;
   end;

@@ -1163,7 +1163,10 @@ begin
               begin
                 if FFrontBase.GetServiceCheckOptions(OrderKey, PrinterName, PrnGrid) then
                   if FReport.PrintServiceCheck(1, PrnGrid, OrderKey, PrinterName) then
+                  begin
                     FFrontBase.SavePrintDate(OrderKey);
+                    FFrontBase.CloseModifyTable(FModificationDataSet, Now);
+                  end;
               end;
               FormState := OrderMenu;
             end;
@@ -1205,7 +1208,7 @@ begin
     FLineTable.FieldByName('USR$QUANTITY').AsCurrency :=
       FLineTable.FieldByName('USR$QUANTITY').AsCurrency + 1;
     if FLineTable.FieldByName('STATEFIELD').AsInteger = cn_StateNothing then
-      FLineTable.FieldByName('STATEFIELD').AsInteger := cn_StateUpdate; 
+      FLineTable.FieldByName('STATEFIELD').AsInteger := cn_StateUpdate;
     FLineTable.Post;
     WritePos(FLineTable);
   end;
@@ -1321,6 +1324,9 @@ begin
   if (not FLineTable.IsEmpty) and (FormState = MenuInfo) then
   begin
     GoodKey := FLineTable.FieldByName('usr$goodkey').AsInteger;
+    if not FGoodDataSet.Locate('ID', GoodKey, []) then
+      FFrontBase.GetGoodByID(FGoodDataSet, GoodKey);
+
     if FGoodDataSet.Locate('ID', GoodKey, []) then
     begin
       if FGoodDataSet.FieldByName('MODIFYGROUPKEY').AsInteger <> 0 then
@@ -1357,7 +1363,7 @@ begin
             FLineTable.FieldByName('MODIFYSTRING').AsString := S;
             FLineTable.FieldByName('EXTRAMODIFY').AsString := ES;
             if FLineTable.FieldByName('STATEFIELD').AsInteger = cn_StateNothing then
-              FLineTable.FieldByName('STATEFIELD').AsInteger := cn_StateInsert;
+              FLineTable.FieldByName('STATEFIELD').AsInteger := cn_StateUpdate;
             FLineTable.Post;
           end;
         finally

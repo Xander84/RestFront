@@ -243,17 +243,19 @@ type
     procedure GetUserList(UserList: TStrings);
     function GetUserOrders(ContactKey: Integer; var MemTable: TkbmMemTable):Boolean; //Если -1 то возвращаем для текущего
     function GetMenuList(var MemTable: TkbmMemTable): Boolean;
-    function GetGroupList(var MemTable: TkbmMemTable; MenuKey: Integer): Boolean;
-    function GetGoodList(var MemTable: TkbmMemTable; MenuKey,GroupKey: Integer): Boolean;
+    function GetGroupList(var MemTable: TkbmMemTable; const MenuKey: Integer): Boolean;
+    function GetGoodList(var MemTable: TkbmMemTable; const MenuKey, GroupKey: Integer): Boolean;
+    function GetGoodByID(var MemTable: TkbmMemTable; const GoodKey: Integer): Boolean;
 
     function LockUserOrder(const OrderKey: Integer): Boolean;
     function UnLockUserOrder(const OrderKey: Integer): Boolean;
 
     function GetPayKindType(var MemTable: TkbmMemTable; const PayType: Integer; IsPlCard: Integer = 0): Boolean;
 
-    function CreateNewOrder(var HeaderTable, LineTable, ModifyTable: TkbmMemTable; out OrderKey:Integer): Boolean;
-    function SaveAndReloadOrder(var HeaderTable, LineTable, ModifyTable: TkbmMemTable; OrderKey:Integer): Boolean;
-    function GetOrder(var HeaderTable, LineTable, ModifyTable: TkbmMemTable; OrderKey:Integer): Boolean; // Если OrderKey = -1 то новый заказ
+    function CreateNewOrder(var HeaderTable, LineTable, ModifyTable: TkbmMemTable; out OrderKey: Integer): Boolean;
+    function SaveAndReloadOrder(var HeaderTable, LineTable, ModifyTable: TkbmMemTable; OrderKey: Integer): Boolean;
+    function GetOrder(var HeaderTable, LineTable, ModifyTable: TkbmMemTable; OrderKey: Integer): Boolean; // Если OrderKey = -1 то новый заказ
+    function CloseModifyTable(var ModifyTable: TkbmMemTable; const CloseTime: TTime): Boolean;
     //оплачен или нет
     function OrderIsPayed(const ID: Integer): Boolean;
     //причины списания
@@ -394,6 +396,7 @@ begin
   DS.FieldDefs.Add('MASTERKEY', ftInteger, 0);
   DS.FieldDefs.Add('MODIFYKEY', ftInteger, 0);
   DS.FieldDefs.Add('NAME', ftString, 40);
+  DS.FieldDefs.Add('CLOSETIME', ftTime, 0);
   DS.CreateTable;
 end;
 
@@ -956,22 +959,73 @@ begin
   end;
 end;
 
-function TFrontBase.GetGoodList(var MemTable: TkbmMemTable;
-  MenuKey,GroupKey: Integer): Boolean;
+function IsNeedModify(const FSQL: TIBSQL; const GoodKey: Integer): Integer;
+begin
+  Result := 0;
+  FSQL.Close;
+  FSQL.ParamByName('goodkey').AsInteger := GoodKey;
+  FSQL.ExecQuery;
+  if not FSQL.Eof then
+    Result := 1;
+end;
 
-  function IsNeedModify(const FSQL: TIBSQL; const GoodKey: Integer): Integer;
-  begin
-    Result := 0;
-    FSQL.Close;
-    FSQL.ParamByName('goodkey').AsInteger := GoodKey;
-    FSQL.ExecQuery;
-    if not FSQL.Eof then
-      Result := 1;
-  end;
-
+function TFrontBase.GetGoodByID(var MemTable: TkbmMemTable;
+  const GoodKey: Integer): Boolean;
 var
   FSQL: TIBSQL;
+const
+  cst_GoodByID =
+    ' SELECT g.id, g.name, mn.usr$cost, g.alias, g.USR$MODIFYGROUPKEY, g.USR$BEDIVIDE ' +
+    ' FROM gd_good g ' +
+    '   JOIN usr$mn_menuline mn ON mn.usr$goodkey = g.id ' +
+    '   JOIN gd_goodgroup cg ON g.groupkey = cg.id ' +
+    '   JOIN gd_document doc ON doc.id = mn.documentkey ' +
+    ' WHERE G.ID = :GOODKEY ' +
+    '   and (doc.disabled is null or doc.disabled = 0) ';
+begin
+  Result := False;
+  FReadSQL.Close;
+  if MemTable.State <> dsBrowse then
+    MemTable.Post;
 
+{ TODO : Переписать код обработки транзакции в ф-циях с товарами }
+  if not FReadSQL.Transaction.InTransaction then
+    FReadSQL.Transaction.StartTransaction;
+  try
+    FSQL := TIBSQL.Create(nil);
+    FSQL.Transaction := FReadSQL.Transaction;
+    FSQL.SQL.Text := 'SELECT FIRST(1) * FROM USR$CROSS36_416793598 WHERE usr$gd_goodkey = :goodkey';
+    try
+      FReadSQL.SQL.Text := cst_GoodByID;
+      FReadSQL.ParamByName('GOODKEY').AsInteger := GoodKey;
+      FReadSQL.ExecQuery;
+      while not FReadSQL.EOF do
+      begin
+        MemTable.Append;
+        MemTable.FieldByName('ID').AsInteger := FReadSQL.FieldByName('ID').AsInteger;
+        MemTable.FieldByName('NAME').AsString := FReadSQL.FieldByName('NAME').AsString;
+        MemTable.FieldByName('Alias').AsString := FReadSQL.FieldByName('ALIAS').AsString;
+        MemTable.FieldByName('Cost').ASCurrency := FReadSQL.FieldByName('usr$Cost').ASCurrency;
+        MemTable.FieldByName('MODIFYGROUPKEY').AsInteger := FReadSQL.FieldByName('USR$MODIFYGROUPKEY').AsInteger;
+        MemTable.FieldByName('ISNEEDMODIFY').AsInteger := IsNeedModify(FSQL, FReadSQL.FieldByName('ID').AsInteger);
+        MemTable.FieldByName('BEDIVIDE').AsInteger := FReadSQL.FieldByName('USR$BEDIVIDE').AsInteger;
+        MemTable.Post;
+        FReadSQL.Next;
+      end;
+      Result := True;
+    finally
+      FSQL.Free;
+    end;
+  finally
+    FReadSQL.Close;
+    FReadSQL.Transaction.Commit;
+  end;
+end;
+
+function TFrontBase.GetGoodList(var MemTable: TkbmMemTable;
+  const MenuKey, GroupKey: Integer): Boolean;
+var
+  FSQL: TIBSQL;
 begin
   Result := False;
   FReadSQL.Close;
@@ -1012,7 +1066,7 @@ begin
   end;
 end;
 
-function TFrontBase.GetGroupList(var MemTable: TkbmMemTable; MenuKey: Integer): Boolean;
+function TFrontBase.GetGroupList(var MemTable: TkbmMemTable; const MenuKey: Integer): Boolean;
 begin
   Result := False;
   FReadSQL.Close;
@@ -1113,7 +1167,7 @@ begin
     FSQL := TIBSQL.Create(nil);
     FSQL.Transaction := FReadSQL.Transaction;
     FSQL.SQL.Text :=
-      ' SELECT CR.USR$MN_MODIFYKEY, m.USR$NAME ' +
+      ' SELECT CR.USR$MN_MODIFYKEY, m.USR$NAME, CR.USR$CLOSETIME ' +
       ' FROM USR$CROSS509_157767346 CR ' +
       ' LEFT JOIN usr$mn_modify m ON m.ID = CR.USR$MN_MODIFYKEY ' +
       ' WHERE CR.USR$MN_ORDERLINEKEY = :line ';
@@ -1191,6 +1245,7 @@ begin
           ModifyTable.FieldByName('MASTERKEY').AsInteger := FReadSQL.FieldByName('id').AsInteger;
           ModifyTable.FieldByName('MODIFYKEY').AsInteger := FSQL.FieldByName('USR$MN_MODIFYKEY').AsInteger;
           ModifyTable.FieldByName('NAME').AsString := FSQL.FieldByName('USR$NAME').AsString;
+          ModifyTable.FieldByName('CLOSETIME').Value := FSQL.FieldByName('USR$CLOSETIME').Value;
           ModifyTable.Post;
           if S > '' then
             S := S + ', ';
@@ -2072,6 +2127,54 @@ begin
   end;
 end;
 
+function TFrontBase.CloseModifyTable(var ModifyTable: TkbmMemTable;
+  const CloseTime: TTime): Boolean;
+var
+  FSQL: TIBSQL;
+
+const
+  UpdateModify = ' UPDATE USR$CROSS509_157767346 C ' +
+    ' SET C.USR$CLOSETIME = :closetime       ' +
+    ' WHERE C.usr$mn_orderlinekey = :linekey ';
+
+begin
+  Result := False;
+
+  FSQL := TIBSQL.Create(nil);
+  FSQL.Transaction := FCheckTransaction;
+  FSQL.SQL.Text := UpdateModify;
+  try
+    try
+      if not FCheckTransaction.InTransaction then
+        FCheckTransaction.StartTransaction;
+
+      ModifyTable.First;
+      while not ModifyTable.Eof do
+      begin
+        if ModifyTable.FieldByName('CLOSETIME').AsString = '' then
+        begin
+          FSQL.ParamByName('linekey').AsInteger := ModifyTable.FieldByName('MASTERKEY').AsInteger;
+          FSQL.ParamByName('closetime').AsTime := CloseTime;
+          FSQL.ExecQuery;
+          FSQL.Close;
+        end;
+        ModifyTable.Next;
+      end;
+    except
+      on E: Exception do
+      begin
+        AdvTaskMessageDlg('Внимание', 'Ошибка при сохранении заказа ' + E.Message, mtError, [mbOK], 0);
+        FCheckTransaction.Rollback;
+      end;
+    end;
+  finally
+    if FCheckTransaction.InTransaction then
+      FCheckTransaction.Commit;
+
+    FSQL.Free;
+  end;
+end;
+
 function TFrontBase.SaveAndReloadOrder(var HeaderTable, LineTable,
   ModifyTable: TkbmMemTable; OrderKey: Integer): Boolean;
 begin
@@ -2094,11 +2197,11 @@ begin
     ' SET USR$ISLOCKED = 1 ' +
     ' WHERE DOCUMENTKEY = :orderkey ';
   try
-    if not FCheckTransaction.InTransaction then
-      FCheckTransaction.StartTransaction;
-
-    FSQL.Params[0].AsInteger := OrderKey;
     try
+      if not FCheckTransaction.InTransaction then
+        FCheckTransaction.StartTransaction;
+
+      FSQL.Params[0].AsInteger := OrderKey;
       FSQL.ExecQuery;
       FSQL.Close;
     except
