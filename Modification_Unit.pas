@@ -6,12 +6,12 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, ExtCtrls, kbmMemTable, DB, Front_DataBase_Unit, Contnrs,
   ActnList, AdvPanel, FrontData_Unit, AdvSmoothButton, AdvStyleIF,
-  AdvSmoothToggleButton, BaseFrontForm_Unit;
+  AdvSmoothToggleButton, BaseFrontForm_Unit, RKCardCodeForm_Unit;
 
 type
   TModificationForm = class(TBaseFrontForm)
     pnlTop: TAdvPanel;
-    Label1: TLabel;
+    lbExtraModificator: TLabel;
     plnRight: TAdvPanel;
     pnlMain: TAdvPanel;
     aclModify: TActionList;
@@ -19,12 +19,15 @@ type
     actCancel: TAction;
     btnOK: TAdvSmoothButton;
     btnCancel: TAdvSmoothButton;
+    btnInputMod: TAdvSmoothButton;
+    lbCaption: TLabel;
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure FormShow(Sender: TObject);
     procedure actOKExecute(Sender: TObject);
     procedure actOKUpdate(Sender: TObject);
     procedure actCancelExecute(Sender: TObject);
     procedure actCancelUpdate(Sender: TObject);
+    procedure btnInputModClick(Sender: TObject);
   private
     FModificationTable: TkbmMemTable;
     FLineModifyTable: TkbmMemTable;
@@ -39,6 +42,7 @@ type
     //
     FButtonList : TObjectList;
     FGoodName: String;
+    FExtraModifyString: String;
 
     procedure SetFrontBase(Value: TFrontBase);
 
@@ -49,6 +53,7 @@ type
 
     procedure ModifyButtonOnClick(Sender: TObject);
     procedure SetGoodName(const Value: String);
+    procedure SetExtraModifyString(const Value: String);
   public
     property FrontBase: TFrontBase read FFrontBase write SetFrontBase;
     //Если модификатор обязателен, то смотрим GoodKey
@@ -58,6 +63,7 @@ type
     //
     property LineModifyTable: TkbmMemTable read FLineModifyTable write SetLineModifyTable;
     property GoodName: String read FGoodName write SetGoodName;
+    property ExtraModifyString: String read FExtraModifyString write SetExtraModifyString;
 
     constructor CreateWithFrontBase(AOwner: TComponent; FBase: TFrontBase);
 
@@ -81,6 +87,7 @@ begin
   FLastLeftButton := 8;
   FLastTopButton  := 8;
   FModificationButtonNumber := 1;
+  FExtraModifyString := '';
 
   FModificationTable := TkbmMemTable.Create(nil);
   FModificationTable.FieldDefs.Add('ID', ftInteger, 0);
@@ -95,6 +102,13 @@ begin
   FButtonList := TObjectList.Create;
 end;
 
+procedure TModificationForm.SetExtraModifyString(const Value: String);
+begin
+  FExtraModifyString := Value;
+  if Value <> '' then
+    lbExtraModificator.Caption := '  Дополнительный модификатор: ' + FExtraModifyString;
+end;
+
 procedure TModificationForm.SetFrontBase(Value: TFrontBase);
 begin
   FFrontBase := Value;
@@ -103,7 +117,7 @@ end;
 procedure TModificationForm.SetGoodName(const Value: String);
 begin
   FGoodName := Value;
-  Label1.Caption := 'Модификаторы для: ' + FGoodName;
+  lbCaption.Caption := 'Модификаторы для: ' + FGoodName;
 end;
 
 procedure TModificationForm.AddModificationButton;
@@ -112,7 +126,6 @@ var
 begin
   //Создание кнопки
   FButton := TAdvSmoothToggleButton.Create(Self);
-//  FButton.AllowAllUp := True;
   FButton.Parent := pnlMain;
   FButton.OnClick := ModifyButtonOnClick;
   FButton.Name := Format('btnModification%d', [FModificationButtonNumber]);
@@ -144,6 +157,24 @@ begin
 
   FButtonList.Add(FButton);
   Inc(FModificationButtonNumber);
+end;
+
+procedure TModificationForm.btnInputModClick(Sender: TObject);
+var
+  FForm: TRKCardCode;
+begin
+  FForm := TRKCardCode.Create(nil);
+  FForm.NeedPassWordChar := False;
+  try
+    FForm.ShowModal;
+    if FForm.ModalResult = mrOk then
+    begin
+      FExtraModifyString := FForm.InputString;
+      lbExtraModificator.Caption := '  Дополнительный модификатор: ' + FExtraModifyString;
+    end;
+  finally
+    FForm.Free;
+  end;
 end;
 
 procedure TModificationForm.CreateModificationButtonList;

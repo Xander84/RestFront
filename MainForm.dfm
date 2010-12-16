@@ -48,6 +48,9 @@ object RestMainForm: TRestMainForm
         ColorTo = 14986888
         TabColor = clBtnFace
         TabColorTo = clNone
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object edPassword: TEdit
           Left = 265
           Top = 299
@@ -621,6 +624,9 @@ object RestMainForm: TRestMainForm
               ColorTo = 14986888
               TabColor = clBtnFace
               TabColorTo = clNone
+              ExplicitTop = 0
+              ExplicitWidth = 0
+              ExplicitHeight = 0
               object btnNewOrder: TAdvSmoothButton
                 Left = 16
                 Top = 8
@@ -1432,6 +1438,9 @@ object RestMainForm: TRestMainForm
           ImageIndex = 1
           TabColor = clBtnFace
           TabColorTo = clNone
+          ExplicitTop = 0
+          ExplicitWidth = 0
+          ExplicitHeight = 0
           object Button14: TButton
             Left = 0
             Top = 620
@@ -1784,6 +1793,9 @@ object RestMainForm: TRestMainForm
           ImageIndex = 2
           TabColor = clBtnFace
           TabColorTo = clNone
+          ExplicitTop = 0
+          ExplicitWidth = 0
+          ExplicitHeight = 0
           object btnEditReport: TAdvSmoothButton
             Left = 0
             Top = 1

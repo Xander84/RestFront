@@ -16,10 +16,13 @@ type
     procedure edPassKeyPress(Sender: TObject; var Key: Char);
     procedure btnOKClick(Sender: TObject);
   private
-    function GetPassword: String;
+    FNeedPassWordChar: Boolean;
+    function GetInputString: String;
+    procedure SetNeedPassWordChar(const Value: Boolean);
     { Private declarations }
   public
-    property PassWord: String read GetPassword;
+    property InputString: String read GetInputString;
+    property NeedPassWordChar: Boolean read FNeedPassWordChar write SetNeedPassWordChar;
   end;
 
 var
@@ -37,9 +40,18 @@ begin
     ModalResult := mrCancel;
 end;
 
-function TCardCode.GetPassword: String;
+function TCardCode.GetInputString: String;
 begin
   Result := edPass.Text;
+end;
+
+procedure TCardCode.SetNeedPassWordChar(const Value: Boolean);
+begin
+  FNeedPassWordChar := Value;
+  if FNeedPassWordChar then
+    edPass.PasswordChar := '*'
+  else
+    edPass.PasswordChar := #0;
 end;
 
 procedure TCardCode.btnOKClick(Sender: TObject);

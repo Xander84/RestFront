@@ -23,7 +23,7 @@ object ModificationForm: TModificationForm
     Left = 0
     Top = 0
     Width = 654
-    Height = 41
+    Height = 80
     Align = alTop
     BevelOuter = bvNone
     Color = 16640730
@@ -58,7 +58,25 @@ object ModificationForm: TModificationForm
     StatusBar.GradientDirection = gdVertical
     Styler = FrontData.FrontPanelStyler
     FullHeight = 41
-    object Label1: TLabel
+    object lbExtraModificator: TLabel
+      Left = 0
+      Top = 40
+      Width = 654
+      Height = 40
+      Align = alBottom
+      AutoSize = False
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -19
+      Font.Name = 'Times New Roman'
+      Font.Style = []
+      ParentFont = False
+      Transparent = False
+      Layout = tlCenter
+      WordWrap = True
+      ExplicitTop = 0
+    end
+    object lbCaption: TLabel
       Left = 0
       Top = 0
       Width = 654
@@ -80,9 +98,9 @@ object ModificationForm: TModificationForm
   end
   object plnRight: TAdvPanel
     Left = 493
-    Top = 41
+    Top = 80
     Width = 161
-    Height = 432
+    Height = 393
     Align = alRight
     BevelOuter = bvNone
     Color = 16640730
@@ -116,10 +134,12 @@ object ModificationForm: TModificationForm
     StatusBar.ColorTo = 16374724
     StatusBar.GradientDirection = gdVertical
     Styler = FrontData.FrontPanelStyler
+    ExplicitTop = 41
+    ExplicitHeight = 432
     FullHeight = 432
     object btnOK: TAdvSmoothButton
       Left = 17
-      Top = 318
+      Top = 285
       Width = 137
       Height = 47
       Action = actOK
@@ -149,7 +169,7 @@ object ModificationForm: TModificationForm
     end
     object btnCancel: TAdvSmoothButton
       Left = 17
-      Top = 374
+      Top = 338
       Width = 137
       Height = 47
       Action = actCancel
@@ -177,12 +197,43 @@ object ModificationForm: TModificationForm
       TabOrder = 1
       Version = '1.6.9.0'
     end
+    object btnInputMod: TAdvSmoothButton
+      Left = 16
+      Top = 6
+      Width = 137
+      Height = 47
+      Appearance.Font.Charset = DEFAULT_CHARSET
+      Appearance.Font.Color = clWindowText
+      Appearance.Font.Height = -19
+      Appearance.Font.Name = 'Times New Roman'
+      Appearance.Font.Style = []
+      Status.Caption = '0'
+      Status.Appearance.Fill.Color = clRed
+      Status.Appearance.Fill.ColorMirror = clNone
+      Status.Appearance.Fill.ColorMirrorTo = clNone
+      Status.Appearance.Fill.GradientType = gtSolid
+      Status.Appearance.Fill.BorderColor = clGray
+      Status.Appearance.Fill.Rounding = 0
+      Status.Appearance.Fill.ShadowOffset = 0
+      Status.Appearance.Font.Charset = DEFAULT_CHARSET
+      Status.Appearance.Font.Color = clWhite
+      Status.Appearance.Font.Height = -11
+      Status.Appearance.Font.Name = 'Tahoma'
+      Status.Appearance.Font.Style = []
+      Bevel = False
+      Caption = #1042#1074#1077#1089#1090#1080' '#1084#1086#1076#1080#1092#1080#1082#1072#1090#1086#1088
+      Color = 15195349
+      ParentFont = False
+      TabOrder = 2
+      Version = '1.6.9.0'
+      OnClick = btnInputModClick
+    end
   end
   object pnlMain: TAdvPanel
     Left = 0
-    Top = 41
+    Top = 80
     Width = 493
-    Height = 432
+    Height = 393
     Align = alClient
     BevelOuter = bvNone
     Color = 16640730
@@ -216,8 +267,8 @@ object ModificationForm: TModificationForm
     StatusBar.ColorTo = 16374724
     StatusBar.GradientDirection = gdVertical
     Styler = FrontData.FrontPanelStyler
-    ExplicitLeft = -6
-    ExplicitTop = 46
+    ExplicitTop = 41
+    ExplicitHeight = 432
     FullHeight = 432
   end
   object aclModify: TActionList

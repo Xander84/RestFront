@@ -1,13 +1,6 @@
 program RestFront;
 
 uses
-{$IFDEF VER150}
-  FastMM4,
-  RtlVclOptimize,
-{$ELSE}
-  {$WEAKLINKRTTI ON}
-  {$RTTI EXPLICIT METHODS([]) PROPERTIES([]) FIELDS([])}
-{$ENDIF}
   Forms,
   AppEvnts,
   MainForm in 'MainForm.pas' {RestMainForm},
@@ -21,7 +14,6 @@ uses
   SellParamForm_Unit in 'SellParamForm_Unit.pas' {SellParamForm},
   PayForm_Unit in 'PayForm_Unit.pas' {PayForm},
   SplitOrderForm_Unit in 'SplitOrderForm_Unit.pas' {SplitOrder},
-  CardCodeForm_Unit in 'CardCodeForm_Unit.pas' {CardCode},
   PercOrCardForm_Unit in 'PercOrCardForm_Unit.pas' {PercOrCard},
   DiscountTypeForm_Unit in 'DiscountTypeForm_Unit.pas' {DiscountType},
   ChooseDiscountCardForm_Unit in 'ChooseDiscountCardForm_Unit.pas' {ChooseDiscountCard},
@@ -34,7 +26,9 @@ uses
   MercFP_Unit in 'Merc\MercFP_Unit.pas',
   CashForm_Unit in 'CashForm_Unit.pas' {CashForm},
   BaseFrontForm_Unit in 'BaseFrontForm_Unit.pas' {BaseFrontForm},
-  ShtrihFR_Unit in 'Shtrih\ShtrihFR_Unit.pas';
+  CardCodeForm_Unit in 'CardCodeForm_Unit.pas' {CardCode},
+  ShtrihFR_Unit in 'Shtrih\ShtrihFR_Unit.pas',
+  RKCardCodeForm_Unit in 'RKCardCodeForm_Unit.pas' {RKCardCode};
 
 {$R *.res}
 

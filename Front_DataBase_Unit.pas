@@ -128,6 +128,7 @@ const
     '  ol.usr$causedeletekey,                                   '+
     '  ol.usr$deleteamount,                                     '+
     '  ol.usr$doublebonus,                                      '+
+    '  ol.usr$extramodify,                                      '+
     '  g.name goodname                                          '+
     ' FROM gd_document doc                                      '+
     ' join usr$mn_orderline ol on ol.documentkey = doc.id       '+
@@ -383,6 +384,7 @@ begin
   DS.FieldDefs.Add('STATEFIELD', ftInteger, 0);
   DS.FieldDefs.Add('MODIFYSTRING', ftString, 1024);
   DS.FieldDefs.Add('PARENT', ftInteger, 0);
+  DS.FieldDefs.Add('EXTRAMODIFY', ftString, 60);
   DS.CreateTable;
 end;
 
@@ -550,7 +552,8 @@ const
     '      usr$register,                 ' +
     '      usr$logicdate,                ' +
     '      usr$depotkey,                 ' +
-    '      usr$doublebonus)              ' +
+    '      usr$doublebonus,              ' +
+    '      usr$extramodify)              ' +
     '    values (                        ' +
     '      :documentkey,                 ' +
     '      :masterkey,                   ' +
@@ -569,7 +572,8 @@ const
     '      :usr$register,                ' +
     '      :usr$logicdate,               ' +
     '      :usr$depotkey,                ' +
-    '      :usr$doublebonus)             ' ;
+    '      :usr$doublebonus,             ' +
+    '      :usr$extramodify)             ' ;
 
   UpdateOrder =
     '      update usr$mn_order                      ' +
@@ -583,7 +587,7 @@ const
     '          usr$discountkey = :usr$discountkey,  ' +
     '          usr$bonussum = :usr$bonussum,        ' +
     '          usr$timecloseorder = :usr$timecloseorder, ' +
-    '          usr$pay = :usr$pay,                   ' +
+    '          usr$pay = :usr$pay,                  ' +
     '          USR$ISLOCKED = 0                     ' +
     '      where (documentkey = :documentkey)       ';
 
@@ -601,7 +605,8 @@ const
     '          usr$causedeletekey = :usr$causedeletekey,             ' +
     '          usr$deleteamount = :usr$deleteamount,                 ' +
     '          usr$logicdate = :usr$logicdate,                       ' +
-    '          usr$doublebonus = :usr$doublebonus                    ' +
+    '          usr$doublebonus = :usr$doublebonus,                   ' +
+    '          usr$extramodify = :usr$extramodify                    ' +
     '      where (documentkey = :documentkey)                        ';
 
   DeleteModify = ' DELETE FROM USR$CROSS509_157767346 ' +
@@ -672,8 +677,6 @@ begin
   UpdParent.ParamCheck := False;
 
   LineTable.Filtered := False;
-  LineTable.BlockReadSize := 1;
-//  LineTable.DisableControls;
   try
     try
       if not FCheckTransaction.InTransaction then
@@ -778,13 +781,14 @@ begin
               InsOrderLine.ParamByName('usr$persdiscount').AsCurrency := LineTable.FieldByName('usr$persdiscount').AsCurrency;
               InsOrderLine.ParamByName('usr$causedeletekey').Value := LineTable.FieldByName('usr$causedeletekey').Value;
               InsOrderLine.ParamByName('usr$deleteamount').AsCurrency := LineTable.FieldByName('usr$deleteamount').AsCurrency;
-              InsOrderLine.ParamByName('usr$logicdate').AsDate := GetLogicDate; //????
+              InsOrderLine.ParamByName('usr$logicdate').AsDate := GetLogicDate;
               InsOrderLine.ParamByName('usr$doublebonus').AsInteger := LineTable.FieldByName('usr$doublebonus').AsInteger;
               InsOrderLine.ParamByName('documentkey').AsInteger := LineID;
               InsOrderLine.ParamByName('usr$register').AsVariant := ''; //????
               InsOrderLine.ParamByName('usr$costeqwithdiscount').AsVariant := ''; //????
               InsOrderLine.ParamByName('usr$costeq').AsVariant := '';  //????
               InsOrderLine.ParamByName('usr$depotkey').AsVariant := ''; //????
+              InsOrderLine.ParamByName('usr$extramodify').AsString := LineTable.FieldByName('extramodify').AsString;
               InsOrderLine.ExecQuery;
 
               ModifyTable.First;
@@ -815,6 +819,7 @@ begin
               UpdOrderLine.ParamByName('usr$deleteamount').AsCurrency := LineTable.FieldByName('usr$deleteamount').AsCurrency;
               UpdOrderLine.ParamByName('usr$logicdate').AsDate := GetLogicDate; //????
               UpdOrderLine.ParamByName('usr$doublebonus').AsInteger := LineTable.FieldByName('usr$doublebonus').AsInteger;
+              UpdOrderLine.ParamByName('usr$extramodify').AsString := LineTable.FieldByName('extramodify').AsString;
               UpdOrderLine.ParamByName('documentkey').AsInteger := LineTable.FieldByName('ID').AsInteger;
               UpdOrderLine.ExecQuery;
 
@@ -890,7 +895,6 @@ begin
     DelModify.Free;
     UpdParent.Free;
     LineTable.Filtered := True;
-    LineTable.BlockReadSize := 0;
   end;
 end;
 
@@ -1079,7 +1083,7 @@ function TFrontBase.GetOrder(var HeaderTable, LineTable, ModifyTable: TkbmMemTab
   OrderKey: Integer): Boolean;
 var
   FSQL: TIBSQL;
-  S: String;
+  S, ES: String;
   BPost, APost: TDataSetNotifyEvent;
 begin
   Result := False;
@@ -1174,6 +1178,8 @@ begin
         LineTable.FieldByName('oldquantity').Value := FReadSQL.FieldByName('usr$quantity').Value;
         LineTable.FieldByName('LINEKEY').AsInteger := FReadSQL.FieldByName('id').Value;
         LineTable.FieldByName('STATEFIELD').AsInteger := 0;
+        LineTable.FieldByName('EXTRAMODIFY').AsString := FReadSQL.FieldByName('usr$extramodify').AsString;
+        ES := LineTable.FieldByName('EXTRAMODIFY').AsString;
         LineTable.Post;
 
         FSQL.Params[0].AsInteger := FReadSQL.FieldByName('id').Value;
@@ -1193,6 +1199,14 @@ begin
           FSQL.Next;
         end;
         FSQL.Close;
+
+        if ES <> '' then
+        begin
+          if S = '' then
+            S := ES
+          else
+            S := S + ', ' + ES;
+        end;
 
         if S > '' then
         begin
@@ -2040,7 +2054,7 @@ begin
           '  usr.passw = :pass ' +
           '  and usr.disabled = 0  ' +
           '  and usr.usr$mn_isfrontuser = 1 ';
-        FReadSQL.Params[0].AsString := FForm.PassWord;
+        FReadSQL.Params[0].AsString := FForm.InputString;
         FReadSQL.ExecQuery;
         if not FReadSQL.Eof then
         begin

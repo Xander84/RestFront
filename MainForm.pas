@@ -892,10 +892,11 @@ procedure TRestMainForm.GoodButtonOnClick(Sender: TObject);
 var
   GoodKey: Integer;
   FForm: TModificationForm;
-  S: String;
+  S, ES: String;
 begin
   GoodKey := TButton(Sender).Tag;
   S := '';
+  ES := '';
   if FGoodDataSet.Locate('ID', GoodKey, []) then
   begin
     FLineTable.Append;
@@ -923,6 +924,14 @@ begin
             S := S + FModificationDataSet.FieldByName('NAME').AsString;
             FModificationDataSet.Next;
           end;
+          ES := FForm.ExtraModifyString;
+          if ES <> '' then
+          begin
+            if S = '' then
+              S := ES
+            else
+              S := S + ', ' + ES;
+          end;
         end;
       finally
         FForm.Free;
@@ -934,6 +943,7 @@ begin
     FLineTable.FieldByName('usr$quantity').AsInteger := 1;
     FLineTable.FieldByName('usr$costncu').AsCurrency := FGoodDataSet.FieldByName('COST').AsCurrency;
     FLineTable.FieldByName('MODIFYSTRING').AsString := S;
+    FLineTable.FieldByName('EXTRAMODIFY').AsString := ES;
     FLineTable.Post;
     WritePos(FLineTable);
   end;
@@ -1304,9 +1314,10 @@ procedure TRestMainForm.actModificationExecute(Sender: TObject);
 var
   GoodKey: Integer;
   FForm: TModificationForm;
-  S: String;
+  S, ES: String;
 begin
   S := '';
+  ES := FLineTable.FieldByName('EXTRAMODIFY').AsString;
   if (not FLineTable.IsEmpty) and (FormState = MenuInfo) then
   begin
     GoodKey := FLineTable.FieldByName('usr$goodkey').AsInteger;
@@ -1319,6 +1330,8 @@ begin
           FForm.ModifyGroupKey := FGoodDataSet.FieldByName('MODIFYGROUPKEY').AsInteger;
           FForm.LineModifyTable := FModificationDataSet;
           FForm.GoodName := FGoodDataSet.FieldByName('NAME').AsString;
+          if ES <> '' then
+            FForm.ExtraModifyString := ES;
           FForm.ShowModal;
           if FForm.ModalResult = mrOK then
           begin
@@ -1330,8 +1343,19 @@ begin
               S := S + FModificationDataSet.FieldByName('NAME').AsString;
               FModificationDataSet.Next;
             end;
+
+            ES := FForm.ExtraModifyString;
+            if ES <> '' then
+            begin
+              if S = '' then
+                S := ES
+              else
+                S := S + ', ' + ES;
+            end;
+
             FLineTable.Edit;
             FLineTable.FieldByName('MODIFYSTRING').AsString := S;
+            FLineTable.FieldByName('EXTRAMODIFY').AsString := ES;
             if FLineTable.FieldByName('STATEFIELD').AsInteger = cn_StateNothing then
               FLineTable.FieldByName('STATEFIELD').AsInteger := cn_StateInsert;
             FLineTable.Post;
@@ -2029,11 +2053,21 @@ begin
           FForm.ShowModal;
           if FForm.ModalResult = mrOK then
           begin
-            if StrToCurr(FForm.Number) > 0 then
-            begin
-              FLineTable.Edit;
-              FLineTable.FieldByName('usr$quantity').AsCurrency := StrToCurr(FForm.Number);
-              FLineTable.Post;
+            try
+              if StrToCurr(FForm.Number) > 0 then
+              begin
+                FLineTable.Edit;
+                FLineTable.FieldByName('usr$quantity').AsCurrency := StrToCurr(FForm.Number);
+                FLineTable.Post;
+              end;
+            except
+              on E: Exception do
+              begin
+                if E is EConvertError then
+                  AdvTaskMessageDlg('Внимание', 'Введено неверное число', mtError, [mbOK], 0)
+                else
+                  AdvTaskMessageDlg('Внимание', 'Ошибка ' + E.Message, mtError, [mbOK], 0)
+              end;
             end;
           end;
         finally

@@ -86,9 +86,6 @@
 			<DCCReference Include="SplitOrderForm_Unit.pas">
 				<Form>SplitOrder</Form>
 			</DCCReference>
-			<DCCReference Include="CardCodeForm_Unit.pas">
-				<Form>CardCode</Form>
-			</DCCReference>
 			<DCCReference Include="PercOrCardForm_Unit.pas">
 				<Form>PercOrCard</Form>
 			</DCCReference>
@@ -116,7 +113,13 @@
 			<DCCReference Include="BaseFrontForm_Unit.pas">
 				<Form>BaseFrontForm</Form>
 			</DCCReference>
+			<DCCReference Include="CardCodeForm_Unit.pas">
+				<Form>CardCode</Form>
+			</DCCReference>
 			<DCCReference Include="Shtrih\ShtrihFR_Unit.pas"/>
+			<DCCReference Include="RKCardCodeForm_Unit.pas">
+				<Form>RKCardCode</Form>
+			</DCCReference>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>
