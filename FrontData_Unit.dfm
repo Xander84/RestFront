@@ -1,8 +1,6 @@
 object FrontData: TFrontData
   OldCreateOrder = False
   OnCreate = DataModuleCreate
-  Left = 393
-  Top = 381
   Height = 272
   Width = 269
   object FrontPanelStyler: TAdvPanelStyler

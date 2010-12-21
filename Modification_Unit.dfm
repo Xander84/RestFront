@@ -134,8 +134,6 @@ object ModificationForm: TModificationForm
     StatusBar.ColorTo = 16374724
     StatusBar.GradientDirection = gdVertical
     Styler = FrontData.FrontPanelStyler
-    ExplicitTop = 41
-    ExplicitHeight = 432
     FullHeight = 432
     object btnOK: TAdvSmoothButton
       Left = 17
@@ -267,8 +265,6 @@ object ModificationForm: TModificationForm
     StatusBar.ColorTo = 16374724
     StatusBar.GradientDirection = gdVertical
     Styler = FrontData.FrontPanelStyler
-    ExplicitTop = 41
-    ExplicitHeight = 432
     FullHeight = 432
   end
   object aclModify: TActionList

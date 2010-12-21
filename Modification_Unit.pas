@@ -132,8 +132,8 @@ begin
   FButton.GroupIndex := FModificationButtonNumber;
   FButton.Height := 51;
   FButton.Width  := 145;
-  FButton.Appearance.Font.Name := 'Times New Roman';
-  FButton.Appearance.Font.Size := 12;
+  FButton.Appearance.Font.Name := cn_FontType;
+  FButton.Appearance.Font.Size := cn_ButtonFontSize;
   FButton.SetComponentStyle(tsOffice2007Silver);
 
   //проверяем, есть ли ещё место в ряду

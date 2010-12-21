@@ -1,9 +1,11 @@
 object PayForm: TPayForm
   Left = 327
   Top = 152
-  Width = 654
-  Height = 500
+  BorderIcons = []
+  BorderStyle = bsSingle
   Caption = #1060#1086#1088#1084#1072' '#1086#1087#1083#1072#1090#1099
+  ClientHeight = 475
+  ClientWidth = 648
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -18,8 +20,8 @@ object PayForm: TPayForm
   TextHeight = 13
   object pnlBottom: TAdvPanel
     Left = 0
-    Top = 416
-    Width = 646
+    Top = 418
+    Width = 648
     Height = 57
     Align = alBottom
     BevelOuter = bvNone
@@ -54,6 +56,8 @@ object PayForm: TPayForm
     StatusBar.ColorTo = 16374724
     StatusBar.GradientDirection = gdVertical
     Styler = FrontData.FrontPanelStyler
+    ExplicitTop = 416
+    ExplicitWidth = 646
     FullHeight = 57
     object btnOK: TAdvSmoothButton
       Left = 8
@@ -120,8 +124,8 @@ object PayForm: TPayForm
   object pnlMain: TAdvPanel
     Left = 0
     Top = 0
-    Width = 497
-    Height = 416
+    Width = 499
+    Height = 418
     Align = alClient
     BevelOuter = bvNone
     Color = 16640730
@@ -155,13 +159,15 @@ object PayForm: TPayForm
     StatusBar.ColorTo = 16374724
     StatusBar.GradientDirection = gdVertical
     Styler = FrontData.FrontPanelStyler
+    ExplicitWidth = 497
+    ExplicitHeight = 416
     FullHeight = 405
   end
   object pnlRight: TAdvPanel
-    Left = 497
+    Left = 499
     Top = 0
     Width = 149
-    Height = 416
+    Height = 418
     Align = alRight
     BevelOuter = bvNone
     Color = 16640730
@@ -195,6 +201,8 @@ object PayForm: TPayForm
     StatusBar.ColorTo = 16374724
     StatusBar.GradientDirection = gdVertical
     Styler = FrontData.FrontPanelStyler
+    ExplicitLeft = 497
+    ExplicitHeight = 416
     FullHeight = 405
   end
   object actMain: TActionList

@@ -607,7 +607,7 @@ begin
     FButton.Caption := Format('¹ %s', [FOrderDataSet.FieldByName('TableName').AsString]);
     FButton.Status.Caption := FormatFloat('#,##0', FOrderDataSet.FieldByName('Summ').AsFloat);
     FButton.Status.Visible := True;
-    FButton.Status.Appearance.Font.Size := 9;
+    FButton.Status.Appearance.Font.Size := cn_ButtonSmallFontSize;
     FButton.Status.OffsetTop := -2;
     FButton.VerticalSpacing := 10;
     if FOrderDataSet.FieldByName('Status').AsInteger = Integer(osOrderClose) then
@@ -719,9 +719,9 @@ begin
 
     FButton.Tag := FGroupDataSet.FieldByName('ID').AsInteger;
     if Length(FGroupDataSet.FieldByName('NAME').AsString) > 16 then
-      FButton.Appearance.Font.Size := 9
+      FButton.Appearance.Font.Size := cn_ButtonSmallFontSize
     else
-      FButton.Appearance.Font.Size := 11;
+      FButton.Appearance.Font.Size := cn_ButtonFontSize;
     FButton.Caption := FGroupDataSet.FieldByName('NAME').AsString;
   finally
     FButton.Appearance.EndUpdate;
@@ -1867,7 +1867,7 @@ begin
   FButton.Appearance.BeginUpdate;
   try
     FButton.Color := btnColor;
-    FButton.Appearance.Font.Size := 12;
+    FButton.Appearance.Font.Size := cn_ButtonFontSize;
     FButton.Parent := pnlUsers;
     FButton.Name := Format(btnUserName, [FUserButtonNumber]);
     FButton.Height := btnHeight;
@@ -1985,7 +1985,7 @@ begin
     FButton.Caption := Format('¹ %s', [MemTable.FieldByName('TableName').AsString]);
     FButton.Status.Caption := MemTable.FieldByName('Summ').AsString;
     FButton.Status.Visible := True;
-    FButton.Status.Appearance.Font.Size := 9;
+    FButton.Status.Appearance.Font.Size := cn_ButtonSmallFontSize;
     if MemTable.FieldByName('Status').AsInteger = Integer(osOrderClose) then
     begin
       FButton.Status.Appearance.Fill.Color := clRed;

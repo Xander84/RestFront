@@ -40,7 +40,6 @@ type
 // настройки для гридов
 const
   cn_FontSize = 16;
-  cn_ButtonFontSize = 14;
   cn_EvenRowColor = clInfoBk;
   cn_OddRowColor = clGradientActiveCaption;
   cn_FontType = 'Times New Roman';
@@ -56,7 +55,8 @@ const
   GRID_HEADER_FONT_SIZE = 'HEADER_FONT_SIZE';
   GRID_FONT_SIZE = 'FONT_SIZE';
   BTN_FONT_SECTION_NAME = 'BUTTON_FONT';
-  BTN_STATUS_FONT_SIZE = 'STATUS_FONT_SIZE';
+  BTN_SMALL_FONT_SIZE = 'BUTTON_SMALL_FONT_SIZE';
+  BTN_FONT_SIZE = 'BTN_FONT_SIZE';
   cn_defaultHeight = 768;
   cn_defaultWidth = 1024;
 
@@ -70,6 +70,8 @@ var
   cn_ShutDownOnExit: Boolean;
   cn_TitleFontSize: Integer;
   cn_GridFontSize: Integer;
+  cn_ButtonFontSize: Integer;
+  cn_ButtonSmallFontSize: Integer;
 
 implementation
 
@@ -341,7 +343,27 @@ begin
     end else
       FunctionFile.WriteString(GRID_FONT_SECTION_NAME, GRID_FONT_SIZE, '14');
 
+    if FunctionFile.ValueExists(BTN_FONT_SECTION_NAME, BTN_SMALL_FONT_SIZE) then
+    begin
+      ValueText := AnsiUpperCase(FunctionFile.ReadString(BTN_FONT_SECTION_NAME, BTN_SMALL_FONT_SIZE, '9'));
+      try
+        cn_ButtonSmallFontSize := StrToInt(ValueText);
+      except
+        cn_ButtonSmallFontSize := 9;
+      end;
+    end else
+      FunctionFile.WriteString(BTN_FONT_SECTION_NAME, BTN_SMALL_FONT_SIZE, '9');
 
+    if FunctionFile.ValueExists(BTN_FONT_SECTION_NAME, BTN_FONT_SIZE) then
+    begin
+      ValueText := AnsiUpperCase(FunctionFile.ReadString(BTN_FONT_SECTION_NAME, BTN_FONT_SIZE, '12'));
+      try
+        cn_ButtonFontSize := StrToInt(ValueText);
+      except
+        cn_ButtonFontSize := 12;
+      end;
+    end else
+      FunctionFile.WriteString(BTN_FONT_SECTION_NAME, BTN_FONT_SIZE, '12');
 
   finally
     FreeAndNil(FunctionFile);

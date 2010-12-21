@@ -1,6 +1,7 @@
 object DeleteOrderLine: TDeleteOrderLine
   Left = 349
   Top = 213
+  BorderIcons = []
   BorderStyle = bsSingle
   Caption = #1042#1099#1073#1086#1088' '#1087#1088#1080#1095#1080#1085#1099' '#1091#1076#1072#1083#1077#1085#1080#1103
   ClientHeight = 320

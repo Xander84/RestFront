@@ -829,7 +829,9 @@ begin
               DelModify.Close;
               DelModify.ParamByName('POSKEY').AsInteger := LineTable.FieldByName('ID').AsInteger;
               DelModify.ExecQuery;
-
+              // на всякий случай
+              if ModifyTable.TransactionLevel > 0 then
+                ModifyTable.Commit;
               ModifyTable.First;
               while not ModifyTable.Eof do
               begin
@@ -1148,6 +1150,11 @@ begin
   LineTable.Close;
   LineTable.CreateTable;
   LineTable.Open;
+
+  ModifyTable.Close;
+  ModifyTable.CreateTable;
+  ModifyTable.Open;
+
   if OrderKey  = -1 then
   begin
     Result := True;
@@ -1238,22 +1245,28 @@ begin
 
         FSQL.Params[0].AsInteger := FReadSQL.FieldByName('id').Value;
         FSQL.ExecQuery;
-        while not FSQL.Eof do
-        begin
 
-          ModifyTable.Append;
-          ModifyTable.FieldByName('MASTERKEY').AsInteger := FReadSQL.FieldByName('id').AsInteger;
-          ModifyTable.FieldByName('MODIFYKEY').AsInteger := FSQL.FieldByName('USR$MN_MODIFYKEY').AsInteger;
-          ModifyTable.FieldByName('NAME').AsString := FSQL.FieldByName('USR$NAME').AsString;
-          ModifyTable.FieldByName('CLOSETIME').Value := FSQL.FieldByName('USR$CLOSETIME').Value;
-          ModifyTable.Post;
-          if S > '' then
-            S := S + ', ';
-          S := S + FSQL.FieldByName('USR$NAME').AsString;
+        ModifyTable.StartTransaction;
+        try
+          while not FSQL.Eof do
+          begin
 
-          FSQL.Next;
+            ModifyTable.Append;
+            ModifyTable.FieldByName('MASTERKEY').AsInteger := FReadSQL.FieldByName('id').AsInteger;
+            ModifyTable.FieldByName('MODIFYKEY').AsInteger := FSQL.FieldByName('USR$MN_MODIFYKEY').AsInteger;
+            ModifyTable.FieldByName('NAME').AsString := FSQL.FieldByName('USR$NAME').AsString;
+            ModifyTable.FieldByName('CLOSETIME').Value := FSQL.FieldByName('USR$CLOSETIME').Value;
+            ModifyTable.Post;
+            if S > '' then
+              S := S + ', ';
+            S := S + FSQL.FieldByName('USR$NAME').AsString;
+
+            FSQL.Next;
+          end;
+          FSQL.Close;
+        finally
+          ModifyTable.Commit;
         end;
-        FSQL.Close;
 
         if ES <> '' then
         begin
@@ -2900,7 +2913,6 @@ var
   FUserInfo: TUserInfo;
   FUpdateSQL: TIBSQL;
 begin
-  CanClose := False;
   FReadSQL.Close;
   if not FReadSQL.Transaction.InTransaction then
     FReadSQL.Transaction.StartTransaction;
@@ -2990,7 +3002,6 @@ var
   FUserInfo: TUserInfo;
   FUpdateSQL: TIBSQL;
 begin
-  CanStart := False;
   FReadSQL.Close;
   if not FReadSQL.Transaction.InTransaction then
     FReadSQL.Transaction.StartTransaction;

@@ -11704,7 +11704,8 @@ type
     property ComLogOnlyErrors: WordBool index 545 read GetWordBoolProp write SetWordBoolProp stored False;
     property SCPassword: Integer index 554 read GetIntegerProp write SetIntegerProp stored False;
     property NewSCPassword: Integer index 555 read GetIntegerProp write SetIntegerProp stored False;
-    property MethodName: WideString index 559 read GetWideStringProp write SetWideStringProp stored False;
+    //Alexander fix warning
+    property MethodName2: WideString index 559 read GetWideStringProp write SetWideStringProp stored False;
     property PropertyName: WideString index 560 read GetWideStringProp write SetWideStringProp stored False;
     property LockTimeout: Integer index 563 read GetIntegerProp write SetIntegerProp stored False;
     property SlipStringInterval: Integer index 564 read GetIntegerProp write SetIntegerProp stored False;

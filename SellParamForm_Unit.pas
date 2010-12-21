@@ -336,7 +336,7 @@ procedure TSellParamForm.actPayExecute(Sender: TObject);
 var
   CashCode: Integer;
 begin
-  if (lblChange.Caption = '') or (FChange > 0) then
+  if (lblChange.Caption = '') or (FChange < 0) then
   begin
     AdvTaskMessageDlg('Внимание', 'Сумма оплаты меньше суммы чека!', mtWarning, [mbOK], 0);
     exit;

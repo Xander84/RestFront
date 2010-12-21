@@ -1598,9 +1598,6 @@ END
 /* FrontData_Unit.dfm */
 /* BaseFrontForm_Unit.dfm */
 /* CardCodeForm_Unit.dfm */
-/* OrderNumber_Unit.dfm */
-/* DevideForm_Unit.dfm */
-/* SplitOrderForm_Unit.dfm */
 /* c:\program files (x86)\embarcadero\rad studio\7.0\lib\FileCtrl.res */
 /* D:\Front\Source\Components\FastReport 4\Source\frxInheritError.dfm */
 /* D:\Front\Source\Components\FastReport 4\Source\frxCtrls.RES */
@@ -1665,19 +1662,22 @@ END
 /* D:\Front\Source\Components\FastReport 4\Source\frxDesgn.DFM */
 /* D:\Front\Source\Components\FastReport 4\Source\frxDesgn.RES */
 /* D:\Front\Source\Components\FastReport 4\Source\frxOLEEditor.DFM */
-/* GuestForm_unit.dfm */
-/* DeleteOrderLine_unit.dfm */
-/* RKCardCodeForm_Unit.dfm */
-/* Modification_Unit.dfm */
-/* PayForm_Unit.dfm */
-/* SellParamForm_Unit.dfm */
-/* PercOrCardForm_Unit.dfm */
+/* OrderNumber_Unit.dfm */
+/* DevideForm_Unit.dfm */
+/* SplitOrderForm_Unit.dfm */
+/* CashForm_Unit.dfm */
+/* D:\Front\Source\jcl\source\common\JclUnicode.res */
+/* EditReportForm_Unit.dfm */
+/* ChooseDiscountCardForm_Unit.dfm */
 /* c:\program files (x86)\embarcadero\rad studio\7.0\lib\DBGrids.res */
 /* DiscountTypeForm_Unit.dfm */
-/* ChooseDiscountCardForm_Unit.dfm */
-/* EditReportForm_Unit.dfm */
-/* D:\Front\Source\jcl\source\common\JclUnicode.res */
-/* CashForm_Unit.dfm */
-/* D:\Front\Source\MainForm.dfm */
+/* PercOrCardForm_Unit.dfm */
+/* PayForm_Unit.dfm */
+/* D:\Front\Source\SellParamForm_Unit.dfm */
+/* RKCardCodeForm_Unit.dfm */
+/* Modification_Unit.dfm */
+/* DeleteOrderLine_unit.dfm */
+/* GuestForm_unit.dfm */
+/* MainForm.dfm */
 /* D:\Front\Source\RestFront.res */
 /* D:\Front\Source\RestFront.drf */
