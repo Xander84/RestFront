@@ -306,6 +306,7 @@ type
     procedure CreateGroupButtonList(const MenuKey: Integer);
     procedure AddGroupButton;
     procedure RemoveGroupButton;
+    procedure AddPopularGoods;
     //нажатие на кнопку Группы
     procedure GroupButtonOnClick(Sender: TObject);
 
@@ -621,6 +622,26 @@ begin
   end;
   FOrderButtonList.Add(FButton);
   Inc(FOrderButtonNumber);
+end;
+
+procedure TRestMainForm.AddPopularGoods;
+begin
+  FFrontBase.GetPopularGoodList(FGoodDataSet);
+  if (FGoodDataSet.Active) and (not FGoodDataSet.Eof) then
+  begin
+    FGoodLastTop := btnFirstTop;
+    FGoodFirstTop := btnFirstTop;
+    FGoodLastLeftButton := btnFirstTop;
+    pnlMainGood.Visible := True;
+
+    FGoodDataSet.First;
+    while not FGoodDataSet.Eof do
+    begin
+      AddGoodButton;
+
+      FGoodDataSet.Next;
+    end;
+  end;
 end;
 
 procedure TRestMainForm.CreateOrderButtonList;
@@ -1763,6 +1784,7 @@ begin
 
           CreateOrderButtonList;
           CreateMenuButtonList;
+          AddPopularGoods;
 
           ClearDisplay;
         finally

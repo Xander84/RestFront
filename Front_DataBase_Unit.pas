@@ -46,6 +46,15 @@ const
     '  and (doc.disabled is null or doc.disabled = 0)  ' +
     ' ORDER BY 1 ';
 
+  cst_PopularGoodList =
+    ' SELECT g.id, g.name, mn.usr$cost, g.alias, g.USR$MODIFYGROUPKEY, g.USR$BEDIVIDE FROM GD_GOOD G ' +
+    ' JOIN GD_GOODGROUP GD ON GD.ID = G.GROUPKEY ' +
+    ' JOIN usr$mn_menuline mn ON g.id = mn.usr$goodkey ' +
+    ' JOIN gd_document doc on doc.id = mn.documentkey ' +
+    ' WHERE ((G.USR$ISPOPULAR = 1) OR (GD.USR$ISPOPULAR = 1)) ' +
+    '   AND (doc.disabled is null or doc.disabled = 0) ' +
+    ' ORDER BY G.NAME ';
+
   cst_MenuList =
     'SELECT mn.documentkey, mn.usr$todate, mnn.usr$name ' +
     '  FROM usr$mn_menu mn left join usr$mn_menuname mnn ' +
@@ -246,6 +255,7 @@ type
     function GetGroupList(var MemTable: TkbmMemTable; const MenuKey: Integer): Boolean;
     function GetGoodList(var MemTable: TkbmMemTable; const MenuKey, GroupKey: Integer): Boolean;
     function GetGoodByID(var MemTable: TkbmMemTable; const GoodKey: Integer): Boolean;
+    function GetPopularGoodList(var MemTable: TkbmMemTable): Boolean;
 
     function LockUserOrder(const OrderKey: Integer): Boolean;
     function UnLockUserOrder(const OrderKey: Integer): Boolean;
@@ -1044,6 +1054,47 @@ begin
       FReadSQL.SQL.Text := cst_GoodList;
       FReadSQL.ParamByName('MenuKey').AsInteger := MenuKey;
       FReadSQL.ParamByName('GroupKey').AsInteger := GroupKey;
+      FReadSQL.ExecQuery;
+      while not FReadSQL.EOF do
+      begin
+        MemTable.Append;
+        MemTable.FieldByName('ID').AsInteger := FReadSQL.FieldByName('ID').AsInteger;
+        MemTable.FieldByName('NAME').AsString := FReadSQL.FieldByName('NAME').AsString;
+        MemTable.FieldByName('Alias').AsString := FReadSQL.FieldByName('ALIAS').AsString;
+        MemTable.FieldByName('Cost').ASCurrency := FReadSQL.FieldByName('usr$Cost').ASCurrency;
+        MemTable.FieldByName('MODIFYGROUPKEY').AsInteger := FReadSQL.FieldByName('USR$MODIFYGROUPKEY').AsInteger;
+        MemTable.FieldByName('ISNEEDMODIFY').AsInteger := IsNeedModify(FSQL, FReadSQL.FieldByName('ID').AsInteger);
+        MemTable.FieldByName('BEDIVIDE').AsInteger := FReadSQL.FieldByName('USR$BEDIVIDE').AsInteger;
+        MemTable.Post;
+        FReadSQL.Next;
+      end;
+      Result := True;
+    finally
+      FSQL.Free;
+    end;
+  finally
+    FReadSQL.Close;
+    FReadSQL.Transaction.Commit;
+  end;
+end;
+
+function TFrontBase.GetPopularGoodList(var MemTable: TkbmMemTable): Boolean;
+var
+  FSQL: TIBSQL;
+begin
+  Result := False;
+  FReadSQL.Close;
+  MemTable.Close;
+  MemTable.CreateTable;
+  MemTable.Open;
+  if not FReadSQL.Transaction.InTransaction then
+    FReadSQL.Transaction.StartTransaction;
+  try
+    FSQL := TIBSQL.Create(nil);
+    FSQL.Transaction := FReadSQL.Transaction;
+    FSQL.SQL.Text := 'SELECT FIRST(1) * FROM USR$CROSS36_416793598 WHERE usr$gd_goodkey = :goodkey';
+    try
+      FReadSQL.SQL.Text := cst_PopularGoodList;
       FReadSQL.ExecQuery;
       while not FReadSQL.EOF do
       begin
