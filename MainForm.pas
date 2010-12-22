@@ -342,7 +342,6 @@ type
     procedure OnAfterPostHeader(DataSet: TDataSet);
     procedure OnAfterPost(DataSet: TDataSet); ///!!!!
     procedure OnAfterDelete(DataSet: TDataSet);
-
   public
 
 
@@ -1065,7 +1064,7 @@ begin
         FUserInfo := FFrontBase.CheckUserPasswordWithForm;
         if FUserInfo.CheckedUserPassword then
         begin
-          if (FUserInfo.UserInGroup and FFrontBase.MN_Options.ManagerGroupMask) <> 0 then
+          if (FUserInfo.UserInGroup and FFrontBase.Options.ManagerGroupMask) <> 0 then
             //
           else begin
             AdvTaskMessageDlg('Внимание', cn_dontManagerPermission, mtWarning, [mbOK], 0);
@@ -1098,7 +1097,7 @@ begin
   ClearDisplay;
 
 { TODO : Проверка на Max кол-во гостей }
-  if (FFrontBase.UserGroup and FFrontBase.MN_Options.ManagerGroupMask) <> 0 then
+  if (FFrontBase.UserGroup and FFrontBase.Options.ManagerGroupMask) <> 0 then
     // входит в группу менеджеры
   else begin
     if FFrontBase.CheckCountOrderByResp(FFrontBase.ContactKey) then
@@ -1110,7 +1109,7 @@ begin
 
   FOrderNumber := '';
   FFrontBase.GetOrder(FHeaderTable, FLineTable, FModificationDataSet, -1);
-  if FFrontBase.MN_Options.NoPassword then
+  if FFrontBase.Options.NoPassword then
     FOrderNumber := IntToStr(FFrontBase.GetNextOrderNum)
   else begin
     FOrderForm := TOrderNumber.Create(nil);
@@ -1126,7 +1125,7 @@ begin
   if FOrderNumber = '' then
     exit;
 
-  if FFrontBase.MN_Options.MinGuestCount < 0 then
+  if FFrontBase.Options.MinGuestCount < 0 then
     FGuestCount := 1
   else begin
     FGuestForm := TGuestForm.Create(nil);
@@ -1141,7 +1140,7 @@ begin
     end;
   end;
 
-  if (FGuestCount >= FFrontBase.MN_Options.MinGuestCount) and (FOrderNumber <> '') then
+  if (FGuestCount >= FFrontBase.Options.MinGuestCount) and (FOrderNumber <> '') then
   begin
     if not Assigned(dsMain.DataSet) then
       dsMain.DataSet := FLineTable;
@@ -1180,7 +1179,7 @@ begin
           try
             if FFrontBase.CreateNewOrder(FHeaderTable, FLineTable, FModificationDataSet, OrderKey) then
             begin
-              if FFrontBase.MN_Options.LastPrintOrder <> OrderKey then
+              if FFrontBase.Options.LastPrintOrder <> OrderKey then
               begin
                 if FFrontBase.GetServiceCheckOptions(OrderKey, PrinterName, PrnGrid) then
                   if FReport.PrintServiceCheck(1, PrnGrid, OrderKey, PrinterName) then
@@ -1262,7 +1261,7 @@ begin
       FUserInfo := FFrontBase.CheckUserPasswordWithForm;
       if FUserInfo.CheckedUserPassword then
       begin
-        if (FUserInfo.UserInGroup and FFrontBase.MN_Options.ManagerGroupMask) <> 0 then
+        if (FUserInfo.UserInGroup and FFrontBase.Options.ManagerGroupMask) <> 0 then
           //
         else begin
           AdvTaskMessageDlg('Внимание', cn_dontManagerPermission, mtWarning, [mbOK], 0);
@@ -1308,7 +1307,7 @@ begin
       FUserInfo := FFrontBase.CheckUserPasswordWithForm;
       if FUserInfo.CheckedUserPassword then
       begin
-        if (FUserInfo.UserInGroup and FFrontBase.MN_Options.ManagerGroupMask) <> 0 then
+        if (FUserInfo.UserInGroup and FFrontBase.Options.ManagerGroupMask) <> 0 then
           //
         else begin
           AdvTaskMessageDlg('Внимание', cn_dontManagerPermission, mtWarning, [mbOK], 0);
@@ -1409,7 +1408,7 @@ begin
   FUserInfo := FFrontBase.CheckUserPasswordWithForm;
   if FUserInfo.CheckedUserPassword then
   begin
-    if (FUserInfo.UserInGroup and FFrontBase.MN_Options.ManagerGroupMask) <> 0 then
+    if (FUserInfo.UserInGroup and FFrontBase.Options.ManagerGroupMask) <> 0 then
       //
     else begin
       AdvTaskMessageDlg('Внимание', cn_dontManagerPermission, mtWarning, [mbOK], 0);
@@ -1472,7 +1471,7 @@ begin
   FUserInfo := FFrontBase.CheckUserPasswordWithForm;
   if FUserInfo.CheckedUserPassword then
   begin
-    if (FUserInfo.UserInGroup and FFrontBase.MN_Options.ManagerGroupMask) <> 0 then
+    if (FUserInfo.UserInGroup and FFrontBase.Options.ManagerGroupMask) <> 0 then
     begin
       if FFrontBase.OrderIsPayed(FHeaderTable.FieldByName('ID').AsInteger) then
         AdvTaskMessageDlg('Внимание', 'Этот заказ уже был оплачен',
@@ -1499,7 +1498,7 @@ var
   DiscountKey: Integer;
   FChooseDiscountForm: TChooseDiscountCard;
 begin
-  DiscountType := FFrontBase.MN_Options.DiscountType;
+  DiscountType := FFrontBase.Options.DiscountType;
   if DiscountType = 0 then
     exit;
 
@@ -1527,7 +1526,7 @@ begin
     FUserInfo := FFrontBase.CheckUserPasswordWithForm;
     if FUserInfo.CheckedUserPassword then
     begin
-      if (FUserInfo.UserInGroup and FFrontBase.MN_Options.ManagerGroupMask) <> 0 then
+      if (FUserInfo.UserInGroup and FFrontBase.Options.ManagerGroupMask) <> 0 then
       begin
         FDiscountTypeForm := TDiscountType.Create(nil);
         try
@@ -1941,7 +1940,7 @@ begin
         try
           while not UserTable.Eof do
           begin
-            if (UserTable.FieldByName('InGroup').AsInteger and FFrontBase.MN_Options.WaiterGroupMask) <> 0 then
+            if (UserTable.FieldByName('InGroup').AsInteger and FFrontBase.Options.WaiterGroupMask) <> 0 then
             begin
               //1. Отрисовываем кнопку
               AddUserButton(UserTable);
@@ -2414,7 +2413,7 @@ begin
   FUserInfo := FFrontBase.CheckUserPasswordWithForm;
   if FUserInfo.CheckedUserPassword then
   begin
-    if (FUserInfo.UserInGroup and FFrontBase.MN_Options.ManagerGroupMask) <> 0 then
+    if (FUserInfo.UserInGroup and FFrontBase.Options.ManagerGroupMask) <> 0 then
     else begin
       AdvTaskMessageDlg('Внимание', cn_dontManagerPermission, mtWarning, [mbOK], 0);
       exit;
@@ -2450,8 +2449,8 @@ begin
   FUserInfo := FFrontBase.CheckUserPasswordWithForm;
   if FUserInfo.CheckedUserPassword then
   begin
-    if ((FUserInfo.UserInGroup and FFrontBase.MN_Options.ManagerGroupMask) <> 0) or
-      ((FUserInfo.UserInGroup and FFrontBase.MN_Options.KassaGroupMask) <> 0) then
+    if ((FUserInfo.UserInGroup and FFrontBase.Options.ManagerGroupMask) <> 0) or
+      ((FUserInfo.UserInGroup and FFrontBase.Options.KassaGroupMask) <> 0) then
     else begin
       AdvTaskMessageDlg('Внимание', 'Данный пользователь не обладает правами менеджера или кассира!',
         mtWarning, [mbOK], 0);
@@ -2460,7 +2459,7 @@ begin
     FForm := TCashForm.Create(Self);
     try
       FForm.FiscalRegistry := FFiscal;
-      FForm.IsManager := ((FUserInfo.UserInGroup and FFrontBase.MN_Options.ManagerGroupMask) <> 0);
+      FForm.IsManager := ((FUserInfo.UserInGroup and FFrontBase.Options.ManagerGroupMask) <> 0);
       FForm.ShowModal;
     finally
       FForm.Free;

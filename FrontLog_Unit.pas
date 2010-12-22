@@ -97,7 +97,7 @@ var
 begin
   if Assigned(FFrontBase) then
   begin
-    if FFrontBase.MN_Options.DoLog then
+    if FFrontBase.Options.DoLog then
     begin
       // Локализуем сообщение
       Str := MsgType;
@@ -105,8 +105,8 @@ begin
       if Msg <> '' then
         Str := Str + ' ' + Msg;
       UserKey := FFrontBase.ContactKey;
-      if FFrontBase.MN_Options.LogToFile then
-        WriteLogToFile(Str, UserKey, FFrontBase.MN_Options.LinesLimit)
+      if FFrontBase.Options.LogToFile then
+        WriteLogToFile(Str, UserKey, FFrontBase.Options.LinesLimit)
       else
         WriteLogToBase(Str, UserKey);
     end;

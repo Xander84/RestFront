@@ -1,6 +1,13 @@
 program RestFront;
 
 uses
+{$IFDEF VER150}
+  FastMM4,
+  RtlVclOptimize,
+{$ELSE}
+  {$WEAKLINKRTTI ON}
+  {$RTTI EXPLICIT METHODS([]) PROPERTIES([]) FIELDS([])}
+{$ENDIF}
   Forms,
   AppEvnts,
   MainForm in 'MainForm.pas' {RestMainForm},

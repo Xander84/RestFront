@@ -355,7 +355,7 @@ begin
   FFrontBase.Display.Payed;
   if Assigned(FFiscalRegiter) then
   begin
-    if FFrontBase.MN_Options.PrintFiscalChek then
+    if FFrontBase.Options.PrintFiscalChek then
     begin
       // если фискальный чек печатается, то подключаем соответствующее оборудовние
       CashCode := FFrontBase.CashCode;

@@ -188,7 +188,7 @@ type
     ExtCalcCardID:     Integer;
     ExtDepotKeys:      String;
     PrintCopyCheck:    Boolean;
-    SaveAllOrder:      Integer;
+    SaveAllOrder:      Boolean;
     BackType:          Integer;
   end;
 
@@ -226,7 +226,7 @@ type
 
     FOrderTypeKey: Integer;
     FCompanyKey: Integer;
-    FMN_Options: TFrontOptions;
+    FOptions: TFrontOptions;
 
     FDisplay: TDisplay;
     FDisplayInitialized: Boolean;
@@ -324,7 +324,7 @@ type
     property UserKey: Integer read FUserKey;
     property ContactKey: Integer read FContactKey;
     property UserGroup: Integer read FUserGroup;
-    property MN_Options: TFrontOptions read FMN_Options write FMN_Options;
+    property Options: TFrontOptions read FOptions write FOptions;
 
     property Display: TDisplay read GetDisplay;
     property CashCode: Integer read GetCashCode;
@@ -971,7 +971,7 @@ begin
   end;
 end;
 
-function IsNeedModify(const FSQL: TIBSQL; const GoodKey: Integer): Integer;
+function IsNeedModify(const FSQL: TIBSQL; const GoodKey: Integer): Integer; inline;
 begin
   Result := 0;
   FSQL.Close;
@@ -1482,12 +1482,12 @@ begin
     if WithPrecheck then
       FReadSQL.SQL.Text := FReadSQL.SQL.Text +
         '   and o.usr$timecloseorder + 0 is not null ';
-    if mn_Options.OrderCurrentLDate then
+    if Options.OrderCurrentLDate then
       FReadSQL.SQL.Text := FReadSQL.SQL.Text + ' AND o.USR$LOGICDATE = :LDate ' ;
     FReadSQL.SQL.Text := FReadSQL.SQL.Text + '   ) ' +
       ' order by    ' +
       '   con.name asc  ';
-    if mn_Options.OrderCurrentLDate then
+    if Options.OrderCurrentLDate then
       FReadSQL.ParamByName('LDate').AsDateTime := GetLogicDate;
 
     FReadSQL.ExecQuery;
@@ -1606,7 +1606,7 @@ end;
 function TFrontBase.GetLogicDate: TDateTime;
 begin
   GetLogicDate := Date;
-  if not mn_options.UseCurrentDate then
+  if not Options.UseCurrentDate then
   begin
     FReadSQL.Close;
     if not FReadSQL.Transaction.InTransaction then
@@ -2002,9 +2002,9 @@ begin
 
       if WithGroup then
       begin
-        if (FReadSQL.FieldByName('InGroup').AsInteger and MN_Options.ManagerGroupMask) <> 0 then
+        if (FReadSQL.FieldByName('InGroup').AsInteger and Options.ManagerGroupMask) <> 0 then
           UserInGroupName := 'Менеджер: '
-        else if (FReadSQL.FieldByName('InGroup').AsInteger and MN_Options.KassaGroupMask) <> 0 then
+        else if (FReadSQL.FieldByName('InGroup').AsInteger and Options.KassaGroupMask) <> 0 then
           UserInGroupName := 'Кассир: '
         else
           UserInGroupName := 'Официант: ';
@@ -3006,7 +3006,7 @@ begin
         FUserInfo := CheckUserPasswordWithForm;
         if FUserInfo.CheckedUserPassword then
         begin
-          if (FUserInfo.UserInGroup and MN_Options.KassaGroupMask) <> 0 then
+          if (FUserInfo.UserInGroup and Options.KassaGroupMask) <> 0 then
           begin
             FUpdateSQL := TIBSQL.Create(nil);
             FUpdateSQL.Transaction := FCheckTransaction;
@@ -3095,7 +3095,7 @@ begin
         FUserInfo := CheckUserPasswordWithForm;
         if FUserInfo.CheckedUserPassword then
         begin
-          if (FUserInfo.UserInGroup and MN_Options.KassaGroupMask) <> 0 then
+          if (FUserInfo.UserInGroup and Options.KassaGroupMask) <> 0 then
           begin
             FUpdateSQL := TIBSQL.Create(nil);
             FUpdateSQL.Transaction := FCheckTransaction;
@@ -3143,11 +3143,11 @@ begin
     if not FReadSQL.Transaction.InTransaction then
       FReadSQL.Transaction.StartTransaction;
 
-    FMN_Options.LastPrintOrder := -1;
+    FOptions.LastPrintOrder := -1;
     // опции Лога
-    FMN_Options.DoLog := True;
-    FMN_Options.LinesLimit := 0;
-    FMN_Options.LogToFile := True;
+    FOptions.DoLog := True;
+    FOptions.LinesLimit := 0;
+    FOptions.LogToFile := True;
 
     FReadSQL.Close;
     FReadSQL.SQL.Text :=
@@ -3173,111 +3173,111 @@ begin
       FName := AnsiUpperCase(FReadSQL.FieldByName('NAME').AsString);
       if FName = 'OPENTIME' then
       begin
-        FMN_Options.OpenTime := FReadSQL.FieldByName('DATETIME_DATA').AsDateTime;
+        FOptions.OpenTime := FReadSQL.FieldByName('DATETIME_DATA').AsDateTime;
       end else
       if FName = 'CLOSETIME' then
       begin
-        FMN_Options.CloseTime := FReadSQL.FieldByName('DATETIME_DATA').AsDateTime;
+        FOptions.CloseTime := FReadSQL.FieldByName('DATETIME_DATA').AsDateTime;
       end else
       if FName = 'BASEPATH' then
       begin
-        FMN_Options.BasePath := FReadSQL.FieldByName('STR_DATA').AsString;
+        FOptions.BasePath := FReadSQL.FieldByName('STR_DATA').AsString;
       end else
       if FName = 'PRINTLOG' then
       begin
-        FMN_Options.PrintLog := (FReadSQL.FieldByName('INT_DATA').AsInteger = 1);
+        FOptions.PrintLog := (FReadSQL.FieldByName('INT_DATA').AsInteger = 1);
       end else
       if FName = 'PLSINGLEFILE' then
       begin
-        FMN_Options.PLSingleFile := (FReadSQL.FieldByName('INT_DATA').AsInteger = 1);
+        FOptions.PLSingleFile := (FReadSQL.FieldByName('INT_DATA').AsInteger = 1);
       end else
       if FName = 'PLFILEFOLDER' then
       begin
-        FMN_Options.PLFileFolder := FReadSQL.FieldByName('STR_DATA').AsString;
+        FOptions.PLFileFolder := FReadSQL.FieldByName('STR_DATA').AsString;
       end else
       if FName = 'PRINTFISCALCHEK' then
       begin
-        FMN_Options.PrintFiscalChek := (FReadSQL.FieldByName('INT_DATA').AsInteger = 1);
+        FOptions.PrintFiscalChek := (FReadSQL.FieldByName('INT_DATA').AsInteger = 1);
       end else
       if FName = 'ORDERCURRENTLDATE' then
       begin
-        FMN_Options.OrderCurrentLDate := (FReadSQL.FieldByName('INT_DATA').AsInteger = 1);
+        FOptions.OrderCurrentLDate := (FReadSQL.FieldByName('INT_DATA').AsInteger = 1);
       end else
       if FName = 'MAINCOMPANYID' then
       begin
-        FMN_Options.MainCompanyID := FReadSQL.FieldByName('INT_DATA').AsInteger;
+        FOptions.MainCompanyID := FReadSQL.FieldByName('INT_DATA').AsInteger;
       end else
       if FName = 'CHECKLINE1' then
       begin
-        FMN_Options.CheckLine1 := FReadSQL.FieldByName('STR_DATA').AsString;
+        FOptions.CheckLine1 := FReadSQL.FieldByName('STR_DATA').AsString;
       end else
       if FName = 'CHECKLINE2' then
       begin
-        FMN_Options.CheckLine2 := FReadSQL.FieldByName('STR_DATA').AsString;
+        FOptions.CheckLine2 := FReadSQL.FieldByName('STR_DATA').AsString;
       end else
       if FName = 'CHECKLINE3' then
       begin
-        FMN_Options.CheckLine3 := FReadSQL.FieldByName('STR_DATA').AsString;
+        FOptions.CheckLine3 := FReadSQL.FieldByName('STR_DATA').AsString;
       end else
       if FName = 'CHECKLINE4' then
       begin
-        FMN_Options.CheckLine4 := FReadSQL.FieldByName('STR_DATA').AsString;
+        FOptions.CheckLine4 := FReadSQL.FieldByName('STR_DATA').AsString;
       end else
       if FName = 'CHECKLINE5' then
       begin
-        FMN_Options.CheckLine5 := FReadSQL.FieldByName('STR_DATA').AsString;
+        FOptions.CheckLine5 := FReadSQL.FieldByName('STR_DATA').AsString;
       end else
       if FName = 'CHECKLINE6' then
       begin
-        FMN_Options.CheckLine6 := FReadSQL.FieldByName('STR_DATA').AsString;
+        FOptions.CheckLine6 := FReadSQL.FieldByName('STR_DATA').AsString;
       end else
       if FName = 'CHECKLINE7' then
       begin
-        FMN_Options.CheckLine7 := FReadSQL.FieldByName('STR_DATA').AsString;
+        FOptions.CheckLine7 := FReadSQL.FieldByName('STR_DATA').AsString;
       end else
       if FName = 'CHECKLINE8' then
       begin
-        FMN_Options.CheckLine8 := FReadSQL.FieldByName('STR_DATA').AsString;
+        FOptions.CheckLine8 := FReadSQL.FieldByName('STR_DATA').AsString;
       end else
       if FName = 'SYNCTIME' then
       begin
-        FMN_Options.SyncTime := (FReadSQL.FieldByName('INT_DATA').AsInteger = 1);
+        FOptions.SyncTime := (FReadSQL.FieldByName('INT_DATA').AsInteger = 1);
       end else
       if FName = 'TIMECOMP' then
       begin
-        FMN_Options.TimeComp := FReadSQL.FieldByName('STR_DATA').AsString;
+        FOptions.TimeComp := FReadSQL.FieldByName('STR_DATA').AsString;
       end else
       if FName = 'EXTCALCCARDID' then
       begin
-        FMN_Options.ExtCalcCardID := FReadSQL.FieldByName('INT_DATA').AsInteger;
+        FOptions.ExtCalcCardID := FReadSQL.FieldByName('INT_DATA').AsInteger;
       end else
       if FName = 'EXTDEPOTKEYS' then
       begin
-        FMN_Options.ExtDepotKeys := FReadSQL.FieldByName('STR_DATA').AsString;
+        FOptions.ExtDepotKeys := FReadSQL.FieldByName('STR_DATA').AsString;
       end else
       if FName = 'NOPASSWORD' then
       begin
-        FMN_Options.NoPassword := (FReadSQL.FieldByName('INT_DATA').AsInteger = 1);
+        FOptions.NoPassword := (FReadSQL.FieldByName('INT_DATA').AsInteger = 1);
       end else
       if FName = 'USECURRENTDATE' then
       begin
-        FMN_Options.UseCurrentDate := (FReadSQL.FieldByName('INT_DATA').AsInteger = 1);
+        FOptions.UseCurrentDate := (FReadSQL.FieldByName('INT_DATA').AsInteger = 1);
       end else
       if FName = 'DISCOUNTTYPE' then
       begin
-        FMN_Options.DiscountType := FReadSQL.FieldByName('INT_DATA').AsInteger;
+        FOptions.DiscountType := FReadSQL.FieldByName('INT_DATA').AsInteger;
       end else
       if FName = 'SAVEALLORDER' then
       begin
-        FMN_Options.SaveAllOrder := FReadSQL.FieldByName('INT_DATA').AsInteger;
+        FOptions.SaveAllOrder := True;//(FReadSQL.FieldByName('INT_DATA').AsInteger = 1);
       end else
       if FName = 'BACKTYPE' then
       begin
-        FMN_Options.BackType := FReadSQL.FieldByName('INT_DATA').AsInteger;
+        FOptions.BackType := FReadSQL.FieldByName('INT_DATA').AsInteger;
       end else
       if FName = 'PRINTCOPYCHECK' then
       begin
-        FMN_Options.PrintCopyCheck := (FReadSQL.FieldByName('INT_DATA').AsInteger = 1);
+        FOptions.PrintCopyCheck := (FReadSQL.FieldByName('INT_DATA').AsInteger = 1);
       end;
 
       FReadSQL.Next;
@@ -3291,15 +3291,15 @@ begin
       FName := AnsiUpperCase(FReadSQL.FieldByName('NAME').AsString);
       if FName = 'MAXOPENEDORDERS' then
       begin
-        FMN_Options.MaxOpenedOrders := FReadSQL.FieldByName('INT_DATA').AsInteger;
+        FOptions.MaxOpenedOrders := FReadSQL.FieldByName('INT_DATA').AsInteger;
       end else
       if FName = 'MAXGUESTCOUNT' then
       begin
-        FMN_Options.MaxGuestCount := FReadSQL.FieldByName('INT_DATA').AsInteger;
+        FOptions.MaxGuestCount := FReadSQL.FieldByName('INT_DATA').AsInteger;
       end else
       if FName = 'MINGUESTCOUNT' then
       begin
-        FMN_Options.MinGuestCount := FReadSQL.FieldByName('INT_DATA').AsInteger;
+        FOptions.MinGuestCount := FReadSQL.FieldByName('INT_DATA').AsInteger;
       end;
 
       FReadSQL.Next;
@@ -3313,15 +3313,15 @@ begin
       FName := AnsiUpperCase(FReadSQL.FieldByName('NAME').AsString);
       if FName = 'WAITER' then
       begin
-        FMN_Options.WaiterGroupMask := GetGroupMask(FReadSQL.FieldByName('INT_DATA').AsInteger);
+        FOptions.WaiterGroupMask := GetGroupMask(FReadSQL.FieldByName('INT_DATA').AsInteger);
       end else
       if FName = 'MANAGER' then
       begin
-        FMN_Options.ManagerGroupMask := GetGroupMask(FReadSQL.FieldByName('INT_DATA').AsInteger);
+        FOptions.ManagerGroupMask := GetGroupMask(FReadSQL.FieldByName('INT_DATA').AsInteger);
       end else
       if FName = 'KASSA' then
       begin
-        FMN_Options.KassaGroupMask := GetGroupMask(FReadSQL.FieldByName('INT_DATA').AsInteger);
+        FOptions.KassaGroupMask := GetGroupMask(FReadSQL.FieldByName('INT_DATA').AsInteger);
       end;
 
       FReadSQL.Next;
@@ -3373,7 +3373,7 @@ begin
     FReadSQL.ParamByName('respkey').AsInteger := RespID;
     FReadSQL.ExecQuery;
 
-    Result := (FReadSQL.FieldByName('countOrder').AsInteger > mn_Options.MaxOpenedOrders - 1);
+    Result := (FReadSQL.FieldByName('countOrder').AsInteger > Options.MaxOpenedOrders - 1);
 
     FReadSQL.Transaction.Commit;
   except
