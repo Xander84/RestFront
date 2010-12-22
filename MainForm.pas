@@ -322,6 +322,8 @@ type
     procedure AddUserOrderButton(const MemTable: TkbmMemTable);
     procedure RemoveUserOrderButton;
 
+    procedure SaveCheck;
+    procedure SaveAllOrder;
     //Скроллирование
     procedure ScrollControl(const FControl: TWinControl; const Down: Boolean;
       var Top: Integer; var Bottom: Integer);
@@ -967,6 +969,27 @@ begin
     FLineTable.Post;
     WritePos(FLineTable);
   end;
+  SaveAllOrder;
+end;
+
+procedure TRestMainForm.SaveAllOrder;
+begin
+  if FFrontBase.Options.SaveAllOrder then
+    SaveCheck;
+end;
+
+procedure TRestMainForm.SaveCheck;
+var
+  OrderKey: Integer;
+begin
+  OrderKey := FHeaderTable.FieldByName('ID').AsInteger;
+  DBGrMain.DataSource := nil;
+  try
+    FFrontBase.SaveAndReloadOrder(FHeaderTable, FLineTable,
+      FModificationDataSet, OrderKey);
+  finally
+    DBGrMain.DataSource := dsMain;
+  end;
 end;
 
 procedure TRestMainForm.ScrollControl(const FControl: TWinControl; const Down: Boolean;
@@ -1232,6 +1255,7 @@ begin
     FLineTable.Post;
     WritePos(FLineTable);
   end;
+  SaveAllOrder;
 end;
 
 procedure TRestMainForm.actRemoveQuantityExecute(Sender: TObject);
@@ -1286,6 +1310,7 @@ begin
       end;
     end;
   end;
+  SaveAllOrder;
 end;
 
 procedure TRestMainForm.actDeletePositionExecute(Sender: TObject);
@@ -1331,6 +1356,7 @@ begin
       end;
     end;
   end;
+  SaveAllOrder;
 end;
 
 procedure TRestMainForm.actModificationExecute(Sender: TObject);
@@ -1433,6 +1459,7 @@ begin
     FSplitForm.ManagerKey := FUserInfo.UserKey;
 
   end;
+  SaveAllOrder;
 end;
 
 procedure TRestMainForm.actPreCheckExecute(Sender: TObject);
@@ -1442,16 +1469,17 @@ begin
   if FHeaderTable.FieldByName('usr$timecloseorder').IsNull then
   begin
     ClearDisplay;
-    OrderKey := FHeaderTable.FieldByName('ID').AsInteger;
+    SaveCheck;
+{    OrderKey := FHeaderTable.FieldByName('ID').AsInteger;
     DBGrMain.DataSource := nil;
     try
       FFrontBase.SaveAndReloadOrder(FHeaderTable, FLineTable,
         FModificationDataSet, OrderKey);
     finally
       DBGrMain.DataSource := dsMain;
-    end;
+    end;   }
 
-    if FReport.PrintPreCheck(1, OrderKey) then
+    if FReport.PrintPreCheck(1, FHeaderTable.FieldByName('ID').AsInteger) then
     begin
       if FHeaderTable.State = dsBrowse then
         FHeaderTable.Edit;
@@ -1606,16 +1634,17 @@ procedure TRestMainForm.actPayExecute(Sender: TObject);
 var
   FForm: TSellParamForm;
   SumToPay: Currency;
-  OrderKey: Integer;
+//  OrderKey: Integer;
 begin
-  OrderKey := FHeaderTable.FieldByName('ID').AsInteger;
+  SaveCheck;
+{  OrderKey := FHeaderTable.FieldByName('ID').AsInteger;
   DBGrMain.DataSource := nil;
   try
     FFrontBase.SaveAndReloadOrder(FHeaderTable, FLineTable,
       FModificationDataSet, OrderKey);
   finally
     DBGrMain.DataSource := dsMain;
-  end;
+  end;   }
 
   SumToPay := 0;
   FLineTable.DisableControls;
@@ -2102,6 +2131,7 @@ begin
         end;
       end;
   end;
+  SaveAllOrder;
 end;
 
 procedure TRestMainForm.WritePos(DataSet: TDataSet);
@@ -2122,7 +2152,7 @@ var
   OldDetailID, MasterKey: Integer;
   V: Array of Variant;
   I: Integer;
-  PrnGrid, DocumentKey, OrderKey: Integer;
+  PrnGrid, DocumentKey{, OrderKey}: Integer;
   PrinterName: String;
 begin
   OldQuantity := FLineTable.FieldByName('usr$quantity').AsCurrency;
@@ -2165,14 +2195,15 @@ begin
   Inc(FLineID);
 
   MasterKey := FHeaderTable.FieldByName('ID').AsInteger;
-  OrderKey := FHeaderTable.FieldByName('ID').AsInteger;
+  SaveCheck;
+{  OrderKey := FHeaderTable.FieldByName('ID').AsInteger;
   DBGrMain.DataSource := nil;
   try
     FFrontBase.SaveAndReloadOrder(FHeaderTable, FLineTable,
       FModificationDataSet, OrderKey);
   finally
     DBGrMain.DataSource := dsMain;
-  end;
+  end;  }
   //обновить футер грида
   DBGrMain.SumList.RecalcAll;
 

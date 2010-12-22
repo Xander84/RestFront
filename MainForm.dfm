@@ -48,9 +48,6 @@ object RestMainForm: TRestMainForm
         ColorTo = 14986888
         TabColor = clBtnFace
         TabColorTo = clNone
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 0
         object edPassword: TEdit
           Left = 265
           Top = 299
@@ -104,9 +101,6 @@ object RestMainForm: TRestMainForm
         ImageIndex = 1
         TabColor = clBtnFace
         TabColorTo = clNone
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 0
         object pnlRight: TAdvPanel
           Left = 692
           Top = 0
@@ -627,9 +621,6 @@ object RestMainForm: TRestMainForm
               ColorTo = 14986888
               TabColor = clBtnFace
               TabColorTo = clNone
-              ExplicitTop = 0
-              ExplicitWidth = 0
-              ExplicitHeight = 0
               object btnNewOrder: TAdvSmoothButton
                 Left = 16
                 Top = 8
@@ -1324,7 +1315,7 @@ object RestMainForm: TRestMainForm
         Top = 1
         Width = 80
         Height = 719
-        ActivePage = tsMainButton
+        ActivePage = tsFunctionButton
         ActiveFont.Charset = DEFAULT_CHARSET
         ActiveFont.Color = clWindowText
         ActiveFont.Height = -11
@@ -1342,9 +1333,6 @@ object RestMainForm: TRestMainForm
           ColorTo = clNone
           TabColor = clBtnFace
           TabColorTo = clNone
-          ExplicitTop = 0
-          ExplicitWidth = 0
-          ExplicitHeight = 0
           object btnExitWindows: TAdvSmoothButton
             Left = 0
             Top = 1
@@ -1444,9 +1432,6 @@ object RestMainForm: TRestMainForm
           ImageIndex = 1
           TabColor = clBtnFace
           TabColorTo = clNone
-          ExplicitTop = 0
-          ExplicitWidth = 0
-          ExplicitHeight = 0
           object Button14: TButton
             Left = 0
             Top = 620
@@ -1799,9 +1784,6 @@ object RestMainForm: TRestMainForm
           ImageIndex = 2
           TabColor = clBtnFace
           TabColorTo = clNone
-          ExplicitTop = 0
-          ExplicitWidth = 0
-          ExplicitHeight = 0
           object btnEditReport: TAdvSmoothButton
             Left = 0
             Top = 1
