@@ -39,15 +39,15 @@ type
     dsMain: TDataSource;
     acListMain: TActionList;
     actPay: TAction;
+    TouchKeyBoard: TAdvSmoothTouchKeyBoard;
+    btnPay: TAdvSmoothButton;
+    btnCancel: TAdvSmoothButton;
     btnCashPay: TAdvSmoothToggleButton;
     btnBeznalPay: TAdvSmoothToggleButton;
     btnCardPay: TAdvSmoothToggleButton;
     actDeletePay: TAction;
     btnDelPay: TAdvSmoothButton;
     DBAdvGrMain: TDBAdvGrid;
-    AdvPanel1: TAdvPanel;
-    btnPay: TAdvSmoothButton;
-    btnCancel: TAdvSmoothButton;
     procedure edMainKeyPress(Sender: TObject; var Key: Char);
     procedure edMainChange(Sender: TObject);
     procedure btnCashPayClick(Sender: TObject);
@@ -61,8 +61,6 @@ type
     procedure actDeletePayExecute(Sender: TObject);
     procedure DBAdvGrMainFooterCalc(Sender: TObject; ACol, ARow: Integer;
       var Value: String);
-    procedure FormCreate(Sender: TObject);
-    procedure FormShow(Sender: TObject);
   private
     FFrontBase: TFrontBase;
     // сумма к оплате
@@ -71,8 +69,6 @@ type
     FPaySum: Currency;
     // сдача
     FChange: Currency;
-    // сумма по кредитной карточке
-    FCreditCardSum: Currency;
     FInDeleteOrUpdate: Boolean;
     FInInsert: Boolean;
     FNalID: Integer;
@@ -85,7 +81,6 @@ type
     FDocLine: TkbmMemTable;
     FPayType: Integer;
     dsPayLine: TkbmMemTable;
-    FTouchKeyBoard: TAdvSmoothTouchKeyBoard;
 
     procedure SetSumToPay(const Value: Currency);
     procedure SetFiscalRegister(const Value: TFiscalRegister);
@@ -128,7 +123,6 @@ begin
   FPaySum := 0;
   FSumToPay := 0;
   FChange := 0;
-  FCreditCardSum := 0;
   FInDeleteOrUpdate := False;
   FInInsert := False;
 
@@ -166,11 +160,6 @@ begin
     FloatingFooter.ColumnCalc[1] := acCUSTOM;
     FloatingFooter.ColumnCalc[2] := acCUSTOM;
   end;
-
-//  Height := cn_Height;
-//  Width := cn_Width;
-//  AdjustResolution(pnlMain);
-
 end;
 
 destructor TSellParamForm.Destroy;
@@ -465,7 +454,7 @@ end;
 procedure TSellParamForm.TouchKeyBoardKeyClick(Sender: TObject;
   Index: Integer);
 begin
-  with FTouchKeyBoard.Keys.Items[Index] do
+  with TouchKeyBoard.Keys.Items[Index] do
   begin
     if SpecialKey = skNone then
       PostMessage(edMain.Handle, WM_KEYUP, Ord(Caption[1]), 0)
@@ -576,32 +565,6 @@ begin
       FInDeleteOrUpdate := False;
     end;
   end;
-end;
-
-procedure TSellParamForm.FormCreate(Sender: TObject);
-begin
-  inherited;
-
-  AdjustResolution(Self);
-  Height := cn_Height;
-  Width := cn_Width;
-
-  FTouchKeyBoard := TAdvSmoothTouchKeyBoard.Create(pnlMain);
-  FTouchKeyBoard.Parent := pnlMain;
-  FTouchKeyBoard.KeyboardType := ktCELLPHONE;
-  FTouchKeyBoard.OnKeyClick := TouchKeyBoardKeyClick;
-  FTouchKeyBoard.SetComponentStyle(GetFrontStyle);
-  FTouchKeyBoard.Keys[9].Caption := ',';
-  FTouchKeyBoard.Left := AdjustWidth(50);
-  FTouchKeyBoard.Top := AdjustWidth(145);
-  FTouchKeyBoard.Font.Size := cn_FontSize;
-end;
-
-procedure TSellParamForm.FormShow(Sender: TObject);
-begin
-  inherited;
-  FTouchKeyBoard.Width := AdjustWidth(271);
-  FTouchKeyBoard.Height :=  AdjustWidth(297);
 end;
 
 end.
