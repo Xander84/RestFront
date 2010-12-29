@@ -1,9 +1,9 @@
 object BaseFrontForm: TBaseFrontForm
   Left = 246
   Top = 230
-  Width = 156
-  Height = 67
   Caption = 'BaseFrontForm'
+  ClientHeight = 40
+  ClientWidth = 148
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText

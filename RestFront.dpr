@@ -35,7 +35,8 @@ uses
   BaseFrontForm_Unit in 'BaseFrontForm_Unit.pas' {BaseFrontForm},
   CardCodeForm_Unit in 'CardCodeForm_Unit.pas' {CardCode},
   ShtrihFR_Unit in 'Shtrih\ShtrihFR_Unit.pas',
-  RKCardCodeForm_Unit in 'RKCardCodeForm_Unit.pas' {RKCardCode};
+  RKCardCodeForm_Unit in 'RKCardCodeForm_Unit.pas' {RKCardCode},
+  AddUserForm_unit in 'AddUserForm_unit.pas' {AddUserForm};
 
 {$R *.res}
 

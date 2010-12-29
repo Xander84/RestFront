@@ -26,7 +26,7 @@ object OrderNumber: TOrderNumber
     Color = 16640730
     TabOrder = 0
     UseDockManager = True
-    Version = '1.9.0.0'
+    Version = '2.0.1.0'
     BorderColor = clGray
     Caption.Color = 14059353
     Caption.ColorTo = 9648131
@@ -38,7 +38,7 @@ object OrderNumber: TOrderNumber
     Caption.GradientDirection = gdVertical
     Caption.Indent = 2
     Caption.ShadeLight = 255
-    CollapsColor = clHighlight
+    CollapsColor = clNone
     CollapsDelay = 0
     ColorTo = 14986888
     ShadowColor = clBlack
@@ -63,12 +63,16 @@ object OrderNumber: TOrderNumber
       Align = alTop
       Alignment = taCenter
       Caption = #1053#1086#1084#1077#1088' '#1079#1072#1082#1072#1079#1072
+      Color = clNone
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -27
       Font.Name = 'Times New Roman'
       Font.Style = []
+      ParentColor = False
       ParentFont = False
+      Transparent = True
+      ExplicitTop = 7
     end
     object edtNumber: TEdit
       Left = 10
@@ -100,6 +104,7 @@ object OrderNumber: TOrderNumber
       AutoCompletion.Color = clBlack
       Fill.ColorMirror = clNone
       Fill.ColorMirrorTo = clNone
+      Fill.BorderColor = clNone
       Fill.Rounding = 0
       Fill.ShadowOffset = 0
       KeyboardType = ktCELLPHONE
@@ -254,7 +259,7 @@ object OrderNumber: TOrderNumber
       SmallFont.Height = -13
       SmallFont.Name = 'Times New Roman'
       SmallFont.Style = []
-      Version = '1.0.1.1'
+      Version = '1.5.0.0'
       OnKeyClick = TouchKeyBoardKeyClick
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
@@ -290,7 +295,7 @@ object OrderNumber: TOrderNumber
       Color = 15195349
       ParentFont = False
       TabOrder = 2
-      Version = '1.6.5.2'
+      Version = '1.6.9.0'
       OnClick = btnOKClick
     end
     object btnCancel: TAdvSmoothButton
@@ -321,7 +326,7 @@ object OrderNumber: TOrderNumber
       Color = 15195349
       ParentFont = False
       TabOrder = 3
-      Version = '1.6.5.2'
+      Version = '1.6.9.0'
       OnClick = btnCancelClick
     end
   end

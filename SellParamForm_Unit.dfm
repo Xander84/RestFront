@@ -4,8 +4,8 @@ object SellParamForm: TSellParamForm
   BorderIcons = []
   BorderStyle = bsSingle
   Caption = #1055#1072#1088#1072#1084#1077#1090#1088#1099' '#1087#1088#1086#1076#1072#1078#1080
-  ClientHeight = 505
-  ClientWidth = 800
+  ClientHeight = 434
+  ClientWidth = 797
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -19,8 +19,8 @@ object SellParamForm: TSellParamForm
   object pnlMain: TAdvPanel
     Left = 0
     Top = 0
-    Width = 800
-    Height = 505
+    Width = 797
+    Height = 434
     Align = alClient
     BevelOuter = bvNone
     Color = 16640730
@@ -54,60 +54,74 @@ object SellParamForm: TSellParamForm
     StatusBar.ColorTo = 16374724
     StatusBar.GradientDirection = gdVertical
     Styler = FrontData.FrontPanelStyler
+    ExplicitWidth = 800
+    ExplicitHeight = 505
     FullHeight = 0
     object lblToPay: TLabel
-      Left = 568
-      Top = 61
+      Left = 551
+      Top = 17
       Width = 225
       Height = 33
       Alignment = taRightJustify
       AutoSize = False
+      Color = clWindow
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -27
       Font.Name = 'Times New Roman'
       Font.Style = []
+      ParentColor = False
       ParentFont = False
+      Transparent = True
     end
     object lblChange: TLabel
-      Left = 567
-      Top = 364
+      Left = 551
+      Top = 320
       Width = 225
       Height = 33
       Alignment = taRightJustify
       AutoSize = False
+      Color = clWindow
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -27
       Font.Name = 'Times New Roman'
       Font.Style = []
+      ParentColor = False
       ParentFont = False
+      Transparent = True
     end
     object Label1: TLabel
-      Left = 456
-      Top = 61
+      Left = 443
+      Top = 17
       Width = 102
       Height = 31
       Caption = #1082' '#1086#1087#1083#1072#1090#1077':'
+      Color = clWindow
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -27
       Font.Name = 'Times New Roman'
       Font.Style = []
+      ParentColor = False
       ParentFont = False
+      Transparent = True
     end
     object Label2: TLabel
-      Left = 492
-      Top = 364
+      Left = 476
+      Top = 320
       Width = 69
       Height = 31
       Caption = #1089#1076#1072#1095#1072':'
+      Color = clWindow
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -27
       Font.Name = 'Times New Roman'
       Font.Style = []
+      ParentColor = False
       ParentFont = False
+      Transparent = True
     end
     object edMain: TEdit
       Left = 32
@@ -120,9 +134,9 @@ object SellParamForm: TSellParamForm
       OnKeyPress = edMainKeyPress
     end
     object TouchKeyBoard: TAdvSmoothTouchKeyBoard
-      Left = 24
-      Top = 69
-      Width = 273
+      Left = 16
+      Top = 17
+      Width = 265
       Height = 305
       AutoCompletion.Font.Charset = DEFAULT_CHARSET
       AutoCompletion.Font.Color = clWhite
@@ -147,7 +161,7 @@ object SellParamForm: TSellParamForm
           X = 3
           Y = 2
           Height = 76
-          Width = 89
+          Width = 86
           SubKeys = <>
         end
         item
@@ -156,10 +170,10 @@ object SellParamForm: TSellParamForm
           ShiftKeyValue = -1
           AltGrKeyValue = -1
           SpecialKey = skNone
-          X = 92
+          X = 89
           Y = 2
           Height = 76
-          Width = 89
+          Width = 86
           SubKeys = <>
         end
         item
@@ -168,10 +182,10 @@ object SellParamForm: TSellParamForm
           ShiftKeyValue = -1
           AltGrKeyValue = -1
           SpecialKey = skNone
-          X = 181
+          X = 176
           Y = 2
           Height = 76
-          Width = 89
+          Width = 86
           SubKeys = <>
         end
         item
@@ -183,7 +197,7 @@ object SellParamForm: TSellParamForm
           X = 3
           Y = 78
           Height = 76
-          Width = 89
+          Width = 86
           SubKeys = <>
         end
         item
@@ -192,10 +206,10 @@ object SellParamForm: TSellParamForm
           ShiftKeyValue = -1
           AltGrKeyValue = -1
           SpecialKey = skNone
-          X = 92
+          X = 89
           Y = 78
           Height = 76
-          Width = 89
+          Width = 86
           SubKeys = <>
         end
         item
@@ -204,10 +218,10 @@ object SellParamForm: TSellParamForm
           ShiftKeyValue = -1
           AltGrKeyValue = -1
           SpecialKey = skNone
-          X = 181
+          X = 176
           Y = 78
           Height = 76
-          Width = 89
+          Width = 86
           SubKeys = <>
         end
         item
@@ -219,7 +233,7 @@ object SellParamForm: TSellParamForm
           X = 3
           Y = 152
           Height = 76
-          Width = 89
+          Width = 86
           SubKeys = <>
         end
         item
@@ -228,10 +242,10 @@ object SellParamForm: TSellParamForm
           ShiftKeyValue = -1
           AltGrKeyValue = -1
           SpecialKey = skNone
-          X = 92
+          X = 89
           Y = 152
           Height = 76
-          Width = 89
+          Width = 86
           SubKeys = <>
         end
         item
@@ -240,10 +254,10 @@ object SellParamForm: TSellParamForm
           ShiftKeyValue = -1
           AltGrKeyValue = -1
           SpecialKey = skNone
-          X = 181
+          X = 176
           Y = 152
           Height = 76
-          Width = 89
+          Width = 86
           SubKeys = <>
         end
         item
@@ -255,7 +269,7 @@ object SellParamForm: TSellParamForm
           X = 3
           Y = 227
           Height = 76
-          Width = 89
+          Width = 86
           SubKeys = <>
         end
         item
@@ -264,10 +278,10 @@ object SellParamForm: TSellParamForm
           ShiftKeyValue = -1
           AltGrKeyValue = -1
           SpecialKey = skNone
-          X = 92
+          X = 89
           Y = 227
           Height = 76
-          Width = 89
+          Width = 86
           SubKeys = <>
         end
         item
@@ -277,10 +291,10 @@ object SellParamForm: TSellParamForm
           AltGrKeyValue = -1
           SpecialKey = skBackSpace
           Color = 10526880
-          X = 181
+          X = 176
           Y = 227
           Height = 76
-          Width = 89
+          Width = 86
           SubKeys = <>
         end>
       SmallFont.Charset = DEFAULT_CHARSET
@@ -297,8 +311,8 @@ object SellParamForm: TSellParamForm
       Font.Style = []
     end
     object btnPay: TAdvSmoothButton
-      Left = 29
-      Top = 420
+      Left = 16
+      Top = 363
       Width = 268
       Height = 57
       Action = actPay
@@ -327,8 +341,8 @@ object SellParamForm: TSellParamForm
       Version = '1.6.9.0'
     end
     object btnCancel: TAdvSmoothButton
-      Left = 524
-      Top = 420
+      Left = 511
+      Top = 363
       Width = 268
       Height = 57
       Appearance.Font.Charset = DEFAULT_CHARSET
@@ -358,8 +372,8 @@ object SellParamForm: TSellParamForm
       OnClick = btnCancelClick
     end
     object btnCashPay: TAdvSmoothToggleButton
-      Left = 320
-      Top = 97
+      Left = 307
+      Top = 53
       Width = 174
       Height = 59
       Color = 15195349
@@ -394,8 +408,8 @@ object SellParamForm: TSellParamForm
       OnClick = btnCashPayClick
     end
     object btnBeznalPay: TAdvSmoothToggleButton
-      Left = 320
-      Top = 163
+      Left = 307
+      Top = 119
       Width = 174
       Height = 59
       Color = 15195349
@@ -430,8 +444,8 @@ object SellParamForm: TSellParamForm
       OnClick = btnBeznalPayClick
     end
     object btnCardPay: TAdvSmoothToggleButton
-      Left = 320
-      Top = 229
+      Left = 307
+      Top = 185
       Width = 174
       Height = 59
       Color = 15195349
@@ -466,8 +480,8 @@ object SellParamForm: TSellParamForm
       OnClick = btnCardPayClick
     end
     object btnDelPay: TAdvSmoothButton
-      Left = 321
-      Top = 296
+      Left = 308
+      Top = 252
       Width = 172
       Height = 57
       Action = actDeletePay
@@ -496,8 +510,8 @@ object SellParamForm: TSellParamForm
       Version = '1.6.9.0'
     end
     object DBAdvGrMain: TDBAdvGrid
-      Left = 504
-      Top = 96
+      Left = 491
+      Top = 52
       Width = 289
       Height = 257
       Cursor = crDefault
@@ -705,12 +719,12 @@ object SellParamForm: TSellParamForm
     end
   end
   object dsMain: TDataSource
-    Left = 416
-    Top = 48
+    Left = 312
+    Top = 8
   end
   object acListMain: TActionList
-    Left = 456
-    Top = 48
+    Left = 360
+    Top = 8
     object actPay: TAction
       Caption = #1054#1087#1083#1072#1090#1080#1090#1100
       OnExecute = actPayExecute

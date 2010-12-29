@@ -669,9 +669,9 @@ object RestMainForm: TRestMainForm
                 Color = 14986888
                 TabOrder = 0
                 object Panel6: TAdvPanel
-                  Left = 650
+                  Left = 640
                   Top = 0
-                  Width = 40
+                  Width = 50
                   Height = 271
                   Align = alRight
                   BevelOuter = bvNone
@@ -716,7 +716,7 @@ object RestMainForm: TRestMainForm
                   object btnGoodUp: TAdvSmoothButton
                     Left = 3
                     Top = 5
-                    Width = 33
+                    Width = 43
                     Height = 129
                     Action = actGoodUp
                     Appearance.PictureAlignment = taCenter
@@ -747,7 +747,7 @@ object RestMainForm: TRestMainForm
                   object btnGoodDown: TAdvSmoothButton
                     Left = 3
                     Top = 138
-                    Width = 33
+                    Width = 43
                     Height = 129
                     Action = actGoodDown
                     Appearance.PictureAlignment = taCenter
@@ -779,7 +779,7 @@ object RestMainForm: TRestMainForm
                 object pnlGood: TAdvPanel
                   Left = 0
                   Top = 0
-                  Width = 650
+                  Width = 640
                   Height = 271
                   Align = alClient
                   BevelOuter = bvNone
@@ -1315,7 +1315,7 @@ object RestMainForm: TRestMainForm
         Top = 1
         Width = 80
         Height = 719
-        ActivePage = tsFunctionButton
+        ActivePage = tsOrderButton
         ActiveFont.Charset = DEFAULT_CHARSET
         ActiveFont.Color = clWindowText
         ActiveFont.Height = -11
@@ -1816,7 +1816,7 @@ object RestMainForm: TRestMainForm
           end
           object btnCashForm: TAdvSmoothButton
             Left = 0
-            Top = 56
+            Top = 55
             Width = 72
             Height = 50
             Action = actCashForm
@@ -1842,6 +1842,36 @@ object RestMainForm: TRestMainForm
             Color = 15195349
             ParentFont = False
             TabOrder = 1
+            Version = '1.6.9.0'
+          end
+          object btnAddUser: TAdvSmoothButton
+            Left = 0
+            Top = 111
+            Width = 72
+            Height = 50
+            Action = actAddUser
+            Appearance.Font.Charset = DEFAULT_CHARSET
+            Appearance.Font.Color = clWindowText
+            Appearance.Font.Height = -13
+            Appearance.Font.Name = 'Times New Roman'
+            Appearance.Font.Style = [fsBold]
+            Status.Caption = '0'
+            Status.Appearance.Fill.Color = clRed
+            Status.Appearance.Fill.ColorMirror = clNone
+            Status.Appearance.Fill.ColorMirrorTo = clNone
+            Status.Appearance.Fill.GradientType = gtSolid
+            Status.Appearance.Fill.BorderColor = clGray
+            Status.Appearance.Fill.Rounding = 0
+            Status.Appearance.Fill.ShadowOffset = 0
+            Status.Appearance.Font.Charset = DEFAULT_CHARSET
+            Status.Appearance.Font.Color = clWhite
+            Status.Appearance.Font.Height = -11
+            Status.Appearance.Font.Name = 'Tahoma'
+            Status.Appearance.Font.Style = []
+            Bevel = False
+            Color = 15195349
+            ParentFont = False
+            TabOrder = 2
             Version = '1.6.9.0'
           end
         end
@@ -1988,6 +2018,11 @@ object RestMainForm: TRestMainForm
       Category = 'menu'
       Caption = #1050#1072#1089#1089#1072
       OnExecute = actCashFormExecute
+    end
+    object actAddUser: TAction
+      Category = 'menu'
+      Caption = 'actAddUser'
+      OnExecute = actAddUserExecute
     end
   end
   object dsMain: TDataSource

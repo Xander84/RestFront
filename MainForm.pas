@@ -12,7 +12,7 @@ uses
   Contnrs, kbmMemTable, DBGridEh, GridsEh, FiscalRegister_Unit,
   SplitOrderForm_Unit, Report_Unit, FrontData_Unit, BaseFrontForm_Unit,
   AdvSmoothButton, AdvPanel, AdvPageControl, AdvSmoothTouchKeyBoard,
-  TaskDialog, FrontLog_Unit, Grids, Menus;
+  TaskDialog, FrontLog_Unit, Grids, Menus, AddUserForm_unit;
 
 const
   btnHeight = 65;
@@ -31,14 +31,6 @@ const
   btnFirstTop = 8;
   btnColor = $00E7DCD5;
 
-
-{ TODO -oAlexander :
-Сейчас размеры кнопок заданы константами, посмотреть,
-может их определять в зависимости от размера экрана. }
-{ TODO -oAlexander -cInterface : 
-Для форм с выбором (модификаторы, выбор оплаты, отказы)
-создать базовую форму где будет реализовано скроллирование 
-панелей, будут кнопки ОК и Отмена }
 { TODO -oAlexander : Реализовать форму выбора параметров }
 { TODO -oAlexander : Реализовать форму добавления сотрудника }
 
@@ -158,6 +150,8 @@ type
     btnEditReport: TAdvSmoothButton;
     btnCashForm: TAdvSmoothButton;
     btnShowKeyBoard: TAdvSmoothButton;
+    btnAddUser: TAdvSmoothButton;
+    actAddUser: TAction;
 
     //Проверка введёного пароля
     procedure actPassEnterExecute(Sender: TObject);
@@ -208,6 +202,7 @@ type
     procedure actGoodDownUpdate(Sender: TObject);
     procedure actScrollUpUpdate(Sender: TObject);
     procedure actScrollDownUpdate(Sender: TObject);
+    procedure actAddUserExecute(Sender: TObject);
 
   private
     //Компонент обращения к БД
@@ -389,6 +384,7 @@ begin
 
   btnEditReport.Left := btnEditReport.Left + 4;
   btnCashForm.Left := btnCashForm.Left + 4;
+  btnAddUser.Left := btnAddUser.Left + 4;
 
   btnAddQuantity.Left := btnAddQuantity.Left + 4;
   btnRemoveQuantity.Left := btnRemoveQuantity.Left + 4;
@@ -1230,7 +1226,7 @@ begin
     OrderMenu, ManagerPage, ManagerChooseOrder:
       begin
         FormState := Pass;
-
+        FFrontBase.ClearCache;
       end;
     MenuInfo:
       begin
@@ -1463,8 +1459,8 @@ begin
 end;
 
 procedure TRestMainForm.actPreCheckExecute(Sender: TObject);
-var
-  OrderKey: Integer;
+{var
+  OrderKey: Integer;    }
 begin
   if FHeaderTable.FieldByName('usr$timecloseorder').IsNull then
   begin
@@ -2399,6 +2395,31 @@ procedure TRestMainForm.actAddQuantityUpdate(Sender: TObject);
 begin
   actAddQuantity.Enabled := (FHeaderTable.FieldByName('usr$timecloseorder').IsNull
     and FLineTable.FieldByName('usr$mn_printdate').IsNull);
+end;
+
+procedure TRestMainForm.actAddUserExecute(Sender: TObject);
+var
+  FUserInfo: TUserInfo;
+  FForm: TAddUserForm;
+begin
+  FUserInfo := FFrontBase.CheckUserPasswordWithForm;
+  if FUserInfo.CheckedUserPassword then
+  begin
+    if ((FUserInfo.UserInGroup and FFrontBase.Options.ManagerGroupMask) <> 0) or
+      ((FUserInfo.UserInGroup and FFrontBase.Options.KassaGroupMask) <> 0) then
+    else begin
+      AdvTaskMessageDlg('Внимание', 'Данный пользователь не обладает правами менеджера или кассира!',
+        mtWarning, [mbOK], 0);
+      exit;
+    end;
+    FForm := TAddUserForm.Create(Self);
+    try
+      FForm.FrontBase := FFrontBase;
+      FForm.ShowModal;
+    finally
+      FForm.Free;
+    end;
+  end;
 end;
 
 procedure TRestMainForm.actRemoveQuantityUpdate(Sender: TObject);

@@ -4,7 +4,7 @@ interface
 
 uses
   IBDatabase, Db, Classes, IBSQL, kbmMemTable, Base_Display_unit,
-  Pole_Display_Unit, IBQuery, IB, IBErrorCodes;
+  Pole_Display_Unit, IBQuery, IB, IBErrorCodes{, JclStrHashMap}, IBServices;
 
 const
   MN_OrderXID = 147014509;
@@ -199,6 +199,12 @@ type
     UserInGroup         : Integer;
   end;
 
+{  TGoodItemCache = class
+
+  public
+
+  end;     }
+
   TFrontBase = class
   private
     FDataBase: TIBDataBase;
@@ -208,7 +214,6 @@ type
     FIDTransaction: TIBTransaction;
     FCheckTransaction: TIBTransaction;
     FCheckSQL: TIBSQL;
-
     // Имя и пароль IB
     FIBName: String;
     FIBPassword: String;
@@ -231,17 +236,23 @@ type
     FDisplay: TDisplay;
     FDisplayInitialized: Boolean;
 
+//    FGoodHashList: TStringHashMap;
+
     function GetDisplay: TDisplay;
     function GetCashCode: Integer;
     function GetFiscalComPort: Integer;
     function GetCashNumber: Integer;
     function GetIsMainCash: Boolean;
+    function GetServerName: String;
   public
     constructor Create;
     destructor Destroy; override;
 
     procedure InitDB;
     procedure InitStorage;
+    function GetIBRandomString: String;
+    function CheckIBUser(const IBName: String): Boolean;
+    procedure CreateIBUser(const IBName, IBPass: String; ID: Integer);
 
     function CheckUserPassword(UserID: Integer; UserPassword: String): Integer; //Возвращает ID Группы -1 Если не нашло
     function LogIn(UserPassword: String): Boolean; //Возвращает ID Группы -1 Если не нашло
@@ -284,6 +295,10 @@ type
     function GetDiscountList(var MemTable: TkbmMemTable): Boolean;
     function GetDiscountCardInfo(var MemTable: TkbmMemTable; const CardID: Integer; LDate: TDateTime; Pass: String): Boolean;
     function CalcBonusSum(var DataSet: TDataSet; FLine: TkbmMemTable; var Bonus: Boolean; var PercDisc: Currency): Boolean;
+    //список подразделений компании
+    function GetDepartmentList(var MemTable: TkbmMemTable): Boolean;
+    function GetUserGroupList(var MemTable: TkbmMemTable): Boolean;
+    function AddUser(var EmplTable, GroupListTable: TkbmMemTable): Boolean;
     //работа с оборудованием
     procedure InitDisplay;
     function GetPrinterName: String;
@@ -315,6 +330,8 @@ type
 
     procedure DoOnDisconnect;
     function TryToConnect(const Count: Integer): Boolean;
+    //Cache
+    procedure ClearCache;
 
     class function GetGroupMask(const AGroupID: Integer): Integer;
     class function GetLocalComputerName: String;
@@ -331,6 +348,7 @@ type
     property FiscalComPort: Integer read GetFiscalComPort;
     property CashNumber: Integer read GetCashNumber;
     property IsMainCash: Boolean read GetIsMainCash;
+    property ServerName: String read GetServerName;
   end;
 
   procedure GetHeaderTable(var DS: TkbmMemTable);
@@ -416,17 +434,22 @@ function TFrontBase.CheckUserPassword(UserID: Integer;
   UserPassword: String): Integer;
 begin
   Result := -1;
-  FReadSQL.Close;
-  FReadSQL.Transaction.StartTransaction;
   try
+    FReadSQL.Close;
+    if not FReadSQL.Transaction.InTransaction then
+      FReadSQL.Transaction.StartTransaction;
+
     FReadSQL.SQL.Text := cst_UserPassword;
     FReadSQL.ParamBYName('Password').AsString := UserPassword;
     FReadSQL.ExecQuery;
     if not FReadSQL.EOF then
       Result := FReadSQL.FieldByName('usr$groupKey').ASInteger;
-  finally
+
     FReadSQL.Close;
     FReadSQL.Transaction.Commit;
+  except
+    on E: Exception do
+      AdvTaskMessageDlg('Внимание', 'Ошибка ' + E.Message, mtError, [mbOK], 0);
   end;
 end;
 
@@ -479,6 +502,8 @@ begin
   FFiscalComPort := -1;
   FCashNumber := -1;
   FIsMainCash := False;
+
+//  FGoodHashList := TStringHashMap.Create(CaseInSensitiveTraits, 512);
 end;
 
 function TFrontBase.CreateNewOrder(var HeaderTable,
@@ -932,6 +957,8 @@ begin
   if Assigned(FDisplay) then
     FDisplay.Free;
 
+//  FGoodHashList.Free;
+
   inherited;
 end;
 
@@ -1000,10 +1027,10 @@ begin
   if MemTable.State <> dsBrowse then
     MemTable.Post;
 
-{ TODO : Переписать код обработки транзакции в ф-циях с товарами }
-  if not FReadSQL.Transaction.InTransaction then
-    FReadSQL.Transaction.StartTransaction;
   try
+    if not FReadSQL.Transaction.InTransaction then
+      FReadSQL.Transaction.StartTransaction;
+
     FSQL := TIBSQL.Create(nil);
     FSQL.Transaction := FReadSQL.Transaction;
     FSQL.SQL.Text := 'SELECT FIRST(1) * FROM USR$CROSS36_416793598 WHERE usr$gd_goodkey = :goodkey';
@@ -1028,9 +1055,11 @@ begin
     finally
       FSQL.Free;
     end;
-  finally
     FReadSQL.Close;
     FReadSQL.Transaction.Commit;
+  except
+    on E: Exception do
+      AdvTaskMessageDlg('Внимание', 'Ошибка ' + E.Message, mtError, [mbOK], 0);
   end;
 end;
 
@@ -1044,9 +1073,10 @@ begin
   MemTable.Close;
   MemTable.CreateTable;
   MemTable.Open;
-  if not FReadSQL.Transaction.InTransaction then
-    FReadSQL.Transaction.StartTransaction;
   try
+    if not FReadSQL.Transaction.InTransaction then
+      FReadSQL.Transaction.StartTransaction;
+
     FSQL := TIBSQL.Create(nil);
     FSQL.Transaction := FReadSQL.Transaction;
     FSQL.SQL.Text := 'SELECT FIRST(1) * FROM USR$CROSS36_416793598 WHERE usr$gd_goodkey = :goodkey';
@@ -1072,9 +1102,11 @@ begin
     finally
       FSQL.Free;
     end;
-  finally
     FReadSQL.Close;
     FReadSQL.Transaction.Commit;
+  except
+    on E: Exception do
+      AdvTaskMessageDlg('Внимание', 'Ошибка ' + E.Message, mtError, [mbOK], 0);
   end;
 end;
 
@@ -1087,9 +1119,10 @@ begin
   MemTable.Close;
   MemTable.CreateTable;
   MemTable.Open;
-  if not FReadSQL.Transaction.InTransaction then
-    FReadSQL.Transaction.StartTransaction;
   try
+    if not FReadSQL.Transaction.InTransaction then
+      FReadSQL.Transaction.StartTransaction;
+
     FSQL := TIBSQL.Create(nil);
     FSQL.Transaction := FReadSQL.Transaction;
     FSQL.SQL.Text := 'SELECT FIRST(1) * FROM USR$CROSS36_416793598 WHERE usr$gd_goodkey = :goodkey';
@@ -1113,9 +1146,11 @@ begin
     finally
       FSQL.Free;
     end;
-  finally
     FReadSQL.Close;
     FReadSQL.Transaction.Commit;
+  except
+    on E: Exception do
+      AdvTaskMessageDlg('Внимание', 'Ошибка ' + E.Message, mtError, [mbOK], 0);
   end;
 end;
 
@@ -1126,9 +1161,10 @@ begin
   MemTable.Close;
   MemTable.CreateTable;
   MemTable.Open;
-  if not FReadSQL.Transaction.InTransaction then
-    FReadSQL.Transaction.StartTransaction;
   try
+    if not FReadSQL.Transaction.InTransaction then
+      FReadSQL.Transaction.StartTransaction;
+
     FReadSQL.SQL.Text := cst_GroupList;
     FReadSQL.ParamByName('MenuKey').AsInteger := MenuKey;
     FReadSQL.ExecQuery;
@@ -1142,9 +1178,12 @@ begin
       FReadSQL.Next;
     end;
     Result := True;
-  finally
+
     FReadSQL.Close;
     FReadSQL.Transaction.Commit;
+  except
+    on E: Exception do
+      AdvTaskMessageDlg('Внимание', 'Ошибка ' + E.Message, mtError, [mbOK], 0);
   end;
 end;
 
@@ -1511,14 +1550,14 @@ procedure TFrontBase.InitDB;
 var
   I: Integer;
 begin
-  for i := 0 to ParamCount - 1 do
+  for I := 0 to ParamCount - 1 do
   begin
-    if UpperCase(ParamStr(i)) = '/SN' then
-      FIBPath := ParamStr(i+1)
-    else if UpperCase(ParamStr(i)) = '/USER' then
-      FIBName := ParamStr(i+1)
-    else if UpperCase(ParamStr(i)) = '/PASSWORD' then
-      FIBPassword := ParamStr(i+1)
+    if UpperCase(ParamStr(I)) = '/SN' then
+      FIBPath := ParamStr(I + 1)
+    else if UpperCase(ParamStr(I)) = '/USER' then
+      FIBName := ParamStr(I + 1)
+    else if UpperCase(ParamStr(I)) = '/PASSWORD' then
+      FIBPassword := ParamStr(I + 1)
   end;
 
   try
@@ -1778,6 +1817,40 @@ begin
   end;
 end;
 
+function TFrontBase.GetIBRandomString: String;
+var
+  I, Pr, C: Integer;
+begin
+  try
+    if not FReadSQL.Transaction.InTransaction then
+      FReadSQL.Transaction.StartTransaction;
+
+    SetLength(Result, 8);
+    repeat
+      Pr := -1;
+      for I := 1 to 8 do
+      begin
+        repeat
+          C := Random(36);
+        until (C <> Pr) and ((I > 1) or (C < 26));
+        Pr := C;
+        if C > 25 then
+          Result[I] := Chr(Ord('0') + C - 26)
+        else
+          Result[I] := Chr(Ord('A') + C);
+      end;
+
+      FReadSQL.Close;
+      FReadSQL.SQL.Text := 'SELECT id FROM gd_user WHERE ibname=''' + Result + '''' +
+        ' OR ibpassword=''' + Result + '''';
+      FReadSQL.ExecQuery;
+    until FReadSQL.EOF;
+  except
+    on E: Exception do
+      AdvTaskMessageDlg('Внимание', 'Ошибка ' + E.Message, mtError, [mbOK], 0);
+  end;
+end;
+
 function TFrontBase.GetIDByRUID(const XID: Integer;
   const DBID: Integer): Integer;
 begin
@@ -1804,6 +1877,7 @@ begin
   if FCashCode > 0 then
     Result := FCashCode
   else begin
+{ TODO : Одинаковый код }
     FReadSQL.Close;
     if not FReadSQL.Transaction.InTransaction then
       FReadSQL.Transaction.StartTransaction;
@@ -2191,6 +2265,12 @@ begin
   end;
 end;
 
+procedure TFrontBase.ClearCache;
+begin
+//  FGoodHashList.Iterate(nil, Iterate_FreeObjects);
+//  FGoodHashList.Clear;
+end;
+
 function TFrontBase.CloseModifyTable(var ModifyTable: TkbmMemTable;
   const CloseTime: TTime): Boolean;
 var
@@ -2526,6 +2606,110 @@ begin
   end;
 end;
 
+function TFrontBase.AddUser(var EmplTable,
+  GroupListTable: TkbmMemTable): Boolean;
+var
+  FSQL: TIBSQL;
+  Tr: TIBTransaction;
+  DepID, ContactID, UserID: Integer;
+  IBPass, IBName: String;
+begin
+// 1. Добавляем запись в GD_CONTACT
+// 2. Добавляем запись в GD_PEOPLE
+// 3. Создаем IB запись
+// 4. Добавляем запись в GD_USER
+// 5. Добавляем запись в GD_USERCOMPANY
+  Result := False;
+  FSQL := TIBSQL.Create(nil);
+  Tr := TIBTransaction.Create(nil);
+  try
+    try
+      GroupListTable.First;
+
+      Tr.DefaultDatabase := FDataBase;
+      Tr.StartTransaction;
+      FSQL.Transaction := Tr;
+
+      FSQL.SQL.Text := ' SELECT FIRST(1) C.ID FROM GD_CONTACT C ' +
+        ' WHERE C.CONTACTTYPE = 4 ' +
+        '   AND C.PARENT = ' + IntToStr(FCompanyKey);
+      FSQL.ExecQuery;
+      DepID := FSQL.Fields[0].AsInteger;
+      FSQL.Close;
+
+      ContactID := GetNextID;
+      //1.
+      FSQL.SQL.Text := ' INSERT INTO GD_CONTACT (ID, PARENT, CONTACTTYPE, NAME, AFULL, ACHAG, AVIEW) ' +
+        ' VALUES (:ID, :DEP, 2, :NAME, -1, -1, -1) ';
+      FSQL.ParamByName('ID').AsInteger := ContactID;
+      FSQL.ParamByName('DEP').AsInteger := DepID;
+      FSQL.ParamByName('NAME').AsString := EmplTable.FieldByName('SURNAME').AsString + ' ' +
+        EmplTable.FieldByName('FIRSTNAME').AsString + ' ' + EmplTable.FieldByName('MIDDLENAME').AsString;
+      FSQL.ExecQuery;
+      FSQL.Close;
+
+      //2.
+      FSQL.SQL.Text := ' INSERT INTO GD_PEOPLE (CONTACTKEY, FIRSTNAME, SURNAME, MIDDLENAME, WCOMPANYKEY) ' +
+        ' VALUES (:ID, :FNAME, :SNAME, :MNAME, :COMPANYKEY) ';
+      FSQL.ParamByName('ID').AsInteger := ContactID;
+      FSQL.ParamByName('FNAME').AsString := EmplTable.FieldByName('FIRSTNAME').AsString;
+      FSQL.ParamByName('SNAME').AsString := EmplTable.FieldByName('SURNAME').AsString;
+      FSQL.ParamByName('MNAME').AsString := EmplTable.FieldByName('MIDDLENAME').AsString;
+      FSQL.ParamByName('COMPANYKEY').AsInteger := FCompanyKey;
+      FSQL.ExecQuery;
+      FSQL.Close;
+
+      Randomize;
+      IBPass := GetIBRandomString;
+      IBName := GetIBRandomString;
+      //3.
+      CreateIBUser(IBName, IBPass, ContactID);
+      //4.
+      UserID := GetNextID;
+      FSQL.SQL.Text := ' INSERT INTO GD_USER (ID, NAME, PASSW, IBNAME, IBPASSWORD, CONTACTKEY, ' +
+        '   CANTCHANGEPASSW, PASSWNEVEREXP, USR$MN_ISFRONTUSER) ' +
+        ' VALUES (:ID, :NAME, :PASS, :IBPASS, :IBNAME, :CONTACTKEY, 1, 1, 1) ';
+      FSQL.ParamByName('ID').AsInteger := UserID;
+      FSQL.ParamByName('NAME').AsString := EmplTable.FieldByName('SURNAME').AsString;
+      FSQL.ParamByName('PASS').AsString := EmplTable.FieldByName('PASSW').AsString;
+      FSQL.ParamByName('IBPASS').AsString := IBPass;
+      FSQL.ParamByName('IBNAME').AsString := IBName;
+      FSQL.ParamByName('CONTACTKEY').AsInteger := ContactID;
+      FSQL.ExecQuery;
+      FSQL.Close;
+
+      while not GroupListTable.Eof do
+      begin
+        if GroupListTable.FieldByName('CHECKED').AsInteger = 1 then
+        begin
+          FSQL.SQL.Text := Format('UPDATE gd_user SET ingroup=g_b_or(ingroup, %d) WHERE id=%d',
+            [GetGroupMask(GroupListTable.FieldByName('ID').AsInteger), UserID]);
+          FSQL.ExecQuery;
+          FSQL.Close;
+        end;
+        GroupListTable.Next;
+      end;
+
+      //5.
+      FSQL.SQL.Text := 'INSERT INTO gd_usercompany(userkey, companykey) VALUES (' +
+        IntToStr(UserID) + ',' +
+        IntToStr(FCompanyKey) + ') ';
+      FSQL.ExecQuery;
+      FSQL.Close;
+
+      Tr.Commit;
+      Result := True;
+    except
+      Result := False;
+      Tr.Rollback;
+      raise;
+    end;
+  finally
+    FSQL.Free;
+    Tr.Free;
+  end;
+end;
+
 function TFrontBase.CalcBonusSum(var DataSet: TDataSet;
   FLine: TkbmMemTable; var Bonus: Boolean;
   var PercDisc: Currency): Boolean;
@@ -2643,6 +2827,40 @@ begin
   except
     on E: Exception do
         AdvTaskMessageDlg('Внимание', 'Ошибка ' + E.Message, mtError, [mbOK], 0);
+  end;
+end;
+
+function TFrontBase.GetServerName: String;
+var
+  A, B, I: Integer;
+begin
+  A := -1;
+  for I := 1 to Length(FIBPath) do
+    if FIBPath[I] = ':' then
+    begin
+      A := I;
+      break;
+    end;
+
+  B := -1;
+  for I := A + 1 to Length(FIBPath) do
+    if FIBPath[I] = ':' then
+    begin
+      B := I;
+      break;
+    end;
+
+  if A < 2 then
+    Result := ''
+  else begin
+    Result := Copy(FIBPath, 1, A - 1);
+
+    if B = -1 then
+    begin
+{      if (A = 2) and (A < Length(FIBPath)) and (FIBPath[A + 1] in ['\', '/']) then }
+      if (A = 2) and (A < Length(FIBPath)) and (CharInSet(FIBPath[A + 1], ['\', '/'])) then
+        Result := '';
+    end;
   end;
 end;
 
@@ -2878,6 +3096,73 @@ begin
     Query.Open;
 
     Result := True;
+  except
+    on E: Exception do
+      AdvTaskMessageDlg('Внимание', 'Ошибка ' + E.Message, mtError, [mbOK], 0);
+  end;
+end;
+
+function TFrontBase.GetUserGroupList(var MemTable: TkbmMemTable): Boolean;
+begin
+  Result := False;
+  try
+    FReadSQL.Close;
+    MemTable.Close;
+//    MemTable.CreateTable;
+    MemTable.Open;
+    if not FReadSQL.Transaction.InTransaction then
+      FReadSQL.Transaction.StartTransaction;
+    try
+      FReadSQL.SQL.Text := 'SELECT G.ID, G.NAME FROM GD_USERGROUP G ' +
+        ' WHERE G.DISABLED = 0 OR G.DISABLED IS NULL ';
+      FReadSQL.ExecQuery;
+      while not FReadSQL.EOF do
+      begin
+        MemTable.Append;
+        MemTable.FieldByName('ID').AsInteger := FReadSQL.FieldByName('ID').AsInteger;
+        MemTable.FieldByName('USR$NAME').AsString := FReadSQL.FieldByName('NAME').AsString;
+        MemTable.FieldByName('CHECKED').AsInteger := 0;
+        MemTable.Post;
+        FReadSQL.Next;
+      end;
+      Result := True;
+    finally
+      FReadSQL.Close;
+      FReadSQL.Transaction.Commit;
+    end;
+  except
+    on E: Exception do
+      AdvTaskMessageDlg('Внимание', 'Ошибка ' + E.Message, mtError, [mbOK], 0);
+  end;
+end;
+
+function TFrontBase.GetDepartmentList(var MemTable: TkbmMemTable): Boolean;
+begin
+  Result := False;
+  try
+    FReadSQL.Close;
+    MemTable.Close;
+    MemTable.CreateTable;
+    MemTable.Open;
+    if not FReadSQL.Transaction.InTransaction then
+      FReadSQL.Transaction.StartTransaction;
+    try
+      FReadSQL.SQL.Text := ' SELECT con.ID, con.NAME FROM GD_CONTACT con ' +
+        ' where con.CONTACTTYPE = 4 ';
+      FReadSQL.ExecQuery;
+      while not FReadSQL.EOF do
+      begin
+        MemTable.Append;
+        MemTable.FieldByName('ID').AsInteger := FReadSQL.FieldByName('ID').AsInteger;
+        MemTable.FieldByName('USR$NAME').AsString := FReadSQL.FieldByName('NAME').AsString;
+        MemTable.Post;
+        FReadSQL.Next;
+      end;
+      Result := True;
+    finally
+      FReadSQL.Close;
+      FReadSQL.Transaction.Commit;
+    end;
   except
     on E: Exception do
       AdvTaskMessageDlg('Внимание', 'Ошибка ' + E.Message, mtError, [mbOK], 0);
@@ -3143,11 +3428,45 @@ begin
     if not FReadSQL.Transaction.InTransaction then
       FReadSQL.Transaction.StartTransaction;
 
-    FOptions.LastPrintOrder := -1;
+    with FOptions do
+    begin
+      LastPrintOrder := -1;
     // опции Лога
-    FOptions.DoLog := True;
-    FOptions.LinesLimit := 0;
-    FOptions.LogToFile := True;
+      DoLog := True;
+      LinesLimit := 0;
+      LogToFile := True;
+
+      BasePath := '';
+      PrintLog := False;
+      PLSingleFile := False;
+      PLFileFolder := '';
+      PrintFiscalChek := False;
+      OrderCurrentLDate := False;
+      MainCompanyID := -1;
+      CheckLine1 := '****************';
+      CheckLine2 := 'Ресторан';
+      CheckLine3 := 'Название';
+      CheckLine4 := '****************';
+      CheckLine5 := '             ';
+      CheckLine6 := 'Адрес';
+      CheckLine7 := 'Тел';
+      CheckLine8 := 'ежедневно с 12.00 до 24.00';
+      SyncTime := False;
+      TimeComp := '';
+      ExtCalcCardID := 0;
+      ExtDepotKeys := '0';
+      PrintCopyCheck := False;
+      NoPassword := False;
+
+      UseCurrentDate := False;
+      DiscountType := 0;
+      SaveAllOrder := False;
+      BackType := 0;
+
+      MaxOpenedOrders := 100;
+      MaxGuestCount := 10;
+      MinGuestCount := 1;
+    end;
 
     FReadSQL.Close;
     FReadSQL.SQL.Text :=
@@ -3269,7 +3588,7 @@ begin
       end else
       if FName = 'SAVEALLORDER' then
       begin
-        FOptions.SaveAllOrder := True;//(FReadSQL.FieldByName('INT_DATA').AsInteger = 1);
+        FOptions.SaveAllOrder := (FReadSQL.FieldByName('INT_DATA').AsInteger = 1);
       end else
       if FName = 'BACKTYPE' then
       begin
@@ -3379,6 +3698,128 @@ begin
   except
     on E: Exception do
       AdvTaskMessageDlg('Внимание', 'Ошибка ' + E.Message, mtError, [mbOK], 0);
+  end;
+end;
+
+procedure TFrontBase.CreateIBUser(const IBName, IBPass: String; ID: Integer);
+var
+  IBSS: TIBSecurityService;
+  Q: TIBSQL;
+  Tr: TIBTransaction;
+begin
+  if CheckIBUser(IBName) then
+    exit;
+
+  IBSS := TIBSecurityService.Create(nil);
+  try
+    IBSS.ServerName := ServerName;
+    IBSS.LoginPrompt := False;
+    if ServerName > '' then
+      IBSS.Protocol := TCP
+    else
+      IBSS.Protocol := Local;
+    IBSS.Params.Add('user_name=' + FIBName);
+    IBSS.Params.Add('password=' + FIBPassword);
+    IBSS.Active := True;
+    try
+      IBSS.UserName := IBName;
+      IBSS.FirstName := '';
+      IBSS.MiddleName := '';
+      IBSS.LastName := '';
+      IBSS.UserID := ID;
+      IBSS.GroupID := 0;
+      IBSS.Password := IBPass;
+      IBSS.AddUser;
+      while IBSS.IsServiceRunning do Sleep(100);
+    finally
+      IBSS.Active := False;
+    end;
+  finally
+    IBSS.Free;
+  end;
+
+  Tr := TIBTransaction.Create(nil);
+  Q := TIBSQL.Create(nil);
+  try
+    Tr.DefaultDatabase := FDataBase;
+    Tr.StartTransaction;
+
+    Q.Transaction := Tr;
+    Q.SQL.Text := 'GRANT administrator TO ' + IBName + ' WITH ADMIN OPTION ';
+    Q.ExecQuery;
+
+    Tr.Commit;
+  finally
+    Q.Free;
+    Tr.Free;
+  end;
+end;
+
+function TFrontBase.CheckIBUser(const IBName: String): Boolean;
+var
+  IBSS: TIBSecurityService;
+  q: TIBSQL;
+  Tr: TIBTransaction;
+begin
+  Result := ServerName = '';
+  if not Result then
+  begin
+    IBSS := TIBSecurityService.Create(nil);
+    try
+      IBSS.ServerName := ServerName;
+      if IBSS.ServerName > '' then
+        IBSS.Protocol := TCP
+      else
+        IBSS.Protocol := Local;
+      IBSS.LoginPrompt := False;
+      IBSS.Params.Add('user_name=' + FIBName);
+      IBSS.Params.Add('password=' + FIBPassword);
+      try
+        IBSS.Active := True;
+        try
+          IBSS.UserName := IBName;
+          IBSS.DisplayUser(IBSS.UserName);
+          Result := IBSS.UserInfoCount > 0;
+        finally
+          IBSS.Active := False;
+        end;
+      except
+        AdvTaskMessageDlg('Внимание',  'Невозможно получить доступ к учетной записи пользователя.'#13#10 +
+          'Возможно пароль администратора базы данных введен неверно.',
+          mtError, [mbOK], 0);
+      end;
+    finally
+      IBSS.Free;
+    end;
+  end;
+
+  if Result then
+  begin
+    q := TIBSQL.Create(nil);
+    Tr := TIBTransaction.Create(nil);
+    try
+      Tr.DefaultDatabase := FDataBase;
+      Tr.StartTransaction;
+
+      q.Transaction := Tr;
+      q.SQL.Text := 'SELECT * FROM rdb$user_privileges WHERE rdb$privilege=''M'' ' +
+        'AND rdb$relation_name=''ADMINISTRATOR'' AND rdb$user=''' + IBName + '''';
+      q.ExecQuery;
+
+      if q.EOF then
+      begin
+        q.Close;
+        q.SQL.Text := 'GRANT administrator TO ' + IBName +
+          ' WITH ADMIN OPTION';
+        q.ExecQuery;
+      end;
+
+      q.Close;
+      Tr.Commit;
+    finally
+      q.Free;
+      Tr.Free;
+    end;
   end;
 end;
 

@@ -43,6 +43,8 @@ begin
       TAdvTabSheet(Components[I]).ColorTo := FrontData.PanelColorTo;
     end;
   end;
+  BorderIcons := [];
+  BorderStyle := bsSingle;
 
   inherited;
 end;

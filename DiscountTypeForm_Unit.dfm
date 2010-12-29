@@ -27,7 +27,7 @@ object DiscountType: TDiscountType
     Color = 16640730
     TabOrder = 0
     UseDockManager = True
-    Version = '1.9.0.0'
+    Version = '2.0.1.0'
     BorderColor = clGray
     Caption.Color = 14059353
     Caption.ColorTo = 9648131
@@ -39,7 +39,7 @@ object DiscountType: TDiscountType
     Caption.GradientDirection = gdVertical
     Caption.Indent = 2
     Caption.ShadeLight = 255
-    CollapsColor = clHighlight
+    CollapsColor = clNone
     CollapsDelay = 0
     ColorTo = 14986888
     ShadowColor = clBlack
@@ -61,7 +61,7 @@ object DiscountType: TDiscountType
       Top = 24
       Width = 393
       Height = 39
-      Color = 16640730
+      Color = clWhite
       DataField = 'USR$NAME'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
@@ -102,7 +102,7 @@ object DiscountType: TDiscountType
       Color = 15195349
       ParentFont = False
       TabOrder = 1
-      Version = '1.6.5.2'
+      Version = '1.6.9.0'
       OnClick = btnOKClick
     end
     object btnCancel: TAdvSmoothButton
@@ -133,7 +133,7 @@ object DiscountType: TDiscountType
       Color = 15195349
       ParentFont = False
       TabOrder = 2
-      Version = '1.6.5.2'
+      Version = '1.6.9.0'
       OnClick = btnCancelClick
     end
   end
@@ -149,7 +149,7 @@ object DiscountType: TDiscountType
     LoadedCompletely = False
     SavedCompletely = False
     FilterOptions = []
-    Version = '5.52'
+    Version = '6.30'
     LanguageID = 0
     SortID = 0
     SubLanguageID = 1
