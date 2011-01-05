@@ -33,6 +33,7 @@ type
     actMoneyIN: TAction;
     actMoneyOUT: TAction;
     actOpenMoney: TAction;
+    btnExit: TAdvSmoothButton;
     procedure actStartDayExecute(Sender: TObject);
     procedure actStartSessionExecute(Sender: TObject);
     procedure actReportWithoutCleaningExecute(Sender: TObject);

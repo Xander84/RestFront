@@ -123,6 +123,9 @@
 			<DCCReference Include="AddUserForm_unit.pas">
 				<Form>AddUserForm</Form>
 			</DCCReference>
+			<DCCReference Include="AdminForm_Unit.pas">
+				<Form>AdminForm</Form>
+			</DCCReference>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>

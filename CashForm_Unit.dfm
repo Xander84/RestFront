@@ -3,8 +3,8 @@ object CashForm: TCashForm
   Top = 113
   BorderStyle = bsDialog
   Caption = #1050#1072#1089#1089#1072
-  ClientHeight = 587
-  ClientWidth = 421
+  ClientHeight = 499
+  ClientWidth = 324
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -18,8 +18,8 @@ object CashForm: TCashForm
   object pnlMain: TAdvPanel
     Left = 0
     Top = 0
-    Width = 421
-    Height = 587
+    Width = 324
+    Height = 499
     Align = alClient
     BevelOuter = bvNone
     Color = 16640730
@@ -53,12 +53,15 @@ object CashForm: TCashForm
     StatusBar.ColorTo = 16374724
     StatusBar.GradientDirection = gdVertical
     Styler = FrontData.FrontPanelStyler
+    ExplicitLeft = 14
+    ExplicitWidth = 421
+    ExplicitHeight = 587
     FullHeight = 0
     object btnStartDay: TAdvSmoothButton
-      Left = 20
-      Top = 21
-      Width = 380
-      Height = 47
+      Left = 14
+      Top = 8
+      Width = 296
+      Height = 40
       Action = actStartDay
       Appearance.Font.Charset = DEFAULT_CHARSET
       Appearance.Font.Color = clWindowText
@@ -85,10 +88,10 @@ object CashForm: TCashForm
       Version = '1.6.9.0'
     end
     object btnStartSession: TAdvSmoothButton
-      Left = 20
-      Top = 77
-      Width = 380
-      Height = 47
+      Left = 14
+      Top = 54
+      Width = 296
+      Height = 40
       Action = actStartSession
       Appearance.Font.Charset = DEFAULT_CHARSET
       Appearance.Font.Color = clWindowText
@@ -115,10 +118,10 @@ object CashForm: TCashForm
       Version = '1.6.9.0'
     end
     object btnReportWithoutCleaning: TAdvSmoothButton
-      Left = 20
-      Top = 133
-      Width = 380
-      Height = 47
+      Left = 14
+      Top = 100
+      Width = 296
+      Height = 40
       Action = actReportWithoutCleaning
       Appearance.Font.Charset = DEFAULT_CHARSET
       Appearance.Font.Color = clWindowText
@@ -145,10 +148,10 @@ object CashForm: TCashForm
       Version = '1.6.9.0'
     end
     object btnReportWithCleaning: TAdvSmoothButton
-      Left = 20
-      Top = 209
-      Width = 380
-      Height = 47
+      Left = 14
+      Top = 146
+      Width = 296
+      Height = 40
       Action = actReportWithCleaning
       Appearance.Font.Charset = DEFAULT_CHARSET
       Appearance.Font.Color = clWindowText
@@ -175,10 +178,10 @@ object CashForm: TCashForm
       Version = '1.6.9.0'
     end
     object btnEndSession: TAdvSmoothButton
-      Left = 20
-      Top = 265
-      Width = 380
-      Height = 47
+      Left = 14
+      Top = 192
+      Width = 296
+      Height = 40
       Action = actEndSession
       Appearance.Font.Charset = DEFAULT_CHARSET
       Appearance.Font.Color = clWindowText
@@ -205,10 +208,10 @@ object CashForm: TCashForm
       Version = '1.6.9.0'
     end
     object btnEndDay: TAdvSmoothButton
-      Left = 20
-      Top = 321
-      Width = 380
-      Height = 47
+      Left = 14
+      Top = 238
+      Width = 296
+      Height = 40
       Action = actEndDay
       Appearance.Font.Charset = DEFAULT_CHARSET
       Appearance.Font.Color = clWindowText
@@ -235,10 +238,10 @@ object CashForm: TCashForm
       Version = '1.6.9.0'
     end
     object btnMoneyIN: TAdvSmoothButton
-      Left = 20
-      Top = 397
-      Width = 380
-      Height = 47
+      Left = 14
+      Top = 284
+      Width = 296
+      Height = 40
       Action = actMoneyIN
       Appearance.Font.Charset = DEFAULT_CHARSET
       Appearance.Font.Color = clWindowText
@@ -265,10 +268,10 @@ object CashForm: TCashForm
       Version = '1.6.9.0'
     end
     object btnMoneyOUT: TAdvSmoothButton
-      Left = 20
-      Top = 453
-      Width = 380
-      Height = 47
+      Left = 14
+      Top = 330
+      Width = 296
+      Height = 40
       Action = actMoneyOUT
       Appearance.Font.Charset = DEFAULT_CHARSET
       Appearance.Font.Color = clWindowText
@@ -295,10 +298,10 @@ object CashForm: TCashForm
       Version = '1.6.9.0'
     end
     object btnOpenMoney: TAdvSmoothButton
-      Left = 20
-      Top = 509
-      Width = 380
-      Height = 47
+      Left = 14
+      Top = 376
+      Width = 296
+      Height = 40
       Action = actOpenMoney
       Appearance.Font.Charset = DEFAULT_CHARSET
       Appearance.Font.Color = clWindowText
@@ -324,10 +327,42 @@ object CashForm: TCashForm
       TabOrder = 8
       Version = '1.6.9.0'
     end
+    object btnExit: TAdvSmoothButton
+      Left = 14
+      Top = 440
+      Width = 296
+      Height = 40
+      Hint = #1042#1099#1093#1086#1076
+      Appearance.Font.Charset = DEFAULT_CHARSET
+      Appearance.Font.Color = clWindowText
+      Appearance.Font.Height = -19
+      Appearance.Font.Name = 'Times New Roman'
+      Appearance.Font.Style = [fsBold]
+      Status.Caption = '0'
+      Status.Appearance.Fill.Color = clRed
+      Status.Appearance.Fill.ColorMirror = clNone
+      Status.Appearance.Fill.ColorMirrorTo = clNone
+      Status.Appearance.Fill.GradientType = gtSolid
+      Status.Appearance.Fill.BorderColor = clGray
+      Status.Appearance.Fill.Rounding = 0
+      Status.Appearance.Fill.ShadowOffset = 0
+      Status.Appearance.Font.Charset = DEFAULT_CHARSET
+      Status.Appearance.Font.Color = clWhite
+      Status.Appearance.Font.Height = -11
+      Status.Appearance.Font.Name = 'Tahoma'
+      Status.Appearance.Font.Style = []
+      Bevel = False
+      Caption = #1042#1099#1093#1086#1076
+      Color = 15195349
+      ParentFont = False
+      TabOrder = 9
+      Version = '1.6.9.0'
+      ModalResult = 1
+    end
   end
   object alMain: TActionList
-    Left = 8
-    Top = 360
+    Left = 96
+    Top = 80
     object actStartDay: TAction
       Caption = #1054#1090#1082#1088#1099#1090#1100' '#1076#1077#1085#1100
       Hint = #1054#1090#1082#1088#1099#1090#1100' '#1076#1077#1085#1100

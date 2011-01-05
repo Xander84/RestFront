@@ -233,7 +233,7 @@ end;
 
 procedure TSellParamForm.btnCashPayClick(Sender: TObject);
 begin
-  if TAdvSmoothToggleButton(Sender).Down = True then
+  if TAdvSmoothToggleButton(Sender).Down then
   begin
     FCurrentPayType := FFrontBase.GetIDByRUID(mn_RUBpaytypeXID, mn_RUBpaytypeDBID);
     FCurrentPayName := 'Рубли';

@@ -12,7 +12,7 @@ uses
   Contnrs, kbmMemTable, DBGridEh, GridsEh, FiscalRegister_Unit,
   SplitOrderForm_Unit, Report_Unit, FrontData_Unit, BaseFrontForm_Unit,
   AdvSmoothButton, AdvPanel, AdvPageControl, AdvSmoothTouchKeyBoard,
-  TaskDialog, FrontLog_Unit, Grids, Menus, AddUserForm_unit;
+  TaskDialog, FrontLog_Unit, Grids, Menus, AddUserForm_unit, AdminForm_Unit;
 
 const
   btnHeight = 65;
@@ -137,7 +137,6 @@ type
     btnCancel: TAdvSmoothButton;
     btnExitWindows: TAdvSmoothButton;
     btnRestartRest: TAdvSmoothButton;
-    actEditReport: TAction;
     btnGoodUp: TAdvSmoothButton;
     btnGoodDown: TAdvSmoothButton;
     actCashForm: TAction;
@@ -147,11 +146,10 @@ type
     btnUserLeft: TAdvSmoothButton;
     btnUserRight: TAdvSmoothButton;
     tsOrderButton: TAdvTabSheet;
-    btnEditReport: TAdvSmoothButton;
+    btnAdminOptions: TAdvSmoothButton;
     btnCashForm: TAdvSmoothButton;
     btnShowKeyBoard: TAdvSmoothButton;
-    btnAddUser: TAdvSmoothButton;
-    actAddUser: TAction;
+    actAdminOptions: TAction;
 
     //Проверка введёного пароля
     procedure actPassEnterExecute(Sender: TObject);
@@ -195,14 +193,13 @@ type
     procedure actPreCheckUpdate(Sender: TObject);
     procedure actDiscountUpdate(Sender: TObject);
     procedure actDevideUpdate(Sender: TObject);
-    procedure actEditReportExecute(Sender: TObject);
     procedure actPayUpdate(Sender: TObject);
     procedure actCashFormExecute(Sender: TObject);
     procedure actGoodUpUpdate(Sender: TObject);
     procedure actGoodDownUpdate(Sender: TObject);
     procedure actScrollUpUpdate(Sender: TObject);
     procedure actScrollDownUpdate(Sender: TObject);
-    procedure actAddUserExecute(Sender: TObject);
+    procedure actAdminOptionsExecute(Sender: TObject);
 
   private
     //Компонент обращения к БД
@@ -382,9 +379,8 @@ begin
   {$IFDEF NEW_TABCONTROL}
   btnBackToMenu.Left := btnBackToMenu.Left + 4;
 
-  btnEditReport.Left := btnEditReport.Left + 4;
+  btnAdminOptions.Left := btnAdminOptions.Left + 4;
   btnCashForm.Left := btnCashForm.Left + 4;
-  btnAddUser.Left := btnAddUser.Left + 4;
 
   btnAddQuantity.Left := btnAddQuantity.Left + 4;
   btnRemoveQuantity.Left := btnRemoveQuantity.Left + 4;
@@ -1708,7 +1704,7 @@ begin
           FMenuButtonCount := 0;
 
           btnCashForm.Visible := False;
-          btnEditReport.Visible := False;
+          btnAdminOptions.Visible := False;
 
           FLastLeftButton := 18 + btnWidth {$IFDEF NEW_TABCONTROL} + 4 {$ENDIF};;
           FGroupLastLeftButton := btnFirstTop;
@@ -1783,7 +1779,7 @@ begin
           FLineTable.Open;
           //
           btnCashForm.Visible := True;
-          btnEditReport.Visible := True;
+          btnAdminOptions.Visible := True;
 
           FLastLeftButton := 18 + btnWidth {$IFDEF NEW_TABCONTROL} + 4 {$ENDIF};;
           FLastTopButton  := btnFirstTop;
@@ -1841,7 +1837,7 @@ begin
           pcExtraButton.ActivePage := tsOrderButton;
 
           btnCashForm.Visible := True;
-          btnEditReport.Visible := True;
+          btnAdminOptions.Visible := True;
 
           FUserFirstTop       := btnFirstTop;
           FUserLastLeftButton := btnFirstTop;
@@ -2378,7 +2374,7 @@ begin
   while not FLineTable.Eof do
   begin
     FLineTable.Edit;
-    if bonus then
+    if Bonus then
       FLineTable.FieldByName('USR$PERSDISCOUNT').AsCurrency := PercDisc;
     FLineTable.Post;
 
@@ -2397,22 +2393,20 @@ begin
     and FLineTable.FieldByName('usr$mn_printdate').IsNull);
 end;
 
-procedure TRestMainForm.actAddUserExecute(Sender: TObject);
+procedure TRestMainForm.actAdminOptionsExecute(Sender: TObject);
 var
   FUserInfo: TUserInfo;
-  FForm: TAddUserForm;
+  FForm: TAdminForm;
 begin
   FUserInfo := FFrontBase.CheckUserPasswordWithForm;
   if FUserInfo.CheckedUserPassword then
   begin
-    if ((FUserInfo.UserInGroup and FFrontBase.Options.ManagerGroupMask) <> 0) or
-      ((FUserInfo.UserInGroup and FFrontBase.Options.KassaGroupMask) <> 0) then
+    if (FUserInfo.UserInGroup and FFrontBase.Options.ManagerGroupMask) <> 0 then
     else begin
-      AdvTaskMessageDlg('Внимание', 'Данный пользователь не обладает правами менеджера или кассира!',
-        mtWarning, [mbOK], 0);
+      AdvTaskMessageDlg('Внимание', cn_dontManagerPermission, mtWarning, [mbOK], 0);
       exit;
     end;
-    FForm := TAddUserForm.Create(Self);
+    FForm := TAdminForm.Create(Self);
     try
       FForm.FrontBase := FFrontBase;
       FForm.ShowModal;
@@ -2455,31 +2449,6 @@ end;
 procedure TRestMainForm.actPayUpdate(Sender: TObject);
 begin
   actPay.Enabled := not FLineTable.IsEmpty;
-end;
-
-procedure TRestMainForm.actEditReportExecute(Sender: TObject);
-var
-  FUserInfo: TUserInfo;
-  Form: TEditReport;
-begin
-  FUserInfo := FFrontBase.CheckUserPasswordWithForm;
-  if FUserInfo.CheckedUserPassword then
-  begin
-    if (FUserInfo.UserInGroup and FFrontBase.Options.ManagerGroupMask) <> 0 then
-    else begin
-      AdvTaskMessageDlg('Внимание', cn_dontManagerPermission, mtWarning, [mbOK], 0);
-      exit;
-    end;
-    Form := TEditReport.Create(nil);
-    try
-      Form.FrontBase := FFrontBase;
-      Form.ShowModal;
-    finally
-      Form.Free;
-      if edPassword.CanFocus then
-        edPassword.SetFocus;
-    end;
-  end;
 end;
 
 procedure TRestMainForm.OnAfterPost(DataSet: TDataSet);

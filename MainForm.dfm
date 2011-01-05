@@ -1784,12 +1784,12 @@ object RestMainForm: TRestMainForm
           ImageIndex = 2
           TabColor = clBtnFace
           TabColorTo = clNone
-          object btnEditReport: TAdvSmoothButton
-            Left = 0
-            Top = 1
+          object btnAdminOptions: TAdvSmoothButton
+            Left = -1
+            Top = 56
             Width = 72
             Height = 50
-            Action = actEditReport
+            Action = actAdminOptions
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
             Appearance.Font.Height = -13
@@ -1816,7 +1816,7 @@ object RestMainForm: TRestMainForm
           end
           object btnCashForm: TAdvSmoothButton
             Left = 0
-            Top = 55
+            Top = 1
             Width = 72
             Height = 50
             Action = actCashForm
@@ -1842,36 +1842,6 @@ object RestMainForm: TRestMainForm
             Color = 15195349
             ParentFont = False
             TabOrder = 1
-            Version = '1.6.9.0'
-          end
-          object btnAddUser: TAdvSmoothButton
-            Left = 0
-            Top = 111
-            Width = 72
-            Height = 50
-            Action = actAddUser
-            Appearance.Font.Charset = DEFAULT_CHARSET
-            Appearance.Font.Color = clWindowText
-            Appearance.Font.Height = -13
-            Appearance.Font.Name = 'Times New Roman'
-            Appearance.Font.Style = [fsBold]
-            Status.Caption = '0'
-            Status.Appearance.Fill.Color = clRed
-            Status.Appearance.Fill.ColorMirror = clNone
-            Status.Appearance.Fill.ColorMirrorTo = clNone
-            Status.Appearance.Fill.GradientType = gtSolid
-            Status.Appearance.Fill.BorderColor = clGray
-            Status.Appearance.Fill.Rounding = 0
-            Status.Appearance.Fill.ShadowOffset = 0
-            Status.Appearance.Font.Charset = DEFAULT_CHARSET
-            Status.Appearance.Font.Color = clWhite
-            Status.Appearance.Font.Height = -11
-            Status.Appearance.Font.Name = 'Tahoma'
-            Status.Appearance.Font.Style = []
-            Bevel = False
-            Color = 15195349
-            ParentFont = False
-            TabOrder = 2
             Version = '1.6.9.0'
           end
         end
@@ -2009,20 +1979,16 @@ object RestMainForm: TRestMainForm
       Caption = #1056#1077#1089#1090#1072#1088#1090
       OnExecute = actRestartRestExecute
     end
-    object actEditReport: TAction
-      Category = 'menu'
-      Caption = #1064#1072#1073#1083#1086#1085#1099
-      OnExecute = actEditReportExecute
-    end
     object actCashForm: TAction
       Category = 'menu'
       Caption = #1050#1072#1089#1089#1072
       OnExecute = actCashFormExecute
     end
-    object actAddUser: TAction
+    object actAdminOptions: TAction
       Category = 'menu'
-      Caption = 'actAddUser'
-      OnExecute = actAddUserExecute
+      Caption = #1040#1076#1084#1080#1085'.'
+      Hint = #1040#1076#1084#1080#1085'.'
+      OnExecute = actAdminOptionsExecute
     end
   end
   object dsMain: TDataSource

@@ -36,7 +36,8 @@ uses
   CardCodeForm_Unit in 'CardCodeForm_Unit.pas' {CardCode},
   ShtrihFR_Unit in 'Shtrih\ShtrihFR_Unit.pas',
   RKCardCodeForm_Unit in 'RKCardCodeForm_Unit.pas' {RKCardCode},
-  AddUserForm_unit in 'AddUserForm_unit.pas' {AddUserForm};
+  AddUserForm_unit in 'AddUserForm_unit.pas' {AddUserForm},
+  AdminForm_Unit in 'AdminForm_Unit.pas' {AdminForm};
 
 {$R *.res}
 

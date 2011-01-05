@@ -314,10 +314,7 @@ begin
     if FunctionFile.ValueExists(SYS_SECTION_NAME, SYS_SHUTDOWN_ON_EXIT) then
     begin
       ValueText := AnsiUpperCase(FunctionFile.ReadString(SYS_SECTION_NAME, SYS_SHUTDOWN_ON_EXIT, 'FALSE'));
-      if ValueText = 'TRUE' then
-        cn_ShutDownOnExit := True
-      else
-        cn_ShutDownOnExit := False;
+      cn_ShutDownOnExit := (ValueText = 'TRUE');
     end else
       FunctionFile.WriteString(SYS_SECTION_NAME, SYS_SHUTDOWN_ON_EXIT, 'FALSE');
 

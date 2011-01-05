@@ -54,8 +54,6 @@ object SellParamForm: TSellParamForm
     StatusBar.ColorTo = 16374724
     StatusBar.GradientDirection = gdVertical
     Styler = FrontData.FrontPanelStyler
-    ExplicitWidth = 800
-    ExplicitHeight = 505
     FullHeight = 0
     object lblToPay: TLabel
       Left = 551

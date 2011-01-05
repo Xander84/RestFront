@@ -72,9 +72,9 @@ type
     destructor Destroy; override;
 
     function PrintPreCheck(const ReportType, DocID: Integer): Boolean;
-    function PrintServiceCheck(const ReportType, PrnGrID, DocID: Integer; PrinterName: String): Boolean;
+    function PrintServiceCheck(const ReportType, PrnGrID, DocID: Integer; const PrinterName: String): Boolean;
     function PrintDeleteServiceCheck(const ReportType, PrnGrID, DocumentKey, MasterKey: Integer;
-      PrinterName: String): Boolean;
+      const PrinterName: String): Boolean;
     function EditTemplate(const ID: Integer): Boolean;
 
     property FrontBase: TFrontBase read FFrontBase write FFrontBase;
@@ -184,7 +184,7 @@ begin
 end;
 
 function TRestReport.PrintDeleteServiceCheck(const ReportType, PrnGrID,
-  DocumentKey, MasterKey: Integer; PrinterName: String): Boolean;
+  DocumentKey, MasterKey: Integer; const PrinterName: String): Boolean;
 var
   FReport: Tgs_fr4SingleReport;
   Str: TStream;
@@ -373,7 +373,7 @@ begin
 end;
 
 function TRestReport.PrintServiceCheck(const ReportType, PrnGrID,
-  DocID: Integer; PrinterName: String): Boolean;
+  DocID: Integer; const PrinterName: String): Boolean;
 var
   FReport: Tgs_fr4SingleReport;
   Str: TStream;
