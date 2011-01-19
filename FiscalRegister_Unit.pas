@@ -49,6 +49,8 @@ uses
 
 constructor TFiscalRegister.Create;
 begin
+  inherited;
+
   FLastFiscalType := -1;
   FFiscalRegister := nil;
   FInit := False;

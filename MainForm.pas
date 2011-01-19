@@ -32,7 +32,6 @@ const
   btnColor = $00E7DCD5;
 
 { TODO -oAlexander : Реализовать форму выбора параметров }
-{ TODO -oAlexander : Реализовать форму добавления сотрудника }
 
 {
 Для удаления мерцания компонентов использую
@@ -76,7 +75,6 @@ type
     pcExtraButton: TAdvPageControl;
     tsMainButton: TAdvTabSheet;
     tsFunctionButton: TAdvTabSheet;
-    Button14: TButton;
     actBackToMenu: TAction;
     Panel1: TAdvPanel;
     actScrollUp: TAction;
@@ -150,6 +148,8 @@ type
     btnCashForm: TAdvSmoothButton;
     btnShowKeyBoard: TAdvSmoothButton;
     actAdminOptions: TAction;
+    btnAllChecks: TAdvSmoothButton;
+    actAllChecks: TAction;
 
     //Проверка введёного пароля
     procedure actPassEnterExecute(Sender: TObject);
@@ -174,7 +174,6 @@ type
     procedure actCancelPreCheckExecute(Sender: TObject);
     procedure actDiscountExecute(Sender: TObject);
     procedure actPayExecute(Sender: TObject);
-    procedure Button14Click(Sender: TObject);
     procedure actUsersUpExecute(Sender: TObject);
     procedure actUsersDownExecute(Sender: TObject);
     procedure actDevideExecute(Sender: TObject);
@@ -200,6 +199,8 @@ type
     procedure actScrollUpUpdate(Sender: TObject);
     procedure actScrollDownUpdate(Sender: TObject);
     procedure actAdminOptionsExecute(Sender: TObject);
+    procedure actAllChecksExecute(Sender: TObject);
+    procedure actAllChecksUpdate(Sender: TObject);
 
   private
     //Компонент обращения к БД
@@ -381,6 +382,7 @@ begin
 
   btnAdminOptions.Left := btnAdminOptions.Left + 4;
   btnCashForm.Left := btnCashForm.Left + 4;
+  btnAllChecks.Left := btnAllChecks.Left + 4;
 
   btnAddQuantity.Left := btnAddQuantity.Left + 4;
   btnRemoveQuantity.Left := btnRemoveQuantity.Left + 4;
@@ -1449,27 +1451,16 @@ begin
       FSplitForm := TSplitOrder.Create(nil);
     FSplitForm.MainOrderKey := MainOrderKey;
     FSplitForm.ManagerKey := FUserInfo.UserKey;
-
   end;
   SaveAllOrder;
 end;
 
 procedure TRestMainForm.actPreCheckExecute(Sender: TObject);
-{var
-  OrderKey: Integer;    }
 begin
   if FHeaderTable.FieldByName('usr$timecloseorder').IsNull then
   begin
     ClearDisplay;
     SaveCheck;
-{    OrderKey := FHeaderTable.FieldByName('ID').AsInteger;
-    DBGrMain.DataSource := nil;
-    try
-      FFrontBase.SaveAndReloadOrder(FHeaderTable, FLineTable,
-        FModificationDataSet, OrderKey);
-    finally
-      DBGrMain.DataSource := dsMain;
-    end;   }
 
     if FReport.PrintPreCheck(1, FHeaderTable.FieldByName('ID').AsInteger) then
     begin
@@ -1626,17 +1617,8 @@ procedure TRestMainForm.actPayExecute(Sender: TObject);
 var
   FForm: TSellParamForm;
   SumToPay: Currency;
-//  OrderKey: Integer;
 begin
   SaveCheck;
-{  OrderKey := FHeaderTable.FieldByName('ID').AsInteger;
-  DBGrMain.DataSource := nil;
-  try
-    FFrontBase.SaveAndReloadOrder(FHeaderTable, FLineTable,
-      FModificationDataSet, OrderKey);
-  finally
-    DBGrMain.DataSource := dsMain;
-  end;   }
 
   SumToPay := 0;
   FLineTable.DisableControls;
@@ -1705,6 +1687,7 @@ begin
 
           btnCashForm.Visible := False;
           btnAdminOptions.Visible := False;
+          btnAllChecks.Visible := False;
 
           FLastLeftButton := 18 + btnWidth {$IFDEF NEW_TABCONTROL} + 4 {$ENDIF};;
           FGroupLastLeftButton := btnFirstTop;
@@ -1780,6 +1763,7 @@ begin
           //
           btnCashForm.Visible := True;
           btnAdminOptions.Visible := True;
+          btnAllChecks.Visible := True;
 
           FLastLeftButton := 18 + btnWidth {$IFDEF NEW_TABCONTROL} + 4 {$ENDIF};;
           FLastTopButton  := btnFirstTop;
@@ -1838,6 +1822,7 @@ begin
 
           btnCashForm.Visible := True;
           btnAdminOptions.Visible := True;
+          btnAllChecks.Visible := True;
 
           FUserFirstTop       := btnFirstTop;
           FUserLastLeftButton := btnFirstTop;
@@ -2048,13 +2033,6 @@ begin
   FUsersOrderButtonList.Clear;
 end;
 
-procedure TRestMainForm.Button14Click(Sender: TObject);
-begin
-  FormState := OrderMenu;
-  FormState := ManagerPage;
-  CreateUserList;
-end;
-
 procedure TRestMainForm.actUsersUpExecute(Sender: TObject);
 var
   TempLastTop, TempFirstTop: Integer;
@@ -2144,7 +2122,7 @@ var
   OldDetailID, MasterKey: Integer;
   V: Array of Variant;
   I: Integer;
-  PrnGrid, DocumentKey{, OrderKey}: Integer;
+  PrnGrid, DocumentKey: Integer;
   PrinterName: String;
 begin
   OldQuantity := FLineTable.FieldByName('usr$quantity').AsCurrency;
@@ -2175,7 +2153,6 @@ begin
     FLineTable.Fields[I].Clear
   else
     FLineTable.Fields[I].AsString := V[I];
-//  FLineTable.FieldByName('ID').Clear;
   DocumentKey := FFrontBase.GetNextID;
   FLineTable.FieldByName('ID').AsInteger := DocumentKey;
   FLineTable.FieldByName('LINEKEY').AsInteger := FLineID;
@@ -2188,14 +2165,7 @@ begin
 
   MasterKey := FHeaderTable.FieldByName('ID').AsInteger;
   SaveCheck;
-{  OrderKey := FHeaderTable.FieldByName('ID').AsInteger;
-  DBGrMain.DataSource := nil;
-  try
-    FFrontBase.SaveAndReloadOrder(FHeaderTable, FLineTable,
-      FModificationDataSet, OrderKey);
-  finally
-    DBGrMain.DataSource := dsMain;
-  end;  }
+
   //обновить футер грида
   DBGrMain.SumList.RecalcAll;
 
@@ -2414,6 +2384,18 @@ begin
       FForm.Free;
     end;
   end;
+end;
+
+procedure TRestMainForm.actAllChecksExecute(Sender: TObject);
+begin
+  FormState := OrderMenu;
+  FormState := ManagerPage;
+  CreateUserList;
+end;
+
+procedure TRestMainForm.actAllChecksUpdate(Sender: TObject);
+begin
+  actAllChecks.Enabled := ((FFrontBase.UserGroup and FFrontBase.Options.ManagerGroupMask) = 0);
 end;
 
 procedure TRestMainForm.actRemoveQuantityUpdate(Sender: TObject);

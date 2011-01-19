@@ -4,7 +4,8 @@ interface
 
 uses
   IBDatabase, Db, Classes, IBSQL, kbmMemTable, Base_Display_unit,
-  Pole_Display_Unit, IBQuery, IB, IBErrorCodes{, JclStrHashMap}, IBServices;
+  Pole_Display_Unit, IBQuery, IB, IBErrorCodes{, JclStrHashMap}, IBServices,
+  obj_QueryList;
 
 const
   MN_OrderXID = 147014509;
@@ -236,6 +237,8 @@ type
     FDisplay: TDisplay;
     FDisplayInitialized: Boolean;
 
+    FQueryList: TgsQueryList;
+
 //    FGoodHashList: TStringHashMap;
 
     function GetDisplay: TDisplay;
@@ -349,6 +352,7 @@ type
     property CashNumber: Integer read GetCashNumber;
     property IsMainCash: Boolean read GetIsMainCash;
     property ServerName: String read GetServerName;
+    property QueryList: TgsQueryList read FQueryList;
   end;
 
   procedure GetHeaderTable(var DS: TkbmMemTable);
@@ -503,6 +507,7 @@ begin
   FCashNumber := -1;
   FIsMainCash := False;
 
+  FQueryList := TgsQueryList.Create(FDataBase, nil, True);
 //  FGoodHashList := TStringHashMap.Create(CaseInSensitiveTraits, 512);
 end;
 
@@ -957,6 +962,7 @@ begin
   if Assigned(FDisplay) then
     FDisplay.Free;
 
+  FQueryList.Free;
 //  FGoodHashList.Free;
 
   inherited;

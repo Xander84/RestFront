@@ -45,7 +45,7 @@ type
     //наличные безналичные
     property PayType: Integer read FPayType write FPayType;
     //пластиковая карта или нет
-    property IsPlCard: Integer read FIsPlCard write FIsPLCard;
+    property IsPlCard: Integer read FIsPlCard write FIsPlCard;
     property PayFormDataSet: TkbmMemTable read FPayFormDataSet;
   end;
 

@@ -61,7 +61,6 @@ object AddUserForm: TAddUserForm
     StatusBar.ColorTo = 16374724
     StatusBar.GradientDirection = gdVertical
     Styler = FrontData.FrontPanelStyler
-    ExplicitLeft = -1
     FullHeight = 0
     object Label1: TLabel
       Left = 16
@@ -585,8 +584,6 @@ object AddUserForm: TAddUserForm
     StatusBar.ColorTo = 16374724
     StatusBar.GradientDirection = gdVertical
     Styler = FrontData.FrontPanelStyler
-    ExplicitLeft = 475
-    ExplicitHeight = 276
     FullHeight = 0
     object btnOK: TAdvSmoothButton
       Left = 5

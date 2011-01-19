@@ -69,7 +69,7 @@
 			<DCCReference Include="OrderNumber_Unit.pas">
 				<Form>OrderNumber</Form>
 			</DCCReference>
-			<DCCReference Include="Report_Unit.pas"/>
+			<DCCReference Include="Report\Report_Unit.pas"/>
 			<DCCReference Include="Display\Base_Display_unit.pas"/>
 			<DCCReference Include="Modification_Unit.pas">
 				<Form>ModificationForm</Form>
@@ -125,6 +125,15 @@
 			</DCCReference>
 			<DCCReference Include="AdminForm_Unit.pas">
 				<Form>AdminForm</Form>
+			</DCCReference>
+			<DCCReference Include="Report\gd_MultiStringList.pas"/>
+			<DCCReference Include="Report\obj_QueryList.pas"/>
+			<DCCReference Include="Report\rp_dlgViewResult_unit.pas">
+				<Form>dlgViewResult</Form>
+			</DCCReference>
+			<DCCReference Include="Report\rp_frmGrid_unit.pas">
+				<Form>frmGrid</Form>
+				<DesignClass>TFrame</DesignClass>
 			</DCCReference>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>

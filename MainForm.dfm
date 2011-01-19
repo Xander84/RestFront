@@ -1432,16 +1432,6 @@ object RestMainForm: TRestMainForm
           ImageIndex = 1
           TabColor = clBtnFace
           TabColorTo = clNone
-          object Button14: TButton
-            Left = 0
-            Top = 620
-            Width = 72
-            Height = 50
-            Caption = '1'
-            TabOrder = 0
-            Visible = False
-            OnClick = Button14Click
-          end
           object btnAddQuantity: TAdvSmoothButton
             Left = 0
             Top = 1
@@ -1471,7 +1461,7 @@ object RestMainForm: TRestMainForm
             Bevel = False
             Color = 15195349
             ParentFont = False
-            TabOrder = 1
+            TabOrder = 0
             Version = '1.6.9.0'
           end
           object btnRemoveQuantity: TAdvSmoothButton
@@ -1502,7 +1492,7 @@ object RestMainForm: TRestMainForm
             Bevel = False
             Color = 15195349
             ParentFont = False
-            TabOrder = 2
+            TabOrder = 1
             Version = '1.6.9.0'
           end
           object btnDeletePosition: TAdvSmoothButton
@@ -1532,7 +1522,7 @@ object RestMainForm: TRestMainForm
             Bevel = False
             Color = 15195349
             ParentFont = False
-            TabOrder = 3
+            TabOrder = 2
             Version = '1.6.9.0'
           end
           object btnCutCheck: TAdvSmoothButton
@@ -1562,7 +1552,7 @@ object RestMainForm: TRestMainForm
             Bevel = False
             Color = 15195349
             ParentFont = False
-            TabOrder = 4
+            TabOrder = 3
             Version = '1.6.9.0'
           end
           object btnPreCheck: TAdvSmoothButton
@@ -1592,7 +1582,7 @@ object RestMainForm: TRestMainForm
             Bevel = False
             Color = 15195349
             ParentFont = False
-            TabOrder = 5
+            TabOrder = 4
             Version = '1.6.9.0'
           end
           object btnCancelPreCheck: TAdvSmoothButton
@@ -1622,7 +1612,7 @@ object RestMainForm: TRestMainForm
             Bevel = False
             Color = 15195349
             ParentFont = False
-            TabOrder = 6
+            TabOrder = 5
             Version = '1.6.9.0'
           end
           object btnModification: TAdvSmoothButton
@@ -1652,7 +1642,7 @@ object RestMainForm: TRestMainForm
             Bevel = False
             Color = 15195349
             ParentFont = False
-            TabOrder = 7
+            TabOrder = 6
             Version = '1.6.9.0'
           end
           object btnKeyBoard: TAdvSmoothButton
@@ -1682,7 +1672,7 @@ object RestMainForm: TRestMainForm
             Bevel = False
             Color = 15195349
             ParentFont = False
-            TabOrder = 8
+            TabOrder = 7
             TabStop = False
             Version = '1.6.9.0'
           end
@@ -1713,7 +1703,7 @@ object RestMainForm: TRestMainForm
             Bevel = False
             Color = 15195349
             ParentFont = False
-            TabOrder = 9
+            TabOrder = 8
             Version = '1.6.9.0'
           end
           object btnPay: TAdvSmoothButton
@@ -1743,7 +1733,7 @@ object RestMainForm: TRestMainForm
             Bevel = False
             Color = 15195349
             ParentFont = False
-            TabOrder = 10
+            TabOrder = 9
             Version = '1.6.9.0'
           end
           object btnDevide: TAdvSmoothButton
@@ -1773,7 +1763,7 @@ object RestMainForm: TRestMainForm
             Bevel = False
             Color = 15195349
             ParentFont = False
-            TabOrder = 11
+            TabOrder = 10
             Version = '1.6.9.0'
           end
         end
@@ -1842,6 +1832,36 @@ object RestMainForm: TRestMainForm
             Color = 15195349
             ParentFont = False
             TabOrder = 1
+            Version = '1.6.9.0'
+          end
+          object btnAllChecks: TAdvSmoothButton
+            Left = -1
+            Top = 111
+            Width = 72
+            Height = 50
+            Action = actAllChecks
+            Appearance.Font.Charset = DEFAULT_CHARSET
+            Appearance.Font.Color = clWindowText
+            Appearance.Font.Height = -13
+            Appearance.Font.Name = 'Times New Roman'
+            Appearance.Font.Style = [fsBold]
+            Status.Caption = '0'
+            Status.Appearance.Fill.Color = clRed
+            Status.Appearance.Fill.ColorMirror = clNone
+            Status.Appearance.Fill.ColorMirrorTo = clNone
+            Status.Appearance.Fill.GradientType = gtSolid
+            Status.Appearance.Fill.BorderColor = clGray
+            Status.Appearance.Fill.Rounding = 0
+            Status.Appearance.Fill.ShadowOffset = 0
+            Status.Appearance.Font.Charset = DEFAULT_CHARSET
+            Status.Appearance.Font.Color = clWhite
+            Status.Appearance.Font.Height = -11
+            Status.Appearance.Font.Name = 'Tahoma'
+            Status.Appearance.Font.Style = []
+            Bevel = False
+            Color = 15195349
+            ParentFont = False
+            TabOrder = 2
             Version = '1.6.9.0'
           end
         end
@@ -1989,6 +2009,13 @@ object RestMainForm: TRestMainForm
       Caption = #1040#1076#1084#1080#1085'.'
       Hint = #1040#1076#1084#1080#1085'.'
       OnExecute = actAdminOptionsExecute
+    end
+    object actAllChecks: TAction
+      Category = 'menu'
+      Caption = #1042#1089#1077' '#1079#1072#1082#1072#1079#1099
+      Hint = #1042#1089#1077' '#1079#1072#1082#1072#1079#1099
+      OnExecute = actAllChecksExecute
+      OnUpdate = actAllChecksUpdate
     end
   end
   object dsMain: TDataSource

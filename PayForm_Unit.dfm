@@ -56,8 +56,6 @@ object PayForm: TPayForm
     StatusBar.ColorTo = 16374724
     StatusBar.GradientDirection = gdVertical
     Styler = FrontData.FrontPanelStyler
-    ExplicitTop = 416
-    ExplicitWidth = 646
     FullHeight = 57
     object btnOK: TAdvSmoothButton
       Left = 8
@@ -159,8 +157,6 @@ object PayForm: TPayForm
     StatusBar.ColorTo = 16374724
     StatusBar.GradientDirection = gdVertical
     Styler = FrontData.FrontPanelStyler
-    ExplicitWidth = 497
-    ExplicitHeight = 416
     FullHeight = 405
   end
   object pnlRight: TAdvPanel
@@ -201,8 +197,6 @@ object PayForm: TPayForm
     StatusBar.ColorTo = 16374724
     StatusBar.GradientDirection = gdVertical
     Styler = FrontData.FrontPanelStyler
-    ExplicitLeft = 497
-    ExplicitHeight = 416
     FullHeight = 405
   end
   object actMain: TActionList

@@ -27,7 +27,6 @@ const
   cn_paytype_credit = 1;
   cn_paytype_noncash = 2;
 
-
 type
   TSellParamForm = class(TBaseFrontForm)
     pnlMain: TAdvPanel;
@@ -480,7 +479,7 @@ end;
 
 procedure TSellParamForm.OnAfterDelete(DataSet: TDataSet);
 begin
-  FInDeleteOrUpDate := True;
+  FInDeleteOrUpdate := True;
   try
     //edMain.Text := '';
     edMain.Text := dsPayLine.FieldByName('SUM').AsString;

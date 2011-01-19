@@ -4,13 +4,17 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, FrontData_Unit, AdvAppStyler, AdvPanel, AdvPageControl, ExtCtrls;
+  Dialogs, FrontData_Unit, AdvAppStyler, AdvPanel, AdvPageControl, ExtCtrls,
+  Front_DataBase_Unit;
 
 type
   TBaseFrontForm = class(TForm)
     AdvFormStyler: TAdvFormStyler;
+  protected
+    FFrontBase: TFrontBase;
   public
     procedure AfterConstruction; override;
+    property FrontBase: TFrontBase read FFrontBase write FFrontBase;
   end;
 
 var

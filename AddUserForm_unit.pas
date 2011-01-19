@@ -40,10 +40,8 @@ type
     procedure FormCreate(Sender: TObject);
     procedure actAddUserExecute(Sender: TObject);
     procedure actAddUserUpdate(Sender: TObject);
-  private
-    FFrontBase: TFrontBase;
   public
-    property FrontBase: TFrontBase read FFrontBase write FFrontBase;
+
   end;
 
 var
@@ -64,7 +62,6 @@ begin
   actAddUser.Enabled := (not MainTable.FieldByName('SURNAME').IsNull)
     and (not MainTable.FieldByName('PASSW').IsNull)
     and (MainTable.FieldByName('PASSW').AsString = edConfirmPass.Text);
-//    and (DBLookupComboBox.KeyValue > 0);
 end;
 
 procedure TAddUserForm.FormCreate(Sender: TObject);

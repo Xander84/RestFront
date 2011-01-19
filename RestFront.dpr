@@ -10,11 +10,12 @@ uses
 {$ENDIF}
   Forms,
   AppEvnts,
+  MidasLib,
   MainForm in 'MainForm.pas' {RestMainForm},
   GuestForm_unit in 'GuestForm_unit.pas' {GuestForm},
   DeleteOrderLine_unit in 'DeleteOrderLine_unit.pas' {DeleteOrderLine},
   OrderNumber_Unit in 'OrderNumber_Unit.pas' {OrderNumber},
-  Report_Unit in 'Report_Unit.pas',
+  Report_Unit in 'Report\Report_Unit.pas',
   Base_Display_unit in 'Display\Base_Display_unit.pas',
   Modification_Unit in 'Modification_Unit.pas' {ModificationForm},
   DevideForm_Unit in 'DevideForm_Unit.pas' {DevideForm},
@@ -37,7 +38,11 @@ uses
   ShtrihFR_Unit in 'Shtrih\ShtrihFR_Unit.pas',
   RKCardCodeForm_Unit in 'RKCardCodeForm_Unit.pas' {RKCardCode},
   AddUserForm_unit in 'AddUserForm_unit.pas' {AddUserForm},
-  AdminForm_Unit in 'AdminForm_Unit.pas' {AdminForm};
+  AdminForm_Unit in 'AdminForm_Unit.pas' {AdminForm},
+  gd_MultiStringList in 'Report\gd_MultiStringList.pas',
+  obj_QueryList in 'Report\obj_QueryList.pas',
+  rp_dlgViewResult_unit in 'Report\rp_dlgViewResult_unit.pas' {dlgViewResult},
+  rp_frmGrid_unit in 'Report\rp_frmGrid_unit.pas' {frmGrid: TFrame};
 
 {$R *.res}
 

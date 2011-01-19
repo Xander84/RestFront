@@ -117,6 +117,8 @@ end;
 
 constructor TFrontLog.Create;
 begin
+  inherited;
+
   FFrontBase := nil;
 end;
 
