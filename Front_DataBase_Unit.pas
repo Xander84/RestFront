@@ -362,7 +362,7 @@ type
 implementation
 
 uses
-  Windows, Sysutils, CardCodeForm_Unit, TaskDialog, Dialogs;
+  Windows, Sysutils, CardCodeForm_Unit, TaskDialog, Dialogs, FrontData_Unit;
 
 
 procedure GetHeaderTable(var DS: TkbmMemTable);
@@ -507,7 +507,12 @@ begin
   FCashNumber := -1;
   FIsMainCash := False;
 
-  FQueryList := TgsQueryList.Create(FDataBase, nil, True);
+  try
+    FQueryList := TgsQueryList.Create(FDataBase, nil, True);
+    FrontData.BaseQueryList := FQueryList;
+  except
+    raise;
+  end;
 //  FGoodHashList := TStringHashMap.Create(CaseInSensitiveTraits, 512);
 end;
 

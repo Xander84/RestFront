@@ -56,26 +56,9 @@ type
     FDataSet: TDataSet;
     FCurrentField: TField;
 
-    procedure Open; virtual;
-    procedure ExecSQL; virtual;
-    procedure Close; virtual;
-    procedure First; virtual;
-    procedure Last; virtual;
-    function  Eof: Boolean; virtual;
-    function  Bof: Boolean; virtual;
-    procedure Next; virtual;
-    procedure Prior; virtual;
-    procedure AddField(const FieldName: String; const FieldType: TFieldType;
-                       FieldSize: Integer; Required: Boolean); virtual;
-    procedure AssignFields(const ADataSet: TDataSet);
+//    procedure AssignFields(const ADataSet: TDataSet);
     procedure CopyRecord(const ADataSet: TDataSet);
     procedure ClearFields; virtual;
-    procedure Append; virtual;
-    procedure Edit; virtual;
-    procedure Delete; virtual;
-    procedure Post; virtual;
-    procedure Cancel; virtual;
-    procedure Insert;
     function  Get_Transaction: TIBTransaction;
     procedure Set_Transaction(const Value: TIBTransaction);
 
@@ -96,12 +79,30 @@ type
     function  Get_RecordCount: Integer;
     function  Get_Active: Boolean;
     function  CreateBlobStream(const Field: TField; Mode: TBlobStreamMode): TStream;
-    function  Locate(const KeyFields: string; const KeyValues: Variant;
-      Options: TLocateOptions): Boolean;
     function  Get_Self: Integer;
   public
     constructor Create(const AnMemTable: Boolean; const AnChildClass: Boolean = False);
     destructor Destroy; override;
+
+    procedure Open; virtual;
+    procedure ExecSQL; virtual;
+    procedure Close; virtual;
+    procedure First; virtual;
+    procedure Last; virtual;
+    function  Eof: Boolean; virtual;
+    function  Bof: Boolean; virtual;
+    procedure Next; virtual;
+    procedure Prior; virtual;
+    procedure Append; virtual;
+    procedure Edit; virtual;
+    procedure Delete; virtual;
+    procedure Post; virtual;
+    procedure Cancel; virtual;
+    procedure Insert;
+    function  Locate(const KeyFields: string; const KeyValues: Variant;
+      Options: TLocateOptions): Boolean;
+    procedure AddField(const FieldName: String; const FieldType: String;
+                       FieldSize: Integer; Required: Boolean); virtual;
 
     property Database: TIBDatabase write SetDatabase;
     property Transaction: TIBTransaction write SetTransaction;
@@ -140,8 +141,6 @@ type
     function GetCount: Integer;
     function GetIndexQueryByName(const Name: String): Integer;
   protected
-    function  Add(const QueryName: String; MemQuery: Boolean): Integer;
-    procedure Clear;
     procedure Delete(Index: Integer);
     function  Get_Query(Index: Integer): TgsDataSet;
     function  Get_Count: Integer;
@@ -158,6 +157,9 @@ type
     constructor Create(const AnDatabase: TIBDatabase; const AnTransaction: TIBTransaction;
       const AnIsRealList: Boolean = False);
     destructor Destroy; override;
+
+    function  Add(const QueryName: String; MemQuery: Boolean): Integer;
+    procedure Clear;
 
     property Count: Integer read GetCount;
 
@@ -212,6 +214,9 @@ type
 procedure CompliteDataSetStream(const AnStream: TStream;
   const AnDataSet: TDataSet; const AnFetchBlob: Boolean = False);
 function GetFieldTypeFromStr(const AnTypeName: String): TFieldType;
+
+var
+  gsQueryList: TgsQueryList;
 
 implementation
 
@@ -384,11 +389,11 @@ begin
   GetIBQuery.SQL.Text := Value;
 end;
 
-procedure TgsDataSet.AddField(const FieldName: String; const FieldType: TFieldType;
+procedure TgsDataSet.AddField(const FieldName: String; const FieldType: String;
   FieldSize: Integer; Required: Boolean);
 begin
   if FDataSet is TClientDataSet then
-    FDataSet.FieldDefs.Add(FieldName, FieldType, FieldSize,
+    FDataSet.FieldDefs.Add(FieldName, GetFieldTypeFromStr(FieldType), FieldSize,
       Required)
 end;
 
@@ -1045,7 +1050,7 @@ begin
   end;
 end;
 
-procedure TgsDataSet.AssignFields(const ADataSet: TDataSet);
+{procedure TgsDataSet.AssignFields(const ADataSet: TDataSet);
 var
   I: Integer;
 begin
@@ -1055,7 +1060,7 @@ begin
         ADataSet.Fields[I].DataSize, ADataSet.Fields[I].Required)
   else
     raise Exception.Create('Method not supported for real dataset.');
-end;
+end;}
 
 procedure TgsDataSet.CopyRecord(const ADataSet: TDataSet);
 var

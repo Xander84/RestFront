@@ -42,7 +42,8 @@ uses
   gd_MultiStringList in 'Report\gd_MultiStringList.pas',
   obj_QueryList in 'Report\obj_QueryList.pas',
   rp_dlgViewResult_unit in 'Report\rp_dlgViewResult_unit.pas' {dlgViewResult},
-  rp_frmGrid_unit in 'Report\rp_frmGrid_unit.pas' {frmGrid: TFrame};
+  rp_frmGrid_unit in 'Report\rp_frmGrid_unit.pas' {frmGrid: TFrame},
+  fs_iQueryListRTTI in 'Report\fs_iQueryListRTTI.pas';
 
 {$R *.res}
 

@@ -7,7 +7,7 @@ interface
 uses
   SysUtils, Windows, Classes, AdvPanel, AdvSmoothMessageDialog, AdvStyleIF,
   SysConst, Graphics, ImgList, Controls, AdvAppStyler, GDIPPictureContainer,
-  DBGridEh, AdvGrid, DBAdvGrid, Forms;
+  DBGridEh, AdvGrid, DBAdvGrid, Forms, obj_QueryList;
 
 type
   TApplicationFile = (afApplicationData);
@@ -21,6 +21,7 @@ type
   private
     FPanelColor: TColor;
     FPanelColorTo: TColor;
+    FQueryList: TgsQueryList;
 
     function CheckUserDataDirectory: Boolean;
     function GetUserApplicationFileName(const AFile: TApplicationFile): String;
@@ -29,6 +30,7 @@ type
 
     property PanelColor: TColor read FPanelColor write FPanelColor;
     property PanelColorTo: TColor read FPanelColorTo write FPanelColorTo;
+    property BaseQueryList: TgsQueryList read FQueryList write FQueryList;
   end;
 
   procedure SetupGrid(const Grid: TDBGridEh);
