@@ -12,12 +12,12 @@ const
 type
   TMultiString = class(TStringList)
   private
-    procedure SetParam(Index: Integer; Value: String);
-    function GetParam(Index: Integer): String;
+    procedure SetParam(const Index: Integer; const Value: String);
+    function GetParam(const Index: Integer): String;
   public
     constructor Create(const AnFieldCount: Integer);
 
-    property Params[Index: Integer]: String read GetParam write SetParam;
+    property Params[const Index: Integer]: String read GetParam write SetParam;
   end;
 
 type
@@ -45,36 +45,36 @@ type
 type
   TFourStringList = class(TMultiStringList)
   private
-    function GetMasterTable(Index: Integer): String;
-    procedure SetMasterTable(Index: Integer; Value: String);
-    function GetMasterField(Index: Integer): String;
-    procedure SetMasterField(Index: Integer; Value: String);
-    function GetDetailTable(Index: Integer): String;
-    procedure SetDetailTable(Index: Integer; Value: String);
-    function GetDetailField(Index: Integer): String;
-    procedure SetDetailField(Index: Integer; Value: String);
+    function GetMasterTable(const Index: Integer): String;
+    procedure SetMasterTable(const Index: Integer; const Value: String);
+    function GetMasterField(const Index: Integer): String;
+    procedure SetMasterField(const Index: Integer; const Value: String);
+    function GetDetailTable(const Index: Integer): String;
+    procedure SetDetailTable(const Index: Integer; const Value: String);
+    function GetDetailField(const Index: Integer): String;
+    procedure SetDetailField(const Index: Integer; const Value: String);
   public
     constructor Create;
 
     function AddRecord(const AnMasterTable, AnMasterField, AnDetailTable,
      AnDetailField: String): Integer;
 
-    function IndexOfMasterTable(AnMasterTable: String): Integer;
-    function IndexOfMasterField(AnMasterField: String): Integer;
-    function IndexOfDetailTable(AnDetailTable: String): Integer;
-    function IndexOfDetailField(AnDetailField: String): Integer;
+    function IndexOfMasterTable(const AnMasterTable: String): Integer;
+    function IndexOfMasterField(const AnMasterField: String): Integer;
+    function IndexOfDetailTable(const AnDetailTable: String): Integer;
+    function IndexOfDetailField(const AnDetailField: String): Integer;
 
-    property MasterTable[Index: Integer]: String read GetMasterTable
+    property MasterTable[const Index: Integer]: String read GetMasterTable
      write SetMasterTable;
-    property MasterField[Index: Integer]: String read GetMasterField
+    property MasterField[const Index: Integer]: String read GetMasterField
      write SetMasterField;
-    property DetailTable[Index: Integer]: String read GetDetailTable
+    property DetailTable[const Index: Integer]: String read GetDetailTable
      write SetDetailTable;
-    property DetailField[Index: Integer]: String read GetDetailField
+    property DetailField[const Index: Integer]: String read GetDetailField
      write SetDetailField;
   end;
 
-function CheckFieldNames(const AnDataSet: TDataSet; AnFieldNames: String): Boolean;
+//function CheckFieldNames(const AnDataSet: TDataSet; AnFieldNames: String): Boolean;
 
 implementation
 
@@ -93,12 +93,12 @@ begin
     Add('');
 end;
 
-function TMultiString.GetParam(Index: Integer): String;
+function TMultiString.GetParam(const Index: Integer): String;
 begin
   Result := Strings[Index];
 end;
 
-procedure TMultiString.SetParam(Index: Integer; Value: String);
+procedure TMultiString.SetParam(const Index: Integer; const Value: String);
 begin
   Strings[Index] := Value;
 end;
@@ -219,47 +219,47 @@ begin
   inherited Create(4);
 end;
 
-function TFourStringList.GetMasterField(Index: Integer): String;
+function TFourStringList.GetMasterField(const Index: Integer): String;
 begin
   Result := GetMultiString(Index).Params[1];
 end;
 
-function TFourStringList.GetMasterTable(Index: Integer): String;
+function TFourStringList.GetMasterTable(const Index: Integer): String;
 begin
   Result := GetMultiString(Index).Params[0];
 end;
 
-function TFourStringList.GetDetailField(Index: Integer): String;
+function TFourStringList.GetDetailField(const Index: Integer): String;
 begin
   Result := GetMultiString(Index).Params[3];
 end;
 
-function TFourStringList.GetDetailTable(Index: Integer): String;
+function TFourStringList.GetDetailTable(const Index: Integer): String;
 begin
   Result := GetMultiString(Index).Params[2];
 end;
 
-procedure TFourStringList.SetMasterField(Index: Integer; Value: String);
+procedure TFourStringList.SetMasterField(const Index: Integer; const Value: String);
 begin
   GetMultiString(Index).Params[1] := Value;
 end;
 
-procedure TFourStringList.SetMasterTable(Index: Integer; Value: String);
+procedure TFourStringList.SetMasterTable(const Index: Integer; const Value: String);
 begin
   GetMultiString(Index).Params[0] := Value;
 end;
 
-procedure TFourStringList.SetDetailField(Index: Integer; Value: String);
+procedure TFourStringList.SetDetailField(const Index: Integer; const Value: String);
 begin
   GetMultiString(Index).Params[3] := Value;
 end;
 
-procedure TFourStringList.SetDetailTable(Index: Integer; Value: String);
+procedure TFourStringList.SetDetailTable(const Index: Integer; const Value: String);
 begin
   GetMultiString(Index).Params[2] := Value;
 end;
 
-function CheckFieldNames(const AnDataSet: TDataSet; AnFieldNames: String): Boolean;
+{function CheckFieldNames(const AnDataSet: TDataSet; AnFieldNames: String): Boolean;
 var
   I, J: Integer;
 begin
@@ -279,9 +279,9 @@ begin
     I := Length(AnFieldNames);
     Result := AnDataSet.FieldByName(Copy(AnFieldNames, J + 1, I - J)) <> nil;
   end;
-end;
+end;  }
 
-function TFourStringList.IndexOfDetailField(AnDetailField: String): Integer;
+function TFourStringList.IndexOfDetailField(const AnDetailField: String): Integer;
 var
   I: Integer;
 begin
@@ -294,7 +294,7 @@ begin
     end;
 end;
 
-function TFourStringList.IndexOfDetailTable(AnDetailTable: String): Integer;
+function TFourStringList.IndexOfDetailTable(const AnDetailTable: String): Integer;
 var
   I: Integer;
 begin
@@ -307,7 +307,7 @@ begin
     end;
 end;
 
-function TFourStringList.IndexOfMasterField(AnMasterField: String): Integer;
+function TFourStringList.IndexOfMasterField(const AnMasterField: String): Integer;
 var
   I: Integer;
 begin
@@ -320,7 +320,7 @@ begin
     end;
 end;
 
-function TFourStringList.IndexOfMasterTable(AnMasterTable: String): Integer;
+function TFourStringList.IndexOfMasterTable(const AnMasterTable: String): Integer;
 var
   I: Integer;
 begin

@@ -193,11 +193,8 @@ begin
 end;
 
 function TFrontData.CheckUserDataDirectory: Boolean;
-var
-  CurrentDir: String;
 begin
   Result := False;
-  CurrentDir := GetCurrentDir;
   SetCurrentDir(ExtractFileDir(ParamStr(0)));
   if DirectoryExists(ExpandFileName(DATA_DIR)) then
   begin

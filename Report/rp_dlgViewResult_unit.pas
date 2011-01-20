@@ -20,7 +20,7 @@ type
   public
     property PageCount: Integer read GetPageCount;
 
-    procedure AddPage(const AnDataSet: TDataSet); virtual;
+    procedure AddPage(const AnDataSet: TDataSet); {virtual;}
   end;
 
 var

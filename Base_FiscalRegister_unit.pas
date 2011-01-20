@@ -51,14 +51,7 @@ type
     property Self: Integer read Get_Self;
   end;
 
-var
-  BaseFiscalRegister: IBaseFiscalRegister;
-
 implementation
 
-initialization
-  BaseFiscalRegister := nil;
-
-finalization
 
 end.

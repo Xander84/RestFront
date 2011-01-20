@@ -54,24 +54,24 @@ type
     function GetStrFromFieldType(const AnFieldType: TFieldType): String;
   protected
     FDataSet: TDataSet;
-    FCurrentField: TField;
+//    FCurrentField: TField;
 
 //    procedure AssignFields(const ADataSet: TDataSet);
     procedure CopyRecord(const ADataSet: TDataSet);
-    procedure ClearFields; virtual;
+    procedure ClearFields;
     function  Get_Transaction: TIBTransaction;
     procedure Set_Transaction(const Value: TIBTransaction);
 
-    function  Get_Fields(Index: Integer): TField; virtual;
-    function  Get_FieldByName(const FieldName: String): TField; virtual;
-    function  Get_IsResult: Boolean; virtual;
-    procedure Set_IsResult(Value: Boolean); virtual;
-    function  Get_SQL: String; virtual;
-    procedure Set_SQL(const Value: String); virtual;
-    function  Get_Params(Index: Integer): TParam; virtual;
-    function  Get_ParamByName(const ParamName: String): TParam; virtual;
-    function  Get_FieldCount: Integer; virtual;
-    function  Get_ParamCount: Integer; virtual;
+    function  Get_Fields(Index: Integer): TField;
+    function  Get_FieldByName(const FieldName: String): TField;
+    function  Get_IsResult: Boolean;
+    procedure Set_IsResult(Value: Boolean);
+    function  Get_SQL: String;
+    procedure Set_SQL(const Value: String);
+    function  Get_Params(Index: Integer): TParam;
+    function  Get_ParamByName(const ParamName: String): TParam;
+    function  Get_FieldCount: Integer;
+    function  Get_ParamCount: Integer;
     function  Get_FetchBlob: Boolean;
     procedure Set_FetchBlob(Value: Boolean);
     function  Get_IndexFields: String;
@@ -84,25 +84,25 @@ type
     constructor Create(const AnMemTable: Boolean; const AnChildClass: Boolean = False);
     destructor Destroy; override;
 
-    procedure Open; virtual;
-    procedure ExecSQL; virtual;
-    procedure Close; virtual;
-    procedure First; virtual;
-    procedure Last; virtual;
-    function  Eof: Boolean; virtual;
-    function  Bof: Boolean; virtual;
-    procedure Next; virtual;
-    procedure Prior; virtual;
-    procedure Append; virtual;
-    procedure Edit; virtual;
-    procedure Delete; virtual;
-    procedure Post; virtual;
-    procedure Cancel; virtual;
+    procedure Open;
+    procedure ExecSQL;
+    procedure Close;
+    procedure First;
+    procedure Last;
+    function  Eof: Boolean;
+    function  Bof: Boolean;
+    procedure Next;
+    procedure Prior;
+    procedure Append;
+    procedure Edit;
+    procedure Delete;
+    procedure Post;
+    procedure Cancel;
     procedure Insert;
     function  Locate(const KeyFields: string; const KeyValues: Variant;
       Options: TLocateOptions): Boolean;
     procedure AddField(const FieldName: String; const FieldType: String;
-                       FieldSize: Integer; Required: Boolean); virtual;
+                       FieldSize: Integer; Required: Boolean); {virtual;}
 
     property Database: TIBDatabase write SetDatabase;
     property Transaction: TIBTransaction write SetTransaction;
@@ -131,7 +131,7 @@ type
     FDatabase: TIBDatabase;
     FTransaction: TIBTransaction;
     FQueryList: TList;
-    FCurrentField: TField;
+//    FCurrentField: TField;
     FMasterDetail: TFourStringList;
     FTempMasterDetail: TFourStringList;
     FWasCreateTransaction: Boolean;
@@ -196,10 +196,10 @@ type
     procedure AssignTempStream(const AnStream: TStream);
     procedure Clear; override;
 
-    function AddDataSet(const AnName: String): Integer; overload; virtual;
-    function AddDataSet(const AnName: String; const AnDataSet: TDataSet): Integer; overload; virtual;
-    procedure AddDataSetList(const AnBaseQueryList: Variant); virtual;
-    procedure DeleteDataSet(const AnIndex: Integer); virtual;
+    function AddDataSet(const AnName: String): Integer; overload; {virtual;}
+    function AddDataSet(const AnName: String; const AnDataSet: TDataSet): Integer; overload; {virtual;}
+    procedure AddDataSetList(const AnBaseQueryList: Variant); {virtual;}
+    procedure DeleteDataSet(const AnIndex: Integer);
     procedure AddMasterDetail(const AnMasterTable, AnMasterField, AnDetailTable,
      AnDetailField: String);
 
@@ -238,7 +238,7 @@ begin
     else
       FDataSet := TIBQuery.Create(nil);
     FDataSet.Tag := 0;
-    FCurrentField := nil;
+//    FCurrentField := nil;
   end;
   FFetchBlob := False;
   FIndexFields := '';
@@ -713,7 +713,7 @@ begin
   FMasterDetail.Clear;
   FTempMasterDetail.Clear;
   FDataSourceList.Clear;
-  FCurrentField := nil;
+//  FCurrentField := nil;
 end;
 
 function TgsQueryList.Get_Self: Integer;
