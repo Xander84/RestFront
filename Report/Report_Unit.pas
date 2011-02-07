@@ -23,12 +23,7 @@ type
   end;
 
   //класс обёртка для совместимости
-  Tgs_fr4SingleReport = class(Tgs_fr4Report)
-  private
-
-  public
-
-  end;
+  Tgs_fr4SingleReport = class(Tgs_fr4Report);
 
 {
   Класс для работы с FR4
@@ -80,8 +75,8 @@ type
     property FrontBase: TFrontBase read FFrontBase write FFrontBase;
   end;
 
-  const
-    cn_RestParam = 'RestParam';
+const
+  cn_RestParam = 'RestParam';
 
 implementation
 
@@ -220,9 +215,9 @@ begin
         begin
           MemTable.Append;
           I := 0;
-          while i <= Query.FieldCount - 1 do
+          while I <= Query.FieldCount - 1 do
           begin
-            MemTable.Fields[i].AsString := Query.Fields[I].AsString;
+            MemTable.Fields[I].AsString := Query.Fields[I].AsString;
             Inc(I);
           end;
 
@@ -320,9 +315,9 @@ begin
         begin
           MemTable.Append;
           I := 0;
-          while i <= Query.FieldCount - 1 do
+          while I <= Query.FieldCount - 1 do
           begin
-            MemTable.Fields[i].AsString := Query.Fields[I].AsString;
+            MemTable.Fields[I].AsString := Query.Fields[I].AsString;
             Inc(I);
           end;
 
@@ -463,7 +458,7 @@ begin
               I := 0;
               while I <= Query.FieldCount - 1 do
               begin
-                MemTable.Fields[i].AsString := Query.Fields[I].AsString;
+                MemTable.Fields[I].AsString := Query.Fields[I].AsString;
                 Inc(I);
               end;
               MemTable.FieldbyName('GOODNAME').AsString := EndBold + '    ' + Query.FieldByName('modifyname').AsString;

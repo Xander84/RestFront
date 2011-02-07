@@ -169,28 +169,28 @@ begin
       Res := SetDeviceOpt(25, 1);
       ErrMessage(Res);
 
-      Res := SetOrderHeader(1, FrontBase.MN_Options.CheckLine1, 0);
+      Res := SetOrderHeader(1, FrontBase.Options.CheckLine1, 0);
       ErrMessage(Res);
 
-      Res := SetOrderHeader(2, FrontBase.MN_Options.CheckLine2, 0);
+      Res := SetOrderHeader(2, FrontBase.Options.CheckLine2, 0);
       ErrMessage(Res);
 
-      Res := SetOrderHeader(3, FrontBase.MN_Options.CheckLine3, 0);
+      Res := SetOrderHeader(3, FrontBase.Options.CheckLine3, 0);
       ErrMessage(Res);
 
-      Res := SetOrderHeader(4, FrontBase.MN_Options.CheckLine4, 0);
+      Res := SetOrderHeader(4, FrontBase.Options.CheckLine4, 0);
       ErrMessage(Res);
 
-      Res := SetOrderHeader(5, FrontBase.MN_Options.CheckLine5, 0);
+      Res := SetOrderHeader(5, FrontBase.Options.CheckLine5, 0);
       ErrMessage(Res);
 
-      Res := SetOrderHeader(6, FrontBase.MN_Options.CheckLine6, 0);
+      Res := SetOrderHeader(6, FrontBase.Options.CheckLine6, 0);
       ErrMessage(Res);
 
-      Res := SetOrderHeader(7, FrontBase.MN_Options.CheckLine7, 0);
+      Res := SetOrderHeader(7, FrontBase.Options.CheckLine7, 0);
       ErrMessage(Res);
 
-      Res := SetOrderHeader(8, FrontBase.MN_Options.CheckLine8, 0);
+      Res := SetOrderHeader(8, FrontBase.Options.CheckLine8, 0);
       ErrMessage(Res);
 
       Res := SetDescriptorText(42, 'Стол №');

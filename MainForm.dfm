@@ -1,6 +1,6 @@
 object RestMainForm: TRestMainForm
-  Left = 279
-  Top = 57
+  Left = 286
+  Top = 64
   BorderIcons = []
   Caption = 'RestMainForm'
   ClientHeight = 740
@@ -12,7 +12,7 @@ object RestMainForm: TRestMainForm
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
-  Position = poScreenCenter
+  Position = poDesktopCenter
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   PixelsPerInch = 96
@@ -30,7 +30,7 @@ object RestMainForm: TRestMainForm
       Top = 0
       Width = 934
       Height = 721
-      ActivePage = tsMain
+      ActivePage = tsManagerInfo
       ActiveFont.Charset = DEFAULT_CHARSET
       ActiveFont.Color = clWindowText
       ActiveFont.Height = -11
@@ -1294,6 +1294,278 @@ object RestMainForm: TRestMainForm
           end
         end
       end
+      object tsManagerInfo: TAdvTabSheet
+        Caption = 'ManagerInfo'
+        Color = clBtnFace
+        ColorTo = clNone
+        TabColor = clBtnFace
+        TabColorTo = clNone
+        object pnlManagerInfo: TPanel
+          Left = 0
+          Top = 0
+          Width = 934
+          Height = 701
+          Align = alClient
+          BevelOuter = bvNone
+          TabOrder = 0
+          object spInfo: TSplitter
+            Left = 0
+            Top = 404
+            Width = 934
+            Height = 4
+            Cursor = crVSplit
+            Align = alBottom
+            ExplicitTop = 405
+          end
+          object pnlInfoBottom: TPanel
+            Left = 0
+            Top = 408
+            Width = 934
+            Height = 293
+            Align = alBottom
+            BevelOuter = bvNone
+            TabOrder = 0
+            object DBGrInfoLine: TDBGridEh
+              Left = 0
+              Top = 0
+              Width = 934
+              Height = 293
+              Align = alClient
+              Flat = False
+              FooterColor = clWindow
+              FooterFont.Charset = DEFAULT_CHARSET
+              FooterFont.Color = clWindowText
+              FooterFont.Height = -11
+              FooterFont.Name = 'MS Sans Serif'
+              FooterFont.Style = []
+              Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit]
+              ReadOnly = True
+              TabOrder = 0
+              TitleFont.Charset = DEFAULT_CHARSET
+              TitleFont.Color = clWindowText
+              TitleFont.Height = -11
+              TitleFont.Name = 'MS Sans Serif'
+              TitleFont.Style = []
+              OnAdvDrawDataCell = DBGrInfoLineAdvDrawDataCell
+              Columns = <
+                item
+                  EditButtons = <>
+                  FieldName = 'USR$MN_PRINTDATE'
+                  Footers = <>
+                  Title.Caption = #1044#1072#1090#1072' '#1087#1077#1095#1072#1090#1080
+                  Width = 78
+                end
+                item
+                  EditButtons = <>
+                  FieldName = 'NUMBER'
+                  Footers = <>
+                  Title.Caption = #1053#1086#1084#1077#1088
+                end
+                item
+                  EditButtons = <>
+                  FieldName = 'DOCUMENTDATE'
+                  Footers = <>
+                  Title.Caption = #1044#1072#1090#1072
+                end
+                item
+                  EditButtons = <>
+                  FieldName = 'U_USR$GOODKEY_NAME'
+                  Footers = <>
+                  Title.Caption = #1041#1083#1102#1076#1086
+                end
+                item
+                  EditButtons = <>
+                  FieldName = 'CREATIONDATE'
+                  Footers = <>
+                  Title.Caption = #1044#1072#1090#1072' '#1089#1086#1079#1076#1072#1085#1080#1103
+                end
+                item
+                  EditButtons = <>
+                  FieldName = 'USR$COSTNCU'
+                  Footers = <>
+                  Title.Caption = #1062#1077#1085#1072
+                end
+                item
+                  EditButtons = <>
+                  FieldName = 'USR$QUANTITY'
+                  Footers = <>
+                  Title.Caption = #1050#1086#1083'-'#1074#1086
+                end
+                item
+                  EditButtons = <>
+                  FieldName = 'USR$SUMNCU'
+                  Footers = <>
+                  Title.Caption = #1057#1091#1084#1084#1072
+                end
+                item
+                  EditButtons = <>
+                  FieldName = 'USR$PERSDISCOUNT'
+                  Footers = <>
+                  Title.Caption = '% '#1089#1082#1080#1076#1082#1080
+                end
+                item
+                  EditButtons = <>
+                  FieldName = 'USR$COSTNCUWITHDISCOUNT'
+                  Footers = <>
+                  Title.Caption = #1062#1077#1085#1072' '#1089#1086' '#1089#1082#1080#1076#1082#1086#1081
+                end
+                item
+                  EditButtons = <>
+                  FieldName = 'USR$SUMDISCOUNT'
+                  Footers = <>
+                  Title.Caption = #1057#1091#1084#1084#1072' '#1089#1082#1080#1076#1082#1080
+                end
+                item
+                  EditButtons = <>
+                  FieldName = 'USR$SUMNCUWITHDISCOUNT'
+                  Footers = <>
+                  Title.Caption = #1057#1091#1084#1084#1072' '#1089#1086' '#1089#1082#1080#1076#1082#1086#1081
+                end
+                item
+                  EditButtons = <>
+                  FieldName = 'USR$DELETEAMOUNT'
+                  Footers = <>
+                  Title.Caption = #1050#1086#1083'-'#1074#1086' '#1091#1076#1072#1083#1077#1085#1085#1086#1077
+                end
+                item
+                  EditButtons = <>
+                  FieldName = 'U_USR$CAUSEDELETEKEY_USR$NAME'
+                  Footers = <>
+                  Title.Caption = #1055#1088#1080#1095#1080#1085#1072' '#1091#1076#1072#1083#1077#1085#1080#1103
+                end>
+            end
+          end
+          object pnlInfoTop: TPanel
+            Left = 0
+            Top = 0
+            Width = 934
+            Height = 404
+            Align = alClient
+            BevelOuter = bvNone
+            TabOrder = 1
+            object DBGrInfoHeader: TDBGridEh
+              Left = 0
+              Top = 0
+              Width = 934
+              Height = 404
+              Align = alClient
+              Flat = False
+              FooterColor = clWindow
+              FooterFont.Charset = DEFAULT_CHARSET
+              FooterFont.Color = clWindowText
+              FooterFont.Height = -11
+              FooterFont.Name = 'MS Sans Serif'
+              FooterFont.Style = []
+              Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit]
+              ReadOnly = True
+              TabOrder = 0
+              TitleFont.Charset = DEFAULT_CHARSET
+              TitleFont.Color = clWindowText
+              TitleFont.Height = -11
+              TitleFont.Name = 'MS Sans Serif'
+              TitleFont.Style = []
+              OnAdvDrawDataCell = DBGrInfoHeaderAdvDrawDataCell
+              Columns = <
+                item
+                  EditButtons = <>
+                  FieldName = 'NUMBER'
+                  Footers = <>
+                  Title.Caption = #1053#1086#1084#1077#1088
+                end
+                item
+                  EditButtons = <>
+                  FieldName = 'U_USR$RESPKEY_NAME'
+                  Footers = <>
+                  Title.Caption = #1054#1092#1080#1094#1080#1072#1085#1090
+                end
+                item
+                  EditButtons = <>
+                  FieldName = 'USR$LOGICDATE'
+                  Footers = <>
+                  Title.Caption = #1051#1086#1075#1080#1095#1077#1089#1082#1072#1103' '#1076#1072#1090#1072
+                end
+                item
+                  EditButtons = <>
+                  FieldName = 'DOCUMENTDATE'
+                  Footers = <>
+                  Title.Caption = #1044#1072#1090#1072
+                end
+                item
+                  EditButtons = <>
+                  FieldName = 'USR$SUMNCUWITHDISCOUNT'
+                  Footers = <>
+                  Title.Caption = #1057#1091#1084#1084#1072' '#1089#1086' '#1089#1082#1080#1076#1082#1086#1081
+                end
+                item
+                  EditButtons = <>
+                  FieldName = 'USR$DISCOUNTNCU'
+                  Footers = <>
+                  Title.Caption = #1057#1091#1084#1084#1072' '#1089#1082#1080#1076#1082#1080
+                end
+                item
+                  EditButtons = <>
+                  FieldName = 'USR$GUESTCOUNT'
+                  Footers = <>
+                  Title.Caption = #1050#1086#1083#1080#1095#1077#1089#1090#1074#1086' '#1075#1086#1089#1090#1077#1081
+                end
+                item
+                  EditButtons = <>
+                  FieldName = 'USR$TIMEORDER'
+                  Footers = <>
+                  Title.Caption = #1042#1088#1077#1084#1103' '#1085#1072#1095#1072#1083#1072
+                end
+                item
+                  EditButtons = <>
+                  FieldName = 'USR$TIMECLOSEORDER'
+                  Footers = <>
+                  Title.Caption = #1042#1088#1077#1084#1103' '#1079#1072#1082#1088#1099#1090#1080#1103
+                end
+                item
+                  EditButtons = <>
+                  FieldName = 'CREATIONDATE'
+                  Footers = <>
+                  Title.Caption = #1044#1072#1090#1072' '#1089#1086#1079#1076#1072#1085#1080#1103
+                end
+                item
+                  EditButtons = <>
+                  FieldName = 'USR$REGISTER'
+                  Footers = <>
+                  Title.Caption = #1050#1072#1089#1089#1072
+                end
+                item
+                  EditButtons = <>
+                  FieldName = 'EDITIONDATE'
+                  Footers = <>
+                  Title.Caption = #1044#1072#1090#1072' '#1080#1079#1084#1077#1085#1077#1085#1080#1103
+                end
+                item
+                  EditButtons = <>
+                  FieldName = 'U_USR$WHOPAYOFFKEY_NAME'
+                  Footers = <>
+                  Title.Caption = #1050#1090#1086' '#1074#1085#1077#1089' '#1086#1087#1083#1072#1090#1091
+                end
+                item
+                  EditButtons = <>
+                  FieldName = 'USR$FIRSTNAME'
+                  Footers = <>
+                  Title.Caption = #1048#1084#1103
+                end
+                item
+                  EditButtons = <>
+                  FieldName = 'USR$MIDDLENAME'
+                  Footers = <>
+                  Title.Caption = #1054#1090#1095#1077#1089#1090#1074#1086
+                end
+                item
+                  EditButtons = <>
+                  FieldName = 'USR$SURNAME'
+                  Footers = <>
+                  Title.Caption = #1060#1072#1084#1080#1083#1080#1103
+                end>
+            end
+          end
+        end
+      end
     end
     object sbMain: TStatusBar
       Left = 0
@@ -1315,7 +1587,7 @@ object RestMainForm: TRestMainForm
         Top = 1
         Width = 80
         Height = 719
-        ActivePage = tsOrderButton
+        ActivePage = tsManagerInfoButton
         ActiveFont.Charset = DEFAULT_CHARSET
         ActiveFont.Color = clWindowText
         ActiveFont.Height = -11
@@ -1334,7 +1606,7 @@ object RestMainForm: TRestMainForm
           TabColor = clBtnFace
           TabColorTo = clNone
           object btnExitWindows: TAdvSmoothButton
-            Left = 0
+            Left = 4
             Top = 1
             Width = 72
             Height = 50
@@ -1364,7 +1636,7 @@ object RestMainForm: TRestMainForm
             Version = '1.6.9.0'
           end
           object btnRestartRest: TAdvSmoothButton
-            Left = 0
+            Left = 4
             Top = 55
             Width = 72
             Height = 50
@@ -1394,7 +1666,7 @@ object RestMainForm: TRestMainForm
             Version = '1.6.9.0'
           end
           object btnShowKeyBoard: TAdvSmoothButton
-            Left = 0
+            Left = 4
             Top = 112
             Width = 72
             Height = 50
@@ -1433,7 +1705,7 @@ object RestMainForm: TRestMainForm
           TabColor = clBtnFace
           TabColorTo = clNone
           object btnAddQuantity: TAdvSmoothButton
-            Left = 0
+            Left = 4
             Top = 1
             Width = 72
             Height = 50
@@ -1465,7 +1737,7 @@ object RestMainForm: TRestMainForm
             Version = '1.6.9.0'
           end
           object btnRemoveQuantity: TAdvSmoothButton
-            Left = 0
+            Left = 4
             Top = 56
             Width = 72
             Height = 50
@@ -1496,7 +1768,7 @@ object RestMainForm: TRestMainForm
             Version = '1.6.9.0'
           end
           object btnDeletePosition: TAdvSmoothButton
-            Left = 0
+            Left = 4
             Top = 112
             Width = 72
             Height = 50
@@ -1526,7 +1798,7 @@ object RestMainForm: TRestMainForm
             Version = '1.6.9.0'
           end
           object btnCutCheck: TAdvSmoothButton
-            Left = 0
+            Left = 4
             Top = 168
             Width = 72
             Height = 50
@@ -1556,7 +1828,7 @@ object RestMainForm: TRestMainForm
             Version = '1.6.9.0'
           end
           object btnPreCheck: TAdvSmoothButton
-            Left = 0
+            Left = 4
             Top = 224
             Width = 72
             Height = 50
@@ -1586,7 +1858,7 @@ object RestMainForm: TRestMainForm
             Version = '1.6.9.0'
           end
           object btnCancelPreCheck: TAdvSmoothButton
-            Left = 0
+            Left = 4
             Top = 280
             Width = 72
             Height = 50
@@ -1616,7 +1888,7 @@ object RestMainForm: TRestMainForm
             Version = '1.6.9.0'
           end
           object btnModification: TAdvSmoothButton
-            Left = 0
+            Left = 4
             Top = 336
             Width = 72
             Height = 50
@@ -1646,7 +1918,7 @@ object RestMainForm: TRestMainForm
             Version = '1.6.9.0'
           end
           object btnKeyBoard: TAdvSmoothButton
-            Left = 0
+            Left = 4
             Top = 392
             Width = 72
             Height = 50
@@ -1677,7 +1949,7 @@ object RestMainForm: TRestMainForm
             Version = '1.6.9.0'
           end
           object btnDiscount: TAdvSmoothButton
-            Left = 0
+            Left = 4
             Top = 448
             Width = 72
             Height = 50
@@ -1707,7 +1979,7 @@ object RestMainForm: TRestMainForm
             Version = '1.6.9.0'
           end
           object btnPay: TAdvSmoothButton
-            Left = 0
+            Left = 4
             Top = 504
             Width = 72
             Height = 50
@@ -1737,7 +2009,7 @@ object RestMainForm: TRestMainForm
             Version = '1.6.9.0'
           end
           object btnDevide: TAdvSmoothButton
-            Left = 0
+            Left = 4
             Top = 560
             Width = 72
             Height = 50
@@ -1775,8 +2047,8 @@ object RestMainForm: TRestMainForm
           TabColor = clBtnFace
           TabColorTo = clNone
           object btnAdminOptions: TAdvSmoothButton
-            Left = -1
-            Top = 56
+            Left = 4
+            Top = 55
             Width = 72
             Height = 50
             Action = actAdminOptions
@@ -1805,7 +2077,7 @@ object RestMainForm: TRestMainForm
             Version = '1.6.9.0'
           end
           object btnCashForm: TAdvSmoothButton
-            Left = 0
+            Left = 4
             Top = 1
             Width = 72
             Height = 50
@@ -1835,7 +2107,7 @@ object RestMainForm: TRestMainForm
             Version = '1.6.9.0'
           end
           object btnAllChecks: TAdvSmoothButton
-            Left = -1
+            Left = 4
             Top = 111
             Width = 72
             Height = 50
@@ -1863,6 +2135,278 @@ object RestMainForm: TRestMainForm
             ParentFont = False
             TabOrder = 2
             Version = '1.6.9.0'
+          end
+          object btnManagerInfo: TAdvSmoothButton
+            Left = 4
+            Top = 167
+            Width = 72
+            Height = 50
+            Action = actManagerInfo
+            Appearance.Font.Charset = DEFAULT_CHARSET
+            Appearance.Font.Color = clWindowText
+            Appearance.Font.Height = -13
+            Appearance.Font.Name = 'Times New Roman'
+            Appearance.Font.Style = [fsBold]
+            Status.Caption = '0'
+            Status.Appearance.Fill.Color = clRed
+            Status.Appearance.Fill.ColorMirror = clNone
+            Status.Appearance.Fill.ColorMirrorTo = clNone
+            Status.Appearance.Fill.GradientType = gtSolid
+            Status.Appearance.Fill.BorderColor = clGray
+            Status.Appearance.Fill.Rounding = 0
+            Status.Appearance.Fill.ShadowOffset = 0
+            Status.Appearance.Font.Charset = DEFAULT_CHARSET
+            Status.Appearance.Font.Color = clWhite
+            Status.Appearance.Font.Height = -11
+            Status.Appearance.Font.Name = 'Tahoma'
+            Status.Appearance.Font.Style = []
+            Bevel = False
+            Color = 15195349
+            ParentFont = False
+            TabOrder = 3
+            Version = '1.6.9.0'
+          end
+        end
+        object tsManagerInfoButton: TAdvTabSheet
+          Caption = 'tsManagerInfoButton'
+          Color = 14986888
+          ColorTo = clNone
+          TabColor = clBtnFace
+          TabColorTo = clNone
+          object xDateBegin: TDateTimePicker
+            Left = 3
+            Top = 8
+            Width = 73
+            Height = 33
+            Date = 40569.698956435180000000
+            Time = 40569.698956435180000000
+            TabOrder = 0
+          end
+          object xDateEnd: TDateTimePicker
+            Left = 3
+            Top = 47
+            Width = 73
+            Height = 33
+            Date = 40569.698956435180000000
+            Time = 40569.698956435180000000
+            TabOrder = 1
+          end
+          object usrg_BitBtn5: TBitBtn
+            Left = 3
+            Top = 385
+            Width = 75
+            Height = 33
+            Caption = #1042#1099#1088#1091#1095#1082#1072
+            DoubleBuffered = True
+            ParentDoubleBuffered = False
+            TabOrder = 2
+            Visible = False
+          end
+          object usrg_BitBtn12: TBitBtn
+            Left = 3
+            Top = 424
+            Width = 75
+            Height = 33
+            Caption = #1055#1088#1077#1095#1077#1082
+            DoubleBuffered = True
+            ParentDoubleBuffered = False
+            TabOrder = 3
+            Visible = False
+          end
+          object usrg_Button1: TButton
+            Left = 2
+            Top = 463
+            Width = 76
+            Height = 33
+            Caption = #1056#1077#1077#1089#1090#1088
+            TabOrder = 4
+            Visible = False
+          end
+          object btnExitManagerInfo: TAdvSmoothButton
+            Left = 4
+            Top = 644
+            Width = 72
+            Height = 50
+            Appearance.Font.Charset = DEFAULT_CHARSET
+            Appearance.Font.Color = clWindowText
+            Appearance.Font.Height = -13
+            Appearance.Font.Name = 'Times New Roman'
+            Appearance.Font.Style = [fsBold]
+            Status.Caption = '0'
+            Status.Appearance.Fill.Color = clRed
+            Status.Appearance.Fill.ColorMirror = clNone
+            Status.Appearance.Fill.ColorMirrorTo = clNone
+            Status.Appearance.Fill.GradientType = gtSolid
+            Status.Appearance.Fill.BorderColor = clGray
+            Status.Appearance.Fill.Rounding = 0
+            Status.Appearance.Fill.ShadowOffset = 0
+            Status.Appearance.Font.Charset = DEFAULT_CHARSET
+            Status.Appearance.Font.Color = clWhite
+            Status.Appearance.Font.Height = -11
+            Status.Appearance.Font.Name = 'Tahoma'
+            Status.Appearance.Font.Style = []
+            Bevel = False
+            Caption = #1054#1050
+            Color = 14922381
+            ParentFont = False
+            TabOrder = 5
+            Version = '1.6.9.0'
+            OnClick = btnExitManagerInfoClick
+          end
+          object btnWithPrecheck: TAdvSmoothButton
+            Left = 3
+            Top = 142
+            Width = 72
+            Height = 50
+            Appearance.Font.Charset = DEFAULT_CHARSET
+            Appearance.Font.Color = clWindowText
+            Appearance.Font.Height = -13
+            Appearance.Font.Name = 'Times New Roman'
+            Appearance.Font.Style = [fsBold]
+            Status.Caption = '0'
+            Status.Appearance.Fill.Color = clRed
+            Status.Appearance.Fill.ColorMirror = clNone
+            Status.Appearance.Fill.ColorMirrorTo = clNone
+            Status.Appearance.Fill.GradientType = gtSolid
+            Status.Appearance.Fill.BorderColor = clGray
+            Status.Appearance.Fill.Rounding = 0
+            Status.Appearance.Fill.ShadowOffset = 0
+            Status.Appearance.Font.Charset = DEFAULT_CHARSET
+            Status.Appearance.Font.Color = clWhite
+            Status.Appearance.Font.Height = -11
+            Status.Appearance.Font.Name = 'Tahoma'
+            Status.Appearance.Font.Style = []
+            Bevel = False
+            Caption = #1057' '#1087#1088#1077#1095#1077#1082#1072#1084#1080
+            Color = 14922381
+            ParentFont = False
+            TabOrder = 6
+            Version = '1.6.9.0'
+            OnClick = btnWithPrecheckClick
+          end
+          object btnWithoutPrecheck: TAdvSmoothButton
+            Left = 3
+            Top = 198
+            Width = 72
+            Height = 50
+            Appearance.Font.Charset = DEFAULT_CHARSET
+            Appearance.Font.Color = clWindowText
+            Appearance.Font.Height = -13
+            Appearance.Font.Name = 'Times New Roman'
+            Appearance.Font.Style = [fsBold]
+            Status.Caption = '0'
+            Status.Appearance.Fill.Color = clRed
+            Status.Appearance.Fill.ColorMirror = clNone
+            Status.Appearance.Fill.ColorMirrorTo = clNone
+            Status.Appearance.Fill.GradientType = gtSolid
+            Status.Appearance.Fill.BorderColor = clGray
+            Status.Appearance.Fill.Rounding = 0
+            Status.Appearance.Fill.ShadowOffset = 0
+            Status.Appearance.Font.Charset = DEFAULT_CHARSET
+            Status.Appearance.Font.Color = clWhite
+            Status.Appearance.Font.Height = -11
+            Status.Appearance.Font.Name = 'Tahoma'
+            Status.Appearance.Font.Style = []
+            Bevel = False
+            Caption = #1041#1077#1079' '#1087#1088#1077#1095#1077#1082#1086#1074
+            Color = 14922381
+            ParentFont = False
+            TabOrder = 7
+            Version = '1.6.9.0'
+            OnClick = btnWithoutPrecheckClick
+          end
+          object btnPayed: TAdvSmoothButton
+            Left = 3
+            Top = 254
+            Width = 72
+            Height = 50
+            Appearance.Font.Charset = DEFAULT_CHARSET
+            Appearance.Font.Color = clWindowText
+            Appearance.Font.Height = -13
+            Appearance.Font.Name = 'Times New Roman'
+            Appearance.Font.Style = [fsBold]
+            Status.Caption = '0'
+            Status.Appearance.Fill.Color = clRed
+            Status.Appearance.Fill.ColorMirror = clNone
+            Status.Appearance.Fill.ColorMirrorTo = clNone
+            Status.Appearance.Fill.GradientType = gtSolid
+            Status.Appearance.Fill.BorderColor = clGray
+            Status.Appearance.Fill.Rounding = 0
+            Status.Appearance.Fill.ShadowOffset = 0
+            Status.Appearance.Font.Charset = DEFAULT_CHARSET
+            Status.Appearance.Font.Color = clWhite
+            Status.Appearance.Font.Height = -11
+            Status.Appearance.Font.Name = 'Tahoma'
+            Status.Appearance.Font.Style = []
+            Bevel = False
+            Caption = #1054#1087#1083#1072#1095#1077#1085#1085#1099#1077
+            Color = 14922381
+            ParentFont = False
+            TabOrder = 8
+            Version = '1.6.9.0'
+            OnClick = btnPayedClick
+          end
+          object btnNotPayed: TAdvSmoothButton
+            Left = 3
+            Top = 310
+            Width = 72
+            Height = 50
+            Appearance.Font.Charset = DEFAULT_CHARSET
+            Appearance.Font.Color = clWindowText
+            Appearance.Font.Height = -13
+            Appearance.Font.Name = 'Times New Roman'
+            Appearance.Font.Style = [fsBold]
+            Status.Caption = '0'
+            Status.Appearance.Fill.Color = clRed
+            Status.Appearance.Fill.ColorMirror = clNone
+            Status.Appearance.Fill.ColorMirrorTo = clNone
+            Status.Appearance.Fill.GradientType = gtSolid
+            Status.Appearance.Fill.BorderColor = clGray
+            Status.Appearance.Fill.Rounding = 0
+            Status.Appearance.Fill.ShadowOffset = 0
+            Status.Appearance.Font.Charset = DEFAULT_CHARSET
+            Status.Appearance.Font.Color = clWhite
+            Status.Appearance.Font.Height = -11
+            Status.Appearance.Font.Name = 'Tahoma'
+            Status.Appearance.Font.Style = []
+            Bevel = False
+            Caption = #1053#1077#1086#1087#1083#1072#1095#1077#1085#1085#1099#1077
+            Color = 14922381
+            ParentFont = False
+            TabOrder = 9
+            Version = '1.6.9.0'
+            OnClick = btnNotPayedClick
+          end
+          object btnAllChec: TAdvSmoothButton
+            Left = 3
+            Top = 86
+            Width = 72
+            Height = 50
+            Appearance.Font.Charset = DEFAULT_CHARSET
+            Appearance.Font.Color = clWindowText
+            Appearance.Font.Height = -13
+            Appearance.Font.Name = 'Times New Roman'
+            Appearance.Font.Style = [fsBold]
+            Status.Caption = '0'
+            Status.Appearance.Fill.Color = clRed
+            Status.Appearance.Fill.ColorMirror = clNone
+            Status.Appearance.Fill.ColorMirrorTo = clNone
+            Status.Appearance.Fill.GradientType = gtSolid
+            Status.Appearance.Fill.BorderColor = clGray
+            Status.Appearance.Fill.Rounding = 0
+            Status.Appearance.Fill.ShadowOffset = 0
+            Status.Appearance.Font.Charset = DEFAULT_CHARSET
+            Status.Appearance.Font.Color = clWhite
+            Status.Appearance.Font.Height = -11
+            Status.Appearance.Font.Name = 'Tahoma'
+            Status.Appearance.Font.Style = []
+            Bevel = False
+            Caption = #1042#1089#1077' '#1095#1077#1082#1080
+            Color = 14922381
+            ParentFont = False
+            TabOrder = 10
+            Version = '1.6.9.0'
+            OnClick = btnAllChecClick
           end
         end
       end
@@ -2017,14 +2561,28 @@ object RestMainForm: TRestMainForm
       OnExecute = actAllChecksExecute
       OnUpdate = actAllChecksUpdate
     end
+    object actManagerInfo: TAction
+      Category = 'menu'
+      Caption = #1042#1099#1088#1091#1095#1082#1072
+      OnExecute = actManagerInfoExecute
+      OnUpdate = actManagerInfoUpdate
+    end
   end
   object dsMain: TDataSource
-    Left = 536
+    Left = 568
     Top = 64
   end
   object TouchKeyBoard: TAdvSmoothPopupTouchKeyBoard
     KeyboardType = ktQWERTY
-    Left = 424
+    Left = 440
     Top = 64
+  end
+  object dsHeaderInfo: TDataSource
+    Left = 440
+    Top = 144
+  end
+  object dsLineInfo: TDataSource
+    Left = 512
+    Top = 144
   end
 end

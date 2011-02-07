@@ -1,7 +1,7 @@
 unit MainForm;
 
 {$WARN SYMBOL_PLATFORM OFF}
-{$I RestFront.Inc}
+{$I RestFront.inc}
 {Были сделаны изменения в компоненте TAdvPageControl что бы не отображалась граница}
 
 interface
@@ -12,7 +12,8 @@ uses
   Contnrs, kbmMemTable, DBGridEh, GridsEh, FiscalRegister_Unit,
   SplitOrderForm_Unit, Report_Unit, FrontData_Unit, BaseFrontForm_Unit,
   AdvSmoothButton, AdvPanel, AdvPageControl, AdvSmoothTouchKeyBoard,
-  TaskDialog, FrontLog_Unit, Grids, Menus, AddUserForm_unit, AdminForm_Unit;
+  TaskDialog, FrontLog_Unit, Grids, Menus, AddUserForm_unit, AdminForm_Unit,
+  Buttons;
 
 const
   btnHeight = 65;
@@ -31,8 +32,6 @@ const
   btnFirstTop = 8;
   btnColor = $00E7DCD5;
 
-{ TODO -oAlexander : Реализовать форму выбора параметров }
-
 {
 Для удаления мерцания компонентов использую
   LockWindowUpdate(TForm(Self).Handle);
@@ -49,7 +48,7 @@ type
   //редактирование заказа
   //окно менеджера
   //окно менеджера для разделения
-  TRestState = (Pass, OrderMenu, MenuInfo, ManagerPage, ManagerChooseOrder);
+  TRestState = (Pass, OrderMenu, MenuInfo, ManagerPage, ManagerChooseOrder, ManagerInfo);
 
   TRestMainForm = class(TBaseFrontForm)
     pnlMain: TPanel;
@@ -150,6 +149,29 @@ type
     actAdminOptions: TAction;
     btnAllChecks: TAdvSmoothButton;
     actAllChecks: TAction;
+    tsManagerInfo: TAdvTabSheet;
+    tsManagerInfoButton: TAdvTabSheet;
+    xDateBegin: TDateTimePicker;
+    xDateEnd: TDateTimePicker;
+    usrg_BitBtn5: TBitBtn;
+    usrg_BitBtn12: TBitBtn;
+    usrg_Button1: TButton;
+    dsHeaderInfo: TDataSource;
+    dsLineInfo: TDataSource;
+    pnlManagerInfo: TPanel;
+    pnlInfoBottom: TPanel;
+    spInfo: TSplitter;
+    pnlInfoTop: TPanel;
+    DBGrInfoHeader: TDBGridEh;
+    DBGrInfoLine: TDBGridEh;
+    btnManagerInfo: TAdvSmoothButton;
+    actManagerInfo: TAction;
+    btnExitManagerInfo: TAdvSmoothButton;
+    btnWithPrecheck: TAdvSmoothButton;
+    btnWithoutPrecheck: TAdvSmoothButton;
+    btnPayed: TAdvSmoothButton;
+    btnNotPayed: TAdvSmoothButton;
+    btnAllChec: TAdvSmoothButton;
 
     //Проверка введёного пароля
     procedure actPassEnterExecute(Sender: TObject);
@@ -201,6 +223,20 @@ type
     procedure actAdminOptionsExecute(Sender: TObject);
     procedure actAllChecksExecute(Sender: TObject);
     procedure actAllChecksUpdate(Sender: TObject);
+    procedure actManagerInfoExecute(Sender: TObject);
+    procedure actManagerInfoUpdate(Sender: TObject);
+    procedure btnExitManagerInfoClick(Sender: TObject);
+    procedure DBGrInfoLineAdvDrawDataCell(Sender: TCustomDBGridEh; Cell,
+      AreaCell: TGridCoord; Column: TColumnEh; const ARect: TRect;
+      var Params: TColCellParamsEh; var Processed: Boolean);
+    procedure btnAllChecClick(Sender: TObject);
+    procedure btnWithPrecheckClick(Sender: TObject);
+    procedure btnWithoutPrecheckClick(Sender: TObject);
+    procedure btnPayedClick(Sender: TObject);
+    procedure btnNotPayedClick(Sender: TObject);
+    procedure DBGrInfoHeaderAdvDrawDataCell(Sender: TCustomDBGridEh; Cell,
+      AreaCell: TGridCoord; Column: TColumnEh; const ARect: TRect;
+      var Params: TColCellParamsEh; var Processed: Boolean);
 
   private
     //Компонент обращения к БД
@@ -209,7 +245,6 @@ type
     FFiscal: TFiscalRegister;
     // FR4
     FReport: TRestReport;
-
     //Наборы данных
     FOrderDataSet: TkbmMemTable;
     FMenuDataSet : TkbmMemTable;
@@ -218,6 +253,9 @@ type
 
     FHeaderTable : TkbmMemTable;
     FLineTable   : TkbmMemTable;
+
+    FHeaderInfoTable : TkbmMemTable;
+    FLineInfoTable   : TkbmMemTable;
     //для связи позиция - модификатор
     FMasterDataSource: TDataSource;
     FModificationDataSet: TkbmMemTable;
@@ -323,7 +361,6 @@ type
 
     procedure VertScrollControl(const FControl: TWinControl; const ToRight: Boolean;
       var Left: Integer; var Right: Integer);
-    //
 
     procedure SetFormState(const Value: TRestState);
     property FormState: TRestState read FFormState write SetFormState;
@@ -337,9 +374,9 @@ type
     procedure OnAfterPostHeader(DataSet: TDataSet);
     procedure OnAfterPost(DataSet: TDataSet); ///!!!!
     procedure OnAfterDelete(DataSet: TDataSet);
+    procedure AfterLoadManagerInfo;
   public
-
-
+    //
   end;
 
 var
@@ -349,8 +386,8 @@ implementation
 
 uses
   SysUtils, GuestForm_unit, DeleteOrderLine_unit, OrderNumber_Unit,
-  {Pole_Display_Unit,} Modification_Unit, DevideForm_Unit,
-  SellParamForm_Unit, {Math,} PercOrCardForm_Unit, DiscountTypeForm_Unit,
+  Modification_Unit, DevideForm_Unit,
+  SellParamForm_Unit, PercOrCardForm_Unit, DiscountTypeForm_Unit,
   ChooseDiscountCardForm_Unit, EditReportForm_Unit, JclMiscel,
   GDIPPictureContainer, IB, GDIPFill, CashForm_Unit;
 
@@ -379,29 +416,11 @@ procedure TRestMainForm.FormCreate(Sender: TObject);
 begin
   {$IFDEF NEW_TABCONTROL}
   btnBackToMenu.Left := btnBackToMenu.Left + 4;
-
-  btnAdminOptions.Left := btnAdminOptions.Left + 4;
-  btnCashForm.Left := btnCashForm.Left + 4;
-  btnAllChecks.Left := btnAllChecks.Left + 4;
-
-  btnAddQuantity.Left := btnAddQuantity.Left + 4;
-  btnRemoveQuantity.Left := btnRemoveQuantity.Left + 4;
-  btnDeletePosition.Left := btnDeletePosition.Left + 4;
-  btnCutCheck.Left := btnCutCheck.Left + 4;
-  btnPreCheck.Left := btnPreCheck.Left + 4;
-  btnCancelPreCheck.Left := btnCancelPreCheck.Left + 4;
-  btnModification.Left := btnModification.Left + 4;
-  btnKeyBoard.Left := btnKeyBoard.Left + 4;
-  btnDiscount.Left := btnDiscount.Left + 4;
-  btnPay.Left := btnPay.Left + 4;
-  btnDevide.Left := btnDevide.Left + 4;
-
-  btnExitWindows.Left := btnExitWindows.Left + 4;
-  btnRestartRest.Left := btnRestartRest.Left + 4;
-  btnShowKeyBoard.Left := btnShowKeyBoard.Left + 4;
   {$ENDIF}
 
-  SetupGrid(DBGrMain); 
+  SetupGrid(DBGrMain);
+  SetupGrid(DBGrInfoHeader);
+  SetupGrid(DBGrInfoLine);
 
   Height := cn_Height;
   Width := cn_Width;
@@ -478,6 +497,10 @@ begin
   // инчае будет AV при уничтожения грида
   if Assigned(dsMain.DataSet) then
     dsMain.DataSet := nil;
+  if Assigned(dsHeaderInfo.DataSet) then
+    dsHeaderInfo.DataSet := nil;
+  if Assigned(dsLineInfo.DataSet) then
+    dsLineInfo.DataSet := nil;
 
   FreeAndNil(FOrderDataSet);
   FreeAndNil(FMenuDataSet);
@@ -488,6 +511,11 @@ begin
   FreeAndNil(FMasterDataSource);
   FreeAndNil(FLineTable);
   FreeAndNil(FHeaderTable);
+
+  if Assigned(FHeaderInfoTable) then
+    FreeAndNil(FHeaderInfoTable);
+  if Assigned(FLineInfoTable) then
+    FreeAndNil(FLineInfoTable);
 
   FMenuButtonList.Free;
   FOrderButtonList.Free;
@@ -554,7 +582,7 @@ begin
   FLineTable.BeforePost := OnBeforePostLine;
   FLineTable.AfterDelete := OnAfterDelete;
 //  FLineTable.Filter := '([usr$quantity] > 0) AND ([usr$causedeletekey] IS NULL) ';
-  FLineTable.Filtered := True;
+//  FLineTable.Filtered := True;
   FLineTable.Open;
 
   FMasterDataSource := TDataSource.Create(nil);
@@ -587,7 +615,7 @@ begin
     FButton.Height := btnHeight;
     FButton.Width  := btnWidth;
     //проверяем, есть ли ещё место в ряду
-    if (FLastLeftButton + {btnFirstTop} + btnWidth) > tsUserOrder.Width then
+    if (FLastLeftButton + btnWidth) > tsUserOrder.Width then
     begin
       FLastTopButton := FLastTopButton + btnHeight + btnFirstTop;
       FLastLeftButton := btnFirstTop {$IFDEF NEW_TABCONTROL} + 4 {$ENDIF};
@@ -954,7 +982,7 @@ begin
       end;
     end;
     FLineTable.Edit;
-    FLineTable.FieldByName('usr$goodkey').AsInteger := Goodkey;
+    FLineTable.FieldByName('usr$goodkey').AsInteger := GoodKey;
     FLineTable.FieldByName('GOODNAME').AsString := FGoodDataSet.FieldByName('NAME').AsString;
     FLineTable.FieldByName('usr$quantity').AsInteger := 1;
     FLineTable.FieldByName('usr$costncu').AsCurrency := FGoodDataSet.FieldByName('COST').AsCurrency;
@@ -1104,6 +1132,11 @@ begin
   FormState := MenuInfo;
 end;
 
+procedure TRestMainForm.btnExitManagerInfoClick(Sender: TObject);
+begin
+  actOK.Execute;
+end;
+
 procedure TRestMainForm.btnNewOrderClick(Sender: TObject);
 var
   FOrderForm: TOrderNumber;
@@ -1186,6 +1219,17 @@ begin
         FormState := Pass;
 
       end;
+
+    ManagerInfo:
+      begin
+        dsHeaderInfo.DataSet := nil;
+        dsLineInfo.DataSet := nil;
+        FHeaderInfoTable.Close;
+        FLineInfoTable.Close;
+
+        FormState := OrderMenu;
+      end;
+
     MenuInfo:
       begin
         //сохраняем чек
@@ -1226,6 +1270,18 @@ begin
         FormState := Pass;
         FFrontBase.ClearCache;
       end;
+
+
+    ManagerInfo:
+      begin
+        dsHeaderInfo.DataSet := nil;
+        dsLineInfo.DataSet := nil;
+        FHeaderInfoTable.Close;
+        FLineInfoTable.Close;
+
+        FormState := Pass;
+      end;
+
     MenuInfo:
       begin
         if not FOrderDataSet.IsEmpty then
@@ -1351,6 +1407,16 @@ begin
     end;
   end;
   SaveAllOrder;
+end;
+
+procedure TRestMainForm.actManagerInfoExecute(Sender: TObject);
+begin
+  FormState := ManagerInfo;
+end;
+
+procedure TRestMainForm.actManagerInfoUpdate(Sender: TObject);
+begin
+  actManagerInfo.Enabled := ((FFrontBase.UserGroup and FFrontBase.Options.ManagerGroupMask) = 0);
 end;
 
 procedure TRestMainForm.actModificationExecute(Sender: TObject);
@@ -1670,6 +1736,8 @@ begin
           tsGroup.TabVisible := False;
           tsOrderInfo.TabVisible := False;
           tsUserOrder.TabVisible := False;
+          tsManagerInfo.TabVisible := False;
+          tsManagerInfoButton.TabVisible := False;
           //2.Становимся на окно с пассом
           pcMain.ActivePage := tsPassWord;
           pcMenu.ActivePage := tsMenu;
@@ -1688,6 +1756,7 @@ begin
           btnCashForm.Visible := False;
           btnAdminOptions.Visible := False;
           btnAllChecks.Visible := False;
+          btnManagerInfo.Visible := False;
 
           FLastLeftButton := 18 + btnWidth {$IFDEF NEW_TABCONTROL} + 4 {$ENDIF};;
           FGroupLastLeftButton := btnFirstTop;
@@ -1764,6 +1833,7 @@ begin
           btnCashForm.Visible := True;
           btnAdminOptions.Visible := True;
           btnAllChecks.Visible := True;
+          btnManagerInfo.Visible := True;
 
           FLastLeftButton := 18 + btnWidth {$IFDEF NEW_TABCONTROL} + 4 {$ENDIF};;
           FLastTopButton  := btnFirstTop;
@@ -1804,6 +1874,29 @@ begin
         pnlChoose.Visible := True;
       end;
 
+    ManagerInfo:
+      begin
+        FFormState := Value;
+        pcMain.ActivePage := tsManagerInfo;
+        pcExtraButton.ActivePage := tsManagerInfoButton;
+
+        //1. создаем структуры шапки и позиции
+        if not Assigned(FHeaderInfoTable) then
+          FHeaderInfoTable := TkbmMemTable.Create(nil);
+        if not Assigned(FLineInfoTable) then
+          FLineInfoTable := TkbmMemTable.Create(nil);
+        //2. проставить начальное значение кнопок выбора
+        xDateBegin.Date := Now;
+        xDateEnd.Date := Now;
+        //3. загрузить данные
+        FFrontBase.GetOrdersInfo(FHeaderInfoTable, FLineInfoTable, xDateBegin.Date,
+          xDateEnd.Date, False, False, False, False);
+
+        AfterLoadManagerInfo;
+        DBGrInfoHeader.DataSource := dsHeaderInfo;
+        DBGrInfoLine.DataSource := dsLineInfo;
+      end;
+
     ManagerPage:
       begin
         LockWindowUpdate(TForm(Self).Handle);
@@ -1811,6 +1904,7 @@ begin
           RemoveUserButton;
           RemoveUserOrderButton;
 
+//          btnPredCheck.Visible := False;
           if FWithPreCheck then
             btnPredCheck.Caption := 'Без предчека'
           else
@@ -2028,6 +2122,53 @@ begin
   Inc(FUserOrderButtonNumber);
 end;
 
+procedure TRestMainForm.btnAllChecClick(Sender: TObject);
+begin
+  FFrontBase.GetOrdersInfo(FHeaderInfoTable, FLineInfoTable, xDateBegin.Date,
+    xDateEnd.Date, False, False, False, False);
+  AfterLoadManagerInfo;
+end;
+
+procedure TRestMainForm.btnWithPrecheckClick(Sender: TObject);
+begin
+  FFrontBase.GetOrdersInfo(FHeaderInfoTable, FLineInfoTable, xDateBegin.Date,
+    xDateEnd.Date, True, False, False, False);
+  AfterLoadManagerInfo;
+end;
+
+procedure TRestMainForm.btnWithoutPrecheckClick(Sender: TObject);
+begin
+  FFrontBase.GetOrdersInfo(FHeaderInfoTable, FLineInfoTable, xDateBegin.Date,
+    xDateEnd.Date, False, True, False, False);
+  AfterLoadManagerInfo;
+end;
+
+procedure TRestMainForm.btnPayedClick(Sender: TObject);
+begin
+  FFrontBase.GetOrdersInfo(FHeaderInfoTable, FLineInfoTable, xDateBegin.Date,
+    xDateEnd.Date, False, False, True, False);
+  AfterLoadManagerInfo;
+end;
+
+procedure TRestMainForm.btnNotPayedClick(Sender: TObject);
+begin
+  FFrontBase.GetOrdersInfo(FHeaderInfoTable, FLineInfoTable, xDateBegin.Date,
+    xDateEnd.Date, False, False, False, True);
+  AfterLoadManagerInfo;
+end;
+
+procedure TRestMainForm.AfterLoadManagerInfo;
+begin
+  dsHeaderInfo.DataSet := FHeaderInfoTable;
+  dsLineInfo.DataSet := FLineInfoTable;
+  FLineInfoTable.MasterSource := dsHeaderInfo;
+  FLineInfoTable.MasterFields := 'ID';
+  FLineInfoTable.DetailFields := 'PARENT';
+  FHeaderInfoTable.First;
+  if DBGrInfoHeader.CanFocus then
+    DBGrInfoHeader.SetFocus;
+end;
+
 procedure TRestMainForm.RemoveUserOrderButton;
 begin
   FUsersOrderButtonList.Clear;
@@ -2193,6 +2334,28 @@ begin
 
   if S > '' then
     Params.Text := Params.Text + #13#10 + S
+end;
+
+procedure TRestMainForm.DBGrInfoHeaderAdvDrawDataCell(Sender: TCustomDBGridEh;
+  Cell, AreaCell: TGridCoord; Column: TColumnEh; const ARect: TRect;
+  var Params: TColCellParamsEh; var Processed: Boolean);
+begin
+  inherited;
+  if Sender.DataSource.DataSet.FieldByName('USR$PAY').AsInteger = 1 then
+    Params.Font.Color := clFuchsia;
+  if Sender.DataSource.DataSet.FieldByName('USR$VIP').AsInteger = 1 then
+    Params.Font.Color := clTeal;
+  if Sender.DataSource.DataSet.FieldByName('DISABLED').AsInteger = 1 then
+    Params.Font.Color := clRed;
+end;
+
+procedure TRestMainForm.DBGrInfoLineAdvDrawDataCell(Sender: TCustomDBGridEh;
+  Cell, AreaCell: TGridCoord; Column: TColumnEh; const ARect: TRect;
+  var Params: TColCellParamsEh; var Processed: Boolean);
+begin
+  inherited;
+  if Sender.DataSource.DataSet.FieldByName('U_USR$CAUSEDELETEKEY_USR$NAME').AsString > '' then
+    Params.Font.Color := clRed;
 end;
 
 procedure TRestMainForm.btnPredCheckClick(Sender: TObject);

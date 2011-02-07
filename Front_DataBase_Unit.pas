@@ -88,12 +88,45 @@ const
      '   o.usr$sysnum,             ' +
      '   o.usr$register,           ' +
      '   o.usr$whopayoffkey,       ' +
-     '   o.usr$vip,                 ' +
+     '   o.usr$vip,                ' +
      ' ( SELECT SUM(L.USR$SUMNCUWITHDISCOUNT) FROM USR$MN_ORDERLINE L WHERE L.MASTERKEY = doc.ID AND L.USR$CAUSEDELETEKEY IS NULL) AS USR$SUMNCUWITHDISCOUNT ' +
      ' FROM gd_document doc        ' +
      '  join usr$mn_order o on o.documentkey = doc.id  ' +
      '  WHERE                                          ' +
      '  o.documentkey = :id                            ';
+
+   cst_OrderHeaderByDate =
+     ' SELECT                      ' +
+     '   doc.id,                   ' +
+     '   doc.number,               ' +
+     '   doc.sumncu,               ' +
+     '   doc.usr$mn_printdate,     ' +
+     '   doc.editiondate,          ' +
+     '   doc.editorkey,            ' +
+     '   o.usr$respkey,            ' +
+     '   o.usr$guestcount,         ' +
+     '   o.usr$timeorder,          ' +
+     '   o.usr$timecloseorder,     ' +
+     '   o.usr$logicdate,          ' +
+     '   o.usr$discountncu,        ' +
+     '   o.usr$disccardkey,        ' +
+     '   o.usr$userdisckey,        ' +
+     '   o.usr$discountkey,        ' +
+     '   o.usr$bonussum,           ' +
+     '   o.usr$pay,                ' +
+     '   o.usr$cash,               ' +
+     '   o.usr$sysnum,             ' +
+     '   o.usr$register,           ' +
+     '   o.usr$whopayoffkey,       ' +
+     '   o.usr$vip,                ' +
+     ' ( SELECT SUM(L.USR$SUMNCUWITHDISCOUNT) FROM USR$MN_ORDERLINE L WHERE L.MASTERKEY = doc.ID AND L.USR$CAUSEDELETEKEY IS NULL) AS USR$SUMNCUWITHDISCOUNT ' +
+     ' FROM gd_document doc        ' +
+     '   join usr$mn_order o on o.documentkey = doc.id  ' +
+     ' WHERE doc.documenttypekey = :doctype             ' +
+     '   AND doc.parent + 0 IS NULL       ' +
+     '   AND doc.companykey = :companykey ' +
+     '   AND o.usr$logicdate >= :DB      ' +
+     '   AND o.usr$logicdate <= :DE       ';
 
   cst_OrderLine =
     ' SELECT                                                    '+
@@ -263,8 +296,10 @@ type
 
     function GetNextID: Integer;
 
-    procedure GetUserList(UserList: TStrings);
-    function GetUserOrders(ContactKey: Integer; var MemTable: TkbmMemTable):Boolean; //Если -1 то возвращаем для текущего
+    procedure GetUserList(const UserList: TStrings);
+    function GetUserOrders(const ContactKey: Integer; var MemTable: TkbmMemTable):Boolean; //Если -1 то возвращаем для текущего
+    function GetOrdersInfo(const HeaderTable, LineTable: TkbmMemTable; const DateBegin, DateEnd: TDate;
+      const WithPreCheck, WithOutPreCheck, Payed, NotPayed: Boolean): Boolean;
     function GetMenuList(var MemTable: TkbmMemTable): Boolean;
     function GetGroupList(var MemTable: TkbmMemTable; const MenuKey: Integer): Boolean;
     function GetGoodList(var MemTable: TkbmMemTable; const MenuKey, GroupKey: Integer): Boolean;
@@ -1399,7 +1434,329 @@ begin
   end;
 end;
 
-procedure TFrontBase.GetUserList(UserList: TStrings);
+function TFrontBase.GetOrdersInfo(const HeaderTable, LineTable: TkbmMemTable;
+  const DateBegin, DateEnd: TDate; const WithPreCheck, WithOutPreCheck,
+  Payed, NotPayed: Boolean): Boolean;
+var
+  SQLTextHeader: String;
+  FHeaderQuery, FLineQuery: TIBQuery;
+  I, K: Integer;
+  FFirst: Boolean;
+const
+  OrderSQLText =
+    'SELECT '+
+    '  Z.ID, '+
+    '  Z.PARENT, '+
+    '  Z.DOCUMENTTYPEKEY, '+
+    '  Z.TRTYPEKEY, '+
+    '  Z.TRANSACTIONKEY, '+
+    '  Z.NUMBER, '+
+    '  Z.DOCUMENTDATE, '+
+    '  Z.DESCRIPTION, '+
+    '  Z.SUMNCU,'+
+    '  Z.SUMCURR, '+
+    '  Z.SUMEQ, '+
+    '  Z.DELAYED, '+
+    '  Z.AFULL, '+
+    '  Z.ACHAG, '+
+    '  Z.AVIEW, '+
+    '  Z.CURRKEY, '+
+    '  Z.COMPANYKEY,  '+
+    '  Z.CREATORKEY,  '+
+    '  Z.CREATIONDATE, '+
+    '  Z.EDITORKEY, '+
+    '  Z.EDITIONDATE, '+
+    '  Z.PRINTDATE, '+
+    '  Z.DISABLED, '+
+    '  Z.RESERVED, '+
+    '  U.DOCUMENTKEY, '+
+    '  U.RESERVED, '+
+    '  U.USR$BONUSSUM, '+
+    '  U.USR$CASH, '+
+    '  U.USR$DISCCARDKEY, '+
+    '  U.USR$DISCOUNTKEY, '+
+    '  U.USR$DISCOUNTNCU, '+
+    '  U.USR$GRATUITY, '+
+    '  U.USR$GUESTCOUNT, '+
+    '  U.USR$ISLOCKED, '+
+    '  U.USR$LOGICDATE, '+
+    '  U.USR$MENUKEY, '+
+    '  U.USR$PAY, '+
+    '  U.USR$REGISTER, '+
+    '  U.USR$RESPKEY, '+
+    '  U.USR$SYSNUM, '+
+    '  U.USR$TIMECLOSEORDER, '+
+    '  U.USR$TIMEORDER, '+
+    '  U.USR$USERDISCKEY, '+
+    '  U.USR$VIP, '+
+    '  U.USR$WHOPAYOFFKEY, '+
+    '  ( SELECT  '+
+    '    SUM (L.USR$SUMNCUWITHDISCOUNT ) '+
+    '  FROM  '+
+    '    USR$MN_ORDERLINE L  '+
+    '  WHERE '+
+    '    L.MASTERKEY = Z.ID AND L.USR$CAUSEDELETEKEY + 0 IS NULL) AS USR$SUMNCUWITHDISCOUNT, '+
+    '  ( SELECT '+
+    '    SUM ( L.USR$SUMNCUWITHDISCOUNT )  '+
+    '  FROM '+
+    '    USR$MN_ORDERLINE L  '+
+    '  WHERE '+
+    '    L.MASTERKEY  =  Z.ID AND L.USR$CAUSEDELETEKEY + 0 IS NULL) AS SUMNCUCHECK, '+
+    '  Z.USR$SORTNUMBER, '+
+    '  Z.USR$EQRATE, '+
+    '  Z.USR$MN_PRINTDATE, '+
+    '  U_USR$RESPKEY.NAME AS U_USR$RESPKEY_NAME, '+
+    '  U_USR$RESPKEY.USR$SF_SECTION AS U_USR$RESPKEY_USR$SF_SECTION, '+
+    '  U_USR$WHOPAYOFFKEY.NAME AS U_USR$WHOPAYOFFKEY_NAME, '+
+    '  U_USR$WHOPAYOFFKEY.USR$SF_SECTION AS U_USR$WHOPAYOFFKEY_US2034109678, '+
+    '  U_USR$DISCCARDKEY.USR$CODE AS U_USR$DISCCARDKEY_USR$CODE, '+
+    '  U_USR$USERDISCKEY.NAME AS U_USR$USERDISCKEY_NAME, '+
+    '  U_USR$USERDISCKEY.USR$SF_SECTION AS U_USR$USERDISCKEY_USR3488057747, '+
+    '  U_USR$DISCOUNTKEY.USR$NAME AS U_USR$DISCOUNTKEY_USR$NAME, '+
+    '  USR$DISCCARDKEY.USR$DATEEND, '+
+    '  USR$DISCCARDKEY.USR$DATEBEGIN, '+
+    '  USR$DISCCARDKEY.USR$DISCOUNTNAMEKEY, '+
+    '  USR$DISCCARDKEY_USR$DIS12098716.USR$NAME AS USR$DISCCARDKEY_USR$D1251435647, '+
+    '  USR$DISCCARDKEY.USR$CODE, '+
+    '  USR$DISCCARDKEY.USR$FIRSTNAME, '+
+    '  USR$DISCCARDKEY.USR$MIDDLENAME, '+
+    '  USR$DISCCARDKEY.USR$SURNAME, '+
+    '  USR$DISCCARDKEY.USR$ADDRESS, '+
+    '  USR$DISCCARDKEY.USR$PHONE, '+
+    '  USR$DISCCARDKEY.USR$EMAIL, '+
+    '  USR$DISCCARDKEY.USR$BIRTHDAY, '+
+    '  USR$DISCCARDKEY.USR$CARDNUM, '+
+    '  USR$DISCCARDKEY.USR$BALANCE  '+
+    'FROM '+
+    '  GD_DOCUMENT Z '+
+    '    JOIN '+
+    '      USR$MN_ORDER U  '+
+    '    ON '+
+    '      U.DOCUMENTKEY  =  Z.ID '+
+    '    LEFT JOIN '+
+    '      USR$MN_DISCOUNTCARD USR$DISCCARDKEY '+
+    '    ON '+
+    '      USR$DISCCARDKEY.ID  =  U.USR$DISCCARDKEY '+
+    '    LEFT JOIN '+
+    '      GD_CONTACT U_USR$RESPKEY '+
+    '    ON '+
+    '      U_USR$RESPKEY.ID  =  U.USR$RESPKEY '+
+    '    LEFT JOIN '+
+    '      GD_CONTACT U_USR$WHOPAYOFFKEY '+
+    '    ON '+
+    '      U_USR$WHOPAYOFFKEY.ID  =  U.USR$WHOPAYOFFKEY '+
+    '    LEFT JOIN '+
+    '      USR$MN_DISCOUNTCARD U_USR$DISCCARDKEY '+
+    '    ON '+
+    '      U_USR$DISCCARDKEY.ID  =  U.USR$DISCCARDKEY '+
+    '    LEFT JOIN '+
+    '      GD_CONTACT U_USR$USERDISCKEY '+
+    '    ON '+
+    '      U_USR$USERDISCKEY.ID  =  U.USR$USERDISCKEY '+
+    '    LEFT JOIN '+
+    '      USR$MN_DISCOUNTNAME U_USR$DISCOUNTKEY '+
+    '    ON '+
+    '      U_USR$DISCOUNTKEY.ID  =  U.USR$DISCOUNTKEY '+
+    '    LEFT JOIN '+
+    '      USR$MN_DISCOUNTNAME USR$DISCCARDKEY_USR$DIS12098716 '+
+    '    ON '+
+    '      USR$DISCCARDKEY_USR$DIS12098716.ID  =  USR$DISCCARDKEY.USR$DISCOUNTNAMEKEY '+
+    'WHERE  '+
+    '  Z.DOCUMENTTYPEKEY = :doctype '+
+    '     AND '+
+    '  Z.PARENT + 0 IS NULL '+
+    '     AND '+
+    '  Z.COMPANYKEY = :COMPANYKEY '+
+    '     AND '+
+    '  U.USR$LOGICDATE  >=  :DB  '+
+    '     AND '+
+    '  U.USR$LOGICDATE  <=  :DE ';
+
+  OrderClause =
+    'ORDER BY ' +
+    '  Z.CREATIONDATE ';
+
+  LineSQLText =
+    'SELECT '+
+    '  Z.ID, '+
+    '  Z.PARENT, '+
+    '  Z.DOCUMENTTYPEKEY, '+
+    '  Z.TRTYPEKEY, '+
+    '  Z.TRANSACTIONKEY, '+
+    '  Z.NUMBER, '+
+    '  Z.DOCUMENTDATE, '+
+    '  Z.DESCRIPTION, '+
+    '  Z.SUMNCU, '+
+    '  Z.SUMCURR, '+
+    '  Z.SUMEQ, '+
+    '  Z.DELAYED, '+
+    '  Z.AFULL, '+
+    '  Z.ACHAG, '+
+    '  Z.AVIEW, '+
+    '  Z.CURRKEY, '+
+    '  Z.COMPANYKEY, '+
+    '  Z.CREATORKEY, '+
+    '  Z.CREATIONDATE, '+
+    '  Z.EDITORKEY, '+
+    '  Z.EDITIONDATE, '+
+    '  Z.PRINTDATE, '+
+    '  Z.DISABLED, '+
+    '  Z.RESERVED, '+
+    '  U.DOCUMENTKEY, '+
+    '  U.MASTERKEY, '+
+    '  U.RESERVED, '+
+    ' U.USR$CAUSEDELETEKEY, '+
+    '  U.USR$COSTEQ, '+
+    '  U.USR$COSTEQWITHDISCOUNT, '+
+    '  U.USR$COSTNCU, '+
+    '  U.USR$COSTNCUWITHDISCOUNT, '+
+    '  U.USR$DELETEAMOUNT, '+
+    '  U.USR$DEPOTKEY, '+
+    '  U.USR$DOUBLEBONUS, '+
+    '  U.USR$EXTRAMODIFY, '+
+    '  U.USR$GOODKEY, '+
+    '  U.USR$LOGICDATE, '+
+    '  U.USR$MENULINEKEY, '+
+    '  U.USR$MODIFYSET, '+
+    '  U.USR$PERSDISCOUNT, '+
+    '  U.USR$QUANTITY, '+
+    '  U.USR$REGISTER, '+
+    '  U.USR$SUMDISCOUNT, '+
+    '  U.USR$SUMNCU, '+
+    '  U.USR$SUMNCUWITHDISCOUNT, '+
+    '  MODIFY.MODIFYNAME, '+
+    '  Z.USR$SORTNUMBER, '+
+    '  Z.USR$EQRATE, '+
+    '  Z.USR$MN_PRINTDATE, '+
+    '  U_USR$GOODKEY.NAME AS U_USR$GOODKEY_NAME, '+
+    '  U_USR$GOODKEY.ALIAS AS U_USR$GOODKEY_ALIAS, '+
+    '  U_USR$GOODKEY.USR$BEDIVIDE AS U_USR$GOODKEY_USR$BEDIVIDE, '+
+    '  U_USR$CAUSEDELETEKEY.USR$NAME AS U_USR$CAUSEDELETEKEY_USR$NAME, '+
+    '  U_USR$DEPOTKEY.NAME AS U_USR$DEPOTKEY_NAME, '+
+    '  U_USR$DEPOTKEY.USR$SF_SECTION AS U_USR$DEPOTKEY_USR$SF_SECTION, '+
+    '  DEPOT.USR$SF_SECTION '+
+    'FROM '+
+    '  GD_DOCUMENT Z  '+
+    '    LEFT JOIN  '+
+    '      USR$MN_ORDERLINE U '+
+    '    ON  '+
+    '      U.DOCUMENTKEY  =  Z.ID '+
+    '    LEFT JOIN '+
+    '      GD_CONTACT DEPOT '+
+    '    ON '+
+    '      DEPOT.ID  =  U.USR$DEPOTKEY '+
+    '    LEFT JOIN  '+
+    '      USR$MN_MODIFYSTRING ( Z.ID ) MODIFY '+
+    '    ON '+
+    '      1  =  1  '+
+    '    LEFT JOIN '+
+    '      GD_GOOD U_USR$GOODKEY '+
+    '    ON '+
+    '      U_USR$GOODKEY.ID  =  U.USR$GOODKEY '+
+    '    LEFT JOIN '+
+    '      USR$MN_CAUSEDELETEORDERLINE U_USR$CAUSEDELETEKEY '+
+    '    ON '+
+    '      U_USR$CAUSEDELETEKEY.ID  =  U.USR$CAUSEDELETEKEY '+
+    '    LEFT JOIN '+
+    '      GD_CONTACT U_USR$DEPOTKEY '+
+    '    ON '+
+    '      U_USR$DEPOTKEY.ID  =  U.USR$DEPOTKEY '+
+    'WHERE '+
+    '  Z.PARENT =:parent '+
+    '     AND  '+
+    '  Z.DOCUMENTTYPEKEY = :doctype '+
+    '     AND '+
+    '  Z.PARENT + 0 IS NOT NULL ';
+
+begin
+  Result := False;
+  HeaderTable.Close;
+  LineTable.Close;
+  try
+    if not FReadTransaction.InTransaction then
+      FReadTransaction.StartTransaction;
+
+    FHeaderQuery := TIBQuery.Create(nil);
+    FLineQuery := TIBQuery.Create(nil);
+    try
+      SQLTextHeader := OrderSQLText;
+      if WithPreCheck then
+        SQLTextHeader := SQLTextHeader + ' AND USR$TIMECLOSEORDER is not null ';
+      if WithOutPreCheck then
+        SQLTextHeader := SQLTextHeader + ' AND USR$TIMECLOSEORDER is null ';
+      if Payed then
+        SQLTextHeader := SQLTextHeader + ' AND usr$pay = 1 ';
+      if NotPayed then
+        SQLTextHeader := SQLTextHeader + ' AND (usr$pay = 0 or usr$pay is null) ';
+      SQLTextHeader := SQLTextHeader + OrderClause;
+
+      FHeaderQuery.SQL.Text := SQLTextHeader;
+      FHeaderQuery.Transaction := FReadTransaction;
+      FHeaderQuery.ParamByName('DB').AsDateTime := DateBegin;
+      FHeaderQuery.ParamByName('DE').AsDateTime := DateEnd;
+      FHeaderQuery.ParamByName('COMPANYKEY').AsInteger := FCompanyKey;
+      FHeaderQuery.ParamByName('doctype').AsInteger := FOrderTypeKey;
+      FHeaderQuery.Open;
+
+      FLineQuery.SQL.Text := LineSQLText;
+      FLineQuery.Transaction := FReadTransaction;
+
+      HeaderTable.CreateTableAs(FHeaderQuery, [mtcpoStructure]);
+      HeaderTable.IgnoreReadOnly := True;
+      HeaderTable.CreateTable;
+      HeaderTable.Open;
+      FFirst := True;
+      while not FHeaderQuery.Eof do
+      begin
+        HeaderTable.Append;
+        I := 0;
+        while I <= FHeaderQuery.FieldCount - 1 do
+        begin
+          HeaderTable.Fields[I].AsString := FHeaderQuery.Fields[I].AsString;
+          Inc(I);
+        end;
+        HeaderTable.Post;
+
+        FLineQuery.ParamByName('PARENT').AsInteger := HeaderTable.FieldByName('ID').AsInteger;
+        FLineQuery.ParamByName('DOCTYPE').AsInteger := FOrderTypeKey;
+        FLineQuery.Open;
+        if FFirst then
+        begin
+          LineTable.CreateTableAs(FLineQuery, [mtcpoStructure]);
+          LineTable.IgnoreReadOnly := True;
+          LineTable.CreateTable;
+          LineTable.Open;
+          FFirst := False;
+        end;
+        while not FLineQuery.Eof do
+        begin
+          LineTable.Append;
+          K := 0;
+          while K <= FLineQuery.FieldCount - 1 do
+          begin
+            LineTable.Fields[K].AsString := FLineQuery.Fields[K].AsString;
+            Inc(K);
+          end;
+          LineTable.Post;
+
+          FLineQuery.Next;
+        end;
+        FLineQuery.Close;
+
+        FHeaderQuery.Next;
+      end;
+
+    finally
+      FHeaderQuery.Free;
+      FLineQuery.Free;
+    end;
+
+  except
+    raise;
+  end;
+end;
+
+procedure TFrontBase.GetUserList(const UserList: TStrings);
 begin
   UserList.Clear;
   FReadSQL.Close;
@@ -1423,7 +1780,7 @@ begin
   end;
 end;
 
-function TFrontBase.GetUserOrders(ContactKey: Integer; var MemTable: TkbmMemTable): Boolean;
+function TFrontBase.GetUserOrders(const ContactKey: Integer; var MemTable: TkbmMemTable): Boolean;
 begin
   Result := False;
   FReadSQL.Close;

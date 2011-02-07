@@ -74,7 +74,7 @@ type
      write SetDetailField;
   end;
 
-//function CheckFieldNames(const AnDataSet: TDataSet; AnFieldNames: String): Boolean;
+function CheckFieldNames(const AnDataSet: TDataSet; AnFieldNames: String): Boolean;
 
 implementation
 
@@ -259,7 +259,7 @@ begin
   GetMultiString(Index).Params[2] := Value;
 end;
 
-{function CheckFieldNames(const AnDataSet: TDataSet; AnFieldNames: String): Boolean;
+function CheckFieldNames(const AnDataSet: TDataSet; AnFieldNames: String): Boolean;
 var
   I, J: Integer;
 begin
@@ -279,7 +279,7 @@ begin
     I := Length(AnFieldNames);
     Result := AnDataSet.FieldByName(Copy(AnFieldNames, J + 1, I - J)) <> nil;
   end;
-end;  }
+end;
 
 function TFourStringList.IndexOfDetailField(const AnDetailField: String): Integer;
 var

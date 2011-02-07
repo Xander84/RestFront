@@ -37,8 +37,8 @@ type
     procedure SetErrorInInit(const Value: Boolean);
     property ErrorInInit: Boolean read GetErrorInInit write SetErrorInInit;
 
-    function Get_Self: Integer;
-    property Self: Integer read Get_Self;
+    function GetSelf: Integer;
+    property Self: Integer read GetSelf;
   end;
 
   //Базовый класс работы с дисплеем.
@@ -49,7 +49,7 @@ type
     FDisplay: THandle; //Handle COM порта дисплея
     FErrorInInit: Boolean;
 
-    function Get_Self: Integer;
+    function GetSelf: Integer;
     function GetDisplay: THandle;
     procedure SetDisplay(const Value: THandle);
     function GetInitialized: Boolean;
@@ -76,7 +76,7 @@ type
     property Initialized: Boolean read GetInitialized write SetInitialized;
     property ComPort: Integer read GetComPort write SetComPort;
     property ErrorInInit: Boolean read GetErrorInInit write SetErrorInInit;
-    property Self: Integer read Get_Self;
+    property Self: Integer read GetSelf;
 
     { IInterface }
     function QueryInterface(const IID: TGUID; out Obj): HResult; virtual; stdcall;
@@ -150,7 +150,7 @@ begin
   Result := FInitialized;
 end;
 
-function TBaseDisplay.Get_Self: Integer;
+function TBaseDisplay.GetSelf: Integer;
 begin
   Result := Integer(Self);
 end;

@@ -41,6 +41,7 @@ type
   private
     FFetchBlob: Boolean;
     FIndexFields: String;
+    FDataSet: TDataSet;
 
     function GetIBQuery: TIBQuery;
     function GetClientDataSet: TClientDataSet;
@@ -53,7 +54,7 @@ type
   protected
     function GetStrFromFieldType(const AnFieldType: TFieldType): String;
   protected
-    FDataSet: TDataSet;
+
 //    FCurrentField: TField;
 
 //    procedure AssignFields(const ADataSet: TDataSet);
@@ -102,7 +103,7 @@ type
     function  Locate(const KeyFields: string; const KeyValues: Variant;
       Options: TLocateOptions): Boolean;
     procedure AddField(const FieldName: String; const FieldType: String;
-                       FieldSize: Integer; Required: Boolean); {virtual;}
+                       FieldSize: Integer; Required: Boolean);
 
     property Database: TIBDatabase write SetDatabase;
     property Transaction: TIBTransaction write SetTransaction;
@@ -196,14 +197,14 @@ type
     procedure AssignTempStream(const AnStream: TStream);
     procedure Clear; override;
 
-    function AddDataSet(const AnName: String): Integer; overload; {virtual;}
-    function AddDataSet(const AnName: String; const AnDataSet: TDataSet): Integer; overload; {virtual;}
-    procedure AddDataSetList(const AnBaseQueryList: Variant); {virtual;}
+    function AddDataSet(const AnName: String): Integer; overload;
+    function AddDataSet(const AnName: String; const AnDataSet: TDataSet): Integer; overload;
+    procedure AddDataSetList(const AnBaseQueryList: Variant);
     procedure DeleteDataSet(const AnIndex: Integer);
     procedure AddMasterDetail(const AnMasterTable, AnMasterField, AnDetailTable,
      AnDetailField: String);
 
-    procedure LoadFromStream(AnStream: TStream); reintroduce; virtual;
+    procedure LoadFromStream(AnStream: TStream); reintroduce;
     procedure SaveToStream(AnStream: TStream); reintroduce;
 
     property _MasterDetail: TFourStringList read FMasterDetail;
