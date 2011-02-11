@@ -48,7 +48,8 @@ type
   //редактирование заказа
   //окно менеджера
   //окно менеджера для разделения
-  TRestState = (Pass, OrderMenu, MenuInfo, ManagerPage, ManagerChooseOrder, ManagerInfo);
+  //окно кассира для оплаты
+  TRestState = (Pass, OrderMenu, MenuInfo, ManagerPage, ManagerChooseOrder, ManagerInfo, KassirInfo);
 
   TRestMainForm = class(TBaseFrontForm)
     pnlMain: TPanel;
@@ -172,6 +173,11 @@ type
     btnPayed: TAdvSmoothButton;
     btnNotPayed: TAdvSmoothButton;
     btnAllChec: TAdvSmoothButton;
+    lblResp: TLabel;
+    tsEmpty: TAdvTabSheet;
+    actKassirInfo: TAction;
+    btnKassa: TAdvSmoothButton;
+    btnPrintIncomeReport: TAdvSmoothButton;
 
     //Проверка введёного пароля
     procedure actPassEnterExecute(Sender: TObject);
@@ -237,7 +243,9 @@ type
     procedure DBGrInfoHeaderAdvDrawDataCell(Sender: TCustomDBGridEh; Cell,
       AreaCell: TGridCoord; Column: TColumnEh; const ARect: TRect;
       var Params: TColCellParamsEh; var Processed: Boolean);
-
+    procedure actKassirInfoExecute(Sender: TObject);
+    procedure actKassirInfoUpdate(Sender: TObject);
+    procedure btnPrintIncomeReportClick(Sender: TObject);
   private
     //Компонент обращения к БД
     FFrontBase: TFrontBase;
@@ -308,10 +316,13 @@ type
     FSelectedButton: TObject;
 
     FFormState: TRestState;
-
+    FPrevFormState: TRestState;
+    // Режиам только просмотра (для кассира)
+    FViewMode: Boolean;
     FUpdateCount: Integer;
 
     FSplitForm: TSplitOrder;
+
 
   //  FFrontLog: TFrontLog;
 
@@ -348,6 +359,8 @@ type
     procedure GoodButtonOnClick(Sender: TObject);
 
     procedure CreateUserList;
+    procedure CreateManagerPage;
+    procedure CreateKassirPage;
     procedure AddUserButton(const MemTable: TkbmMemTable);
     procedure RemoveUserButton;
     procedure AddUserOrderButton(const MemTable: TkbmMemTable);
@@ -415,7 +428,7 @@ end;
 procedure TRestMainForm.FormCreate(Sender: TObject);
 begin
   {$IFDEF NEW_TABCONTROL}
-  btnBackToMenu.Left := btnBackToMenu.Left + 4;
+//  btnBackToMenu.Left := btnBackToMenu.Left + 4;
   {$ENDIF}
 
   SetupGrid(DBGrMain);
@@ -836,6 +849,20 @@ begin
   end;
 end;
 
+procedure TRestMainForm.CreateKassirPage;
+begin
+  FormState := OrderMenu;
+  FormState := KassirInfo;
+  CreateUserList;
+end;
+
+procedure TRestMainForm.CreateManagerPage;
+begin
+  FormState := OrderMenu;
+  FormState := ManagerPage;
+  CreateUserList;
+end;
+
 procedure TRestMainForm.CreateMenuButtonList;
 begin
   FFrontBase.GetMenuList(FMenuDataSet);
@@ -1213,7 +1240,7 @@ begin
   case FFormState of
     Pass: Assert(False, 'Что мы тут делаем?');
 
-    OrderMenu, ManagerPage, ManagerChooseOrder:
+    OrderMenu, ManagerPage, ManagerChooseOrder, KassirInfo:
       begin
         //переходим на форму с паролем
         FormState := Pass;
@@ -1249,7 +1276,12 @@ begin
                     FFrontBase.CloseModifyTable(FModificationDataSet, Now);
                   end;
               end;
-              FormState := OrderMenu;
+              if FPrevFormState = ManagerPage then
+                CreateManagerPage
+              else if FPrevFormState = KassirInfo then
+                CreateKassirPage
+              else
+                FormState := OrderMenu;
             end;
           finally
             DBGrMain.DataSource := dsMain;
@@ -1265,7 +1297,7 @@ begin
   case FFormState of
     Pass: Assert(False, 'Что мы тут делаем');
 
-    OrderMenu, ManagerPage, ManagerChooseOrder:
+    OrderMenu, ManagerPage, ManagerChooseOrder, KassirInfo:
       begin
         FormState := Pass;
         FFrontBase.ClearCache;
@@ -1286,9 +1318,22 @@ begin
       begin
         if not FOrderDataSet.IsEmpty then
           if FFrontBase.UnLockUserOrder(FOrderDataSet.FieldByName('ID').AsInteger) then
-            FormState := OrderMenu
-        else
-          FormState := OrderMenu
+          begin
+            if FPrevFormState = ManagerPage then
+              CreateManagerPage
+            else if FPrevFormState = KassirInfo then
+              CreateKassirPage
+            else
+              FormState := OrderMenu;
+          end
+        else begin
+          if FPrevFormState = ManagerPage then
+            CreateManagerPage
+          else if FPrevFormState = KassirInfo then
+            CreateKassirPage
+          else
+            FormState := OrderMenu;
+        end;
       end;
   end;
 end;
@@ -1718,13 +1763,18 @@ end;
 
 procedure TRestMainForm.SetFormState(const Value: TRestState);
 begin
+  FPrevFormState := FFormState;
+  if (Value = KassirInfo) or (FPrevFormState = KassirInfo) then
+    FViewMode := True
+  else
+    FViewMode := False;
+
   case Value of
     Pass:
       begin
         LockWindowUpdate(TForm(Self).Handle);
         try
           FFormState := Value;
-
           //1.Скрываем заголовки
           tsMain.TabVisible     := False;
           tsPassWord.TabVisible := False;
@@ -1733,6 +1783,7 @@ begin
           tsOrderButton.TabVisible := False;
           tsMenu.TabVisible := False;
           tsManagerPage.TabVisible := False;
+          tsEmpty.TabVisible := False;
           tsGroup.TabVisible := False;
           tsOrderInfo.TabVisible := False;
           tsUserOrder.TabVisible := False;
@@ -1904,7 +1955,8 @@ begin
           RemoveUserButton;
           RemoveUserOrderButton;
 
-//          btnPredCheck.Visible := False;
+          btnPredCheck.Visible := False;
+          FWithPreCheck := False;
           if FWithPreCheck then
             btnPredCheck.Caption := 'Без предчека'
           else
@@ -1912,7 +1964,7 @@ begin
 
           FFormState := Value;
           pcOrder.ActivePage := tsManagerPage;
-          pcExtraButton.ActivePage := tsOrderButton;
+          pcExtraButton.ActivePage := tsEmpty;  //tsOrderButton;
 
           btnCashForm.Visible := True;
           btnAdminOptions.Visible := True;
@@ -1931,6 +1983,9 @@ begin
 
           FLineID := 1;
 
+          lblResp.Caption := FFrontBase.GetNameWaiterOnID(FFrontBase.ContactKey,
+            True, False);
+
           ClearDisplay;
         finally
           LockWindowUpdate(0);
@@ -1946,8 +2001,9 @@ begin
 
           pcMenu.ActivePage := tsMenu;
           pnlChoose.Visible := False;
-          pnlMainGood.Visible := False;          
+          pnlMainGood.Visible := False;
 
+          btnPredCheck.Visible := True;
           if FWithPreCheck then
             btnPredCheck.Caption := 'Без предчека'
           else
@@ -1955,7 +2011,7 @@ begin
 
           FFormState := Value;
           pcOrder.ActivePage := tsManagerPage;
-          pcExtraButton.ActivePage := tsOrderButton;
+          pcExtraButton.ActivePage := tsEmpty;//tsOrderButton;
 
           FUserFirstTop       := btnFirstTop;
           FUserLastLeftButton := btnFirstTop;
@@ -1970,11 +2026,58 @@ begin
 
           FLineID := 1;
 
+          lblResp.Caption := FFrontBase.GetNameWaiterOnID(FFrontBase.ContactKey,
+            True, False);
+
           ClearDisplay;
         finally
           LockWindowUpdate(0);
         end;
       end;
+
+    KassirInfo:
+      begin
+        LockWindowUpdate(TForm(Self).Handle);
+        try
+          RemoveUserButton;
+          RemoveUserOrderButton;
+
+          pcMenu.ActivePage := tsMenu;
+          pnlChoose.Visible := False;
+          pnlMainGood.Visible := False;
+
+          btnPredCheck.Visible := True;
+          if FWithPreCheck then
+            btnPredCheck.Caption := 'Без предчека'
+          else
+            btnPredCheck.Caption := 'С предчеком';
+
+          FFormState := Value;
+          pcOrder.ActivePage := tsManagerPage;
+          pcExtraButton.ActivePage := tsEmpty;//tsOrderButton;
+
+          FUserFirstTop       := btnFirstTop;
+          FUserLastLeftButton := btnFirstTop;
+          FUserLastTop        := -(btnHeight - 6);
+          FUserButtonNumber   := 1;
+
+          FUserOrderFirstTop       := btnFirstTop;
+          FUserOrderLastLeftButton := btnFirstTop;
+          FUserOrderLastTop        := btnFirstTop;
+          FUserOrderButtonNumber   := btnFirstTop;
+          FMaxUserOrderButtonLeft  := btnFirstTop;
+
+          FLineID := 1;
+
+          lblResp.Caption := FFrontBase.GetNameWaiterOnID(FFrontBase.ContactKey,
+            True, False);
+
+          ClearDisplay;
+        finally
+          LockWindowUpdate(0);
+        end;
+      end;
+
   end;
 end;
 
@@ -2091,7 +2194,7 @@ begin
     FButton.Color := btnColor;
     FButton.Appearance.Font.Size := cn_ButtonFontSize;
     FButton.Parent := pnlUserOrders;
-    if FormState = ManagerPage then
+    if (FormState = ManagerPage) or (FormState = KassirInfo) then
       FButton.OnClick := OrderButtonOnClick
     else
       FButton.OnClick := SplitButtonOnClick;
@@ -2369,6 +2472,11 @@ begin
   CreateUserList;
 end;
 
+procedure TRestMainForm.btnPrintIncomeReportClick(Sender: TObject);
+begin
+  FReport.PrintIncomeReport(xDateBegin.Date, xDateEnd.Date);
+end;
+
 procedure TRestMainForm.SplitButtonOnClick(Sender: TObject);
 begin
   if Assigned(FSplitForm) then
@@ -2517,13 +2625,14 @@ end;
 
 procedure TRestMainForm.actModificationUpdate(Sender: TObject);
 begin
-  actModification.Enabled := FHeaderTable.FieldByName('usr$timecloseorder').IsNull;
+  actModification.Enabled := FHeaderTable.FieldByName('usr$timecloseorder').IsNull
+    and not FViewMode;
 end;
 
 procedure TRestMainForm.actAddQuantityUpdate(Sender: TObject);
 begin
   actAddQuantity.Enabled := (FHeaderTable.FieldByName('usr$timecloseorder').IsNull
-    and FLineTable.FieldByName('usr$mn_printdate').IsNull);
+    and FLineTable.FieldByName('usr$mn_printdate').IsNull) and not FViewMode;
 end;
 
 procedure TRestMainForm.actAdminOptionsExecute(Sender: TObject);
@@ -2551,9 +2660,7 @@ end;
 
 procedure TRestMainForm.actAllChecksExecute(Sender: TObject);
 begin
-  FormState := OrderMenu;
-  FormState := ManagerPage;
-  CreateUserList;
+  CreateManagerPage;
 end;
 
 procedure TRestMainForm.actAllChecksUpdate(Sender: TObject);
@@ -2561,34 +2668,51 @@ begin
   actAllChecks.Enabled := ((FFrontBase.UserGroup and FFrontBase.Options.ManagerGroupMask) = 0);
 end;
 
+procedure TRestMainForm.actKassirInfoExecute(Sender: TObject);
+begin
+  CreateKassirPage;
+end;
+
+procedure TRestMainForm.actKassirInfoUpdate(Sender: TObject);
+begin
+  actKassirInfo.Enabled := ((FFrontBase.UserGroup and FFrontBase.Options.KassaGroupMask) = 0) or
+    ((FFrontBase.UserGroup and FFrontBase.Options.ManagerGroupMask) = 0);
+end;
+
 procedure TRestMainForm.actRemoveQuantityUpdate(Sender: TObject);
 begin
-  actRemoveQuantity.Enabled := FHeaderTable.FieldByName('usr$timecloseorder').IsNull;
+  actRemoveQuantity.Enabled := FHeaderTable.FieldByName('usr$timecloseorder').IsNull
+    and not FViewMode;
 end;
 
 procedure TRestMainForm.actDeletePositionUpdate(Sender: TObject);
 begin
-  actDeletePosition.Enabled := FHeaderTable.FieldByName('usr$timecloseorder').IsNull;
+  actDeletePosition.Enabled := FHeaderTable.FieldByName('usr$timecloseorder').IsNull
+    and not FViewMode;
 end;
 
 procedure TRestMainForm.actCutCheckUpdate(Sender: TObject);
 begin
-  actCutCheck.Enabled := FHeaderTable.FieldByName('usr$timecloseorder').IsNull;
+  actCutCheck.Enabled := FHeaderTable.FieldByName('usr$timecloseorder').IsNull
+    and not FViewMode;
 end;
 
 procedure TRestMainForm.actPreCheckUpdate(Sender: TObject);
 begin
-  actPreCheck.Enabled := FHeaderTable.FieldByName('usr$timecloseorder').IsNull;
+  actPreCheck.Enabled := FHeaderTable.FieldByName('usr$timecloseorder').IsNull
+    and not FViewMode;
 end;
 
 procedure TRestMainForm.actDiscountUpdate(Sender: TObject);
 begin
-  actDiscount.Enabled := FHeaderTable.FieldByName('usr$timecloseorder').IsNull;
+  actDiscount.Enabled := FHeaderTable.FieldByName('usr$timecloseorder').IsNull
+    and not FViewMode;
 end;
 
 procedure TRestMainForm.actDevideUpdate(Sender: TObject);
 begin
-  actDevide.Enabled := FHeaderTable.FieldByName('usr$timecloseorder').IsNull;
+  actDevide.Enabled := FHeaderTable.FieldByName('usr$timecloseorder').IsNull
+    and not FViewMode;
 end;
 
 procedure TRestMainForm.actPayUpdate(Sender: TObject);

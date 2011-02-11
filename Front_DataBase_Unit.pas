@@ -388,6 +388,7 @@ type
     property IsMainCash: Boolean read GetIsMainCash;
     property ServerName: String read GetServerName;
     property QueryList: TgsQueryList read FQueryList;
+    property CompanyKey: Integer read FCompanyKey;
   end;
 
   procedure GetHeaderTable(var DS: TkbmMemTable);
@@ -1382,7 +1383,8 @@ begin
         FSQL.Params[0].AsInteger := FReadSQL.FieldByName('id').Value;
         FSQL.ExecQuery;
 
-        ModifyTable.StartTransaction;
+        if ModifyTable.IsVersioning then
+          ModifyTable.StartTransaction;
         try
           while not FSQL.Eof do
           begin
@@ -1401,7 +1403,8 @@ begin
           end;
           FSQL.Close;
         finally
-          ModifyTable.Commit;
+          if ModifyTable.IsVersioning then
+            ModifyTable.Commit;
         end;
 
         if ES <> '' then

@@ -104,17 +104,19 @@ type
       Options: TLocateOptions): Boolean;
     procedure AddField(const FieldName: String; const FieldType: String;
                        FieldSize: Integer; Required: Boolean);
+    function ParamByName(const ParamName: String): TParam;
+    function FieldByName(const FieldName: String): TField;
 
     property Database: TIBDatabase write SetDatabase;
     property Transaction: TIBTransaction write SetTransaction;
     property DataSet: TDataSet read GetDataSet;
 
     property Fields[Index: Integer]: TField read Get_Fields;
-    property FieldByName[const FieldName: String]: TField read Get_FieldByName;
+//    property FieldByName[const FieldName: String]: TField read Get_FieldByName;
     property IsResult: Boolean read Get_IsResult write Set_IsResult;
     property SQL: String read Get_SQL write Set_SQL;
     property Params[Index: Integer]: TParam read Get_Params;
-    property ParamByName[const ParamName: String]: TParam read Get_ParamByName;
+//    property ParamByName[const ParamName: String]: TParam read Get_ParamByName;
     property FieldCount: Integer read Get_FieldCount;
     property ParamCount: Integer read Get_ParamCount;
 //    property OnCalcField: LongWord read Get_OnCalcField write Set_OnCalcField;
@@ -327,6 +329,11 @@ begin
   FDataSet.Close;
 end;
 
+function TgsDataSet.FieldByName(const FieldName: String): TField;
+begin
+  Result := Get_FieldByName(FieldName);
+end;
+
 procedure TgsDataSet.First;
 begin
   FDataSet.First;
@@ -417,6 +424,11 @@ end;
 procedure TgsDataSet.Delete;
 begin
   GetClientDataSet.Delete;
+end;
+
+function TgsDataSet.ParamByName(const ParamName: String): TParam;
+begin
+  Result := Get_ParamByName(ParamName);
 end;
 
 procedure TgsDataSet.Post;

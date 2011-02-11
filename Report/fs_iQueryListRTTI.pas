@@ -148,9 +148,9 @@ begin
     else if MethodName = 'ADDFIELD' then
       _TgsDataSet.AddField(Caller.Params[0], Caller.Params[1], Caller.Params[2], Caller.Params[3])
     else if MethodName = 'FIELDBYNAME' then
-      Result := Integer(_TgsDataSet.FieldByName[Caller.Params[0]])
+      Result := Integer(_TgsDataSet.FieldByName(Caller.Params[0]))
     else if MethodName = 'PARAMBYNAME' then
-      Result := Integer(_TgsDataSet.ParamByName[Caller.Params[0]])
+      Result := Integer(_TgsDataSet.ParamByName(Caller.Params[0]))
     else if MethodName = 'PARAMS' then
       Result := Integer(_TgsDataSet.Params[Caller.Params[0]])
     else if MethodName = 'FIELDS' then

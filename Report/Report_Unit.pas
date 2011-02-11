@@ -70,6 +70,7 @@ type
     function PrintServiceCheck(const ReportType, PrnGrID, DocID: Integer; const PrinterName: String): Boolean;
     function PrintDeleteServiceCheck(const ReportType, PrnGrID, DocumentKey, MasterKey: Integer;
       const PrinterName: String): Boolean;
+    procedure PrintIncomeReport(const DateBegin, DateEnd: TDate);
     function EditTemplate(const ID: Integer): Boolean;
 
     property FrontBase: TFrontBase read FFrontBase write FFrontBase;
@@ -81,7 +82,7 @@ const
 implementation
 
 uses
-  Windows, Forms;
+  Windows, Forms, FrontData_Unit, obj_QueryList;
 
 { Tgs_fr4Report }
 
@@ -261,6 +262,166 @@ begin
       Query.Free;
       MemTable.Free;
       TfrxDBDataset2.Free;
+    end;
+  finally
+    FReport.Free;
+  end;
+end;
+
+procedure TRestReport.PrintIncomeReport(const DateBegin, DateEnd: TDate);
+var
+  PrinterName: String;
+  FReport: Tgs_fr4SingleReport;
+  Str: TStream;
+  BaseQueryList: TgsQueryList;
+  Q, P, Np, Comp, Header: TgsDataSet;
+  I: Integer;
+  FrxDBDataset: TfrxDBDataset;
+begin
+  Assert(Assigned(FFrontBase), 'FrontBase not assigned');
+
+  BaseQueryList := FrontData.BaseQueryList;
+  BaseQueryList.Clear;
+  PrinterName := FFrontBase.GetPrinterName;
+  FReport := Tgs_fr4SingleReport.Create(nil);
+  try
+    InitReportParams(FReport, PrinterName);
+
+    Str := TMemoryStream.Create;
+    FrxDBDataset := TfrxDBDataset.Create(nil);
+    try
+      Q := BaseQueryList.Query[BaseQueryList.Add('Q', False)];
+      Q.SQL :=
+        '    select ' +
+        '    o.usr$pay, count(o.documentkey) as  countchek, ' +
+        '    sum(o.usr$guestcount) as guestcount ' +
+        '    from ' +
+        '    usr$mn_order o ' +
+        '     ' +
+        '    where o.usr$logicdate >= :datebegin ' +
+        '    and o.usr$logicdate <= :dateend ' +
+        '    group by  o.usr$pay ' +
+        '    order by o.usr$pay desc ';
+      Q.ParamByName('datebegin').AsDateTime := DateBegin;
+      Q.ParamByName('dateend').AsDateTime := DateEnd;
+      Q.Open;
+      Q.IsResult := False;
+
+      P := BaseQueryList.Query[BaseQueryList.Add('P' , False)];
+      P.SQL :=
+        '    select ' +
+        '      o.usr$pay, pt.usr$name as typepay, ' +
+        '      kt.usr$name as kindpay, ' +
+        '      sum(p.usr$sumncu) as sumpayncu ' +
+        '      from ' +
+        '      usr$mn_payment p ' +
+        '      LEFT join usr$mn_order o on o.documentkey = p.usr$orderkey ' +
+        '      LEFT join USR$MN_KINDTYPE kt on kt.id = p.usr$paykindkey ' +
+        '      LEFT join USR$INV_PAYTYPE pt on pt.id = kt.usr$paytypekey ' +
+        '      where o.usr$logicdate >= :datebegin ' +
+        '      and o.usr$logicdate <= :dateend and o.usr$pay = 1 ' +
+        '      group by o.usr$pay, kt.usr$name, pt.usr$name ';
+      P.ParamByName('datebegin').AsDateTime := DateBegin;
+      P.ParamByName('dateend').AsDateTime := DateEnd;
+      P.Open;
+      P.IsResult := False;
+
+      Np := BaseQueryList.Query[BaseQueryList.add('Np' , False)];
+      Np.SQL := ' select o.usr$pay, sum(ol.usr$sumncuwithdiscount) as sumncu from usr$mn_order o ' +
+      ' join usr$mn_orderline ol on ol.masterkey = o.documentkey ' +
+      '      where o.usr$logicdate >= :datebegin ' +
+      '      and o.usr$logicdate <= :dateend and o.usr$pay + 0 = 0' +
+      '      and ol.usr$causedeletekey + 0 is null ' +
+      ' group by o.usr$pay ';
+      Np.ParamByName('datebegin').AsDateTime := DateBegin;
+      Np.ParamByName('dateend').AsDateTime := DateEnd;
+      Np.Open;
+      Np.IsResult := False;
+
+      Comp := BaseQueryList.Query[BaseQueryList.add('Comp' , False)];
+      Comp.SQL := ' select * from gd_v_company where id = :id ';
+      Comp.ParamByName('id').AsInteger := FFrontBase.CompanyKey;
+      Comp.Open;
+      Comp.IsResult := False;
+
+      Header := BaseQueryList.Query[BaseQueryList.Add('Header', True)];
+      Header.AddField('PAY', 'ftInteger', 0, False);
+      Header.AddField('c', 'FTFloat', 0, False);
+      Header.AddField('g', 'FTFloat', 0, False);
+      Header.AddField('t', 'FTString', 60, False);
+      Header.AddField('K', 'FTString', 60, False);
+      Header.AddField('p', 'FTFloat', 0, False);
+      Header.AddField('np', 'FTFloat', 0, False);
+      Header.AddField('PS', 'FTString', 20, False);
+      Header.AddField('COMPANY', 'FtString', 60, False);
+      Header.AddField('Db', 'FtDate', 0, False);
+      Header.AddField('De', 'FtDate', 0, False);
+      Header.AddField('Time', 'FtDateTime', 0, False);
+      Header.Open;
+
+      while not Q.eof do
+      begin
+        Header.Append;
+        Header.FieldByNAme('COMPANY').AsString := Comp.FieldByName('compname').AsString;
+        Header.FieldByNAme('Db').AsDateTime := DateBegin;
+        Header.FieldByNAme('De').AsDateTime := DateEnd;
+        Header.FieldByNAme('Time').AsVariant := Now;
+
+        I := 0;
+        while I <= q.FieldCount - 1 do
+        begin
+          Header.Fields[I].AsString := q.Fields[I].AsString;
+          Inc(I);
+        end;
+        if Q.FieldByName('usr$pay').AsCurrency <> 1 then
+        begin
+          Header.Edit;
+          Header.FieldByName('PS').AsString := 'Не опл';
+        end else
+        begin
+          Header.Edit;
+          Header.FieldByName('PS').AsString := 'Оплач';
+        end;
+        while not P.eof do
+        begin
+          Header.Append;
+          Header.FieldByName('t').AsString := P.FieldByName('typepay').AsString;
+          Header.FieldByName('k').AsString := P.FieldByName('kindpay').AsString;
+          Header.FieldByName('p').AsCurrency := P.FieldByName('sumpayncu').AsCurrency;
+          P.Next;
+        end;
+        if Q.FieldByName('usr$pay').AsCurrency <> 1 then
+        begin
+          Header.Edit;
+          Header.FieldByName('p').AsCurrency := Np.FieldByName('sumncu').AsCurrency;
+        end;
+
+        Header.Post;
+        q.Next;
+      end;
+
+      FrxDBDataset.Name := 'Header';
+      FrxDBDataset.DataSet := TDataSet(Header.DataSet);
+      FReport.DataSets.Add(FrxDBDataset);
+      FReport.EnabledDataSets.Add(FrxDBDataset);
+
+      GetTemplateStreamByRuid(147733592, 1604829035, Str);
+      if Str.Size > 0 then
+      begin
+        Str.Position := 0;
+        FReport.LoadFromStream(Str);
+      end;
+
+      FReport.Variables.Clear;
+      FReport.Variables[' ' + cn_RestParam] := Null;
+      FReport.Variables.AddVariable(cn_RestParam, 'PARAM0', '''' + DateToStr(DateBegin) + '''');
+      FReport.Variables.AddVariable(cn_RestParam, 'PARAM1', '''' + DateToStr(DateEnd) + '''');
+      if FReport.PrepareReport then
+        FReport.ShowPreparedReport;
+
+    finally
+      FrxDBDataset.Free;
+      Str.Free;
     end;
   finally
     FReport.Free;

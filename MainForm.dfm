@@ -30,7 +30,7 @@ object RestMainForm: TRestMainForm
       Top = 0
       Width = 934
       Height = 721
-      ActivePage = tsManagerInfo
+      ActivePage = tsMain
       ActiveFont.Charset = DEFAULT_CHARSET
       ActiveFont.Color = clWindowText
       ActiveFont.Height = -11
@@ -353,7 +353,7 @@ object RestMainForm: TRestMainForm
                   Styler = FrontData.FrontPanelStyler
                   FullHeight = 58
                   object btnBackToMenu: TAdvSmoothButton
-                    Left = 10
+                    Left = 14
                     Top = 7
                     Width = 212
                     Height = 43
@@ -602,7 +602,7 @@ object RestMainForm: TRestMainForm
             Top = 1
             Width = 690
             Height = 699
-            ActivePage = tsOrderInfo
+            ActivePage = tsUserOrder
             ActiveFont.Charset = DEFAULT_CHARSET
             ActiveFont.Color = clWindowText
             ActiveFont.Height = -11
@@ -992,6 +992,20 @@ object RestMainForm: TRestMainForm
                 StatusBar.GradientDirection = gdVertical
                 Styler = FrontData.FrontPanelStyler
                 FullHeight = 65
+                object lblResp: TLabel
+                  Left = 190
+                  Top = 7
+                  Width = 5
+                  Height = 21
+                  Font.Charset = DEFAULT_CHARSET
+                  Font.Color = clWindowText
+                  Font.Height = -19
+                  Font.Name = 'Times New Roman'
+                  Font.Style = []
+                  ParentFont = False
+                  Transparent = True
+                  WordWrap = True
+                end
                 object btnUsersDown: TAdvSmoothButton
                   Left = 12
                   Top = 7
@@ -2166,6 +2180,36 @@ object RestMainForm: TRestMainForm
             TabOrder = 3
             Version = '1.6.9.0'
           end
+          object btnKassa: TAdvSmoothButton
+            Left = 4
+            Top = 223
+            Width = 72
+            Height = 50
+            Action = actKassirInfo
+            Appearance.Font.Charset = DEFAULT_CHARSET
+            Appearance.Font.Color = clWindowText
+            Appearance.Font.Height = -13
+            Appearance.Font.Name = 'Times New Roman'
+            Appearance.Font.Style = [fsBold]
+            Status.Caption = '0'
+            Status.Appearance.Fill.Color = clRed
+            Status.Appearance.Fill.ColorMirror = clNone
+            Status.Appearance.Fill.ColorMirrorTo = clNone
+            Status.Appearance.Fill.GradientType = gtSolid
+            Status.Appearance.Fill.BorderColor = clGray
+            Status.Appearance.Fill.Rounding = 0
+            Status.Appearance.Fill.ShadowOffset = 0
+            Status.Appearance.Font.Charset = DEFAULT_CHARSET
+            Status.Appearance.Font.Color = clWhite
+            Status.Appearance.Font.Height = -11
+            Status.Appearance.Font.Name = 'Tahoma'
+            Status.Appearance.Font.Style = []
+            Bevel = False
+            Color = 15195349
+            ParentFont = False
+            TabOrder = 4
+            Version = '1.6.9.0'
+          end
         end
         object tsManagerInfoButton: TAdvTabSheet
           Caption = 'tsManagerInfoButton'
@@ -2193,7 +2237,7 @@ object RestMainForm: TRestMainForm
           end
           object usrg_BitBtn5: TBitBtn
             Left = 3
-            Top = 385
+            Top = 437
             Width = 75
             Height = 33
             Caption = #1042#1099#1088#1091#1095#1082#1072
@@ -2204,7 +2248,7 @@ object RestMainForm: TRestMainForm
           end
           object usrg_BitBtn12: TBitBtn
             Left = 3
-            Top = 424
+            Top = 476
             Width = 75
             Height = 33
             Caption = #1055#1088#1077#1095#1077#1082
@@ -2215,7 +2259,7 @@ object RestMainForm: TRestMainForm
           end
           object usrg_Button1: TButton
             Left = 2
-            Top = 463
+            Top = 515
             Width = 76
             Height = 33
             Caption = #1056#1077#1077#1089#1090#1088
@@ -2408,6 +2452,48 @@ object RestMainForm: TRestMainForm
             Version = '1.6.9.0'
             OnClick = btnAllChecClick
           end
+          object btnPrintIncomeReport: TAdvSmoothButton
+            Left = 4
+            Top = 381
+            Width = 72
+            Height = 50
+            Appearance.Font.Charset = DEFAULT_CHARSET
+            Appearance.Font.Color = clWindowText
+            Appearance.Font.Height = -13
+            Appearance.Font.Name = 'Times New Roman'
+            Appearance.Font.Style = [fsBold]
+            Status.Caption = '0'
+            Status.Appearance.Fill.Color = clRed
+            Status.Appearance.Fill.ColorMirror = clNone
+            Status.Appearance.Fill.ColorMirrorTo = clNone
+            Status.Appearance.Fill.GradientType = gtSolid
+            Status.Appearance.Fill.BorderColor = clGray
+            Status.Appearance.Fill.Rounding = 0
+            Status.Appearance.Fill.ShadowOffset = 0
+            Status.Appearance.Font.Charset = DEFAULT_CHARSET
+            Status.Appearance.Font.Color = clWhite
+            Status.Appearance.Font.Height = -11
+            Status.Appearance.Font.Name = 'Tahoma'
+            Status.Appearance.Font.Style = []
+            Bevel = False
+            Caption = #1054#1090#1095#1077#1090' '#1087#1086' '#1074#1099#1088#1091#1095#1082#1077
+            Color = 14922381
+            ParentFont = False
+            TabOrder = 11
+            Version = '1.6.9.0'
+            OnClick = btnPrintIncomeReportClick
+          end
+        end
+        object tsEmpty: TAdvTabSheet
+          Caption = 'tsEmpty'
+          Color = 14986888
+          ColorTo = clNone
+          TabColor = clBtnFace
+          TabColorTo = clNone
+          ExplicitLeft = 24
+          ExplicitTop = 0
+          ExplicitWidth = 100
+          ExplicitHeight = 100
         end
       end
     end
@@ -2566,6 +2652,13 @@ object RestMainForm: TRestMainForm
       Caption = #1042#1099#1088#1091#1095#1082#1072
       OnExecute = actManagerInfoExecute
       OnUpdate = actManagerInfoUpdate
+    end
+    object actKassirInfo: TAction
+      Category = 'menu'
+      Caption = #1054#1087#1083#1072#1090#1072
+      Hint = #1054#1087#1083#1072#1090#1072
+      OnExecute = actKassirInfoExecute
+      OnUpdate = actKassirInfoUpdate
     end
   end
   object dsMain: TDataSource
