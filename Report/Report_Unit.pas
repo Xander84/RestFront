@@ -184,84 +184,92 @@ function TRestReport.PrintDeleteServiceCheck(const ReportType, PrnGrID,
 var
   FReport: Tgs_fr4SingleReport;
   Str: TStream;
-  Query: TIBQuery;
-  MemTable: TkbmMemTable;
+  BaseQueryList: TgsQueryList;
   I: Integer;
-  TfrxDBDataset2: TfrxDBDataset;
+  FfrxDBDataset: TfrxDBDataset;
+  S: String;
+  Header: TgsDataSet;
 begin
   Result := False;
 
   Assert(Assigned(FFrontBase), 'FrontBase not assigned');
-
+  BaseQueryList := FrontData.BaseQueryList;
+  BaseQueryList.Clear;
   FReport := Tgs_fr4SingleReport.Create(nil);
   try
     InitReportParams(FReport, PrinterName);
 
     Str := TMemoryStream.Create;
-    Query := TIBQuery.Create(nil);
-    MemTable := TkbmMemTable.Create(nil);
-    MemTable.Name := 'HEADER';
-    TfrxDBDataset2 := TfrxDBDataset.Create(nil);
+    FfrxDBDataset := TfrxDBDataset.Create(nil);
     try
-      if FFrontBase.GetDeleteServiceCheckQuery(Query, PrnGrID, DocumentKey, MasterKey, PrinterName) then
+      Header := BaseQueryList.Query[BaseQueryList.Add('HEADER', False)];
+      S :=
+        'select ' +
+        '  doc.documentdate, doc.number as NUM, ' +
+        '  comp.name compname,  ' +
+        '  o.usr$guestcount guest, ' +
+        '  con.name conname, o.usr$timeorder as open1,  ' +
+        '  ol.documentkey,                              ' +
+        '  g.alias, g.name as goodname,                 ' +
+        '  prngr.usr$name as prngroupname,              ' +
+        '  ol.usr$quantity as q,                        ' +
+        '  setprn.usr$printername as printername,       ' +
+        '  cause.usr$name as cn                         ' +
+        'from                                           ' +
+        '  gd_document doc                              ' +
+        '  join usr$mn_order o on doc.id = o.documentkey and doc.id = :docid  ' +
+        '  join usr$mn_orderline ol on o.documentkey = ol.masterkey ' +
+        '    and ol.documentkey = :lineID                           ' +
+        '  join gd_document docl on docl.id = ol.documentkey        ' +
+        '  join gd_good g on g.id = ol.usr$goodkey                  ' +
+        '  join usr$mn_prngroup prngr on prngr.id = g.usr$prngroupkey   ' +
+        '  join usr$mn_prngroupset setprn on setprn.usr$prngroup = prngr.id   ' +
+        '  JOIN gd_contact comp ON comp.id = doc.companykey                   ' +
+        '  JOIN USR$MN_CAUSEDELETEORDERLINE cause on cause.id = ol.usr$causedeletekey  ' +
+        '  LEFT JOIN usr$mn_p_getcontact_department(o.usr$respkey) cd ON 0 = 0  ' +
+        '  LEFT JOIN gd_contact con ON con.id = cd.peoplekey        ' +
+        '  LEFT JOIN gd_contact dept ON dept.id = cd.departmentkey  ' +
+        'where                                                      ' +
+        '  setprn.usr$printername = :printername                    ' +
+        '  and ol.usr$causedeletekey is not null                    ' +
+        '  and setprn.usr$computername = :COMP                      ' +
+        '  and setprn.usr$kassa = 0 ';
+      if PrnGrID <> 0 then
+        S := S + '  and prngr.id = :prngrid ';
+      Header.SQL := S;
+      Header.ParamByName('docid').AsInteger := DocumentKey;
+      Header.ParamByName('LineID').AsInteger := MasterKey;
+      Header.ParambyName('printername').AsString := PrinterName;
+      Header.ParambyName('comp').AsString := FFrontBase.GetLocalComputerName;
+      if PrnGrID <> 0 then
+        Header.ParambyName('prngrid').Value := PrnGrID;
+      Header.Open;
+
+      FfrxDBDataset.Name := Header.DataSet.Name;
+      FfrxDBDataset.DataSet := TDataSet(Header.DataSet);
+
+      FReport.DataSets.Add(FfrxDBDataset);
+      FReport.EnabledDataSets.Add(FfrxDBDataset);
+      GetTemplateStreamByRuid(147373760, 1033124911, Str);
+      if Str.Size > 0 then
       begin
-        MemTable.CreateTableAs(Query, [mtcpoStructure]);
-        MemTable.FieldDefs.Add('TIME', ftTime, 0);
-        MemTable.FieldDefs.Add('COMPRESSEDON', ftString, 10);
-        MemTable.CreateTable;
-        MemTable.Open;
-
-        Query.First;
-        while not Query.Eof do
-        begin
-          MemTable.Append;
-          I := 0;
-          while I <= Query.FieldCount - 1 do
-          begin
-            MemTable.Fields[I].AsString := Query.Fields[I].AsString;
-            Inc(I);
-          end;
-
-          MemTable.FieldByName('TIME').AsdateTime := Time;
-          MemTable.FieldByName('COMPRESSEDON').AsVariant := '';
-          MemTable.Post;
-          Query.Next;
-        end;
-
-        TfrxDBDataset2.Name := MemTable.Name;
-        TfrxDBDataset2.DataSet := TDataSet(MemTable);
-
-        FReport.DataSets.Add(TfrxDBDataset2);
-        FReport.EnabledDataSets.Add(TfrxDBDataset2);
-
-        case ReportType of
-          1:
-          begin                            
-            GetTemplateStreamByRuid(147373760, 1033124911, Str);
-            if Str.Size > 0 then
-            begin
-              Str.Position := 0;
-              FReport.LoadFromStream(Str);
-            end;
-          end;
-        end;
-        //
-        FReport.Variables.Clear;
-        FReport.Variables[' ' + cn_RestParam] := Null;
-        FReport.Variables.AddVariable(cn_RestParam, 'PrnGrID', '''' + VarToStr(PrnGrID) + '''');
-        FReport.Variables.AddVariable(cn_RestParam, 'DocID', '''' + VarToStr(MasterKey) + '''');
-        FReport.Variables.AddVariable(cn_RestParam, 'LineID', '''' + VarToStr(DocumentKey) + '''');
-        FReport.Variables.AddVariable(cn_RestParam, 'PrinterName', '''' + VarToStr(PrinterName) + '''');
-        if FReport.PrepareReport then
-          FReport.Print;
-
-        Result := True;
+        Str.Position := 0;
+        FReport.LoadFromStream(Str);
       end;
+      //
+      FReport.Variables.Clear;
+      FReport.Variables[' ' + cn_RestParam] := Null;
+      FReport.Variables.AddVariable(cn_RestParam, 'PrnGrID', '''' + VarToStr(PrnGrID) + '''');
+      FReport.Variables.AddVariable(cn_RestParam, 'DocID', '''' + VarToStr(MasterKey) + '''');
+      FReport.Variables.AddVariable(cn_RestParam, 'LineID', '''' + VarToStr(DocumentKey) + '''');
+      FReport.Variables.AddVariable(cn_RestParam, 'PrinterName', '''' + VarToStr(PrinterName) + '''');
+      if FReport.PrepareReport then
+        FReport.Print;
+
+      Result := True;
     finally
       Str.Free;
-      Query.Free;
-      MemTable.Free;
-      TfrxDBDataset2.Free;
+      FfrxDBDataset.Free;
     end;
   finally
     FReport.Free;
@@ -328,11 +336,11 @@ begin
 
       Np := BaseQueryList.Query[BaseQueryList.add('Np' , False)];
       Np.SQL := ' select o.usr$pay, sum(ol.usr$sumncuwithdiscount) as sumncu from usr$mn_order o ' +
-      ' join usr$mn_orderline ol on ol.masterkey = o.documentkey ' +
-      '      where o.usr$logicdate >= :datebegin ' +
-      '      and o.usr$logicdate <= :dateend and o.usr$pay + 0 = 0' +
-      '      and ol.usr$causedeletekey + 0 is null ' +
-      ' group by o.usr$pay ';
+        ' join usr$mn_orderline ol on ol.masterkey = o.documentkey ' +
+        '      where o.usr$logicdate >= :datebegin ' +
+        '      and o.usr$logicdate <= :dateend and o.usr$pay + 0 = 0' +
+        '      and ol.usr$causedeletekey + 0 is null ' +
+        ' group by o.usr$pay ';
       Np.ParamByName('datebegin').AsDateTime := DateBegin;
       Np.ParamByName('dateend').AsDateTime := DateEnd;
       Np.Open;
@@ -368,9 +376,9 @@ begin
         Header.FieldByNAme('Time').AsVariant := Now;
 
         I := 0;
-        while I <= q.FieldCount - 1 do
+        while I <= Q.FieldCount - 1 do
         begin
-          Header.Fields[I].AsString := q.Fields[I].AsString;
+          Header.Fields[I].AsString := Q.Fields[I].AsString;
           Inc(I);
         end;
         if Q.FieldByName('usr$pay').AsCurrency <> 1 then
@@ -397,10 +405,10 @@ begin
         end;
 
         Header.Post;
-        q.Next;
+        Q.Next;
       end;
 
-      FrxDBDataset.Name := 'Header';
+      FrxDBDataset.Name := Header.DataSet.Name;
       FrxDBDataset.DataSet := TDataSet(Header.DataSet);
       FReport.DataSets.Add(FrxDBDataset);
       FReport.EnabledDataSets.Add(FrxDBDataset);

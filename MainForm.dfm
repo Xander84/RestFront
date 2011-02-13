@@ -2490,10 +2490,6 @@ object RestMainForm: TRestMainForm
           ColorTo = clNone
           TabColor = clBtnFace
           TabColorTo = clNone
-          ExplicitLeft = 24
-          ExplicitTop = 0
-          ExplicitWidth = 100
-          ExplicitHeight = 100
         end
       end
     end
@@ -2677,5 +2673,11 @@ object RestMainForm: TRestMainForm
   object dsLineInfo: TDataSource
     Left = 512
     Top = 144
+  end
+  object tmrClose: TTimer
+    Tag = 1
+    OnTimer = tmrCloseTimer
+    Left = 240
+    Top = 240
   end
 end

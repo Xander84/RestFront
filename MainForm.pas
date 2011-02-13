@@ -178,6 +178,7 @@ type
     actKassirInfo: TAction;
     btnKassa: TAdvSmoothButton;
     btnPrintIncomeReport: TAdvSmoothButton;
+    tmrClose: TTimer;
 
     //Проверка введёного пароля
     procedure actPassEnterExecute(Sender: TObject);
@@ -246,6 +247,7 @@ type
     procedure actKassirInfoExecute(Sender: TObject);
     procedure actKassirInfoUpdate(Sender: TObject);
     procedure btnPrintIncomeReportClick(Sender: TObject);
+    procedure tmrCloseTimer(Sender: TObject);
   private
     //Компонент обращения к БД
     FFrontBase: TFrontBase;
@@ -1910,6 +1912,7 @@ begin
           CreateOrderButtonList;
           CreateMenuButtonList;
           AddPopularGoods;
+          tmrClose.Tag := 1;
 
           ClearDisplay;
         finally
@@ -2490,6 +2493,16 @@ begin
     finally
       FreeAndNil(FSplitForm);
     end;
+  end;
+end;
+
+procedure TRestMainForm.tmrCloseTimer(Sender: TObject);
+begin
+  if (not FFrontBase.Options.NoPassword) and (FFormState = OrderMenu) then
+  begin
+    if tmrClose.Tag = 10 then
+      actCancel.Execute;
+    tmrClose.Tag := tmrClose.Tag + 1;
   end;
 end;
 

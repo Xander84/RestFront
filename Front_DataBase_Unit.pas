@@ -342,6 +342,7 @@ type
     function GetPrinterName: String;
     function GetReportTemplate(var Stream: TStream; const ID: Integer): Boolean;
     function SaveReportTemplate(var Stream: TStream; const ID: Integer): Boolean;
+    procedure GetCashInfo;
 
     function GetNameWaiterOnID(const ID: Integer; WithGroup, TwoRows: Boolean): String;
 
@@ -358,7 +359,6 @@ type
     function GetServiceCheckOptions(const DocID: Integer; out PrinterName: String; out PrnGrid: Integer): Boolean;
     function SavePrintDate(const ID: Integer): Boolean;
     function GetPreCheckQuery(var Query: TIBQuery; const DocID: Integer): Boolean;
-    function GetDeleteServiceCheckQuery(var Query: TIBQuery; const PrnGrID, DocumentKey, MasterKey: Integer; const PrinterName: String): Boolean;
     function GetDeleteServiceCheckOptions(const DocID, MasterKey: Integer; out PrinterName: String;
       out PrnGrid: Integer): Boolean;
     function GetReportList(var MemTable: TkbmMemTable): Boolean;
@@ -2243,179 +2243,71 @@ begin
   end;
 end;
 
+procedure TFrontBase.GetCashInfo;
+begin
+  FReadSQL.Close;
+  if not FReadSQL.Transaction.InTransaction then
+    FReadSQL.Transaction.StartTransaction;
+  try
+    FReadSQL.SQL.Text :=
+      ' select ' +
+      '   first(1) ' +
+      '   s.usr$cashcode as code, s.USR$COMPORT as comport, s.usr$cashnumber as number, s.id ' +
+      ' from ' +
+      '   usr$mn_pointofsaleset  s  ' +
+      ' where ' +
+      '   upper(s.usr$computer) = upper(:comp) ' +
+      '   and coalesce(s.usr$active, 0) = 0 ' +
+      '   and s.usr$kassa > '''' ' +
+      ' order by  ' +
+      '   s.id desc ';
+    FReadSQL.Params[0].AsString := AnsiUpperCase(GetLocalComputerName);
+    FReadSQL.ExecQuery;
+    if not FReadSQL.Eof then
+    begin
+      FCashCode := FReadSQL.FieldByName('code').AsInteger;
+      FFiscalComPort := FReadSQL.FieldByName('comport').AsInteger;
+      FCashNumber := FReadSQL.FieldByName('number').AsInteger;
+      FIsMainCash := True;
+    end else
+    begin
+      FCashCode := -1;
+      FFiscalComPort := -1;
+      FCashNumber := -1;
+      FIsMainCash := False;
+    end;
+  finally
+    FReadSQL.Transaction.Commit;
+  end;
+end;
+
 function TFrontBase.GetCashCode: Integer;
 begin
-  if FCashCode > 0 then
-    Result := FCashCode
-  else begin
-{ TODO : Одинаковый код }
-    FReadSQL.Close;
-    if not FReadSQL.Transaction.InTransaction then
-      FReadSQL.Transaction.StartTransaction;
-    try
-      FReadSQL.SQL.Text :=
-        ' select ' +
-        '   first(1) ' +
-        '   s.usr$cashcode as code, s.USR$COMPORT as comport, s.usr$cashnumber as number, s.id ' +
-        ' from ' +
-        '   usr$mn_pointofsaleset  s  ' +
-        ' where ' +
-        '   upper(s.usr$computer) = upper(:comp) ' +
-        '   and coalesce(s.usr$active, 0) = 0 ' +
-        '   and s.usr$kassa > '''' ' +
-        ' order by  ' +
-        '   s.id desc ';
-      FReadSQL.Params[0].AsString := AnsiUpperCase(GetLocalComputerName);
-      FReadSQL.ExecQuery;
-      if not FReadSQL.Eof then
-      begin
-        FCashCode := FReadSQL.FieldByName('code').AsInteger;
-        FFiscalComPort := FReadSQL.FieldByName('comport').AsInteger;
-        FCashNumber := FReadSQL.FieldByName('number').AsInteger;
-        FIsMainCash := True;
-      end else
-      begin
-        FCashCode := -1;
-        FFiscalComPort := -1;
-        FCashNumber := -1;
-        FIsMainCash := False;
-      end;
-      Result := FCashCode;
-    finally
-      FReadSQL.Transaction.Commit;
-    end;
-  end;
+  if not FCashCode > 0 then
+    GetCashInfo;
+  Result := FCashCode;
 end;
 
 function TFrontBase.GetFiscalComPort: Integer;
 begin
-  if FFiscalComPort > 0 then
-    Result := FFiscalComPort
-  else begin
-    FReadSQL.Close;
-    if not FReadSQL.Transaction.InTransaction then
-      FReadSQL.Transaction.StartTransaction;
-    try
-      FReadSQL.SQL.Text :=
-        ' select ' +
-        '   first(1) ' +
-        '   s.usr$cashcode as code, s.USR$COMPORT as comport, s.usr$cashnumber as number, s.id ' +
-        ' from ' +
-        '   usr$mn_pointofsaleset  s  ' +
-        ' where ' +
-        '   upper(s.usr$computer) = upper(:comp) ' +
-        '   and coalesce(s.usr$active, 0) = 0 ' +
-        '   and s.usr$kassa > '''' ' +
-        ' order by  ' +
-        '   s.id desc ';
-      FReadSQL.Params[0].AsString := AnsiUpperCase(GetLocalComputerName);
-      FReadSQL.ExecQuery;
-      if not FReadSQL.Eof then
-      begin
-        FCashCode := FReadSQL.FieldByName('code').AsInteger;
-        FFiscalComPort := FReadSQL.FieldByName('comport').AsInteger;
-        FCashNumber := FReadSQL.FieldByName('number').AsInteger;
-        FIsMainCash := True;
-      end else
-      begin
-        FCashCode := -1;
-        FFiscalComPort := -1;
-        FCashNumber := -1;
-        FIsMainCash := False;
-      end;
-      Result := FFiscalComPort;
-    finally
-      FReadSQL.Transaction.Commit;
-    end;
-  end;
+  if not FFiscalComPort > 0 then
+    GetCashInfo;
+  Result := FFiscalComPort;
 end;
 
 function TFrontBase.GetCashNumber: Integer;
 begin
-  if FCashNumber > 0 then
-    Result := FCashNumber
-  else begin
-    FReadSQL.Close;
-    if not FReadSQL.Transaction.InTransaction then
-      FReadSQL.Transaction.StartTransaction;
-    try
-      FReadSQL.SQL.Text :=
-        ' select ' +
-        '   first(1) ' +
-        '   s.usr$cashcode as code, s.USR$COMPORT as comport, s.usr$cashnumber as number, s.id ' +
-        ' from ' +
-        '   usr$mn_pointofsaleset  s  ' +
-        ' where ' +
-        '   upper(s.usr$computer) = upper(:comp) ' +
-        '   and coalesce(s.usr$active, 0) = 0 ' +
-        '   and s.usr$kassa > '''' ' +
-        ' order by  ' +
-        '   s.id desc ';
-      FReadSQL.Params[0].AsString := AnsiUpperCase(GetLocalComputerName);
-      FReadSQL.ExecQuery;
-      if not FReadSQL.Eof then
-      begin
-        FCashCode := FReadSQL.FieldByName('code').AsInteger;
-        FFiscalComPort := FReadSQL.FieldByName('comport').AsInteger;
-        FCashNumber := FReadSQL.FieldByName('number').AsInteger;
-        FIsMainCash := True;
-      end else
-      begin
-        FCashCode := -1;
-        FFiscalComPort := -1;
-        FCashNumber := -1;
-        FIsMainCash := False;
-      end;
-      Result := FCashNumber;
-    finally
-      FReadSQL.Transaction.Commit;
-    end;
-  end;
+  if not FCashNumber > 0 then
+    GetCashInfo;
+  Result := FCashNumber;
 end;
 
 function TFrontBase.GetIsMainCash: Boolean;
 begin
-  if FIsMainCash then
-    Result := True
-  else begin
-    FReadSQL.Close;
-    if not FReadSQL.Transaction.InTransaction then
-      FReadSQL.Transaction.StartTransaction;
-    try
-      FReadSQL.SQL.Text :=
-        ' select ' +
-        '   first(1) ' +
-        '   s.usr$cashcode as code, s.USR$COMPORT as comport, s.usr$cashnumber as number, s.id ' +
-        ' from ' +
-        '   usr$mn_pointofsaleset  s  ' +
-        ' where ' +
-        '   upper(s.usr$computer) = upper(:comp) ' +
-        '   and coalesce(s.usr$active, 0) = 0 ' +
-        '   and s.usr$kassa > '''' ' +
-        ' order by  ' +
-        '   s.id desc ';
-      FReadSQL.Params[0].AsString := AnsiUpperCase(GetLocalComputerName);
-      FReadSQL.ExecQuery;
-      if not FReadSQL.Eof then
-      begin
-        FCashCode := FReadSQL.FieldByName('code').AsInteger;
-        FFiscalComPort := FReadSQL.FieldByName('comport').AsInteger;
-        FCashNumber := FReadSQL.FieldByName('number').AsInteger;
-        FIsMainCash := True;
-      end else
-      begin
-        FCashCode := -1;
-        FFiscalComPort := -1;
-        FCashNumber := -1;
-        FIsMainCash := False;
-      end;
-      Result := FIsMainCash;
-    finally
-      FReadSQL.Transaction.Commit;
-    end;
-  end;
+  if not FIsMainCash then
+    GetCashInfo;
+  Result := FIsMainCash;
 end;
-
 
 function TFrontBase.GetNameWaiterOnID(const ID: Integer; WithGroup,
   TwoRows: Boolean): String;
@@ -3405,65 +3297,6 @@ begin
       '  o.usr$cash                                               ' +
       '  having Sum(ol.usr$quantity) > 0 ';
     Query.ParamByName('dockey').AsInteger := DocID;
-    Query.Open;
-
-    Result := True;
-  except
-    on E: Exception do
-      AdvTaskMessageDlg('Внимание', 'Ошибка ' + E.Message, mtError, [mbOK], 0);
-  end;
-end;
-
-function TFrontBase.GetDeleteServiceCheckQuery(var Query: TIBQuery;
-  const PrnGrID, DocumentKey, MasterKey: Integer;
-  const PrinterName: String): Boolean;
-var
-  S: String;
-begin
-  Result := False;
-  try
-    S :=
-      'select ' +
-      '  doc.documentdate, doc.number as NUM, ' +
-      '  comp.name compname,  ' +
-      '  o.usr$guestcount guest, ' +
-      '  con.name conname, o.usr$timeorder as open1,  ' +
-      '  ol.documentkey,                              ' +
-      '  g.alias, g.name as goodname,                 ' +
-      '  prngr.usr$name as prngroupname,              ' +
-      '  ol.usr$quantity as q,                        ' +
-      '  setprn.usr$printername as printername,       ' +
-      '  cause.usr$name as cn                         ' +
-      'from                                           ' +
-      '  gd_document doc                              ' +
-      '  join usr$mn_order o on doc.id = o.documentkey and doc.id = :docid  ' +
-      '  join usr$mn_orderline ol on o.documentkey = ol.masterkey ' +
-      '    and ol.documentkey = :lineID                           ' +
-      '  join gd_document docl on docl.id = ol.documentkey        ' +
-      '  join gd_good g on g.id = ol.usr$goodkey                  ' +
-      '  join usr$mn_prngroup prngr on prngr.id = g.usr$prngroupkey   ' +
-      '  join usr$mn_prngroupset setprn on setprn.usr$prngroup = prngr.id   ' +
-      '  JOIN gd_contact comp ON comp.id = doc.companykey                   ' +
-      '  JOIN USR$MN_CAUSEDELETEORDERLINE cause on cause.id = ol.usr$causedeletekey  ' +
-      '  LEFT JOIN usr$mn_p_getcontact_department(o.usr$respkey) cd ON 0 = 0  ' +
-      '  LEFT JOIN gd_contact con ON con.id = cd.peoplekey        ' +
-      '  LEFT JOIN gd_contact dept ON dept.id = cd.departmentkey  ' +
-      'where                                                      ' +
-      '  setprn.usr$printername = :printername                    ' +
-      '  and ol.usr$causedeletekey is not null                    ' +
-      '  and setprn.usr$computername = :COMP                      ' +
-      '  and setprn.usr$kassa = 0 ';
-    if prngrid <> 0 then
-      S := S + '  and prngr.id = :prngrid ';
-
-    Query.Database := FDataBase;
-    Query.SQL.Text := S;
-    Query.ParamByName('docid').AsInteger := DocumentKey;
-    Query.ParamByName('LineID').AsInteger := MasterKey;
-    Query.ParambyName('printername').AsString := PrinterName;
-    Query.ParambyName('comp').AsString := GetLocalComputerName;
-    if prngrid <> 0 then
-      Query.ParambyName('prngrid').Value := PrnGrID;
     Query.Open;
 
     Result := True;
