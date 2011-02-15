@@ -64,7 +64,9 @@ type
     function Get_Self: Integer;
     procedure SetFrontBase(const Value: TFrontBase);
 
-    function Close(const Summ: Currency): Boolean;
+    function Close(const Summ: Currency): Boolean; overload;
+    function Close(const Summ: Currency; PayType: Integer): Boolean; overload;
+    function Close(const Summ1, Summ2, Summ3: Currency): Boolean; overload;
     // прогон ленты на LineCount строк
     function Feed(const LineCount: Integer): Boolean;
     function Cut(const LineCount: Integer): Boolean;
@@ -262,6 +264,7 @@ var
   TotalDiscount: Currency;
   GoodName: String;
   Quantity, Price, SumDiscount, Summ: Currency;
+  Summ1, Summ2, Summ3: Currency;
 begin
   Result := False;
   Assert(Assigned(FFrontBase), 'FrontBase not Assigned');
@@ -288,24 +291,62 @@ begin
       DocLine.Next;
     end;
 
-    Summ := 0;
+    Summ1 := 0;
+    Summ2 := 0;
+    Summ3 := 0;
     PayLine.DisableControls;
     try
       PayLine.First;
       while not PayLine.Eof do
       begin
-        Summ := Summ + PayLine.FieldByName('SUM').AsInteger;
+        case PayLine.FieldByName('PAYTYPE').AsInteger of
+          cn_paytype_cash: //наличные
+            Summ1 := Summ1 + PayLine.FieldByName('SUM').AsInteger;
+          cn_paytype_credit: //кредитная карта
+            Summ3 := Summ3 + PayLine.FieldByName('SUM').AsInteger;
+          cn_paytype_noncash: //безнал (кредит)
+            Summ2 := Summ2 + PayLine.FieldByName('SUM').AsInteger;
+        end;
         PayLine.Next;
       end;
     finally
       PayLine.EnableControls;
     end;
 
-    Close(Summ);
+    Close(Summ1, Summ2, Summ3);
     if SetLastError then
       exit;
     Cut(0);
     Result := True;
+
+    if Result then
+    begin
+    // сохраняем чек
+      if Doc.State <> dsEdit then
+        Doc.Edit;
+      Doc.FieldByName('USR$WHOPAYOFFKEY').AsInteger := FFrontBase.ContactKey;
+      Doc.FieldByName('USR$PAY').AsInteger := 1;
+      Doc.FieldByName('USR$REGISTER').AsString := IntToStr(FFrontBase.CashNumber);
+      Doc.FieldByName('USR$LOGICDATE').AsDateTime := FFrontBase.GetLogicDate;
+      Doc.FieldByName('USR$SYSNUM').AsInteger := GetDocumentNumber;
+      if Doc.FieldByName('usr$timecloseorder').IsNull then
+        Doc.FieldByName('usr$timecloseorder').AsDateTime := Now;
+
+      PayLine.DisableControls;
+      try
+        PayLine.First;
+        while not PayLine.Eof do
+        begin
+          FFrontBase.SavePayment(FFrontBase.ContactKey, Doc.FieldByName('ID').AsInteger,
+            PayLine.FieldByName('USR$PAYTYPEKEY').AsInteger, PayLine.FieldByName('SUM').AsCurrency);
+
+          PayLine.Next;
+        end;
+      finally
+        PayLine.EnableControls;
+      end;
+      Doc.Post;
+    end;
 
   end else
     MessageBox(Application.Handle, PChar('Не установлен драйвер для ФР !'),
@@ -398,6 +439,85 @@ procedure TMercuryRegister.ClearLastError;
 begin
   FLastErrorNumber := 0;
   FLastErrorDescription := '';
+end;
+
+function TMercuryRegister.Close(const Summ1, Summ2, Summ3: Currency): Boolean;
+begin
+  ClearLastError;
+  Result := False;
+  if FDriverInit then
+  begin
+    try
+      AddTotal(cn_FontFlagTotal, 0, FIV, 0);
+      if SetLastError then
+        exit;
+
+      Inc(FIV);
+      if CurrentOper = 1 then
+      begin
+        // печать уплаченной суммы
+        if Summ3 > 0 then
+          AddPay(mptCashCard, Summ1, Summ3, '', cn_FontFlagPay, 0, FIV, 0)
+        else if Summ2 > 0 then
+          AddPay(mptCashCredit, Summ1, Summ2, '', cn_FontFlagPay, 0, FIV, 0)
+        else
+          AddPay(mptCash, Summ1, 0, '', cn_FontFlagPay, 0, FIV, 0);
+        if SetLastError then
+          exit;
+        Inc(FIV);
+        // печать уплаченной суммы
+        AddChange(cn_FontFlagChange, 0, FIV, 0);
+        if SetLastError then
+          exit;
+        Inc(FIV);
+      end;
+      CloseFiscalDoc;
+      if SetLastError then
+        exit;
+      if not Feed(5) then
+        exit;
+      Result := True;
+    except
+      ShowLastError;
+    end;
+  end
+end;
+
+function TMercuryRegister.Close(const Summ: Currency;
+  PayType: Integer): Boolean;
+begin
+  ClearLastError;
+  Result := False;
+  if FDriverInit then
+  begin
+    try
+      AddTotal(cn_FontFlagTotal, 0, FIV, 0);
+      if SetLastError then
+        exit;
+
+      Inc(FIV);
+      if CurrentOper = 1 then
+      begin
+        AddPay(PayType, Summ, 0, '', cn_FontFlagPay, 0, FIV, 0);
+        if SetLastError then
+          exit;
+        Inc(FIV);
+        // печать уплаченной суммы
+        AddChange(cn_FontFlagChange, 0, FIV, 0);
+        if SetLastError then
+          exit;
+        Inc(FIV);
+      end;
+      CloseFiscalDoc;
+      if SetLastError then
+        exit;
+      if not Feed(5) then
+        exit;
+      Result := True;
+    except
+      ShowLastError;
+    end;
+  end
 end;
 
 function TMercuryRegister.SetLastError: Boolean;
@@ -636,38 +756,7 @@ end;
 
 function TMercuryRegister.Close(const Summ: Currency): Boolean;
 begin
-  ClearLastError;
-  Result := False;
-  if FDriverInit then
-  begin
-    try
-      AddTotal(cn_FontFlagTotal, 0, FIV, 0);
-      if SetLastError then
-        exit;
-
-      Inc(FIV);
-      if CurrentOper = 1 then
-      begin
-        AddPay(0, Summ, 0, '', cn_FontFlagPay, 0, FIV, 0);
-        if SetLastError then
-          exit;
-        Inc(FIV);
-        // печать уплаченной суммы
-        AddChange(cn_FontFlagChange, 0, FIV, 0);
-        if SetLastError then
-          exit;
-        Inc(FIV);
-      end;
-      CloseFiscalDoc;
-      if SetLastError then
-        exit;
-      if not Feed(5) then
-        exit;
-      Result := True;
-    except
-      ShowLastError;
-    end;
-  end
+  Result := Close(Summ, mptCash);
 end;
 
 function TMercuryRegister.Feed(const LineCount: Integer): Boolean;

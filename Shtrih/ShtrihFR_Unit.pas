@@ -94,8 +94,11 @@ end;
 
 function TShtrihFR.GetDocumentNumber: Integer;
 begin
-  Result := 0;
-//  if FDriverInit then
+  try
+    Result := OpenDocumentNumber;
+  except
+    Result := 0;
+  end;
 end;
 
 function TShtrihFR.GetFrontBase: TFrontBase;
@@ -282,53 +285,21 @@ begin
         end;
       end;
 
-
       CheckSubTotal;
-      // сначала кредитка
       PayLine.DisableControls;
       try
         PayLine.First;
         while not PayLine.Eof do
         begin
-          if (PayLine.FieldByName('PAYTYPE').AsInteger = 1) and
-            (PayLine.FieldByName('SUM').AsInteger > 0) then
-          begin
-            Self.Summ3 := Self.Summ3 + PayLine.FieldByName('SUM').AsInteger;
-          end;
-          PayLine.Next;
-        end;
-      finally
-        PayLine.EnableControls;
-      end;
-
-      // Безнал
-      PayLine.DisableControls;
-      try
-        PayLine.First;
-        while not PayLine.Eof do
-        begin
-          if (PayLine.FieldByName('PAYTYPE').AsInteger = 2) and
-            (PayLine.FieldByName('SUM').AsInteger > 0) then
-          begin
-            Self.Summ2 := Self.Summ2 + PayLine.FieldByName('SUM').AsInteger;
-          end;
-          PayLine.Next;
-        end;
-      finally
-        PayLine.EnableControls;
-      end;
-
-      // наличные
-      PayLine.DisableControls;
-      try
-        PayLine.First;
-        while not PayLine.Eof do
-        begin
-          if (PayLine.FieldByName('PAYTYPE').AsInteger = 0) and
-            (PayLine.FieldByName('SUM').AsInteger > 0) then
-          begin
-            Self.Summ1 := Self.Summ1 + PayLine.FieldByName('SUM').AsInteger;
-          end;
+          if PayLine.FieldByName('SUM').AsInteger > 0 then
+            case PayLine.FieldByName('PAYTYPE').AsInteger of
+              cn_paytype_cash: //наличные
+                Self.Summ1 := Self.Summ1 + PayLine.FieldByName('SUM').AsInteger;
+              cn_paytype_credit: //кредитная карта
+                Self.Summ3 := Self.Summ3 + PayLine.FieldByName('SUM').AsInteger;
+              cn_paytype_noncash: //безнал (кредит)
+                Self.Summ2 := Self.Summ2 + PayLine.FieldByName('SUM').AsInteger;
+            end;
           PayLine.Next;
         end;
       finally
@@ -344,6 +315,35 @@ begin
         ErrMessage(Res);
       end else
         Result := True;
+
+      if Result then
+      begin
+      // сохраняем чек
+        if Doc.State <> dsEdit then
+          Doc.Edit;
+        Doc.FieldByName('USR$WHOPAYOFFKEY').AsInteger := FFrontBase.ContactKey;
+        Doc.FieldByName('USR$PAY').AsInteger := 1;
+        Doc.FieldByName('USR$REGISTER').AsString := IntToStr(FFrontBase.CashNumber);
+        Doc.FieldByName('USR$LOGICDATE').AsDateTime := FFrontBase.GetLogicDate;
+        Doc.FieldByName('USR$SYSNUM').AsInteger := GetDocumentNumber;
+        if Doc.FieldByName('usr$timecloseorder').IsNull then
+          Doc.FieldByName('usr$timecloseorder').AsDateTime := Now;
+
+        PayLine.DisableControls;
+        try
+          PayLine.First;
+          while not PayLine.Eof do
+          begin
+            FFrontBase.SavePayment(FFrontBase.ContactKey, Doc.FieldByName('ID').AsInteger,
+              PayLine.FieldByName('USR$PAYTYPEKEY').AsInteger, PayLine.FieldByName('SUM').AsCurrency);
+
+            PayLine.Next;
+          end;
+        finally
+          PayLine.EnableControls;
+        end;
+        Doc.Post;
+      end;
     end;
   end;
 end;

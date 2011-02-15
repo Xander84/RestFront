@@ -8,7 +8,7 @@ uses
   FiscalRegister_Unit, ActnList, FrontData_Unit,
   AdvSmoothTouchKeyBoard, ExtCtrls, AdvPanel, AdvSmoothButton,
   AdvSmoothToggleButton, Grids, BaseFrontForm_Unit, BaseGrid, AdvGrid,
-  DBAdvGrid, AdvObj;
+  DBAdvGrid, AdvObj, Base_FiscalRegister_unit;
 
 const
   cn_maxpay = 1000000;
@@ -19,13 +19,6 @@ const
   //рубли по умолчанию форма оплаты
   mn_RUBpaytypeXID = 147141777;
   mn_RUBpaytypeDBID = 349813242;
-  // тип оплаты
-  // 0 нал
-  // 1 карта
-  // 2 безнал
-  cn_paytype_cash = 0;
-  cn_paytype_credit = 1;
-  cn_paytype_noncash = 2;
 
 type
   TSellParamForm = class(TBaseFrontForm)
@@ -390,6 +383,7 @@ begin
           Doc.FieldByName('USR$WHOPAYOFFKEY').AsInteger := FFrontBase.ContactKey;
           Doc.FieldByName('USR$PAY').AsInteger := 1;
           Doc.FieldByName('USR$LOGICDATE').AsDateTime := FFrontBase.GetLogicDate;
+          Doc.FieldByName('USR$SYSNUM').AsInteger := 0;
           if Doc.FieldByName('usr$timecloseorder').IsNull then
             Doc.FieldByName('usr$timecloseorder').AsDateTime := Now;
 

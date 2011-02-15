@@ -10,6 +10,15 @@ interface
 uses
   Classes, Windows, kbmMemTable, DB, Front_DataBase_Unit;
 
+const
+  // тип оплаты
+  // 0 нал
+  // 1 карта
+  // 2 безнал
+  cn_paytype_cash = 0;
+  cn_paytype_credit = 1;
+  cn_paytype_noncash = 2;
+
 type
   IBaseFiscalRegister = interface
   ['{308C2D25-B5F7-4801-B8E4-F09E92B7AFBA}']
