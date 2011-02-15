@@ -185,7 +185,6 @@ var
   FReport: Tgs_fr4SingleReport;
   Str: TStream;
   BaseQueryList: TgsQueryList;
-  I: Integer;
   FfrxDBDataset: TfrxDBDataset;
   S: String;
   Header: TgsDataSet;

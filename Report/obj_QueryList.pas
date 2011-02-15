@@ -540,7 +540,6 @@ begin
     on E: Exception do
     begin
       Delete(Result);
-      Result := -1;
       raise Exception.Create('Произошла ошибка при создании нового объекта.'#13#10 +
         E.Message);
     end;
