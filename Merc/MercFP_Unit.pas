@@ -65,7 +65,6 @@ type
     procedure SetFrontBase(const Value: TFrontBase);
 
     function Close(const Summ: Currency): Boolean; overload;
-    function Close(const Summ: Currency; PayType: Integer): Boolean; overload;
     function Close(const Summ1, Summ2, Summ3: Currency): Boolean; overload;
     // прогон ленты на LineCount строк
     function Feed(const LineCount: Integer): Boolean;
@@ -483,43 +482,6 @@ begin
   end
 end;
 
-function TMercuryRegister.Close(const Summ: Currency;
-  PayType: Integer): Boolean;
-begin
-  ClearLastError;
-  Result := False;
-  if FDriverInit then
-  begin
-    try
-      AddTotal(cn_FontFlagTotal, 0, FIV, 0);
-      if SetLastError then
-        exit;
-
-      Inc(FIV);
-      if CurrentOper = 1 then
-      begin
-        AddPay(PayType, Summ, 0, '', cn_FontFlagPay, 0, FIV, 0);
-        if SetLastError then
-          exit;
-        Inc(FIV);
-        // печать уплаченной суммы
-        AddChange(cn_FontFlagChange, 0, FIV, 0);
-        if SetLastError then
-          exit;
-        Inc(FIV);
-      end;
-      CloseFiscalDoc;
-      if SetLastError then
-        exit;
-      if not Feed(5) then
-        exit;
-      Result := True;
-    except
-      ShowLastError;
-    end;
-  end
-end;
-
 function TMercuryRegister.SetLastError: Boolean;
 begin
   if ErrCode <> 0 then
@@ -756,7 +718,39 @@ end;
 
 function TMercuryRegister.Close(const Summ: Currency): Boolean;
 begin
-  Result := Close(Summ, mptCash);
+  ClearLastError;
+  Result := False;
+  if FDriverInit then
+  begin
+    try
+      AddTotal(cn_FontFlagTotal, 0, FIV, 0);
+      if SetLastError then
+        exit;
+
+      Inc(FIV);
+      if CurrentOper = 1 then
+      begin
+        AddPay(mptCash, Summ, 0, '', cn_FontFlagPay, 0, FIV, 0);
+        if SetLastError then
+          exit;
+        Inc(FIV);
+        // печать уплаченной суммы
+        AddChange(cn_FontFlagChange, 0, FIV, 0);
+        if SetLastError then
+          exit;
+        Inc(FIV);
+      end;
+      CloseFiscalDoc;
+      if SetLastError then
+        exit;
+      if not Feed(5) then
+        exit;
+      Result := True;
+    except
+      ShowLastError;
+    end;
+  end
+
 end;
 
 function TMercuryRegister.Feed(const LineCount: Integer): Boolean;
