@@ -10,6 +10,7 @@
 unit dxfDesigner;
 
 {$I dxFLVer.inc}
+
 interface
 
 uses Classes, Graphics, Forms, Windows, Controls, Messages, Menus, SysUtils, IniFiles;
@@ -282,35 +283,35 @@ begin
   with Msg do
     case Message of
       WM_LBUTTONDOWN:
-      begin
-        P := SmallPointToPoint(TSmallPoint(lParam));
-        MapWindowPoints(hwnd, 0, P, 1);
-        FMode := 0;
-        FMoveControl := FindMoveControl(GetActiveForm, P, FMode);
-        if FMoveControl = nil then
-          Exit;
-        if FEditingControls.Count > 0 then
         begin
-          FEdit := False;
-          for I := 0 to FEditingControls.Count -1 do
-            if UpperCase(FEditingControls.Strings[I]) = UpperCase(FMoveControl.Name) then
-            begin
-              FEdit := True;
-              Break;
-            end;
-          if not FEdit then
-          begin
-            FMoveControl := nil;
+          P := SmallPointToPoint(TSmallPoint(lParam));
+          MapWindowPoints(hwnd, 0, P, 1);
+          FMode := 0;
+          FMoveControl := FindMoveControl(GetActiveForm, P, FMode);
+          if FMoveControl = nil then
             Exit;
+          if FEditingControls.Count > 0 then
+          begin
+            FEdit := False;
+            for I := 0 to FEditingControls.Count -1 do
+              if UpperCase(FEditingControls.Strings[I]) = UpperCase(FMoveControl.Name) then
+              begin
+                FEdit := True;
+                Break;
+              end;
+            if not FEdit then
+            begin
+              FMoveControl := nil;
+              Exit;
+            end;
           end;
+          FDownPoint.X := P.X;
+          FDownPoint.Y := P.Y;
+          FOldLeft := FMoveControl.Left;
+          FOldTop := FMoveControl.Top;
+          FOldWidth := FMoveControl.Width;
+          FOldHeight := FMoveControl.Height;
         end;
-        FDownPoint.X := P.X;
-        FDownPoint.Y := P.Y;
-        FOldLeft := FMoveControl.Left;
-        FOldTop := FMoveControl.Top;
-        FOldWidth := FMoveControl.Width;
-        FOldHeight := FMoveControl.Height;
-      end;
       WM_MOUSEMOVE:
         if FMoveControl <> nil then
         begin
@@ -418,28 +419,28 @@ begin
           FMoveControl := nil;
         end;
       WM_RBUTTONDOWN:
-      begin
-        P := SmallPointToPoint(TSmallPoint(lParam));
-        MapWindowPoints(hwnd, 0, P, 1);
-        FPopupControl := FindMoveControl(GetActiveForm, P, Mode);
-        if FPopupControl <> nil then
         begin
-          if FEditingControls.Count > 0 then
+          P := SmallPointToPoint(TSmallPoint(lParam));
+          MapWindowPoints(hwnd, 0, P, 1);
+          FPopupControl := FindMoveControl(GetActiveForm, P, Mode);
+          if FPopupControl <> nil then
           begin
-            FEdit := False;
-            for I := 0 to FEditingControls.Count -1 do
-              if UpperCase(FEditingControls.Strings[I]) = UpperCase(FPopupControl.Name) then
-              begin
-                 FEdit := True;
-                 break;
-               end;
-             if not FEdit then Exit;
-           end;
-           SetChecked(FPopupControl);
-           FPopupMenu.Popup(P.X, P.Y);
+            if FEditingControls.Count > 0 then
+            begin
+              FEdit := False;
+              for I := 0 to FEditingControls.Count -1 do
+                if UpperCase(FEditingControls.Strings[I]) = UpperCase(FPopupControl.Name) then
+                begin
+                  FEdit := True;
+                  break;
+                end;
+                if not FEdit then Exit;
+            end;
+            SetChecked(FPopupControl);
+            FPopupMenu.Popup(P.X, P.Y);
+          end;
         end;
       end;
-    end;
 end;
 
 function TdxfDesigner.FindMoveControl(AControl: TWinControl;P: TPoint; var Mode: Integer): TControl;
@@ -621,24 +622,30 @@ var
 
 begin
   IniFile := TIniFile.Create(FIniFile);
-  if IniFile <> nil then begin
-    OrderList := TList.Create;
-    Load(FForm);
-    while OrderList.Count > 0 do begin
-      MinOrder := TOrderInfo(OrderList.Items[0]).FOrder;
-      N := 0;
-      for I := 1 to OrderList.Count - 1 do
-        if TOrderInfo(OrderList.Items[I]).FOrder < MinOrder then begin
-          MinOrder := TOrderInfo(OrderList.Items[I]).FOrder;
-          N := I;
+  try
+    if IniFile <> nil then begin
+      OrderList := TList.Create;
+      try
+        Load(FForm);
+        while OrderList.Count > 0 do begin
+          MinOrder := TOrderInfo(OrderList.Items[0]).FOrder;
+          N := 0;
+          for I := 1 to OrderList.Count - 1 do
+            if TOrderInfo(OrderList.Items[I]).FOrder < MinOrder then begin
+              MinOrder := TOrderInfo(OrderList.Items[I]).FOrder;
+              N := I;
+            end;
+          TControl(TOrderInfo(OrderList.Items[N]).FControl).BringToFront;
+          TOrderInfo(OrderList.Items[N]).Free;
+          OrderList.Delete(N);
         end;
-      TControl(TOrderInfo(OrderList.Items[N]).FControl).BringToFront;
-      TOrderInfo(OrderList.Items[N]).Free;
-      OrderList.Delete(N);
+      finally
+        OrderList.Free;
+      end;
     end;
-    OrderList.Free;
+  finally
+    IniFile.Free;
   end;
-  IniFile.Free;
 end;
 
 initialization
