@@ -122,7 +122,6 @@ type
     btnDeletePosition: TAdvSmoothButton;
     btnCutCheck: TAdvSmoothButton;
     btnPreCheck: TAdvSmoothButton;
-    btnCancelPreCheck: TAdvSmoothButton;
     btnModification: TAdvSmoothButton;
     btnKeyBoard: TAdvSmoothButton;
     btnDiscount: TAdvSmoothButton;
@@ -1168,6 +1167,11 @@ begin
     dsMain.DataSet := FLineTable;
   end;
   FormState := MenuInfo;
+  //если заказ закрыт, то оставл€ем отмену пречека, иначе просто пречек
+  if FHeaderTable.FieldByName('usr$timecloseorder').IsNull then
+    btnPreCheck.Action := actPreCheck
+  else
+    btnPreCheck.Action := actCancelPreCheck;
 end;
 
 procedure TRestMainForm.btnExitManagerInfoClick(Sender: TObject);
@@ -1589,7 +1593,9 @@ begin
       if FHeaderTable.State = dsBrowse then
         FHeaderTable.Edit;
       FHeaderTable.FieldByName('usr$timecloseorder').AsDateTime := Now;
+
       SaveCheck;
+      actCancel.Execute;
     end;
   end else
   begin
@@ -1619,6 +1625,7 @@ begin
 
       FFrontBase.SaveOrderLog(FFrontBase.ContactKey, FUserInfo.UserKey,
         FHeaderTable.FieldByName('ID').AsInteger, 0, 1);
+      btnPreCheck.Action := actPreCheck;
     end else
       AdvTaskMessageDlg('¬нимание', cn_dontManagerPermission, mtWarning, [mbOK], 0);
   end;
@@ -1767,7 +1774,8 @@ begin
     if FForm.ModalResult = mrOK then
     begin
       //сохранить и выйти
-      actOK.Execute;
+      SaveCheck;
+      actCancel.Execute;
     end;
   finally
     FForm.Free;

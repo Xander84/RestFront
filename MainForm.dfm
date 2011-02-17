@@ -1622,7 +1622,7 @@ object RestMainForm: TRestMainForm
         Top = 1
         Width = 80
         Height = 719
-        ActivePage = tsManagerInfoButton
+        ActivePage = tsFunctionButton
         ActiveFont.Charset = DEFAULT_CHARSET
         ActiveFont.Color = clWindowText
         ActiveFont.Height = -11
@@ -1892,39 +1892,9 @@ object RestMainForm: TRestMainForm
             TabOrder = 4
             Version = '1.6.9.0'
           end
-          object btnCancelPreCheck: TAdvSmoothButton
-            Left = 4
-            Top = 280
-            Width = 72
-            Height = 50
-            Action = actCancelPreCheck
-            Appearance.Font.Charset = DEFAULT_CHARSET
-            Appearance.Font.Color = clWindowText
-            Appearance.Font.Height = -13
-            Appearance.Font.Name = 'Times New Roman'
-            Appearance.Font.Style = [fsBold]
-            Status.Caption = '0'
-            Status.Appearance.Fill.Color = clRed
-            Status.Appearance.Fill.ColorMirror = clNone
-            Status.Appearance.Fill.ColorMirrorTo = clNone
-            Status.Appearance.Fill.GradientType = gtSolid
-            Status.Appearance.Fill.BorderColor = clGray
-            Status.Appearance.Fill.Rounding = 0
-            Status.Appearance.Fill.ShadowOffset = 0
-            Status.Appearance.Font.Charset = DEFAULT_CHARSET
-            Status.Appearance.Font.Color = clWhite
-            Status.Appearance.Font.Height = -11
-            Status.Appearance.Font.Name = 'Tahoma'
-            Status.Appearance.Font.Style = []
-            Bevel = False
-            Color = 15195349
-            ParentFont = False
-            TabOrder = 5
-            Version = '1.6.9.0'
-          end
           object btnModification: TAdvSmoothButton
             Left = 4
-            Top = 336
+            Top = 280
             Width = 72
             Height = 50
             Action = actModification
@@ -1949,12 +1919,12 @@ object RestMainForm: TRestMainForm
             Bevel = False
             Color = 15195349
             ParentFont = False
-            TabOrder = 6
+            TabOrder = 5
             Version = '1.6.9.0'
           end
           object btnKeyBoard: TAdvSmoothButton
             Left = 4
-            Top = 392
+            Top = 336
             Width = 72
             Height = 50
             Action = actKeyBoard
@@ -1979,13 +1949,13 @@ object RestMainForm: TRestMainForm
             Bevel = False
             Color = 15195349
             ParentFont = False
-            TabOrder = 7
+            TabOrder = 6
             TabStop = False
             Version = '1.6.9.0'
           end
           object btnDiscount: TAdvSmoothButton
             Left = 4
-            Top = 448
+            Top = 392
             Width = 72
             Height = 50
             Action = actDiscount
@@ -2010,12 +1980,12 @@ object RestMainForm: TRestMainForm
             Bevel = False
             Color = 15195349
             ParentFont = False
-            TabOrder = 8
+            TabOrder = 7
             Version = '1.6.9.0'
           end
           object btnPay: TAdvSmoothButton
             Left = 4
-            Top = 504
+            Top = 448
             Width = 72
             Height = 50
             Action = actPay
@@ -2040,12 +2010,12 @@ object RestMainForm: TRestMainForm
             Bevel = False
             Color = 15195349
             ParentFont = False
-            TabOrder = 9
+            TabOrder = 8
             Version = '1.6.9.0'
           end
           object btnDevide: TAdvSmoothButton
             Left = 4
-            Top = 560
+            Top = 504
             Width = 72
             Height = 50
             Action = actDevide
@@ -2070,7 +2040,7 @@ object RestMainForm: TRestMainForm
             Bevel = False
             Color = 15195349
             ParentFont = False
-            TabOrder = 10
+            TabOrder = 9
             Version = '1.6.9.0'
           end
         end
