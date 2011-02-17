@@ -13,7 +13,7 @@ uses
   SplitOrderForm_Unit, Report_Unit, FrontData_Unit, BaseFrontForm_Unit,
   AdvSmoothButton, AdvPanel, AdvPageControl, AdvSmoothTouchKeyBoard,
   TaskDialog, FrontLog_Unit, Grids, Menus, AddUserForm_unit, AdminForm_Unit,
-  Buttons;
+  Buttons, AdvToolBtn;
 
 const
   btnHeight = 65;
@@ -179,6 +179,8 @@ type
     btnKassa: TAdvSmoothButton;
     btnPrintIncomeReport: TAdvSmoothButton;
     tmrClose: TTimer;
+    tsTablePage: TAdvTabSheet;
+    sbTable: TScrollBox;
 
     //Проверка введёного пароля
     procedure actPassEnterExecute(Sender: TObject);
@@ -967,6 +969,13 @@ var
   FForm: TModificationForm;
   S, ES: String;
 begin
+  if not FHeaderTable.FieldByName('usr$timecloseorder').IsNull then
+  begin
+    AdvTaskMessageDlg('Внимание', 'По данному заказу пречек уже был распечатан!',
+      mtInformation, [mbOK], 0);
+    exit;
+  end;
+
   GoodKey := TButton(Sender).Tag;
   S := '';
   ES := '';
@@ -1580,7 +1589,8 @@ begin
       if FHeaderTable.State = dsBrowse then
         FHeaderTable.Edit;
       FHeaderTable.FieldByName('usr$timecloseorder').AsDateTime := Now;
-    end;  
+      SaveCheck;
+    end;
   end else
   begin
     AdvTaskMessageDlg('Внимание', 'Пречек уже был распечатан!',
@@ -1605,6 +1615,7 @@ begin
         FHeaderTable.FieldByName('usr$timecloseorder').Clear;
         FHeaderTable.Post;
       end;
+      SaveCheck;
 
       FFrontBase.SaveOrderLog(FFrontBase.ContactKey, FUserInfo.UserKey,
         FHeaderTable.FieldByName('ID').AsInteger, 0, 1);
@@ -1785,6 +1796,7 @@ begin
           tsOrderButton.TabVisible := False;
           tsMenu.TabVisible := False;
           tsManagerPage.TabVisible := False;
+          tsTablePage.TabVisible := False;
           tsEmpty.TabVisible := False;
           tsGroup.TabVisible := False;
           tsOrderInfo.TabVisible := False;
@@ -1873,6 +1885,7 @@ begin
           pnlChoose.Visible := False;
           pnlMainGood.Visible := False;
           tsManagerPage.Visible := False;
+          tsTablePage.Visible := False;
           RemoveGoodButton;
           RemoveGroupButton;
           RemoveOrderButton;

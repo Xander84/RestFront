@@ -159,7 +159,7 @@ object RestMainForm: TRestMainForm
               Top = 0
               Width = 242
               Height = 619
-              ActivePage = tsGroup
+              ActivePage = tsMenu
               ActiveFont.Charset = DEFAULT_CHARSET
               ActiveFont.Color = clWindowText
               ActiveFont.Height = -11
@@ -602,7 +602,7 @@ object RestMainForm: TRestMainForm
             Top = 1
             Width = 690
             Height = 699
-            ActivePage = tsUserOrder
+            ActivePage = tsTablePage
             ActiveFont.Charset = DEFAULT_CHARSET
             ActiveFont.Color = clWindowText
             ActiveFont.Height = -11
@@ -1303,6 +1303,27 @@ object RestMainForm: TRestMainForm
                     OnClick = btnPredCheckClick
                   end
                 end
+              end
+            end
+            object tsTablePage: TAdvTabSheet
+              Caption = 'tsTablePage'
+              Color = 14986888
+              ColorTo = clNone
+              TabColor = clBtnFace
+              TabColorTo = clNone
+              ExplicitLeft = -1
+              ExplicitTop = 15
+              object sbTable: TScrollBox
+                Left = 0
+                Top = 0
+                Width = 690
+                Height = 679
+                Align = alClient
+                TabOrder = 0
+                ExplicitLeft = 184
+                ExplicitTop = 352
+                ExplicitWidth = 425
+                ExplicitHeight = 217
               end
             end
           end
@@ -2677,7 +2698,7 @@ object RestMainForm: TRestMainForm
   object tmrClose: TTimer
     Tag = 1
     OnTimer = tmrCloseTimer
-    Left = 240
-    Top = 240
+    Left = 368
+    Top = 64
   end
 end
