@@ -2243,7 +2243,7 @@ begin
     FButton.Appearance.EndUpdate;
   end;    
 
-  FUserOrderLastLeftButton := FUserOrderLastLeftButton + btnWidth + 10;
+  FUserOrderLastLeftButton := FUserOrderLastLeftButton + btnWidth + 8{10};
 
   FUsersOrderButtonList.Add(FButton);
   Inc(FUserOrderButtonNumber);
@@ -2555,7 +2555,9 @@ begin
   Step := 0;
   if ToRight then
   begin
-    while (Step < btnHeight + 8) and (Right + btnHeight > FControl.Width) do
+    if Right < FControl.Width then
+      exit;
+    while (Step < btnWidth + 8) and (Right +  btnWidth > FControl.Width) do
     begin
       FControl.ScrollBy(-1, 0);
 
@@ -2565,7 +2567,7 @@ begin
     end;
   end else
   begin
-    while (Step < btnHeight + 8) and (Left > 8) do
+    while (Step < btnWidth + 8) and (Left > 8) do
     begin
       FControl.ScrollBy(1, 0);
 
