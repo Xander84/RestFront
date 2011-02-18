@@ -2518,7 +2518,8 @@ begin
           Result.UserName := FReadSQL.FieldByName('Name').AsString;
           Result.UserKey := FReadSQL.FieldByName('ID').AsInteger;
           Result.UserInGroup := FReadSQL.FieldByName('InGroup').AsInteger;
-        end;
+        end else
+          AdvTaskMessageDlg('¬нимание', '¬ведЄн неверный пароль!', mtError, [mbOK], 0);
       finally
         FReadSQL.Transaction.Commit;
       end;
