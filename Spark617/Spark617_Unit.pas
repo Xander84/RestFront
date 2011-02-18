@@ -655,7 +655,10 @@ begin
 
   Result := False;
 
-  Res := SetAccessKey('000000');
+  if FFrontBase.Options.PrintFiscalChek then
+    Res := SetAccessKey('000000')
+  else
+    Res := SetAccessKey('111111');
   ErrMessage(Res);
 
   Res := SetDeviceOpt(1, FFrontBase.FiscalComPort);

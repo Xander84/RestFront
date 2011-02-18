@@ -318,7 +318,7 @@ begin
 
       if Result then
       begin
-      // сохраняем чек
+        // сохраняем чек
         if Doc.State <> dsEdit then
           Doc.Edit;
         Doc.FieldByName('USR$WHOPAYOFFKEY').AsInteger := FFrontBase.ContactKey;

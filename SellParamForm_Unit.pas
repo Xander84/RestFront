@@ -387,80 +387,27 @@ begin
   begin
     FInBrowse := True;
     try
-      if FFrontBase.Options.PrintFiscalChek then
-      begin
+//      if FFrontBase.Options.PrintFiscalChek then
+//      begin
         // если фискальный чек печатается, то подключаем соответствующее оборудовние
         CashCode := FFrontBase.CashCode;
         case CashCode of
-          0: //Штрих-ФР
-          begin
-            FFiscalRegiter.InitFiscalRegister(CashCode);
-            FFiscalRegiter.OpenDrawer;
-            if FFiscalRegiter.PrintCheck(Doc, DocLine, dsPayLine) then
+          0, 1, 2, 3, 4:
             begin
-              Self.ModalResult := mrOk;
-            end;
-          end;
-
-          1: //Дитрон
-          begin
-            Assert(False, 'Данный тип кассы не поддерживается');
-          end;
-
-          2: //Гепард
-          begin
-            FFiscalRegiter.InitFiscalRegister(CashCode);
-            FFiscalRegiter.OpenDrawer;
-            if FFiscalRegiter.PrintCheck(Doc, DocLine, dsPayLine) then
-            begin
-              Self.ModalResult := mrOk;
-            end;
-          end;
-
-          3: //Спарк 617 ТФ
-          begin
-            FFiscalRegiter.InitFiscalRegister(CashCode);
-            FFiscalRegiter.OpenDrawer;
-            if FFiscalRegiter.PrintCheck(Doc, DocLine, dsPayLine) then
-            begin
-              Self.ModalResult := mrOk;
-            end;
-          end;
-
-          4: //Без кассы для тестов
-          begin
-            if Doc.State <> dsEdit then
-              Doc.Edit;
-            Doc.FieldByName('USR$WHOPAYOFFKEY').AsInteger := FFrontBase.ContactKey;
-            Doc.FieldByName('USR$PAY').AsInteger := 1;
-            Doc.FieldByName('USR$LOGICDATE').AsDateTime := FFrontBase.GetLogicDate;
-            Doc.FieldByName('USR$SYSNUM').AsInteger := 0;
-            if Doc.FieldByName('usr$timecloseorder').IsNull then
-              Doc.FieldByName('usr$timecloseorder').AsDateTime := Now;
-
-            dsPayLine.DisableControls;
-            try
-              dsPayLine.First;
-              while not dsPayLine.Eof do
+              FFiscalRegiter.InitFiscalRegister(CashCode);
+              FFiscalRegiter.OpenDrawer;
+              if FFiscalRegiter.PrintCheck(Doc, DocLine, dsPayLine) then
               begin
-                FFrontBase.SavePayment(FFrontBase.ContactKey, Doc.FieldByName('ID').AsInteger,
-                  dsPayLine.FieldByName('USR$PAYTYPEKEY').AsInteger, dsPayLine.FieldByName('SUM').AsCurrency);
-
-                dsPayLine.Next;
+                Self.ModalResult := mrOk;
               end;
-            finally
-              dsPayLine.EnableControls;
             end;
-            Doc.Post;
-            Self.ModalResult := mrOk;
-          end;
 
           else
             MessageBox(Application.Handle, PChar('Для данной рабочей станции не указан кассовый терминал!'),
               'Внимание', MB_OK or MB_ICONEXCLAMATION);
 
         end;
-      end else
+{      end else
       begin
         if Doc.State <> dsEdit then
           Doc.Edit;
@@ -485,7 +432,7 @@ begin
         end;
         Doc.Post;
         Self.ModalResult := mrOk;
-      end;
+      end; }
     finally
       FInBrowse := False;
     end;

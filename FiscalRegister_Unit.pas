@@ -128,7 +128,8 @@ begin
 
       4: // для тестов
       begin
-
+        FFiscalRegister := TAbstractFiscalRegister.Create;
+        FFiscalRegister.FrontBase := FFrontBase;
       end;
 
     else
