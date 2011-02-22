@@ -1616,7 +1616,7 @@ object RestMainForm: TRestMainForm
         Top = 1
         Width = 80
         Height = 719
-        ActivePage = tsFunctionButton
+        ActivePage = tsManagerInfoButton
         ActiveFont.Charset = DEFAULT_CHARSET
         ActiveFont.Color = clWindowText
         ActiveFont.Height = -11
@@ -2203,53 +2203,34 @@ object RestMainForm: TRestMainForm
           TabColor = clBtnFace
           TabColorTo = clNone
           object xDateBegin: TDateTimePicker
-            Left = 3
+            Left = 2
             Top = 8
             Width = 73
-            Height = 33
+            Height = 35
             Date = 40569.698956435180000000
             Time = 40569.698956435180000000
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Times New Roman'
+            Font.Style = []
+            ParentFont = False
             TabOrder = 0
           end
           object xDateEnd: TDateTimePicker
             Left = 3
             Top = 47
             Width = 73
-            Height = 33
+            Height = 35
             Date = 40569.698956435180000000
             Time = 40569.698956435180000000
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Times New Roman'
+            Font.Style = []
+            ParentFont = False
             TabOrder = 1
-          end
-          object usrg_BitBtn5: TBitBtn
-            Left = 3
-            Top = 437
-            Width = 75
-            Height = 33
-            Caption = #1042#1099#1088#1091#1095#1082#1072
-            DoubleBuffered = True
-            ParentDoubleBuffered = False
-            TabOrder = 2
-            Visible = False
-          end
-          object usrg_BitBtn12: TBitBtn
-            Left = 3
-            Top = 476
-            Width = 75
-            Height = 33
-            Caption = #1055#1088#1077#1095#1077#1082
-            DoubleBuffered = True
-            ParentDoubleBuffered = False
-            TabOrder = 3
-            Visible = False
-          end
-          object usrg_Button1: TButton
-            Left = 2
-            Top = 515
-            Width = 76
-            Height = 33
-            Caption = #1056#1077#1077#1089#1090#1088
-            TabOrder = 4
-            Visible = False
           end
           object btnExitManagerInfo: TAdvSmoothButton
             Left = 4
@@ -2278,7 +2259,7 @@ object RestMainForm: TRestMainForm
             Caption = #1054#1050
             Color = 14922381
             ParentFont = False
-            TabOrder = 5
+            TabOrder = 2
             Version = '1.6.9.0'
             OnClick = btnExitManagerInfoClick
           end
@@ -2309,7 +2290,7 @@ object RestMainForm: TRestMainForm
             Caption = #1057' '#1087#1088#1077#1095#1077#1082#1072#1084#1080
             Color = 14922381
             ParentFont = False
-            TabOrder = 6
+            TabOrder = 3
             Version = '1.6.9.0'
             OnClick = btnWithPrecheckClick
           end
@@ -2340,7 +2321,7 @@ object RestMainForm: TRestMainForm
             Caption = #1041#1077#1079' '#1087#1088#1077#1095#1077#1082#1086#1074
             Color = 14922381
             ParentFont = False
-            TabOrder = 7
+            TabOrder = 4
             Version = '1.6.9.0'
             OnClick = btnWithoutPrecheckClick
           end
@@ -2371,7 +2352,7 @@ object RestMainForm: TRestMainForm
             Caption = #1054#1087#1083#1072#1095#1077#1085#1085#1099#1077
             Color = 14922381
             ParentFont = False
-            TabOrder = 8
+            TabOrder = 5
             Version = '1.6.9.0'
             OnClick = btnPayedClick
           end
@@ -2402,7 +2383,7 @@ object RestMainForm: TRestMainForm
             Caption = #1053#1077#1086#1087#1083#1072#1095#1077#1085#1085#1099#1077
             Color = 14922381
             ParentFont = False
-            TabOrder = 9
+            TabOrder = 6
             Version = '1.6.9.0'
             OnClick = btnNotPayedClick
           end
@@ -2433,12 +2414,12 @@ object RestMainForm: TRestMainForm
             Caption = #1042#1089#1077' '#1095#1077#1082#1080
             Color = 14922381
             ParentFont = False
-            TabOrder = 10
+            TabOrder = 7
             Version = '1.6.9.0'
             OnClick = btnAllChecClick
           end
           object btnPrintIncomeReport: TAdvSmoothButton
-            Left = 4
+            Left = 3
             Top = 381
             Width = 72
             Height = 50
@@ -2464,9 +2445,40 @@ object RestMainForm: TRestMainForm
             Caption = #1054#1090#1095#1077#1090' '#1087#1086' '#1074#1099#1088#1091#1095#1082#1077
             Color = 14922381
             ParentFont = False
-            TabOrder = 11
+            TabOrder = 8
             Version = '1.6.9.0'
             OnClick = btnPrintIncomeReportClick
+          end
+          object btnCheckRegister: TAdvSmoothButton
+            Left = 3
+            Top = 437
+            Width = 72
+            Height = 50
+            Appearance.Font.Charset = DEFAULT_CHARSET
+            Appearance.Font.Color = clWindowText
+            Appearance.Font.Height = -13
+            Appearance.Font.Name = 'Times New Roman'
+            Appearance.Font.Style = [fsBold]
+            Status.Caption = '0'
+            Status.Appearance.Fill.Color = clRed
+            Status.Appearance.Fill.ColorMirror = clNone
+            Status.Appearance.Fill.ColorMirrorTo = clNone
+            Status.Appearance.Fill.GradientType = gtSolid
+            Status.Appearance.Fill.BorderColor = clGray
+            Status.Appearance.Fill.Rounding = 0
+            Status.Appearance.Fill.ShadowOffset = 0
+            Status.Appearance.Font.Charset = DEFAULT_CHARSET
+            Status.Appearance.Font.Color = clWhite
+            Status.Appearance.Font.Height = -11
+            Status.Appearance.Font.Name = 'Tahoma'
+            Status.Appearance.Font.Style = []
+            Bevel = False
+            Caption = #1056#1077#1077#1089#1090#1088' '#1089#1095#1077#1090#1086#1074
+            Color = 14922381
+            ParentFont = False
+            TabOrder = 9
+            Version = '1.6.9.0'
+            OnClick = btnCheckRegisterClick
           end
         end
         object tsEmpty: TAdvTabSheet

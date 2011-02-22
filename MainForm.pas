@@ -153,9 +153,6 @@ type
     tsManagerInfoButton: TAdvTabSheet;
     xDateBegin: TDateTimePicker;
     xDateEnd: TDateTimePicker;
-    usrg_BitBtn5: TBitBtn;
-    usrg_BitBtn12: TBitBtn;
-    usrg_Button1: TButton;
     dsHeaderInfo: TDataSource;
     dsLineInfo: TDataSource;
     pnlManagerInfo: TPanel;
@@ -180,6 +177,7 @@ type
     tmrClose: TTimer;
     tsTablePage: TAdvTabSheet;
     sbTable: TScrollBox;
+    btnCheckRegister: TAdvSmoothButton;
 
     //Проверка введёного пароля
     procedure actPassEnterExecute(Sender: TObject);
@@ -249,6 +247,7 @@ type
     procedure actKassirInfoUpdate(Sender: TObject);
     procedure btnPrintIncomeReportClick(Sender: TObject);
     procedure tmrCloseTimer(Sender: TObject);
+    procedure btnCheckRegisterClick(Sender: TObject);
   private
     //Компонент обращения к БД
     FFrontBase: TFrontBase;
@@ -2254,6 +2253,11 @@ begin
   FFrontBase.GetOrdersInfo(FHeaderInfoTable, FLineInfoTable, xDateBegin.Date,
     xDateEnd.Date, False, False, False, False);
   AfterLoadManagerInfo;
+end;
+
+procedure TRestMainForm.btnCheckRegisterClick(Sender: TObject);
+begin
+  FReport.PrintCheckRegister(xDateBegin.Date, xDateEnd.Date);
 end;
 
 procedure TRestMainForm.btnWithPrecheckClick(Sender: TObject);

@@ -14,6 +14,9 @@ const
   cn_StateInsert = 1;
   cn_StateUpdate = 2;
   cn_StateUpdateParent = 3;
+  //рубли по умолчанию форма оплаты
+  mn_RUBpaytypeXID = 147141777;
+  mn_RUBpaytypeDBID = 349813242;
 
 //константы с запросами
 const

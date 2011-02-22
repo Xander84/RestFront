@@ -16,9 +16,7 @@ const
   mn_nalDBID = 354772515;
   mn_beznalXID = 147142771;
   mn_beznalDBID = 362821871;
-  //рубли по умолчанию форма оплаты
-  mn_RUBpaytypeXID = 147141777;
-  mn_RUBpaytypeDBID = 349813242;
+
 
 type
   TSellParamForm = class(TBaseFrontForm)

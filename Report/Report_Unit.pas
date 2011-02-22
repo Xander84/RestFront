@@ -71,6 +71,7 @@ type
     function PrintDeleteServiceCheck(const ReportType, PrnGrID, DocumentKey, MasterKey: Integer;
       const PrinterName: String): Boolean;
     procedure PrintIncomeReport(const DateBegin, DateEnd: TDate);
+    procedure PrintCheckRegister(const DateBegin, DateEnd: TDate);
     function EditTemplate(const ID: Integer): Boolean;
 
     property FrontBase: TFrontBase read FFrontBase write FFrontBase;
@@ -177,6 +178,75 @@ begin
   FReport.PrintOptions.Copies := 1;
   FReport.PrintOptions.Collate := True;
   FReport.PrintOptions.PrintPages := ppAll;
+end;
+
+procedure TRestReport.PrintCheckRegister(const DateBegin, DateEnd: TDate);
+var
+  PrinterName: String;
+  FReport: Tgs_fr4SingleReport;
+  Str: TStream;
+  BaseQueryList: TgsQueryList;
+  Header: TgsDataSet;
+  FrxDBDataset: TfrxDBDataset;
+begin
+  Assert(Assigned(FFrontBase), 'FrontBase not assigned');
+
+  BaseQueryList := FrontData.BaseQueryList;
+  BaseQueryList.Clear;
+  PrinterName := FFrontBase.GetPrinterName;
+  FReport := Tgs_fr4SingleReport.Create(nil);
+  try
+    InitReportParams(FReport, PrinterName);
+
+    Str := TMemoryStream.Create;
+    FrxDBDataset := TfrxDBDataset.Create(nil);
+    try
+      Header := BaseQueryList.Query[BaseQueryList.Add('Header', False)];
+      Header.SQL :=
+        ' SELECT w.name, w.id, o.usr$sysnum as sysnum, com.name as company, sum(ol.usr$sumncuwithdiscount) sumcheck ' +
+        ' FROM usr$mn_order o ' +
+        ' JOIN usr$mn_orderline ol on o.documentkey = ol.masterkey ' +
+        ' left join gd_contact w on w.id = o.usr$respkey ' +
+        ' left join gd_document doc on doc.id = o.documentkey ' +
+        ' left join gd_contact com on com.id = doc.companykey ' +
+        ' WHERE ' +
+        '  o.usr$logicdate >= :begindate ' +
+        '  and o.usr$logicdate <= :enddate and o.usr$sysnum is not null and ol.usr$causedeletekey + 0 is NULL and ol.usr$quantity > 0 ' +
+        '  and exists (SELECT * FROM usr$mn_payment p where p.usr$orderkey = o.documentkey and p.usr$paykindkey = :paykind ) ' +
+        ' GROUP BY 1,3,2,4 ' +
+        ' ORDER BY ' +
+        ' w.name, o.usr$sysnum ';
+      Header.ParamByName('begindate').AsDate := DateBegin;
+      Header.ParamByName('enddate').AsDate := DateEnd;
+      Header.ParamByName('paykind').AsInteger := FFrontBase.GetIDByRUID(mn_RUBpaytypeXID, mn_RUBpaytypeDBID);
+      Header.Open;
+
+      FrxDBDataset.Name := Header.DataSet.Name;
+      FrxDBDataset.DataSet := TDataSet(Header.DataSet);
+      FReport.DataSets.Add(FrxDBDataset);
+      FReport.EnabledDataSets.Add(FrxDBDataset);
+
+      GetTemplateStreamByRuid(147733800, 1604829035, Str);
+      if Str.Size > 0 then
+      begin
+        Str.Position := 0;
+        FReport.LoadFromStream(Str);
+      end;
+
+      FReport.Variables.Clear;
+      FReport.Variables[' ' + cn_RestParam] := Null;
+      FReport.Variables.AddVariable(cn_RestParam, 'PARAM0', '''' + DateToStr(DateBegin) + '''');
+      FReport.Variables.AddVariable(cn_RestParam, 'PARAM1', '''' + DateToStr(DateEnd) + '''');
+      if FReport.PrepareReport then
+        FReport.ShowPreparedReport;
+
+    finally
+      FrxDBDataset.Free;
+      Str.Free;
+    end;
+  finally
+    FReport.Free;
+  end;
 end;
 
 function TRestReport.PrintDeleteServiceCheck(const ReportType, PrnGrID,

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Tgs_fr4SingleReport Version="4.10.1" DotMatrixReport="True" IniFile="\Software\Fast Reports" PreviewOptions.Buttons="4095" PreviewOptions.Zoom="1" PrintOptions.Printer="�� ���������" PrintOptions.PrintOnSheet="0" ReportOptions.CreateDate="40584.6157234838" ReportOptions.Description.Text="" ReportOptions.LastChange="40596.5210174884" ScriptLanguage="PascalScript" ScriptText.Text="begin&#13;&#10;&#13;&#10;end." PropData="08446174617365747301010C2600000020446174615365743D224845414445522220446174615365744E616D653D22484541444552220000095661726961626C657301010C1A000000204E616D653D2220C2F5EEE4EDFBE520EFE0F0E0ECE5F2F0FB2200010C23000000204E616D653D22504152414D30222056616C75653D222732322E30322E32303038272200010C23000000204E616D653D22504152414D31222056616C75653D222732322E30322E3230313127220000055374796C650100">
+  <TfrxDataPage Name="Data" Height="1000" Left="0" Top="0" Width="1000"/>
+  <TfrxDMPPage Name="Page1" PaperWidth="99.0599360237913" PaperHeight="296.862308276426" PaperSize="256" LeftMargin="2.53999835958439" RightMargin="2.53999835958439" TopMargin="4.49791376176403" BottomMargin="4.49791376176403" ColumnWidth="0" ColumnPositions.Text="" HGuides.Text="" VGuides.Text="" FontStyle="0">
+    <TfrxReportTitle Name="ReportTitle1" Height="85" Left="0" Top="17" Width="355.2">
+      <TfrxDMPMemoView Name="DMPMemo1" Left="0" Top="34" Width="355.2" Height="17" ShowHint="False" HAlign="haCenter" TruncOutboundText="False" Text="Реестр счетов"/>
+      <TfrxDMPMemoView Name="DMPMemo2" Left="0" Top="51" Width="355.2" Height="17" ShowHint="False" HAlign="haCenter" TruncOutboundText="False" Text="за период с [PARAM0] по [PARAM1]"/>
+      <TfrxDMPCommand Name="DMPCommand1" Description="Reset Printer" Left="0" Top="0" Width="355.2" Height="17" Hint="Reset Printer" ShowHint="False" Command="1B40"/>
+      <TfrxDMPCommand Name="DMPCommand2" Description="Bell" Left="0" Top="17" Width="355.2" Height="17" Hint="Bell" ShowHint="False" Command="1B70300000"/>
+    </TfrxReportTitle>
+    <TfrxMasterData Name="MasterData1" Height="17" Left="0" Top="221" Width="355.2" ColumnWidth="0" ColumnGap="0" DataSet="HEADER" DataSetName="HEADER" RowCount="0">
+      <TfrxDMPMemoView Name="DMPMemo6" Left="0" Top="0" Width="163.2" Height="17" ShowHint="False" HAlign="haCenter" TruncOutboundText="False" Text="[HEADER.&#34;USR$SYSNUM&#34;]"/>
+      <TfrxDMPMemoView Name="DMPMemo10" Left="163.2" Top="0" Width="192" Height="17" ShowHint="False" HAlign="haRight" TruncOutboundText="False" Text="[HEADER.&#34;SUMCHECK&#34;]"/>
+    </TfrxMasterData>
+    <TfrxHeader Name="Header1" Height="17" Left="0" Top="187" Width="355.2">
+      <TfrxDMPMemoView Name="DMPMemo4" Left="0" Top="0" Width="163.2" Height="17" ShowHint="False" HAlign="haCenter" TruncOutboundText="False" Text="№ счета"/>
+      <TfrxDMPMemoView Name="DMPMemo5" Left="163.2" Top="0" Width="192" Height="17" ShowHint="False" HAlign="haCenter" TruncOutboundText="False" Text="Сумма"/>
+    </TfrxHeader>
+    <TfrxReportSummary Name="ReportSummary1" Height="34" Left="0" Top="306" Width="355.2">
+      <TfrxDMPCommand Name="DMPCommand3" Description="Page Break" Left="0" Top="17" Width="355.2" Height="17" Hint="Page Break" ShowHint="False" Command="1D5601"/>
+      <TfrxDMPMemoView Name="DMPMemo11" Left="0" Top="0" Width="201.6" Height="17" ShowHint="False" TruncOutboundText="False" Text="Итого:"/>
+      <TfrxDMPMemoView Name="DMPMemo12" Left="201.6" Top="0" Width="153.6" Height="17" ShowHint="False" HAlign="haRight" TruncOutboundText="False" Text="[SUM(&#60;HEADER.&#34;SUMCHECK&#34;&#62;,MasterData1)]"/>
+    </TfrxReportSummary>
+    <TfrxGroupHeader Name="GroupHeader1" Height="34" Left="0" Top="136" Width="355.2" Condition="HEADER.&#34;NAME&#34;">
+      <TfrxDMPMemoView Name="DMPMemo3" Left="0" Top="0" Width="96" Height="17" ShowHint="False" TruncOutboundText="False" Text="Оффициант:"/>
+      <TfrxDMPMemoView Name="DMPMemo9" Left="0" Top="17" Width="355.2" Height="17" ShowHint="False" TruncOutboundText="False" Text="[HEADER.&#34;NAME&#34;]"/>
+    </TfrxGroupHeader>
+    <TfrxGroupFooter Name="GroupFooter1" Height="17" Left="0" Top="255" Width="355.2">
+      <TfrxDMPMemoView Name="DMPMemo7" Left="0" Top="0" Width="201.6" Height="17" ShowHint="False" TruncOutboundText="False" Text="Итого по оффицианту:"/>
+      <TfrxDMPMemoView Name="DMPMemo8" Left="201.6" Top="0" Width="153.6" Height="17" ShowHint="False" HAlign="haRight" TruncOutboundText="False" Text="[SUM(&#60;HEADER.&#34;SUMCHECK&#34;&#62;,MasterData1)]"/>
+    </TfrxGroupFooter>
+  </TfrxDMPPage>
+</Tgs_fr4SingleReport>
