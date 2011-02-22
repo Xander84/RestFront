@@ -32,6 +32,7 @@ uses
   Base_FiscalRegister_unit in 'Base_FiscalRegister_unit.pas',
   FiscalRegister_Unit in 'FiscalRegister_Unit.pas',
   MercFP_Unit in 'Merc\MercFP_Unit.pas',
+  Spark617_Unit in 'Spark617\Spark617_Unit.pas',
   CashForm_Unit in 'CashForm_Unit.pas' {CashForm},
   BaseFrontForm_Unit in 'BaseFrontForm_Unit.pas' {BaseFrontForm},
   CardCodeForm_Unit in 'CardCodeForm_Unit.pas' {CardCode},

@@ -1191,8 +1191,6 @@ object RestMainForm: TRestMainForm
                   StatusBar.ColorTo = 16374724
                   StatusBar.GradientDirection = gdVertical
                   Styler = FrontData.FrontPanelStyler
-                  ExplicitLeft = 0
-                  ExplicitTop = -2
                   FullHeight = 528
                 end
                 object pnlUserOrders: TAdvPanel
@@ -1313,8 +1311,6 @@ object RestMainForm: TRestMainForm
               ColorTo = clNone
               TabColor = clBtnFace
               TabColorTo = clNone
-              ExplicitLeft = -1
-              ExplicitTop = 15
               object sbTable: TScrollBox
                 Left = 0
                 Top = 0
@@ -1322,10 +1318,6 @@ object RestMainForm: TRestMainForm
                 Height = 679
                 Align = alClient
                 TabOrder = 0
-                ExplicitLeft = 184
-                ExplicitTop = 352
-                ExplicitWidth = 425
-                ExplicitHeight = 217
               end
             end
           end
@@ -1624,7 +1616,7 @@ object RestMainForm: TRestMainForm
         Top = 1
         Width = 80
         Height = 719
-        ActivePage = tsOrderButton
+        ActivePage = tsFunctionButton
         ActiveFont.Charset = DEFAULT_CHARSET
         ActiveFont.Color = clWindowText
         ActiveFont.Height = -11

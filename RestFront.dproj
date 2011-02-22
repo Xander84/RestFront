@@ -107,6 +107,7 @@
 			<DCCReference Include="Base_FiscalRegister_unit.pas"/>
 			<DCCReference Include="FiscalRegister_Unit.pas"/>
 			<DCCReference Include="Merc\MercFP_Unit.pas"/>
+			<DCCReference Include="Spark617\Spark617_Unit.pas"/>
 			<DCCReference Include="CashForm_Unit.pas">
 				<Form>CashForm</Form>
 			</DCCReference>
