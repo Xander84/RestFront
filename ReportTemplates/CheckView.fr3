@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
-<Tgs_fr4SingleReport Version="4.8.2" DotMatrixReport="True" EngineOptions.DoublePass="True" IniFile="\Software\Fast Reports" PreviewOptions.Buttons="4095" PreviewOptions.Zoom="1" PrintOptions.Printer="По умолчанию" PrintOptions.PrintOnSheet="0" ReportOptions.CreateDate="39770.5769802431" ReportOptions.Description.Text="" ReportOptions.LastChange="40597.4941584954" ScriptLanguage="PascalScript" ScriptText.Text="begin&#13;&#10;&#13;&#10;end." PropData="0844617461736574730101061520446174615365744E616D653D22484541444552220000095661726961626C65730101142A000000204E616D653D2220D092D185D0BED0B4D0BDD18BD0B520D0BFD0B0D180D0B0D0BCD0B5D182D180D18B2200010622204E616D653D22504152414D30222056616C75653D222731343733373335363827220000055374796C650100">
+<Tgs_fr4SingleReport Version="4.8.2" DotMatrixReport="True" EngineOptions.DoublePass="True" IniFile="\Software\Fast Reports" PreviewOptions.Buttons="4095" PreviewOptions.Zoom="1" PrintOptions.Printer="По умолчанию" PrintOptions.PrintOnSheet="0" ReportOptions.CreateDate="39770.5769802431" ReportOptions.Description.Text="" ReportOptions.LastChange="40597.4913224306" ScriptLanguage="PascalScript" ScriptText.Text="begin&#13;&#10;&#13;&#10;end." PropData="0844617461736574730101061520446174615365744E616D653D22484541444552220001061420446174615365744E616D653D2253454C4C53220000095661726961626C65730100055374796C650100">
   <TfrxDataPage Name="Data" Height="1000" Left="0" Top="0" Width="1000"/>
-  <TfrxDMPPage Name="Page1" PaperWidth="99.0599360237913" PaperHeight="296.862308276426" PaperSize="256" LeftMargin="2.53999835958439" RightMargin="2.53999835958439" TopMargin="4.49791376176403" BottomMargin="4.49791376176403" ColumnWidth="0" ColumnPositions.Text="" EndlessHeight="True" HGuides.Text="" VGuides.Text="" FontStyle="0">
+  <TfrxDMPPage Name="Page1" PaperWidth="99.0599360237913" PaperHeight="296.862308276426" PaperSize="256" LeftMargin="2.53999835958439" RightMargin="2.53999835958439" TopMargin="4.49791376176403" BottomMargin="4.49791376176403" ColumnWidth="0" ColumnPositions.Text="" HGuides.Text="" VGuides.Text="" FontStyle="0">
     <TfrxReportTitle Name="ReportTitle1" Height="187" Left="0" Top="17" Width="355.2">
       <TfrxDMPCommand Name="DMPCommand1" Description="Reset Printer" Left="0" Top="0" Width="355.2" Height="17" Hint="Reset Printer" ShowHint="False" Command="1B40"/>
       <TfrxDMPCommand Name="DMPCommand2" Description="Bell" Left="0" Top="17" Width="355.2" Height="17" Hint="Bell" ShowHint="False" Command="1B70300000"/>
@@ -18,7 +18,7 @@
       <TfrxDMPMemoView Name="DMPMemo11" Left="57.6" Top="102" Width="105.6" Height="17" ShowHint="False" DisplayFormat.FormatStr="dd.mm.yyyy" DisplayFormat.Kind="fkDateTime" TruncOutboundText="False" Text="[HEADER.&#34;DOCDATE&#34;]"/>
       <TfrxDMPMemoView Name="DMPMemo12" Left="240" Top="102" Width="115.2" Height="17" ShowHint="False" DisplayFormat.FormatStr="hh:mm:ss" DisplayFormat.Kind="fkDateTime" TruncOutboundText="False" Text="[HEADER.&#34;DOCDATE&#34;]"/>
       <TfrxDMPMemoView Name="DMPMemo13" Left="76.8" Top="119" Width="38.4" Height="17" ShowHint="False" TruncOutboundText="False" Text="[HEADER.&#34;GUEST&#34;]"/>
-      <TfrxDMPMemoView Name="DMPMemo14" Left="240" Top="119" Width="115.2" Height="17" ShowHint="False" DisplayFormat.FormatStr="hh:mm:ss" DisplayFormat.Kind="fkDateTime" TruncOutboundText="False" Text="[HEADER.&#34;TIMECLOSE&#34;]"/>
+      <TfrxDMPMemoView Name="DMPMemo14" Left="240" Top="119" Width="115.2" Height="17" ShowHint="False" DisplayFormat.FormatStr="hh:mm:ss" DisplayFormat.Kind="fkDateTime" TruncOutboundText="False" Text="[HEADER.&#34;CLOSE1&#34;]"/>
       <TfrxDMPMemoView Name="DMPMemo15" Left="0" Top="136" Width="355.2" Height="17" ShowHint="False" TruncOutboundText="False" Text="-------------------------------------"/>
       <TfrxDMPMemoView Name="DMPMemo16" Left="0" Top="170" Width="355.2" Height="17" ShowHint="False" TruncOutboundText="False" Text="-------------------------------------"/>
       <TfrxDMPMemoView Name="DMPMemo17" Left="0" Top="153" Width="153.6" Height="17" ShowHint="False" HAlign="haCenter" TruncOutboundText="False" Text="Название блюда"/>
@@ -38,10 +38,7 @@
     <TfrxGroupFooter Name="GroupFooter1" Height="17" Left="0" Top="306" Width="355.2">
       <TfrxDMPMemoView Name="DMPMemo22" Left="0" Top="0" Width="355.2" Height="17" ShowHint="False" TruncOutboundText="False" Text="-------------------------------------"/>
     </TfrxGroupFooter>
-    <TfrxReportSummary Name="ReportSummary1" Height="136" Left="0" Top="493" Width="355.2">
-      <TfrxDMPCommand Name="DMPCommand3" Description="Page Break" Left="0" Top="119" Width="355.2" Height="17" Hint="Page Break" ShowHint="False" Command="1D5601"/>
-    </TfrxReportSummary>
-    <TfrxHeader Name="Header1" Height="119" Left="0" Top="340" Width="355.2">
+    <TfrxFooter Name="Footer1" Height="136" Left="0" Top="340" Width="355.2">
       <TfrxDMPMemoView Name="DMPMemo28" Left="0" Top="0" Width="153.6" Height="17" ShowHint="False" TruncOutboundText="False" Text="Итого:"/>
       <TfrxDMPMemoView Name="DMPMemo29" Left="220.8" Top="0" Width="134.4" Height="17" ShowHint="False" HAlign="haRight" TruncOutboundText="False" Text="[SUM(&#60;HEADER.&#34;S&#34;&#62;)]"/>
       <TfrxDMPMemoView Name="DMPMemo30" Left="0" Top="34" Width="96" Height="17" ShowHint="False" TruncOutboundText="False" Text="Сумма:"/>
@@ -50,6 +47,22 @@
       <TfrxDMPMemoView Name="DMPMemo33" Left="220.8" Top="34" Width="134.4" Height="17" ShowHint="False" HAlign="haRight" TruncOutboundText="False" Text="[SUM(&#60;HEADER.&#34;S&#34;&#62;)]"/>
       <TfrxDMPMemoView Name="DMPMemo34" Left="220.8" Top="68" Width="134.4" Height="17" ShowHint="False" HAlign="haRight" TruncOutboundText="False" Text="[SUM(&#60;HEADER.&#34;SD&#34;&#62;)]"/>
       <TfrxDMPMemoView Name="DMPMemo35" Left="220.8" Top="102" Width="134.4" Height="17" ShowHint="False" HAlign="haRight" TruncOutboundText="False" Text="[SUM(&#60;HEADER.&#34;SWD&#34;&#62;)]"/>
-    </TfrxHeader>
+    </TfrxFooter>
+  </TfrxDMPPage>
+  <TfrxDMPPage Name="Page2" PaperWidth="99.0599360237913" PaperHeight="296.862308276426" PaperSize="256" LeftMargin="2.53999835958439" RightMargin="2.53999835958439" TopMargin="4.49791376176403" BottomMargin="4.49791376176403" ColumnWidth="0" ColumnPositions.Text="" EndlessHeight="True" PrintOnPreviousPage="True" HGuides.Text="" VGuides.Text="" FontStyle="0">
+    <TfrxReportSummary Name="ReportSummary1" Height="119" Left="0" Top="102" Width="355.2">
+      <TfrxDMPCommand Name="DMPCommand3" Description="Page Break" Left="0" Top="102" Width="355.2" Height="17" Hint="Page Break" ShowHint="False" Command="1D5601"/>
+      <TfrxDMPMemoView Name="DMPMemo27" Left="0" Top="0" Width="355.2" Height="17" ShowHint="False" TruncOutboundText="False" Text="-------------------------------------"/>
+      <TfrxDMPMemoView Name="DMPMemo37" Left="0" Top="34" Width="355.2" Height="17" ShowHint="False" HAlign="haCenter" TruncOutboundText="False" Text="Будем рады видеть Вас снова!"/>
+      <TfrxDMPMemoView Name="DMPMemo38" Left="0" Top="68" Width="355.2" Height="17" ShowHint="False" TruncOutboundText="False" Text="Дата: [SELLS.&#34;NOW&#34;] Время: [SELLS.&#34;NOWTIME&#34;]"/>
+    </TfrxReportSummary>
+    <TfrxMasterData Name="MasterData2" Height="17" Left="0" Top="17" Width="355.2" ColumnWidth="0" ColumnGap="0" DataSetName="SELLS" RowCount="0">
+      <TfrxDMPMemoView Name="SELLSPayType1" Left="0" Top="0" Width="134.4" Height="17" ShowHint="False" DataField="PayType1" DataSetName="SELLS" TruncOutboundText="False" Text="[SELLS.&#34;PayType1&#34;]"/>
+      <TfrxDMPMemoView Name="SELLSPaySum1" Left="240" Top="0" Width="115.2" Height="17" ShowHint="False" DataField="PaySum1" DataSetName="SELLS" HAlign="haRight" TruncOutboundText="False" Text="[SELLS.&#34;PaySum1&#34;]"/>
+    </TfrxMasterData>
+    <TfrxFooter Name="Footer2" Height="17" Left="0" Top="51" Width="355.2">
+      <TfrxDMPMemoView Name="DMPMemo36" Left="0" Top="0" Width="134.4" Height="17" ShowHint="False" TruncOutboundText="False" Text="Сдача:"/>
+      <TfrxDMPMemoView Name="SELLSChangeSum" Left="240" Top="0" Width="115.2" Height="17" ShowHint="False" DataField="ChangeSum" DataSetName="SELLS" HAlign="haRight" TruncOutboundText="False" Text="[SELLS.&#34;ChangeSum&#34;]"/>
+    </TfrxFooter>
   </TfrxDMPPage>
 </Tgs_fr4SingleReport>

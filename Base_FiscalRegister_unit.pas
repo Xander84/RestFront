@@ -92,6 +92,18 @@ type
     property FrontBase: TFrontBase read GetFrontBase write SetFrontBase;
   end;
 
+  // структура оплаты
+  TSaleSums = packed record
+    // сумма наличных
+    FCashSum: Currency;
+    // сумма по карточке
+    FCardSum: Currency;
+    // сумма по безналу
+    FCreditSum: Currency;
+    // сумма сдачи
+    FChangeSum: Currency;
+  end;
+
 implementation
 
 uses

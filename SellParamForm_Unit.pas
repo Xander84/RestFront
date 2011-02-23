@@ -59,12 +59,8 @@ type
     FPaySum: Currency;
     // сдача
     FChange: Currency;
-    // сумма наличных
-    FCashSum: Currency;
-    // сумма по карточке
-    FCardSum: Currency;
-    // сумма по безналу
-    FCreditSum: Currency;
+    // структура оплаты
+    FSums: TSaleSums;
 
     FInDeleteOrUpdate: Boolean;
     FInInsert: Boolean;
@@ -86,7 +82,7 @@ type
     procedure SetDocLine(const Value: TkbmMemTable);
 
     procedure OnAfterDelete(DataSet: TDataSet);
-    procedure OnAfterScroll(DataSet: TDataSet);    
+    procedure OnAfterScroll(DataSet: TDataSet);
 
     procedure PrevSettings(const PayType: Integer; NeedLocate: Boolean = True);
     procedure CalcSums;
@@ -106,7 +102,7 @@ var
 implementation
 
 uses
-  PayForm_Unit, TaskDialog;
+  PayForm_Unit, TaskDialog, Report_Unit;
 
 {$R *.dfm}
 
@@ -117,9 +113,12 @@ procedure TSellParamForm.CalcSums;
 var
   SavePlace: TBookmark;
 begin
-  FCashSum := 0;
-  FCardSum := 0;
-  FCreditSum := 0;
+  with FSums do
+  begin
+    FCashSum := 0;
+    FCardSum := 0;
+    FCreditSum := 0;
+  end;
 
   FInBrowse := True;
   SavePlace := dsPayLine.Bookmark;
@@ -131,11 +130,11 @@ begin
       begin
         case dsPayLine.FieldByName('PAYTYPE').AsInteger of
           cn_paytype_cash: //наличные
-            FCashSum := FCashSum + dsPayLine.FieldByName('SUM').AsInteger;
+            FSums.FCashSum := FSums.FCashSum + dsPayLine.FieldByName('SUM').AsInteger;
           cn_paytype_credit: //кредитная карта
-            FCardSum := FCardSum + dsPayLine.FieldByName('SUM').AsInteger;
+            FSums.FCardSum := FSums.FCardSum + dsPayLine.FieldByName('SUM').AsInteger;
           cn_paytype_noncash: //безнал (кредит)
-            FCreditSum := FCreditSum + dsPayLine.FieldByName('SUM').AsInteger;
+            FSums.FCreditSum := FSums.FCreditSum + dsPayLine.FieldByName('SUM').AsInteger;
         end;
         dsPayLine.Next;
       end;
@@ -355,6 +354,8 @@ begin
 end;
 
 procedure TSellParamForm.actPayExecute(Sender: TObject);
+var
+  FReport: TRestReport;
 begin
   if (lblChange.Caption = '') or (FChange < 0) then
   begin
@@ -372,11 +373,12 @@ begin
     exit;
   end;
   CalcSums;
-  if ((FCardSum + FCreditSum) > FSumToPay) then
+  if ((FSums.FCardSum + FSums.FCreditSum) > FSumToPay) then
   begin
     AdvTaskMessageDlg('Внимание', 'Сумма оплаты по безналичному расчету превышает сумму чека!', mtWarning, [mbOK], 0);
     exit;
   end;
+  FSums.FChangeSum := FChange;
 
   FFrontBase.Display.Payed;
   if Assigned(FFiscalRegiter) then
@@ -387,6 +389,17 @@ begin
       FFiscalRegiter.OpenDrawer;
       if FFiscalRegiter.PrintCheck(Doc, DocLine, dsPayLine) then
       begin
+        if FFrontBase.Options.PrintCopyCheck then
+        begin
+          FReport := TRestReport.Create(Self);
+          FReport.FrontBase := FFrontBase;
+          try
+            FReport.PrintAfterSalePreCheck(FDoc.FieldByName('ID').AsInteger, FSums);
+          finally
+            FReport.Free;
+          end;
+        end;
+
         Self.ModalResult := mrOk;
       end;
     finally

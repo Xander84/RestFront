@@ -7,7 +7,7 @@ uses
   frxDesgn, frxClass, frxDCtrl, frxChart, frxRich, frxBarcode, ImgList,
   frxCross, frxDMPExport, frxExportRTF, TaskDialog, frxGZip, frxChBox,
   frxExportText, frxPrinter, Dialogs, frxDBSet, frxPreview, frxIBXComponents,
-  IBQuery, kbmMemTable, DB, Variants;
+  IBQuery, kbmMemTable, DB, Variants, Base_FiscalRegister_unit;
 
 type
   Tgs_fr4Report = class(TfrxReport)
@@ -67,6 +67,7 @@ type
     destructor Destroy; override;
 
     function PrintPreCheck(const ReportType, DocID: Integer): Boolean;
+    procedure PrintAfterSalePreCheck(const DocID: Integer; const FSums: TSaleSums);
     function PrintServiceCheck(const ReportType, PrnGrID, DocID: Integer; const PrinterName: String): Boolean;
     function PrintDeleteServiceCheck(const ReportType, PrnGrID, DocumentKey, MasterKey: Integer;
       const PrinterName: String): Boolean;
@@ -180,6 +181,144 @@ begin
   FReport.PrintOptions.PrintPages := ppAll;
 end;
 
+procedure TRestReport.PrintAfterSalePreCheck(const DocID: Integer;
+  const FSums: TSaleSums);
+var
+  PrinterName: String;
+  FReport: Tgs_fr4SingleReport;
+  Str: TStream;
+  BaseQueryList: TgsQueryList;
+  Header, Sells: TgsDataSet;
+  I: Integer;
+  FrxDBDataset, FrxDBDataset1: TfrxDBDataset;
+begin
+  Assert(Assigned(FFrontBase), 'FrontBase not assigned');
+
+  PrinterName := FFrontBase.GetPrinterName;
+  if PrinterName = '' then
+  begin
+    AdvTaskMessageDlg('Внимание', 'Для данной рабочей станции не указан пречековый принтер!', mtWarning, [mbOK], 0);
+    exit;
+  end;
+
+  BaseQueryList := FrontData.BaseQueryList;
+  BaseQueryList.Clear;
+  FReport := Tgs_fr4SingleReport.Create(nil);
+  try
+    InitReportParams(FReport, PrinterName);
+
+    Str := TMemoryStream.Create;
+    FrxDBDataset := TfrxDBDataset.Create(nil);
+    FrxDBDataset1 := TfrxDBDataset.Create(nil);
+    try
+      Header := BaseQueryList.Query[BaseQueryList.Add('Header', False)];
+      Header.SQL :=
+        '  SELECT comp.name compname, comp.address compadr, comp.city compcity, ' +
+        '  g.alias a, cat.usr$name categ, g.name goodname, ol.usr$costncu C, ' +
+        '  con.name conname, o.usr$logicdate docdate, doc.number docnum, ' +
+        '  o.usr$guestcount guest, o.usr$timeorder open1, o.usr$timecloseorder close1, ' +
+        '  o.usr$cash cash, o.usr$sysnum sysnum, ' +
+        '  SUM(ol.usr$sumncu) S, ' +
+        '  SUM(ol.usr$sumncuwithdiscount) SWD, ' +
+        '  SUM(ol.usr$sumdiscount) SD, ' +
+        '  Sum(ol.usr$quantity) q ' +
+        '  FROM gd_document doc ' +
+        '  JOIN usr$mn_order o ON o.documentkey = doc.id ' +
+        '    AND doc.id = :dockey ' +
+        '  JOIN usr$mn_orderline ol on ol.masterkey = o.documentkey ' +
+        '  JOIN gd_good g ON g.id = ol.usr$goodkey ' +
+        '  LEFT JOIN gd_contact comp ON comp.id = doc.companykey ' +
+        '  LEFT JOIN usr$mn_p_getcontact_department(usr$respkey) cd ON 0 = 0 ' +
+        '  LEFT JOIN gd_contact con ON con.id = cd.peoplekey ' +
+        '  LEFT JOIN gd_contact dept ON dept.id = cd.departmentkey ' +
+        '  LEFT JOIN USR$mn_category cat ON cat.id = g.usr$category ' +
+        '  where ol.usr$causedeletekey + 0 is null ' +
+        '  GROUP BY ' +
+        '  comp.name, comp.address, comp.city, ' +
+        '  g.name, g.alias, ol.usr$costncu, ' +
+        '  con.name, o.usr$logicdate, doc.number, ' +
+        '  o.usr$guestcount, o.usr$timeorder, o.usr$timecloseorder, ' +
+        '  o.usr$cash, usr$sysnum, cat.usr$name ' +
+        '  having Sum(ol.usr$quantity) > 0 ' +
+        '  order by cat.usr$name ';
+      Header.ParamByName('dockey').AsInteger := DocID;
+      Header.Open;
+
+      Sells := BaseQueryList.Query[BaseQueryList.Add('Sells', True)];
+      Sells.AddField('PayType', 'ftString', 15, False);
+      Sells.AddField('PaySum', 'ftString', 15, False);
+      Sells.AddField('ChangeSum', 'ftString', 15, False);
+      Sells.AddField('NOW', 'ftDate', 0, False);
+      Sells.AddField('NOWTIME', 'ftTime', 0, False);
+      Sells.Open;
+      with FSums do
+      begin
+        if FCashSum > 0 then
+        begin
+          Sells.Append;
+          Sells.FieldByName('PayType').AsString := 'Наличные';
+          Sells.FieldByName('PaySum').AsString := CurrToStr(FCashSum);
+          Sells.FieldByName('ChangeSum').AsString := CurrToStr(FChangeSum);
+          Sells.FieldByName('NOW').AsDateTime := Date;
+          Sells.FieldByName('NOWTIME').AsDateTime := Now;
+          Sells.Post;
+        end;
+        if FCreditSum > 0 then
+        begin
+          Sells.Append;
+          Sells.FieldByName('PayType').AsString := 'Безналичные';
+          Sells.FieldByName('PaySum').AsString := CurrToStr(FCreditSum);
+          Sells.FieldByName('ChangeSum').AsString := CurrToStr(FChangeSum);
+          Sells.FieldByName('NOW').AsDateTime := Date;
+          Sells.FieldByName('NOWTIME').AsDateTime := Now;
+          Sells.Post;
+        end;
+        if FCardSum > 0 then
+        begin
+          Sells.Append;
+          Sells.FieldByName('PayType').AsString := 'Карта';
+          Sells.FieldByName('PaySum').AsString := CurrToStr(FCardSum);
+          Sells.FieldByName('ChangeSum').AsString := CurrToStr(FChangeSum);
+          Sells.FieldByName('NOW').AsDateTime := Date;
+          Sells.FieldByName('NOWTIME').AsDateTime := Now;
+          Sells.Post;
+        end;
+      end;
+
+
+      FrxDBDataset.Name := Header.DataSet.Name;
+      FrxDBDataset.DataSet := TDataSet(Header.DataSet);
+
+      FrxDBDataset1.Name := Sells.DataSet.Name;
+      FrxDBDataset1.DataSet := TDataSet(Sells.DataSet);
+
+      FReport.DataSets.Add(FrxDBDataset);
+      FReport.DataSets.Add(FrxDBDataset1);
+      FReport.EnabledDataSets.Add(FrxDBDataset);
+      FReport.EnabledDataSets.Add(FrxDBDataset1);
+
+      GetTemplateStreamByRuid(147733973, 1604829035, Str);
+      if Str.Size > 0 then
+      begin
+        Str.Position := 0;
+        FReport.LoadFromStream(Str);
+      end;
+      FReport.Variables.Clear;
+      FReport.Variables[' ' + cn_RestParam] := Null;
+      FReport.Variables.AddVariable(cn_RestParam, 'DocID', '''' + VarToStr(DocID) + '''');
+      if FReport.PrepareReport then
+        FReport.Print;
+
+    finally
+      FrxDBDataset.Free;
+      FrxDBDataset1.Free;
+      Str.Free;
+    end;
+  finally
+    FReport.Free;
+  end;
+end;
+
 procedure TRestReport.PrintCheckRegister(const DateBegin, DateEnd: TDate);
 var
   PrinterName: String;
@@ -203,7 +342,7 @@ begin
     try
       Header := BaseQueryList.Query[BaseQueryList.Add('Header', False)];
       Header.SQL :=
-        ' SELECT w.name, w.id, o.usr$sysnum as sysnum, com.name as company, sum(ol.usr$sumncuwithdiscount) sumcheck ' +
+        ' SELECT w.name, w.id, o.usr$sysnum, com.name as company, sum(ol.usr$sumncuwithdiscount) sumcheck ' +
         ' FROM usr$mn_order o ' +
         ' JOIN usr$mn_orderline ol on o.documentkey = ol.masterkey ' +
         ' left join gd_contact w on w.id = o.usr$respkey ' +
@@ -211,7 +350,7 @@ begin
         ' left join gd_contact com on com.id = doc.companykey ' +
         ' WHERE ' +
         '  o.usr$logicdate >= :begindate ' +
-        '  and o.usr$logicdate <= :enddate and o.usr$sysnum is not null and ol.usr$causedeletekey + 0 is NULL and ol.usr$quantity > 0 ' +
+        '  and o.usr$logicdate <= :enddate and ol.usr$causedeletekey + 0 is NULL and ol.usr$quantity > 0 ' +
         '  and exists (SELECT * FROM usr$mn_payment p where p.usr$orderkey = o.documentkey and p.usr$paykindkey = :paykind ) ' +
         ' GROUP BY 1,3,2,4 ' +
         ' ORDER BY ' +
