@@ -51,7 +51,7 @@ constructor TFiscalRegister.Create;
 begin
   inherited;
 
-  FLastFiscalType := -1;
+  FLastFiscalType := 0;
   FFiscalRegister := nil;
   FInit := False;
 end;
@@ -133,7 +133,7 @@ begin
       end;
 
     else
-      Assert(False, 'Данный тип кассы не поддерживается');
+      AdvTaskMessageDlg('Внимание', 'Данный тип кассы не поддерживается', mtWarning, [mbOK], 0);
     end;
 
     FInit := True;  

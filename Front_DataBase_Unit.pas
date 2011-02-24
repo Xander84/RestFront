@@ -336,6 +336,8 @@ type
     function GetDiscountList(var MemTable: TkbmMemTable): Boolean;
     function GetDiscountCardInfo(var MemTable: TkbmMemTable; const CardID: Integer; LDate: TDateTime; Pass: String): Boolean;
     function CalcBonusSum(var DataSet: TDataSet; FLine: TkbmMemTable; var Bonus: Boolean; var PercDisc: Currency): Boolean;
+    function GetPersonalCardInfo(const MemTable: TkbmMemTable;
+      const Pass: String; const PersonalCardID: Integer): Boolean;
     //список подразделений компании
     function GetDepartmentList(var MemTable: TkbmMemTable): Boolean;
     function GetUserGroupList(var MemTable: TkbmMemTable): Boolean;
@@ -349,7 +351,7 @@ type
 
     function GetNameWaiterOnID(const ID: Integer; WithGroup, TwoRows: Boolean): String;
 
-    function SavePayment(const ContactKey, OrderKey, PayKindKey: Integer;
+    function SavePayment(const ContactKey, OrderKey, PayKindKey, PersonalCardKey: Integer;
       Sum: Currency): Boolean;
 
     //1. Отмена пречека
@@ -2191,6 +2193,47 @@ begin
   end;
 end;
 
+function TFrontBase.GetPersonalCardInfo(const MemTable: TkbmMemTable;
+  const Pass: String; const PersonalCardID: Integer): Boolean;
+begin
+  Result := False;
+
+  FReadSQL.Close;
+  MemTable.Close;
+  MemTable.CreateTable;
+  MemTable.Open;
+  if not FReadSQL.Transaction.InTransaction then
+    FReadSQL.Transaction.StartTransaction;
+  try
+    FReadSQL.SQL.Text :=
+      'SELECT C.*, T.USR$NOFISCAL FROM USR$MN_PERSONALCARD C ' +
+      'JOIN USR$MN_KINDTYPE T ON 1 = 1 ' +
+      'WHERE T.ID = :ID AND C.USR$CODE = :pass ';
+    FReadSQL.ParamByName('pass').AsString := Pass;
+    FReadSQL.ParamByName('ID').AsInteger := PersonalCardID;
+    FReadSQL.ExecQuery;
+    while not FReadSQL.Eof do
+    begin
+      if FReadSQL.FieldByName('USR$DISABLED').AsInteger = 1 then
+      begin
+        AdvTaskMessageDlg('Внимание', 'Данная карта отключена!', mtError, [mbOK], 0);
+        exit;
+      end;
+      MemTable.Append;
+      MemTable.FieldByName('USR$NAME').AsString := FReadSQL.FieldByName('USR$NAME').AsString;
+      MemTable.FieldByName('USR$CODE').AsString := FReadSQL.FieldByName('USR$CODE').AsString;
+      MemTable.FieldByName('ID').AsInteger := FReadSQL.FieldByName('ID').AsInteger;
+      MemTable.FieldByName('USR$NOFISCAL').AsInteger := FReadSQL.FieldByName('USR$NOFISCAL').AsInteger;
+      MemTable.Post;
+
+      FReadSQL.Next;
+    end;
+    Result := True;
+  finally
+    FReadSQL.Transaction.Commit;
+  end;
+end;
+
 function TFrontBase.GetIBRandomString: String;
 var
   I, Pr, C: Integer;
@@ -2359,7 +2402,7 @@ begin
 end;
 
 function TFrontBase.SavePayment(const ContactKey, OrderKey,
-  PayKindKey: Integer; Sum: Currency): Boolean;
+  PayKindKey, PersonalCardKey: Integer; Sum: Currency): Boolean;
 var
   FSQL: TIBSQL;
 begin
@@ -2373,13 +2416,15 @@ begin
     '    usr$orderkey, ' +
     '    usr$paykindkey, ' +
     '    usr$sumncu, ' +
-    '    usr$datetime) ' +
+    '    usr$datetime, ' +
+    '    usr$personalcardkey ) ' +
     '  values ( ' +
     '    :editorkey, ' +
     '    :usr$orderkey, ' +
     '    :usr$paykindkey, ' +
     '    :usr$sumncu, ' +
-    '    :usr$datetime) ';
+    '    :usr$datetime, ' +
+    '    :usr$perscardkey ) ';
   try
     if not FCheckTransaction.InTransaction then
       FCheckTransaction.StartTransaction;
@@ -2390,6 +2435,10 @@ begin
       FSQL.ParamByName('usr$paykindkey').AsInteger := PayKindKey;
       FSQL.ParamByName('usr$sumncu').AsCurrency := Sum;
       FSQL.ParamByName('usr$datetime').AsDateTime := Now;
+      if PersonalCardKey <> -1 then
+        FSQL.ParamByName('usr$perscardkey').AsInteger := PersonalCardKey
+      else
+        FSQL.ParamByName('usr$perscardkey').Clear;
       FSQL.ExecQuery;
     except
       on E: Exception do

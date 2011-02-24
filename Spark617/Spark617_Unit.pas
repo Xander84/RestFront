@@ -546,7 +546,8 @@ begin
           while not PayLine.Eof do
           begin
             FFrontBase.SavePayment(FFrontBase.ContactKey, Doc.FieldByName('ID').AsInteger,
-              PayLine.FieldByName('USR$PAYTYPEKEY').AsInteger, PayLine.FieldByName('SUM').AsCurrency);
+              PayLine.FieldByName('USR$PAYTYPEKEY').AsInteger,
+              PayLine.FieldByName('USR$PERSONALCARDKEY').AsInteger, PayLine.FieldByName('SUM').AsCurrency);
 
             PayLine.Next;
           end;

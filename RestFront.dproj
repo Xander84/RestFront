@@ -137,6 +137,9 @@
 				<DesignClass>TFrame</DesignClass>
 			</DCCReference>
 			<DCCReference Include="Report\fs_iQueryListRTTI.pas"/>
+			<DCCReference Include="PersonalCardForm_Unit.pas">
+				<Form>PersonalCardForm</Form>
+			</DCCReference>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>

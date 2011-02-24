@@ -56,9 +56,9 @@ object SellParamForm: TSellParamForm
     Styler = FrontData.FrontPanelStyler
     FullHeight = 0
     object lblToPay: TLabel
-      Left = 551
+      Left = 624
       Top = 17
-      Width = 225
+      Width = 152
       Height = 33
       Alignment = taRightJustify
       AutoSize = False
@@ -73,9 +73,9 @@ object SellParamForm: TSellParamForm
       Transparent = True
     end
     object lblChange: TLabel
-      Left = 551
+      Left = 624
       Top = 320
-      Width = 225
+      Width = 152
       Height = 33
       Alignment = taRightJustify
       AutoSize = False
@@ -90,7 +90,7 @@ object SellParamForm: TSellParamForm
       Transparent = True
     end
     object Label1: TLabel
-      Left = 443
+      Left = 519
       Top = 17
       Width = 102
       Height = 31
@@ -106,7 +106,7 @@ object SellParamForm: TSellParamForm
       Transparent = True
     end
     object Label2: TLabel
-      Left = 476
+      Left = 552
       Top = 320
       Width = 69
       Height = 31
@@ -371,7 +371,7 @@ object SellParamForm: TSellParamForm
     end
     object btnCashPay: TAdvSmoothToggleButton
       Left = 307
-      Top = 53
+      Top = 52
       Width = 174
       Height = 59
       Color = 15195349
@@ -407,7 +407,7 @@ object SellParamForm: TSellParamForm
     end
     object btnBeznalPay: TAdvSmoothToggleButton
       Left = 307
-      Top = 119
+      Top = 117
       Width = 174
       Height = 59
       Color = 15195349
@@ -443,7 +443,7 @@ object SellParamForm: TSellParamForm
     end
     object btnCardPay: TAdvSmoothToggleButton
       Left = 307
-      Top = 185
+      Top = 182
       Width = 174
       Height = 59
       Color = 15195349
@@ -479,7 +479,7 @@ object SellParamForm: TSellParamForm
     end
     object btnDelPay: TAdvSmoothButton
       Left = 308
-      Top = 252
+      Top = 312
       Width = 172
       Height = 57
       Action = actDeletePay
@@ -714,6 +714,42 @@ object SellParamForm: TSellParamForm
         20
         133
         131)
+    end
+    object btnPersonalCard: TAdvSmoothToggleButton
+      Left = 306
+      Top = 247
+      Width = 174
+      Height = 59
+      Color = 15195349
+      ColorDisabled = 16765357
+      ColorDown = 11196927
+      BevelColor = 15195349
+      BevelColorDisabled = 16765357
+      BevelColorDown = 11196927
+      Appearance.Font.Charset = DEFAULT_CHARSET
+      Appearance.Font.Color = clWindowText
+      Appearance.Font.Height = -19
+      Appearance.Font.Name = 'Times New Roman'
+      Appearance.Font.Style = []
+      Caption = #1055#1077#1088#1089'. '#1082#1072#1088#1090#1086#1081
+      Version = '1.1.8.0'
+      Status.Caption = '0'
+      Status.Appearance.Fill.Color = clRed
+      Status.Appearance.Fill.ColorMirror = clNone
+      Status.Appearance.Fill.ColorMirrorTo = clNone
+      Status.Appearance.Fill.GradientType = gtSolid
+      Status.Appearance.Fill.BorderColor = clGray
+      Status.Appearance.Fill.Rounding = 0
+      Status.Appearance.Fill.ShadowOffset = 0
+      Status.Appearance.Font.Charset = DEFAULT_CHARSET
+      Status.Appearance.Font.Color = clWhite
+      Status.Appearance.Font.Height = -11
+      Status.Appearance.Font.Name = 'Tahoma'
+      Status.Appearance.Font.Style = []
+      GroupIndex = 1
+      ParentFont = False
+      TabOrder = 9
+      OnClick = btnPersonalCardClick
     end
   end
   object dsMain: TDataSource

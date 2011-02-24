@@ -1611,15 +1611,15 @@ END
 /* c:\program files (x86)\embarcadero\rad studio\7.0\lib\DBPWDlg.dfm */
 /* c:\program files (x86)\embarcadero\rad studio\7.0\lib\DBLogDlg.dfm */
 /* c:\program files (x86)\embarcadero\rad studio\7.0\lib\DBCtrls.res */
+/* D:\Front\Source\TMS\TASKDIALOG.RES */
 /* c:\program files (x86)\embarcadero\rad studio\7.0\lib\DBGrids.res */
 /* D:\Front\Source\Components\EhLib\Common\CalculatorEh.DFM */
 /* D:\Front\Source\Components\EhLib\Common\DBGridEhFindDlgs.dfm */
 /* D:\Front\Source\Components\EhLib\Common\DBGRIDEH.RES */
 /* Report\rp_frmGrid_unit.DFM */
 /* Report\rp_dlgViewResult_unit.DFM */
-/* D:\Front\Source\TMS\TASKDIALOG.RES */
-/* FrontData_Unit.dfm */
 /* D:\Front\Source\TMS\AdvSmoothTouchKeyBoard.res */
+/* FrontData_Unit.dfm */
 /* CardCodeForm_Unit.dfm */
 /* BaseFrontForm_Unit.dfm */
 /* c:\program files (x86)\embarcadero\rad studio\7.0\lib\FileCtrl.res */
@@ -1634,17 +1634,35 @@ END
 /* D:\Front\Source\Components\FastReport 4\Source\frxPassw.dfm */
 /* D:\Front\Source\Components\FastReport 4\Source\frxProgress.DFM */
 /* D:\Front\Source\Components\FastReport 4\Source\frxClass.RES */
+/* D:\Front\Source\Components\FastReport 4\Source\frxPopupForm.DFM */
+/* D:\Front\Source\Components\FastReport 4\Source\frxEditQueryParams.DFM */
+/* D:\Front\Source\Components\FastReport 4\Source\frxConnWizard.DFM */
+/* D:\Front\Source\Components\FastReport 4\Source\frxConnWizard.RES */
+/* D:\Front\Source\Components\FastReport 4\Source\frxEditSQL.DFM */
+/* D:\Front\Source\Components\FastReport 4\Source\frxEditAliases.DFM */
+/* D:\Front\Source\Components\FastReport 4\Source\frxEditMD.DFM */
+/* D:\Front\Source\Components\FastReport 4\Source\ExportPack\frxExportText.dfm */
+/* D:\Front\Source\Components\FastReport 4\Source\ExportPack\frxExportRTF.dfm */
+/* D:\Front\Source\Components\FastReport 4\Source\frxDMPExport.dfm */
 /* D:\Front\Source\Components\FastReport 4\Source\frxEditFormat.DFM */
 /* D:\Front\Source\Components\FastReport 4\Source\frxEditHighlight.DFM */
 /* D:\Front\Source\Components\FastReport 4\Source\frxEditSysMemo.DFM */
 /* D:\Front\Source\Components\FastReport 4\Source\frxEditMemo.DFM */
-/* D:\Front\Source\Components\FastReport 4\Source\frxOLEEditor.DFM */
+/* D:\Front\Source\Components\FastReport 4\Source\frxEditFrame.DFM */
+/* D:\Front\Source\Components\FastReport 4\Source\frxCrossEditor.DFM */
+/* D:\Front\Source\Components\FastReport 4\Source\frxBarcodeEditor.DFM */
+/* D:\Front\Source\Components\FastReport 4\Source\frxRichEditor.DFM */
+/* c:\program files (x86)\embarcadero\rad studio\7.0\lib\TeeResou.res */
+/* c:\program files (x86)\embarcadero\rad studio\7.0\lib\ExtDlgs.res */
+/* c:\program files (x86)\embarcadero\rad studio\7.0\lib\TeePenDlg.DFM */
+/* c:\program files (x86)\embarcadero\rad studio\7.0\lib\TeeBmps.res */
+/* c:\program files (x86)\embarcadero\rad studio\7.0\lib\TeeGalleryAlternate.DFM */
 /* c:\program files (x86)\embarcadero\rad studio\7.0\lib\Tabs.res */
+/* D:\Front\Source\Components\FastReport 4\Source\frxInsp.DFM */
+/* D:\Front\Source\Components\FastReport 4\Source\frxChartEditor.DFM */
 /* D:\Front\Source\Components\FastReport 4\Source\frxEvaluateForm.DFM */
 /* D:\Front\Source\Components\FastReport 4\Source\frxWatchForm.DFM */
-/* D:\Front\Source\Components\FastReport 4\Source\frxPopupForm.DFM */
 /* D:\Front\Source\Components\FastReport 4\Source\frxDataTree.DFM */
-/* D:\Front\Source\Components\FastReport 4\Source\frxInsp.DFM */
 /* D:\Front\Source\Components\FastReport 4\Source\frxDesgnWorkspace.res */
 /* D:\Front\Source\Components\FastReport 4\Source\frxConnItemEdit.dfm */
 /* D:\Front\Source\Components\FastReport 4\Source\frxConnEditor.DFM */
@@ -1653,7 +1671,6 @@ END
 /* D:\Front\Source\Components\FastReport 4\Source\frxStdWizard.DFM */
 /* D:\Front\Source\Components\FastReport 4\Source\frxStdWizard.RES */
 /* D:\Front\Source\Components\FastReport 4\Source\frxNewItem.DFM */
-/* D:\Front\Source\Components\FastReport 4\Source\frxEditFrame.DFM */
 /* D:\Front\Source\Components\FastReport 4\Source\frxEditStyle.DFM */
 /* D:\Front\Source\Components\FastReport 4\Source\frxEditExpr.DFM */
 /* D:\Front\Source\Components\FastReport 4\Source\frxEditStrings.DFM */
@@ -1668,24 +1685,7 @@ END
 /* D:\Front\Source\Components\FastReport 4\Source\frxReportTree.DFM */
 /* D:\Front\Source\Components\FastReport 4\Source\frxDesgn.DFM */
 /* D:\Front\Source\Components\FastReport 4\Source\frxDesgn.RES */
-/* c:\program files (x86)\embarcadero\rad studio\7.0\lib\TeeResou.res */
-/* c:\program files (x86)\embarcadero\rad studio\7.0\lib\ExtDlgs.res */
-/* c:\program files (x86)\embarcadero\rad studio\7.0\lib\TeePenDlg.DFM */
-/* c:\program files (x86)\embarcadero\rad studio\7.0\lib\TeeBmps.res */
-/* c:\program files (x86)\embarcadero\rad studio\7.0\lib\TeeGalleryAlternate.DFM */
-/* D:\Front\Source\Components\FastReport 4\Source\frxChartEditor.DFM */
-/* D:\Front\Source\Components\FastReport 4\Source\frxRichEditor.DFM */
-/* D:\Front\Source\Components\FastReport 4\Source\frxBarcodeEditor.DFM */
-/* D:\Front\Source\Components\FastReport 4\Source\frxCrossEditor.DFM */
-/* D:\Front\Source\Components\FastReport 4\Source\frxDMPExport.dfm */
-/* D:\Front\Source\Components\FastReport 4\Source\ExportPack\frxExportRTF.dfm */
-/* D:\Front\Source\Components\FastReport 4\Source\ExportPack\frxExportText.dfm */
-/* D:\Front\Source\Components\FastReport 4\Source\frxEditQueryParams.DFM */
-/* D:\Front\Source\Components\FastReport 4\Source\frxConnWizard.DFM */
-/* D:\Front\Source\Components\FastReport 4\Source\frxConnWizard.RES */
-/* D:\Front\Source\Components\FastReport 4\Source\frxEditSQL.DFM */
-/* D:\Front\Source\Components\FastReport 4\Source\frxEditAliases.DFM */
-/* D:\Front\Source\Components\FastReport 4\Source\frxEditMD.DFM */
+/* D:\Front\Source\Components\FastReport 4\Source\frxOLEEditor.DFM */
 /* EditReportForm_Unit.dfm */
 /* AddUserForm_unit.dfm */
 /* AdminForm_Unit.dfm */
@@ -1698,7 +1698,8 @@ END
 /* DiscountTypeForm_Unit.dfm */
 /* PercOrCardForm_Unit.dfm */
 /* PayForm_Unit.dfm */
-/* SellParamForm_Unit.dfm */
+/* D:\Front\Source\PersonalCardForm_Unit.dfm */
+/* D:\Front\Source\SellParamForm_Unit.dfm */
 /* RKCardCodeForm_Unit.dfm */
 /* Modification_Unit.dfm */
 /* DeleteOrderLine_unit.dfm */

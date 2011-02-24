@@ -16,7 +16,8 @@ const
   mn_nalDBID = 354772515;
   mn_beznalXID = 147142771;
   mn_beznalDBID = 362821871;
-
+  mn_personalcardXID = 147733997;
+  mn_personalcardDBID = 1604829035;
 
 type
   TSellParamForm = class(TBaseFrontForm)
@@ -38,6 +39,7 @@ type
     actDeletePay: TAction;
     btnDelPay: TAdvSmoothButton;
     DBAdvGrMain: TDBAdvGrid;
+    btnPersonalCard: TAdvSmoothToggleButton;
     procedure edMainKeyPress(Sender: TObject; var Key: Char);
     procedure edMainChange(Sender: TObject);
     procedure btnCashPayClick(Sender: TObject);
@@ -51,6 +53,7 @@ type
     procedure actDeletePayExecute(Sender: TObject);
     procedure DBAdvGrMainFooterCalc(Sender: TObject; ACol, ARow: Integer;
       var Value: String);
+    procedure btnPersonalCardClick(Sender: TObject);
   private
     FFrontBase: TFrontBase;
     // сумма к оплате
@@ -67,6 +70,8 @@ type
     FInBrowse: Boolean;
     FNalID: Integer;
     FBezNalID: Integer;
+    FPersonalCardID: Integer;
+    FPersonalCardKey: Integer;
     FCurrentPayType: Integer;
     FCurrentPayName: String;
     FNoFiscal: Integer;
@@ -75,6 +80,8 @@ type
     FDocLine: TkbmMemTable;
     FPayType: Integer;
     dsPayLine: TkbmMemTable;
+    FIsValidPayment: Boolean;
+    FNoFiscalPayment: Boolean;
 
     procedure SetSumToPay(const Value: Currency);
     procedure SetFiscalRegister(const Value: TFiscalRegister);
@@ -102,7 +109,7 @@ var
 implementation
 
 uses
-  PayForm_Unit, TaskDialog, Report_Unit;
+  PayForm_Unit, TaskDialog, Report_Unit, PersonalCardForm_Unit;
 
 {$R *.dfm}
 
@@ -112,12 +119,17 @@ uses
 procedure TSellParamForm.CalcSums;
 var
   SavePlace: TBookmark;
+  FFirst: Boolean;
 begin
+  FIsValidPayment := True;
+  FFirst := True;
+
   with FSums do
   begin
     FCashSum := 0;
     FCardSum := 0;
     FCreditSum := 0;
+    FPersonalCardSum := 0;
   end;
 
   FInBrowse := True;
@@ -135,7 +147,22 @@ begin
             FSums.FCardSum := FSums.FCardSum + dsPayLine.FieldByName('SUM').AsInteger;
           cn_paytype_noncash: //безнал (кредит)
             FSums.FCreditSum := FSums.FCreditSum + dsPayLine.FieldByName('SUM').AsInteger;
+          cn_paytype_personalcard:
+            FSums.FPersonalCardSum := FSums.FPersonalCardSum + dsPayLine.FieldByName('SUM').AsInteger;
         end;
+        // проверка на то, что бы фискальные оплаты не были с нефискальными
+        if FFirst then
+        begin
+          FIsValidPayment := True;
+          FNoFiscalPayment := (dsPayLine.FieldByName('USR$NOFISCAL').AsInteger = 1);
+        end else
+        begin
+          if FNoFiscalPayment <> (dsPayLine.FieldByName('USR$NOFISCAL').AsInteger = 1) then
+            FIsValidPayment := False;
+
+        end;
+        FFirst := False;
+
         dsPayLine.Next;
       end;
       dsPayLine.GotoBookmark(SavePlace);
@@ -166,6 +193,7 @@ begin
   dsPayLine.FieldDefs.Clear;
   dsPayLine.FieldDefs.Add('USR$NAME', ftString, 60);
   dsPayLine.FieldDefs.Add('USR$PAYTYPEKEY', ftInteger, 0);
+  dsPayLine.FieldDefs.Add('USR$PERSONALCARDKEY', ftInteger, 0);
   dsPayLine.FieldDefs.Add('USR$NOFISCAL', ftInteger, 0);
   dsPayLine.FieldDefs.Add('SUM', ftFloat, 0);
   dsPayLine.FieldDefs.Add('PAYTYPE', ftInteger, 0);
@@ -179,6 +207,8 @@ begin
   Assert(FNalID <> -1, 'Invalid RUID');
   FBezNalID := FFrontBase.GetIDByRUID(mn_beznalXID, mn_beznalDBID);
   Assert(FBezNalID <> -1, 'Invalid RUID');
+  FPersonalCardID := FFrontBase.GetIDByRUID(mn_personalcardXID, mn_personalcardDBID);
+  Assert(FPersonalCardID <> -1, 'Invalid RUID');
 
   btnCashPay.Down := True;
   FCurrentPayType := FFrontBase.GetIDByRUID(mn_RUBpaytypeXID, mn_RUBpaytypeDBID);
@@ -225,6 +255,7 @@ begin
           dsPayLine.FieldByName('USR$NAME').AsString := FCurrentPayName;
           dsPayLine.FieldByName('USR$NOFISCAL').AsInteger := FNoFiscal;
           dsPayLine.FieldByName('PAYTYPE').AsInteger := FPayType;
+          dsPayLine.FieldByName('USR$PERSONALCARDKEY').AsInteger := FPersonalCardKey;
           dsPayLine.Post;
         end;
       end else
@@ -246,6 +277,7 @@ begin
           dsPayLine.FieldByName('USR$NAME').AsString := FCurrentPayName;
           dsPayLine.FieldByName('USR$NOFISCAL').AsInteger := FNoFiscal;
           dsPayLine.FieldByName('PAYTYPE').AsInteger := FPayType;
+          dsPayLine.FieldByName('USR$PERSONALCARDKEY').AsInteger := FPersonalCardKey;
           dsPayLine.Post;
         end;
       end;
@@ -267,6 +299,7 @@ procedure TSellParamForm.btnCashPayClick(Sender: TObject);
 begin
   if TAdvSmoothToggleButton(Sender).Down then
   begin
+    FPersonalCardKey := -1;
     FCurrentPayType := FFrontBase.GetIDByRUID(mn_RUBpaytypeXID, mn_RUBpaytypeDBID);
     FCurrentPayName := 'Рубли';
     FNoFiscal := 0;
@@ -274,6 +307,36 @@ begin
     edMain.Text := '';
   end;
   Assert(FCurrentPayType <> -1, 'Invalid RUID');
+end;
+
+procedure TSellParamForm.btnPersonalCardClick(Sender: TObject);
+var
+  FForm: TPersonalCardForm;
+begin
+  if TAdvSmoothToggleButton(Sender).Down = False then
+    TAdvSmoothToggleButton(Sender).Down := True;
+
+  FForm := TPersonalCardForm.Create(nil);
+  FForm.FrontBase := FFrontBase;
+  FForm.PersonalCardID := FPersonalCardID;
+  try
+    FForm.ShowModal;
+    if FForm.ModalResult = mrOK then
+    begin
+      FCurrentPayType := FPersonalCardID;
+      FCurrentPayName := 'Персональная карта';
+      FPayType := cn_paytype_personalcard;
+      FPersonalCardKey := FForm.HeaderTable.FieldByName('ID').AsInteger;
+      FNoFiscal := FForm.HeaderTable.FieldByName('USR$NOFISCAL').AsInteger;
+      if edMain.Text = '0' then
+        edMain.Text := ''
+      else
+        edMain.Text := '0';
+    end else
+      PrevSettings(FPayType);
+  finally
+    FForm.Free;
+  end;
 end;
 
 procedure TSellParamForm.btnBeznalPayClick(Sender: TObject);
@@ -289,6 +352,7 @@ begin
     FForm.ShowModal;
     if FForm.ModalResult = mrOK then
     begin
+      FPersonalCardKey := -1;
       FCurrentPayType := FForm.PayFormDataSet.FieldByName('USR$PAYTYPEKEY').AsInteger;
       FCurrentPayName := FForm.PayFormDataSet.FieldByName('USR$NAME').AsString;
       FNoFiscal := FForm.PayFormDataSet.FieldByName('USR$NOFISCAL').AsInteger;
@@ -323,6 +387,7 @@ begin
     FForm.ShowModal;
     if FForm.ModalResult = mrOK then
     begin
+      FPersonalCardKey := -1;
       FCurrentPayType := FForm.PayFormDataSet.FieldByName('USR$PAYTYPEKEY').AsInteger;
       FCurrentPayName := FForm.PayFormDataSet.FieldByName('USR$NAME').AsString;
       FNoFiscal := FForm.PayFormDataSet.FieldByName('USR$NOFISCAL').AsInteger;
@@ -378,6 +443,16 @@ begin
     AdvTaskMessageDlg('Внимание', 'Сумма оплаты по безналичному расчету превышает сумму чека!', mtWarning, [mbOK], 0);
     exit;
   end;
+  if ((FSums.FPersonalCardSum > 0) and ((FSums.FCardSum + FSums.FCreditSum + FSums.FCreditSum) > 0)) then
+  begin
+    AdvTaskMessageDlg('Внимание', 'Не может быть смешанной оплаты при оплате персональной карточкой!', mtWarning, [mbOK], 0);
+    exit;
+  end;
+  if not FIsValidPayment then
+  begin
+    AdvTaskMessageDlg('Внимание', 'Не может быть комбинации фискальной и не фискальной оплаты!', mtWarning, [mbOK], 0);
+    exit;
+  end;
   FSums.FChangeSum := FChange;
 
   FFrontBase.Display.Payed;
@@ -385,7 +460,10 @@ begin
   begin
     FInBrowse := True;
     try
-      FFiscalRegiter.InitFiscalRegister(FFrontBase.CashCode);
+      if FNoFiscalPayment then
+        FFiscalRegiter.InitFiscalRegister(4)
+      else
+        FFiscalRegiter.InitFiscalRegister(FFrontBase.CashCode);
       FFiscalRegiter.OpenDrawer;
       if FFiscalRegiter.PrintCheck(Doc, DocLine, dsPayLine) then
       begin
@@ -455,6 +533,7 @@ begin
       FCurrentPayType := dsPayLine.FieldByName('USR$PAYTYPEKEY').AsInteger;
       FCurrentPayName := dsPayLine.FieldByName('USR$NAME').AsString;
       FPayType := dsPayLine.FieldByName('PAYTYPE').AsInteger;
+      FPersonalCardKey := dsPayLine.FieldByName('USR$PERSONALCARDKEY').AsInteger;
     end else
     begin
       FCurrentPayType := FFrontBase.GetIDByRUID(mn_RUBpaytypeXID, mn_RUBpaytypeDBID);
@@ -506,6 +585,9 @@ begin
        cn_paytype_noncash:
          btnBeznalPay.Down := True;
 
+       cn_paytype_personalcard:
+         btnPersonalCard.Down := True;
+
     else
       btnCashPay.Down := True;
     end;
@@ -528,6 +610,7 @@ begin
       FCurrentPayType := dsPayLine.FieldByName('USR$PAYTYPEKEY').AsInteger;
       FCurrentPayName := dsPayLine.FieldByName('USR$NAME').AsString;
       FPayType := dsPayLine.FieldByName('PAYTYPE').AsInteger;
+      FPersonalCardKey := dsPayLine.FieldByName('USR$PERSONALCARDKEY').AsInteger;
       PrevSettings(FPayType, False);
     finally
       FInDeleteOrUpdate := False;

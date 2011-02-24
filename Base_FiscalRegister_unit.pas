@@ -18,6 +18,7 @@ const
   cn_paytype_cash = 0;
   cn_paytype_credit = 1;
   cn_paytype_noncash = 2;
+  cn_paytype_personalcard = 3;
 
 type
   IBaseFiscalRegister = interface
@@ -102,6 +103,8 @@ type
     FCreditSum: Currency;
     // сумма сдачи
     FChangeSum: Currency;
+    // по личной карточке
+    FPersonalCardSum: Currency;
   end;
 
 implementation
@@ -180,7 +183,8 @@ begin
     while not PayLine.Eof do
     begin
       FFrontBase.SavePayment(FFrontBase.ContactKey, Doc.FieldByName('ID').AsInteger,
-        PayLine.FieldByName('USR$PAYTYPEKEY').AsInteger, PayLine.FieldByName('SUM').AsCurrency);
+        PayLine.FieldByName('USR$PAYTYPEKEY').AsInteger,
+        PayLine.FieldByName('USR$PERSONALCARDKEY').AsInteger, PayLine.FieldByName('SUM').AsCurrency);
 
       PayLine.Next;
     end;
