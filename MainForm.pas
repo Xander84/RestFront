@@ -71,7 +71,6 @@ type
     pcMenu: TAdvPageControl;
     tsMenu: TAdvTabSheet;
     tsGroup: TAdvTabSheet;
-    Panel3: TAdvPanel;
     pcExtraButton: TAdvPageControl;
     tsMainButton: TAdvTabSheet;
     tsFunctionButton: TAdvTabSheet;
@@ -130,8 +129,6 @@ type
     btnOKPass: TAdvSmoothButton;
     btnScrollDown: TAdvSmoothButton;
     btnScrollUp: TAdvSmoothButton;
-    btnOK: TAdvSmoothButton;
-    btnCancel: TAdvSmoothButton;
     btnExitWindows: TAdvSmoothButton;
     btnRestartRest: TAdvSmoothButton;
     btnGoodUp: TAdvSmoothButton;
@@ -178,6 +175,13 @@ type
     tsTablePage: TAdvTabSheet;
     sbTable: TScrollBox;
     btnCheckRegister: TAdvSmoothButton;
+    btnShowKeyboard2: TAdvSmoothButton;
+    btnCancel1: TAdvSmoothButton;
+    btOK1: TAdvSmoothButton;
+    btnOK2: TAdvSmoothButton;
+    btnCancel2: TAdvSmoothButton;
+    btnOK3: TAdvSmoothButton;
+    btnCancel3: TAdvSmoothButton;
 
     //Проверка введёного пароля
     procedure actPassEnterExecute(Sender: TObject);
@@ -1317,7 +1321,6 @@ begin
         FFrontBase.ClearCache;
       end;
 
-
     ManagerInfo:
       begin
         dsHeaderInfo.DataSet := nil;
@@ -1330,23 +1333,27 @@ begin
 
     MenuInfo:
       begin
-        if not FOrderDataSet.IsEmpty then
-          if FFrontBase.UnLockUserOrder(FOrderDataSet.FieldByName('ID').AsInteger) then
-          begin
+        if AdvTaskMessageDlg('Внимание', 'Выйти из заказа?',
+          mtInformation, [mbYes, mbNo], 0) = IDYES then
+        begin
+          if not FOrderDataSet.IsEmpty then
+            if FFrontBase.UnLockUserOrder(FOrderDataSet.FieldByName('ID').AsInteger) then
+            begin
+              if FPrevFormState = ManagerPage then
+                CreateManagerPage
+              else if FPrevFormState = KassirInfo then
+                CreateKassirPage
+              else
+                FormState := OrderMenu;
+            end
+          else begin
             if FPrevFormState = ManagerPage then
               CreateManagerPage
             else if FPrevFormState = KassirInfo then
               CreateKassirPage
             else
               FormState := OrderMenu;
-          end
-        else begin
-          if FPrevFormState = ManagerPage then
-            CreateManagerPage
-          else if FPrevFormState = KassirInfo then
-            CreateKassirPage
-          else
-            FormState := OrderMenu;
+          end;
         end;
       end;
   end;
@@ -1893,6 +1900,7 @@ begin
           pnlMainGood.Visible := False;
           tsManagerPage.Visible := False;
           tsTablePage.Visible := False;
+          pnlRight.Visible := False;
           RemoveGoodButton;
           RemoveGroupButton;
           RemoveOrderButton;
@@ -1943,6 +1951,7 @@ begin
     MenuInfo:
       begin
         FFormState := Value;
+        pnlRight.Visible := True;
         pcExtraButton.ActivePage := tsFunctionButton;
         pcOrder.ActivePage := tsOrderInfo;
         pnlChoose.Visible := True;
@@ -1953,7 +1962,7 @@ begin
         FFormState := Value;
         pcMain.ActivePage := tsManagerInfo;
         pcExtraButton.ActivePage := tsManagerInfoButton;
-
+        pnlRight.Visible := False;
         //1. создаем структуры шапки и позиции
         if not Assigned(FHeaderInfoTable) then
           FHeaderInfoTable := TkbmMemTable.Create(nil);
@@ -1978,6 +1987,7 @@ begin
           RemoveUserButton;
           RemoveUserOrderButton;
 
+          pnlRight.Visible := False;
           btnPredCheck.Visible := False;
           FWithPreCheck := False;
           if FWithPreCheck then
@@ -1987,7 +1997,7 @@ begin
 
           FFormState := Value;
           pcOrder.ActivePage := tsManagerPage;
-          pcExtraButton.ActivePage := tsEmpty;  //tsOrderButton;
+          pcExtraButton.ActivePage := tsEmpty;
 
           btnCashForm.Visible := True;
           btnAdminOptions.Visible := True;
@@ -2025,6 +2035,7 @@ begin
           pcMenu.ActivePage := tsMenu;
           pnlChoose.Visible := False;
           pnlMainGood.Visible := False;
+          pnlRight.Visible := False;
 
           btnPredCheck.Visible := True;
           if FWithPreCheck then
@@ -2068,6 +2079,7 @@ begin
           pcMenu.ActivePage := tsMenu;
           pnlChoose.Visible := False;
           pnlMainGood.Visible := False;
+          pnlRight.Visible := False;
 
           btnPredCheck.Visible := True;
           if FWithPreCheck then
