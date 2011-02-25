@@ -177,8 +177,6 @@ type
     btnCheckRegister: TAdvSmoothButton;
     btnShowKeyboard2: TAdvSmoothButton;
     btnCancel1: TAdvSmoothButton;
-    btOK1: TAdvSmoothButton;
-    btnOK2: TAdvSmoothButton;
     btnCancel2: TAdvSmoothButton;
     btnOK3: TAdvSmoothButton;
     btnCancel3: TAdvSmoothButton;
@@ -437,13 +435,20 @@ begin
 //  btnBackToMenu.Left := btnBackToMenu.Left + 4;
   {$ENDIF}
 
+  {$IFNDEF DEBUG}
+  WindowState := wsMaximized;
+  BorderIcons := BorderIcons + [biMaximize];
+  {$ENDIF}
+
   SetupGrid(DBGrMain);
   SetupGrid(DBGrInfoHeader);
   SetupGrid(DBGrInfoLine);
 
+  {$IFDEF DEBUG}
   Height := cn_Height;
   Width := cn_Width;
   AdjustResolution(Self);
+  {$ENDIF}
 
   //восстанавливаем начальные размеры
   btnNewOrder.Top := btnFirstTop;
@@ -2692,6 +2697,9 @@ var
   FUserInfo: TUserInfo;
   FForm: TAdminForm;
 begin
+  if not FFrontBase.Options.NoPassword then
+    tmrClose.Enabled := False;
+
   FUserInfo := FFrontBase.CheckUserPasswordWithForm;
   if FUserInfo.CheckedUserPassword then
   begin
@@ -2708,6 +2716,8 @@ begin
       FForm.Free;
     end;
   end;
+
+  tmrClose.Enabled := not FFrontBase.Options.NoPassword;
 end;
 
 procedure TRestMainForm.actAllChecksExecute(Sender: TObject);
@@ -2788,6 +2798,9 @@ var
   FUserInfo: TUserInfo;
   FForm: TCashForm;
 begin
+  if not FFrontBase.Options.NoPassword then
+    tmrClose.Enabled := False;
+
   FUserInfo := FFrontBase.CheckUserPasswordWithForm;
   if FUserInfo.CheckedUserPassword then
   begin
@@ -2807,6 +2820,8 @@ begin
       FForm.Free;
     end;
   end;
+
+  tmrClose.Enabled := (not FFrontBase.Options.NoPassword);
 end;
 
 procedure TRestMainForm.actGoodUpUpdate(Sender: TObject);
