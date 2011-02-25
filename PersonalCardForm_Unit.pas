@@ -75,7 +75,7 @@ end;
 procedure TPersonalCardForm.usrg_lblCardCodeKeyUp(Sender: TObject;
   var Key: Word; Shift: TShiftState);
 begin
-  if (Key = 13) then
+  if (Key = VK_RETURN) then
   begin
     if FFrontBase.GetPersonalCardInfo(FHeaderTable, usrg_lblCardCode.Text, FPersonalCardID) then
     begin

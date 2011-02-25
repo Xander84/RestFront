@@ -21,6 +21,20 @@ const
   cn_paytype_personalcard = 3;
 
 type
+  // структура оплаты
+  TSaleSums = packed record
+    // сумма наличных
+    FCashSum: Currency;
+    // сумма по карточке
+    FCardSum: Currency;
+    // сумма по безналу
+    FCreditSum: Currency;
+    // сумма сдачи
+    FChangeSum: Currency;
+    // по личной карточке
+    FPersonalCardSum: Currency;
+  end;
+
   IBaseFiscalRegister = interface
   ['{308C2D25-B5F7-4801-B8E4-F09E92B7AFBA}']
     // Проверка устройства
@@ -28,7 +42,7 @@ type
     // Инициализация
     function Init: Boolean;
     // Печать чека
-    function PrintCheck(const Doc, DocLine, PayLine: TkbmMemTable): Boolean;
+    function PrintCheck(const Doc, DocLine, PayLine: TkbmMemTable; const FSums: TSaleSums): Boolean;
 
     // Установка рабочей базы
     procedure SetFrontBase(const Value: TFrontBase);
@@ -71,7 +85,7 @@ type
   public
     function CheckDeviceInfo: Boolean;
     function Init: Boolean;
-    function PrintCheck(const Doc, DocLine, PayLine: TkbmMemTable): Boolean;
+    function PrintCheck(const Doc, DocLine, PayLine: TkbmMemTable; const FSums: TSaleSums): Boolean;
 
     function PrintZ1ReportWithCleaning: Boolean;
     function PrintZ2ReportWithCleaning: Boolean;
@@ -91,20 +105,6 @@ type
 
     property Self: Integer read Get_Self;
     property FrontBase: TFrontBase read GetFrontBase write SetFrontBase;
-  end;
-
-  // структура оплаты
-  TSaleSums = packed record
-    // сумма наличных
-    FCashSum: Currency;
-    // сумма по карточке
-    FCardSum: Currency;
-    // сумма по безналу
-    FCreditSum: Currency;
-    // сумма сдачи
-    FChangeSum: Currency;
-    // по личной карточке
-    FPersonalCardSum: Currency;
   end;
 
 implementation
@@ -166,7 +166,7 @@ begin
 end;
 
 function TAbstractFiscalRegister.PrintCheck(const Doc, DocLine,
-  PayLine: TkbmMemTable): Boolean;
+  PayLine: TkbmMemTable; const FSums: TSaleSums): Boolean;
 begin
   if Doc.State <> dsEdit then
     Doc.Edit;

@@ -438,7 +438,7 @@ begin
     exit;
   end;
   CalcSums;
-  if ((FSums.FCardSum + FSums.FCreditSum) > FSumToPay) then
+  if ((FSums.FCardSum + FSums.FCreditSum) > FSumToPay) or (FSums.FPersonalCardSum > FSumToPay) then
   begin
     AdvTaskMessageDlg('Внимание', 'Сумма оплаты по безналичному расчету превышает сумму чека!', mtWarning, [mbOK], 0);
     exit;
@@ -465,7 +465,7 @@ begin
       else
         FFiscalRegiter.InitFiscalRegister(FFrontBase.CashCode);
       FFiscalRegiter.OpenDrawer;
-      if FFiscalRegiter.PrintCheck(Doc, DocLine, dsPayLine) then
+      if FFiscalRegiter.PrintCheck(Doc, DocLine, dsPayLine, FSums) then
       begin
         if FFrontBase.Options.PrintCopyCheck then
         begin

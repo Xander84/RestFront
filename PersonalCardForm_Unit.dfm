@@ -60,8 +60,6 @@ object PersonalCardForm: TPersonalCardForm
     StatusBar.ColorTo = 16374724
     StatusBar.GradientDirection = gdVertical
     Styler = FrontData.FrontPanelStyler
-    ExplicitWidth = 380
-    ExplicitHeight = 351
     FullHeight = 0
     object Label1: TLabel
       Left = 16

@@ -34,7 +34,7 @@ type
     procedure EndDay;
     procedure EndSession;
 
-    function PrintCheck(const Doc, DocLine, PayLine: TkbmMemTable): Boolean;      
+    function PrintCheck(const Doc, DocLine, PayLine: TkbmMemTable; const FSums: TSaleSums): Boolean;
 
     property FrontBase: TFrontBase read FFrontBase write FFrontBase;
     property FiscalRegister: IBaseFiscalRegister read FFiscalRegister;
@@ -133,7 +133,7 @@ begin
       end;
 
     else
-      AdvTaskMessageDlg('Внимание', 'Данный тип кассы не поддерживается', mtWarning, [mbOK], 0);
+      raise Exception.Create('Данный тип кассы не поддерживается');
     end;
 
     FInit := True;  
@@ -160,10 +160,10 @@ begin
 end;
 
 function TFiscalRegister.PrintCheck(const Doc, DocLine,
-  PayLine: TkbmMemTable): Boolean;
+  PayLine: TkbmMemTable; const FSums: TSaleSums): Boolean;
 begin
   if Assigned(FFiscalRegister) then
-    Result := FFiscalRegister.PrintCheck(Doc, DocLine, PayLine)
+    Result := FFiscalRegister.PrintCheck(Doc, DocLine, PayLine, FSums)
   else
 { TODO : Подумать над результатом }
     Result := True;

@@ -27,7 +27,7 @@ object ChooseDiscountCard: TChooseDiscountCard
     Color = 16640730
     TabOrder = 0
     UseDockManager = True
-    Version = '1.9.0.0'
+    Version = '2.0.1.0'
     BorderColor = clGray
     Caption.Color = 14059353
     Caption.ColorTo = 9648131
@@ -39,7 +39,7 @@ object ChooseDiscountCard: TChooseDiscountCard
     Caption.GradientDirection = gdVertical
     Caption.Indent = 2
     Caption.ShadeLight = 255
-    CollapsColor = clHighlight
+    CollapsColor = clNone
     CollapsDelay = 0
     ColorTo = 14986888
     ShadowColor = clBlack
@@ -59,7 +59,7 @@ object ChooseDiscountCard: TChooseDiscountCard
     object Label1: TLabel
       Left = 16
       Top = 19
-      Width = 42
+      Width = 40
       Height = 23
       Caption = #1050#1086#1076':'
       Font.Charset = DEFAULT_CHARSET
@@ -156,7 +156,7 @@ object ChooseDiscountCard: TChooseDiscountCard
     object Label5: TLabel
       Left = 16
       Top = 260
-      Width = 170
+      Width = 169
       Height = 23
       Caption = #1054#1087#1083#1072#1090#1080#1090#1100' '#1073#1086#1085#1091#1089#1086#1084':'
       Font.Charset = DEFAULT_CHARSET
@@ -230,7 +230,7 @@ object ChooseDiscountCard: TChooseDiscountCard
       Color = 15195349
       ParentFont = False
       TabOrder = 1
-      Version = '1.6.5.2'
+      Version = '1.6.9.0'
       OnClick = btnChooseBonusClick
     end
     object btnCancel: TAdvSmoothButton
@@ -261,7 +261,7 @@ object ChooseDiscountCard: TChooseDiscountCard
       Color = 15195349
       ParentFont = False
       TabOrder = 2
-      Version = '1.6.5.2'
+      Version = '1.6.9.0'
       OnClick = btnCancelClick
     end
     object btnOK: TAdvSmoothButton
@@ -292,7 +292,7 @@ object ChooseDiscountCard: TChooseDiscountCard
       Color = 15195349
       ParentFont = False
       TabOrder = 3
-      Version = '1.6.5.2'
+      Version = '1.6.9.0'
       OnClick = btnOKClick
     end
     object btnDelete: TAdvSmoothButton
@@ -323,7 +323,7 @@ object ChooseDiscountCard: TChooseDiscountCard
       Color = 15195349
       ParentFont = False
       TabOrder = 4
-      Version = '1.6.5.2'
+      Version = '1.6.9.0'
       OnClick = btnDeleteClick
     end
   end
@@ -339,7 +339,7 @@ object ChooseDiscountCard: TChooseDiscountCard
     LoadedCompletely = False
     SavedCompletely = False
     FilterOptions = []
-    Version = '5.52'
+    Version = '6.30'
     LanguageID = 0
     SortID = 0
     SubLanguageID = 1

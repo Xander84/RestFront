@@ -25,7 +25,7 @@ type
 
     function CheckDeviceInfo: Boolean;
     function Init: Boolean;
-    function PrintCheck(const Doc, DocLine, PayLine: TkbmMemTable): Boolean;
+    function PrintCheck(const Doc, DocLine, PayLine: TkbmMemTable; const FSums: TSaleSums): Boolean;
 
     function PrintZ1ReportWithCleaning: Boolean;
     function PrintZ2ReportWithCleaning: Boolean;
@@ -314,7 +314,8 @@ begin
   end;
 end;
 
-function TSpark617Register.PrintCheck(const Doc, DocLine, PayLine: TkbmMemTable): Boolean;
+function TSpark617Register.PrintCheck(const Doc, DocLine, PayLine: TkbmMemTable;
+  const FSums: TSaleSums): Boolean;
 var
   Res: Integer;
   DocNumber, WaiterName: String;

@@ -189,7 +189,6 @@ var
   Str: TStream;
   BaseQueryList: TgsQueryList;
   Header, Sells: TgsDataSet;
-  I: Integer;
   FrxDBDataset, FrxDBDataset1: TfrxDBDataset;
 begin
   Assert(Assigned(FFrontBase), 'FrontBase not assigned');

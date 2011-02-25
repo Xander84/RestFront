@@ -158,7 +158,7 @@ end;
 procedure TChooseDiscountCard.usrg_lblCardCodeKeyUp(Sender: TObject;
   var Key: Word; Shift: TShiftState);
 begin
-  if (Key = 13) then
+  if (Key = VK_RETURN) then
   begin
     if FFrontBase.GetDiscountCardInfo(memTable, 0, FFrontBase.GetLogicDate, usrg_lblCardCode.Text) then
     begin

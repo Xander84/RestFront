@@ -24,7 +24,7 @@ type
 
     function CheckDeviceInfo: Boolean;
     function Init: Boolean;
-    function PrintCheck(const Doc, DocLine, PayLine: TkbmMemTable): Boolean;
+    function PrintCheck(const Doc, DocLine, PayLine: TkbmMemTable; const FSums: TSaleSums): Boolean;
 
     function PrintZ1ReportWithCleaning: Boolean;
     function PrintZ2ReportWithCleaning: Boolean;
@@ -174,7 +174,7 @@ begin
 end;
 
 function TShtrihFR.PrintCheck(const Doc, DocLine,
-  PayLine: TkbmMemTable): Boolean;
+  PayLine: TkbmMemTable; const FSums: TSaleSums): Boolean;
 var
   Res: Integer;
   DocNumber, WaiterName: String;
