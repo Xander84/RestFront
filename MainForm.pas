@@ -393,7 +393,7 @@ type
     procedure OnAfterDelete(DataSet: TDataSet);
     procedure AfterLoadManagerInfo;
   public
-    //
+    procedure AfterConstruction; override;
   end;
 
 var
@@ -433,11 +433,6 @@ procedure TRestMainForm.FormCreate(Sender: TObject);
 begin
   {$IFDEF NEW_TABCONTROL}
 //  btnBackToMenu.Left := btnBackToMenu.Left + 4;
-  {$ENDIF}
-
-  {$IFNDEF DEBUG}
-  WindowState := wsMaximized;
-  BorderIcons := BorderIcons + [biMaximize];
   {$ENDIF}
 
   SetupGrid(DBGrMain);
@@ -2303,6 +2298,24 @@ begin
   FFrontBase.GetOrdersInfo(FHeaderInfoTable, FLineInfoTable, xDateBegin.Date,
     xDateEnd.Date, False, False, False, True);
   AfterLoadManagerInfo;
+end;
+
+procedure TRestMainForm.AfterConstruction;
+{$IFNDEF DEBUG}
+var
+  SysMenu: HMenu;
+{$ENDIF}
+begin
+  inherited;
+
+  {$IFNDEF DEBUG}
+  WindowState := wsMaximized;
+  BorderIcons := BorderIcons + [biSystemMenu, biMaximize];
+  SysMenu := GetSystemMenu(Handle, False);
+  Windows.EnableMenuItem(SysMenu, SC_CLOSE, MF_DISABLED or MF_GRAYED);
+  GetSystemMenu(Handle, False);
+  Perform(WM_NCPAINT, Handle, 0);
+  {$ENDIF}
 end;
 
 procedure TRestMainForm.AfterLoadManagerInfo;

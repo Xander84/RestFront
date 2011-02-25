@@ -2022,6 +2022,8 @@ object RestMainForm: TRestMainForm
           ImageIndex = 2
           TabColor = clBtnFace
           TabColorTo = clNone
+          ExplicitLeft = -5
+          ExplicitTop = 15
           DesignSize = (
             80
             699)
