@@ -262,11 +262,11 @@ begin
           Sells.FieldByName('NOWTIME').AsDateTime := Now;
           Sells.Post;
         end;
-        if FCreditSum > 0 then
+        if (FCreditSum + FPersonalCardSum) > 0 then
         begin
           Sells.Append;
           Sells.FieldByName('PayType').AsString := 'Безналичные';
-          Sells.FieldByName('PaySum').AsString := CurrToStr(FCreditSum);
+          Sells.FieldByName('PaySum').AsString := CurrToStr(FCreditSum + FPersonalCardSum);
           Sells.FieldByName('ChangeSum').AsString := CurrToStr(FChangeSum);
           Sells.FieldByName('NOW').AsDateTime := Date;
           Sells.FieldByName('NOWTIME').AsDateTime := Now;
