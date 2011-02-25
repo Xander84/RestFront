@@ -329,20 +329,9 @@ begin
         if Doc.FieldByName('usr$timecloseorder').IsNull then
           Doc.FieldByName('usr$timecloseorder').AsDateTime := Now;
 
-        PayLine.DisableControls;
-        try
-          PayLine.First;
-          while not PayLine.Eof do
-          begin
-            FFrontBase.SavePayment(FFrontBase.ContactKey, Doc.FieldByName('ID').AsInteger,
-              PayLine.FieldByName('USR$PAYTYPEKEY').AsInteger,
-              PayLine.FieldByName('USR$PERSONALCARDKEY').AsInteger, PayLine.FieldByName('SUM').AsCurrency);
+        SavePayment(FFrontBase.ContactKey, Doc.FieldByName('ID').AsInteger,
+          PayLine, FFrontBase, FSums);
 
-            PayLine.Next;
-          end;
-        finally
-          PayLine.EnableControls;
-        end;
         Doc.Post;
       end;
     end;

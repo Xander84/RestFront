@@ -107,10 +107,46 @@ type
     property FrontBase: TFrontBase read GetFrontBase write SetFrontBase;
   end;
 
+  procedure SavePayment(const ContactKey, DocID: Integer; const PayLine: TkbmMemTable;
+    const FrontBase: TFrontBase; const FSums: TSaleSums);
+
 implementation
 
 uses
   SysUtils;
+
+procedure SavePayment(const ContactKey, DocID: Integer; const PayLine: TkbmMemTable;
+  const FrontBase: TFrontBase; const FSums: TSaleSums);
+var
+  FRubPayTypeKey: Integer;
+begin
+  FRubPayTypeKey := FrontBase.GetIDByRUID(mn_RUBpaytypeXID, mn_RUBpaytypeDBID);
+
+  PayLine.DisableControls;
+  try
+    PayLine.First;
+    try
+      while not PayLine.Eof do
+      begin
+        if PayLine.FieldByName('USR$PAYTYPEKEY').AsInteger <> FRubPayTypeKey then
+          FrontBase.SavePayment(ContactKey, DocID,
+            PayLine.FieldByName('USR$PAYTYPEKEY').AsInteger,
+            PayLine.FieldByName('USR$PERSONALCARDKEY').AsInteger, PayLine.FieldByName('SUM').AsCurrency)
+        else
+          FrontBase.SavePayment(ContactKey, DocID,
+            PayLine.FieldByName('USR$PAYTYPEKEY').AsInteger,
+            PayLine.FieldByName('USR$PERSONALCARDKEY').AsInteger, (PayLine.FieldByName('SUM').AsCurrency - FSums.FChangeSum));
+
+        PayLine.Next;
+      end;
+    except
+      on E: Exception do
+        raise Exception.Create('Ошибка при сохранении оплаты' + E.Message);
+    end;
+  finally
+    PayLine.EnableControls;
+  end;
+end;
 
 
 { TAbstractFiscalRegister }
@@ -177,20 +213,9 @@ begin
   if Doc.FieldByName('usr$timecloseorder').IsNull then
     Doc.FieldByName('usr$timecloseorder').AsDateTime := Now;
 
-  PayLine.DisableControls;
-  try
-    PayLine.First;
-    while not PayLine.Eof do
-    begin
-      FFrontBase.SavePayment(FFrontBase.ContactKey, Doc.FieldByName('ID').AsInteger,
-        PayLine.FieldByName('USR$PAYTYPEKEY').AsInteger,
-        PayLine.FieldByName('USR$PERSONALCARDKEY').AsInteger, PayLine.FieldByName('SUM').AsCurrency);
+  SavePayment(FFrontBase.ContactKey, Doc.FieldByName('ID').AsInteger,
+    PayLine, FFrontBase, FSums);
 
-      PayLine.Next;
-    end;
-  finally
-    PayLine.EnableControls;
-  end;
   Doc.Post;
 
   Result := True;

@@ -4,7 +4,7 @@ interface
 
 uses
   IBDatabase, Db, Classes, IBSQL, kbmMemTable, Base_Display_unit,
-  Pole_Display_Unit, IBQuery, IB, IBErrorCodes{, JclStrHashMap}, IBServices,
+  Pole_Display_Unit, IBQuery, IB, IBErrorCodes, JclStrHashMap, IBServices,
   obj_QueryList;
 
 const
@@ -236,6 +236,19 @@ type
     UserInGroup         : Integer;
   end;
 
+  TID = -1..MAXINT;
+
+  TRUID = record
+    XID: TID;
+    DBID: TID;
+  end;
+
+  TRUIDRec = record
+    ID: TID;
+    XID: TID;
+    DBID: TID;
+  end;
+
 {  TGoodItemCache = class
 
   public
@@ -276,6 +289,7 @@ type
     FQueryList: TgsQueryList;
 
 //    FGoodHashList: TStringHashMap;
+    CacheList: TStringHashMap;
 
     function GetDisplay: TDisplay;
     function GetCashCode: Integer;
@@ -328,6 +342,7 @@ type
     function GetModificationList(var MemTable: TkbmMemTable; const GoodKey: Integer; const ModifyGroupKey: Integer): Boolean;
 
     function GetIDByRUID(const XID: Integer; const DBID: Integer): Integer;
+    function GetRUIDRecByXID(const XID, DBID: TID): TRUIDRec;
     function GetNextOrderNum: Integer;
     function CheckCountOrderByResp(const RespID: Integer): Boolean;
 
@@ -555,6 +570,7 @@ begin
     raise;
   end;
 //  FGoodHashList := TStringHashMap.Create(CaseInSensitiveTraits, 512);
+  CacheList := TStringHashMap.Create(CaseSensitiveTraits, 1024);
 end;
 
 function TFrontBase.CreateNewOrder(var HeaderTable,
@@ -1010,6 +1026,7 @@ begin
 
   FQueryList.Free;
 //  FGoodHashList.Free;
+  CacheList.Free;
 
   inherited;
 end;
@@ -2268,24 +2285,88 @@ begin
   end;
 end;
 
+function RUIDToStr(const ARUID: TRUID): String;
+begin
+  with ARUID do
+    if (XID = -1) or (DBID = -1) then
+      Result := ''
+    else
+      Result := IntToStr(XID) + '_' + IntToStr(DBID);
+end;
+
+function StrToRUID(const AString: String): TRUID;
+var
+  P: Integer;
+begin
+  with Result do
+    if AString = '' then
+    begin
+      XID := -1;
+      DBID := -1;
+    end else begin
+      P := Pos('_', AString);
+      if P = 0 then
+        raise Exception.Create('Invalid RUID string')
+      else begin
+        XID := StrToIntDef(Copy(AString, 1, P - 1), -1);
+        DBID := StrToIntDef(Copy(AString, P + 1, 255), -1);
+        if (XID <= 0) or (DBID <= 0) then
+          raise Exception.Create('Invalid RUID string')
+      end;
+    end;
+end;
+
+function RUID(const XID, DBID: TID): TRUID;
+begin
+  Result.XID := XID;
+  Result.DBID := DBID;
+end;
+
 function TFrontBase.GetIDByRUID(const XID: Integer;
   const DBID: Integer): Integer;
+var
+  S: String;
+  RR: TRUIDRec;
 begin
-  Result := -1;
+  if (XID = -1) and (DBID = -1) then
+  begin
+    Result := -1;
+  end else
+  begin
+    S := RUIDToStr(RUID(XID, DBID));
+    if not CacheList.Find(S, Result) then
+    begin
+      RR := GetRUIDRecByXID(XID, DBID);
+      if RR.ID = -1 then
+        Result := -1
+      else begin
+        Result := RR.ID;
+        CacheList.Add(S, Result);
+      end;
+    end;
+  end;
+end;
 
+function TFrontBase.GetRUIDRecByXID(const XID, DBID: TID): TRUIDRec;
+begin
   FReadSQL.Close;
-  if not FReadSQL.Transaction.InTransaction then
-    FReadSQL.Transaction.StartTransaction;
   try
+    if not FReadSQL.Transaction.InTransaction then
+      FReadSQL.Transaction.StartTransaction;
+
     FReadSQL.SQL.Text := ' SELECT ID FROM gd_ruid WHERE xid= :xid and dbid = :dbid ' ;
     FReadSQL.ParamByName('xid').AsInteger := XID;
-    FReadSQL.ParamByName('DBid').AsInteger := DBID;
+    FReadSQL.ParamByName('dbid').AsInteger := DBID;
     FReadSQL.ExecQuery;
     if not FReadSQL.Eof then
-      Result := FReadSQL.FieldByname('ID').AsInteger;
-
+      Result.ID := FReadSQL.FieldByname('ID').AsInteger
+    else
+      Result.ID := -1;
+    Result.XID := XID;
+    Result.DBID := DBID;
   finally
-    FReadSQL.Transaction.Commit;
+    FReadSQL.Transaction.Commit;;
+    FReadSQL.Close;
   end;
 end;
 
