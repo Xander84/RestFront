@@ -1323,136 +1323,140 @@ begin
   end;
   FReadSQL.Close;
 
-  if not FReadSQL.Transaction.InTransaction then
-    FReadSQL.Transaction.StartTransaction;
-
   APost := HeaderTable.AfterPost;
   HeaderTable.AfterPost := nil;
 
   BPost := LineTable.BeforePost;
   LineTable.BeforePost := nil;
   try
-    FSQL := TIBSQL.Create(nil);
-    FSQL.Transaction := FReadSQL.Transaction;
-    FSQL.SQL.Text :=
-      ' SELECT CR.USR$MN_MODIFYKEY, m.USR$NAME, CR.USR$CLOSETIME ' +
-      ' FROM USR$CROSS509_157767346 CR ' +
-      ' LEFT JOIN usr$mn_modify m ON m.ID = CR.USR$MN_MODIFYKEY ' +
-      ' WHERE CR.USR$MN_ORDERLINEKEY = :line ';
-
     try
-      FReadSQL.SQL.Text := cst_OrderHeader;
-      FReadSQL.ParamByName('ID').AsInteger := OrderKey;
-      FReadSQL.ExecQuery;
-      while not FReadSQL.EOF do
-      begin
-        HeaderTable.Append;
-        HeaderTable.FieldByName('id').Value := FReadSQL.FieldByName('id').Value;
-        HeaderTable.FieldByName('number').Value := FReadSQL.FieldByName('number').Value;
-        HeaderTable.FieldByName('sumncu').Value := FReadSQL.FieldByName('sumncu').Value;
-        HeaderTable.FieldByName('usr$mn_printdate').Value := FReadSQL.FieldByName('usr$mn_printdate').Value;
-        HeaderTable.FieldByName('usr$sumncuwithdiscount').Value := FReadSQL.FieldByName('usr$sumncuwithdiscount').Value;
-        HeaderTable.FieldByName('usr$respkey').Value := FReadSQL.FieldByName('usr$respkey').Value;
-        HeaderTable.FieldByName('usr$guestcount').Value := FReadSQL.FieldByName('usr$guestcount').Value;
-        HeaderTable.FieldByName('usr$pay').Value := FReadSQL.FieldByName('usr$pay').Value;
-        HeaderTable.FieldByName('usr$timeorder').Value := FReadSQL.FieldByName('usr$timeorder').Value;
-        HeaderTable.FieldByName('usr$timecloseorder').Value := FReadSQL.FieldByName('usr$timecloseorder').Value;
-        HeaderTable.FieldByName('usr$logicdate').Value := FReadSQL.FieldByName('usr$logicdate').Value;
-        HeaderTable.FieldByName('usr$discountncu').Value := FReadSQL.FieldByName('usr$discountncu').Value;
-        HeaderTable.FieldByName('usr$sysnum').Value := FReadSQL.FieldByName('usr$sysnum').Value;
-        HeaderTable.FieldByName('usr$register').Value := FReadSQL.FieldByName('usr$register').Value;
-        HeaderTable.FieldByName('usr$whopayoffkey').Value := FReadSQL.FieldByName('usr$whopayoffkey').Value;
-        HeaderTable.FieldByName('usr$vip').Value := FReadSQL.FieldByName('usr$vip').Value;
-        HeaderTable.FieldByName('usr$disccardkey').Value := FReadSQL.FieldByName('usr$disccardkey').Value;
-        HeaderTable.FieldByName('usr$userdisckey').Value := FReadSQL.FieldByName('usr$userdisckey').Value;
-        HeaderTable.FieldByName('usr$discountkey').Value := FReadSQL.FieldByName('usr$discountkey').Value;
-        HeaderTable.FieldByName('usr$bonussum').Value := FReadSQL.FieldByName('usr$bonussum').Value;
-        HeaderTable.FieldByName('editorkey').Value := FReadSQL.FieldByName('editorkey').Value;
-        HeaderTable.FieldByName('editiondate').Value := FReadSQL.FieldByName('editiondate').Value;
-        HeaderTable.Post;
-        FReadSQL.Next;
-      end;
-      FReadSQL.Close;
-      FReadSQL.SQL.Text := cst_OrderActiveLine; // cst_OrderLine;
-      FReadSQL.ParamByName('ID').AsInteger := OrderKey;
-      FReadSQL.ExecQuery;
-      while not FReadSQL.EOF do
-      begin
-        S:= '';
-        LineTable.Append;
-        LineTable.FieldByName('id').Value := FReadSQL.FieldByName('id').Value;
-        LineTable.FieldByName('number').Value := FReadSQL.FieldByName('number').Value;
-        LineTable.FieldByName('GOODNAME').Value := FReadSQL.FieldByName('GOODNAME').Value;
-        LineTable.FieldByName('usr$mn_printdate').Value := FReadSQL.FieldByName('usr$mn_printdate').Value;
-        LineTable.FieldByName('usr$quantity').Value := FReadSQL.FieldByName('usr$quantity').Value;
-        LineTable.FieldByName('usr$costncu').Value := FReadSQL.FieldByName('usr$costncu').Value;
-        LineTable.FieldByName('usr$goodkey').Value := FReadSQL.FieldByName('usr$goodkey').Value;
-        LineTable.FieldByName('usr$sumncuwithdiscount').Value := FReadSQL.FieldByName('usr$sumncuwithdiscount').Value;
-        LineTable.FieldByName('usr$sumncu').Value := FReadSQL.FieldByName('usr$sumncu').Value;
-        LineTable.FieldByName('usr$costncuwithdiscount').Value := FReadSQL.FieldByName('usr$costncuwithdiscount').Value;
-        LineTable.FieldByName('usr$sumdiscount').Value := FReadSQL.FieldByName('usr$sumdiscount').Value;
-        LineTable.FieldByName('usr$persdiscount').Value := FReadSQL.FieldByName('usr$persdiscount').Value;
-        LineTable.FieldByName('usr$causedeletekey').Value := FReadSQL.FieldByName('usr$causedeletekey').Value;
-        LineTable.FieldByName('usr$deleteamount').Value := FReadSQL.FieldByName('usr$deleteamount').Value;
-        LineTable.FieldByName('usr$doublebonus').Value := FReadSQL.FieldByName('usr$doublebonus').Value;
-        LineTable.FieldByName('editorkey').Value := FReadSQL.FieldByName('editorkey').Value;
-        LineTable.FieldByName('editiondate').Value := FReadSQL.FieldByName('editiondate').Value;
-        LineTable.FieldByName('oldquantity').Value := FReadSQL.FieldByName('usr$quantity').Value;
-        LineTable.FieldByName('LINEKEY').AsInteger := FReadSQL.FieldByName('id').Value;
-        LineTable.FieldByName('STATEFIELD').AsInteger := 0;
-        LineTable.FieldByName('EXTRAMODIFY').AsString := FReadSQL.FieldByName('usr$extramodify').AsString;
-        ES := LineTable.FieldByName('EXTRAMODIFY').AsString;
-        LineTable.Post;
+      if not FReadSQL.Transaction.InTransaction then
+        FReadSQL.Transaction.StartTransaction;
 
-        FSQL.Params[0].AsInteger := FReadSQL.FieldByName('id').Value;
-        FSQL.ExecQuery;
+      FSQL := TIBSQL.Create(nil);
+      FSQL.Transaction := FReadTransaction;
+      FSQL.SQL.Text :=
+        ' SELECT CR.USR$MN_MODIFYKEY, m.USR$NAME, CR.USR$CLOSETIME ' +
+        ' FROM USR$CROSS509_157767346 CR ' +
+        ' LEFT JOIN usr$mn_modify m ON m.ID = CR.USR$MN_MODIFYKEY ' +
+        ' WHERE CR.USR$MN_ORDERLINEKEY = :line ';
 
-        if ModifyTable.IsVersioning then
-          ModifyTable.StartTransaction;
-        try
-          while not FSQL.Eof do
-          begin
-
-            ModifyTable.Append;
-            ModifyTable.FieldByName('MASTERKEY').AsInteger := FReadSQL.FieldByName('id').AsInteger;
-            ModifyTable.FieldByName('MODIFYKEY').AsInteger := FSQL.FieldByName('USR$MN_MODIFYKEY').AsInteger;
-            ModifyTable.FieldByName('NAME').AsString := FSQL.FieldByName('USR$NAME').AsString;
-            ModifyTable.FieldByName('CLOSETIME').Value := FSQL.FieldByName('USR$CLOSETIME').Value;
-            ModifyTable.Post;
-            if S > '' then
-              S := S + ', ';
-            S := S + FSQL.FieldByName('USR$NAME').AsString;
-
-            FSQL.Next;
-          end;
-          FSQL.Close;
-        finally
-          if ModifyTable.IsVersioning then
-            ModifyTable.Commit;
-        end;
-
-        if ES <> '' then
+      try
+        FReadSQL.SQL.Text := cst_OrderHeader;
+        FReadSQL.ParamByName('ID').AsInteger := OrderKey;
+        FReadSQL.ExecQuery;
+        while not FReadSQL.EOF do
         begin
-          if S = '' then
-            S := ES
-          else
-            S := S + ', ' + ES;
+          HeaderTable.Append;
+          HeaderTable.FieldByName('id').Value := FReadSQL.FieldByName('id').Value;
+          HeaderTable.FieldByName('number').Value := FReadSQL.FieldByName('number').Value;
+          HeaderTable.FieldByName('sumncu').Value := FReadSQL.FieldByName('sumncu').Value;
+          HeaderTable.FieldByName('usr$mn_printdate').Value := FReadSQL.FieldByName('usr$mn_printdate').Value;
+          HeaderTable.FieldByName('usr$sumncuwithdiscount').Value := FReadSQL.FieldByName('usr$sumncuwithdiscount').Value;
+          HeaderTable.FieldByName('usr$respkey').Value := FReadSQL.FieldByName('usr$respkey').Value;
+          HeaderTable.FieldByName('usr$guestcount').Value := FReadSQL.FieldByName('usr$guestcount').Value;
+          HeaderTable.FieldByName('usr$pay').Value := FReadSQL.FieldByName('usr$pay').Value;
+          HeaderTable.FieldByName('usr$timeorder').Value := FReadSQL.FieldByName('usr$timeorder').Value;
+          HeaderTable.FieldByName('usr$timecloseorder').Value := FReadSQL.FieldByName('usr$timecloseorder').Value;
+          HeaderTable.FieldByName('usr$logicdate').Value := FReadSQL.FieldByName('usr$logicdate').Value;
+          HeaderTable.FieldByName('usr$discountncu').Value := FReadSQL.FieldByName('usr$discountncu').Value;
+          HeaderTable.FieldByName('usr$sysnum').Value := FReadSQL.FieldByName('usr$sysnum').Value;
+          HeaderTable.FieldByName('usr$register').Value := FReadSQL.FieldByName('usr$register').Value;
+          HeaderTable.FieldByName('usr$whopayoffkey').Value := FReadSQL.FieldByName('usr$whopayoffkey').Value;
+          HeaderTable.FieldByName('usr$vip').Value := FReadSQL.FieldByName('usr$vip').Value;
+          HeaderTable.FieldByName('usr$disccardkey').Value := FReadSQL.FieldByName('usr$disccardkey').Value;
+          HeaderTable.FieldByName('usr$userdisckey').Value := FReadSQL.FieldByName('usr$userdisckey').Value;
+          HeaderTable.FieldByName('usr$discountkey').Value := FReadSQL.FieldByName('usr$discountkey').Value;
+          HeaderTable.FieldByName('usr$bonussum').Value := FReadSQL.FieldByName('usr$bonussum').Value;
+          HeaderTable.FieldByName('editorkey').Value := FReadSQL.FieldByName('editorkey').Value;
+          HeaderTable.FieldByName('editiondate').Value := FReadSQL.FieldByName('editiondate').Value;
+          HeaderTable.Post;
+          FReadSQL.Next;
         end;
-
-        if S > '' then
+        FReadSQL.Close;
+        FReadSQL.SQL.Text := cst_OrderActiveLine; // cst_OrderLine;
+        FReadSQL.ParamByName('ID').AsInteger := OrderKey;
+        FReadSQL.ExecQuery;
+        while not FReadSQL.EOF do
         begin
-          LineTable.Edit;
-          LineTable.FieldByName('MODIFYSTRING').AsString := S;
+          S:= '';
+          LineTable.Append;
+          LineTable.FieldByName('id').Value := FReadSQL.FieldByName('id').Value;
+          LineTable.FieldByName('number').Value := FReadSQL.FieldByName('number').Value;
+          LineTable.FieldByName('GOODNAME').Value := FReadSQL.FieldByName('GOODNAME').Value;
+          LineTable.FieldByName('usr$mn_printdate').Value := FReadSQL.FieldByName('usr$mn_printdate').Value;
+          LineTable.FieldByName('usr$quantity').Value := FReadSQL.FieldByName('usr$quantity').Value;
+          LineTable.FieldByName('usr$costncu').Value := FReadSQL.FieldByName('usr$costncu').Value;
+          LineTable.FieldByName('usr$goodkey').Value := FReadSQL.FieldByName('usr$goodkey').Value;
+          LineTable.FieldByName('usr$sumncuwithdiscount').Value := FReadSQL.FieldByName('usr$sumncuwithdiscount').Value;
+          LineTable.FieldByName('usr$sumncu').Value := FReadSQL.FieldByName('usr$sumncu').Value;
+          LineTable.FieldByName('usr$costncuwithdiscount').Value := FReadSQL.FieldByName('usr$costncuwithdiscount').Value;
+          LineTable.FieldByName('usr$sumdiscount').Value := FReadSQL.FieldByName('usr$sumdiscount').Value;
+          LineTable.FieldByName('usr$persdiscount').Value := FReadSQL.FieldByName('usr$persdiscount').Value;
+          LineTable.FieldByName('usr$causedeletekey').Value := FReadSQL.FieldByName('usr$causedeletekey').Value;
+          LineTable.FieldByName('usr$deleteamount').Value := FReadSQL.FieldByName('usr$deleteamount').Value;
+          LineTable.FieldByName('usr$doublebonus').Value := FReadSQL.FieldByName('usr$doublebonus').Value;
+          LineTable.FieldByName('editorkey').Value := FReadSQL.FieldByName('editorkey').Value;
+          LineTable.FieldByName('editiondate').Value := FReadSQL.FieldByName('editiondate').Value;
+          LineTable.FieldByName('oldquantity').Value := FReadSQL.FieldByName('usr$quantity').Value;
+          LineTable.FieldByName('LINEKEY').AsInteger := FReadSQL.FieldByName('id').Value;
+          LineTable.FieldByName('STATEFIELD').AsInteger := 0;
+          LineTable.FieldByName('EXTRAMODIFY').AsString := FReadSQL.FieldByName('usr$extramodify').AsString;
+          ES := LineTable.FieldByName('EXTRAMODIFY').AsString;
           LineTable.Post;
+
+          FSQL.Params[0].AsInteger := FReadSQL.FieldByName('id').Value;
+          FSQL.ExecQuery;
+
+          if ModifyTable.IsVersioning then
+            ModifyTable.StartTransaction;
+          try
+            while not FSQL.Eof do
+            begin
+
+              ModifyTable.Append;
+              ModifyTable.FieldByName('MASTERKEY').AsInteger := FReadSQL.FieldByName('id').AsInteger;
+              ModifyTable.FieldByName('MODIFYKEY').AsInteger := FSQL.FieldByName('USR$MN_MODIFYKEY').AsInteger;
+              ModifyTable.FieldByName('NAME').AsString := FSQL.FieldByName('USR$NAME').AsString;
+              ModifyTable.FieldByName('CLOSETIME').Value := FSQL.FieldByName('USR$CLOSETIME').Value;
+              ModifyTable.Post;
+              if S > '' then
+                S := S + ', ';
+              S := S + FSQL.FieldByName('USR$NAME').AsString;
+
+              FSQL.Next;
+            end;
+            FSQL.Close;
+          finally
+            if ModifyTable.IsVersioning then
+              ModifyTable.Commit;
+          end;
+
+          if ES <> '' then
+          begin
+            if S = '' then
+              S := ES
+            else
+              S := S + ', ' + ES;
+          end;
+
+          if S > '' then
+          begin
+            LineTable.Edit;
+            LineTable.FieldByName('MODIFYSTRING').AsString := S;
+            LineTable.Post;
+          end;
+
+          FReadSQL.Next;
         end;
-
-        FReadSQL.Next;
+      finally
+        FSQL.Free;
       end;
-    finally
-      FSQL.Free;
+      Result := True;
+    except
+      Result := False;
+      raise;
     end;
-
-    Result := True;
   finally
     HeaderTable.AfterPost := APost;
     LineTable.BeforePost := BPost;

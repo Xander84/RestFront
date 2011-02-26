@@ -263,7 +263,6 @@ var
   TotalDiscount: Currency;
   GoodName: String;
   Quantity, Price, SumDiscount, Summ: Currency;
-  Summ1, Summ2, Summ3: Currency;
 begin
   Result := False;
   Assert(Assigned(FFrontBase), 'FrontBase not Assigned');
@@ -290,29 +289,7 @@ begin
       DocLine.Next;
     end;
 
-    Summ1 := 0;
-    Summ2 := 0;
-    Summ3 := 0;
-    PayLine.DisableControls;
-    try
-      PayLine.First;
-      while not PayLine.Eof do
-      begin
-        case PayLine.FieldByName('PAYTYPE').AsInteger of
-          cn_paytype_cash: //наличные
-            Summ1 := Summ1 + PayLine.FieldByName('SUM').AsInteger;
-          cn_paytype_credit: //кредитная карта
-            Summ3 := Summ3 + PayLine.FieldByName('SUM').AsInteger;
-          cn_paytype_noncash: //безнал (кредит)
-            Summ2 := Summ2 + PayLine.FieldByName('SUM').AsInteger;
-        end;
-        PayLine.Next;
-      end;
-    finally
-      PayLine.EnableControls;
-    end;
-
-    Close(Summ1, Summ2, Summ3);
+    Close(FSums.FCashSum, FSums.FCardSum, (FSums.FCreditSum + FSums.FPersonalCardSum));
     if SetLastError then
       exit;
     Cut(0);

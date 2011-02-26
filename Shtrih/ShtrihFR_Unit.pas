@@ -286,25 +286,10 @@ begin
       end;
 
       CheckSubTotal;
-      PayLine.DisableControls;
-      try
-        PayLine.First;
-        while not PayLine.Eof do
-        begin
-          if PayLine.FieldByName('SUM').AsInteger > 0 then
-            case PayLine.FieldByName('PAYTYPE').AsInteger of
-              cn_paytype_cash: //наличные
-                Self.Summ1 := Self.Summ1 + PayLine.FieldByName('SUM').AsInteger;
-              cn_paytype_credit: //кредитная карта
-                Self.Summ3 := Self.Summ3 + PayLine.FieldByName('SUM').AsInteger;
-              cn_paytype_noncash: //безнал (кредит)
-                Self.Summ2 := Self.Summ2 + PayLine.FieldByName('SUM').AsInteger;
-            end;
-          PayLine.Next;
-        end;
-      finally
-        PayLine.EnableControls;
-      end;
+
+      Self.Summ1 := FSums.FCashSum;
+      Self.Summ2 := (FSums.FCreditSum + FSums.FPersonalCardSum);
+      Self.Summ3 := FSums.FCardSum;
 
       StringForPrinting := '';
       CloseCheck;

@@ -397,86 +397,89 @@ var
   S: String;
   Header: TgsDataSet;
 begin
-  Result := False;
-
   Assert(Assigned(FFrontBase), 'FrontBase not assigned');
   BaseQueryList := FrontData.BaseQueryList;
   BaseQueryList.Clear;
   FReport := Tgs_fr4SingleReport.Create(nil);
   try
-    InitReportParams(FReport, PrinterName);
-
-    Str := TMemoryStream.Create;
-    FfrxDBDataset := TfrxDBDataset.Create(nil);
     try
-      Header := BaseQueryList.Query[BaseQueryList.Add('HEADER', False)];
-      S :=
-        'select ' +
-        '  doc.documentdate, doc.number as NUM, ' +
-        '  comp.name compname,  ' +
-        '  o.usr$guestcount guest, ' +
-        '  con.name conname, o.usr$timeorder as open1,  ' +
-        '  ol.documentkey,                              ' +
-        '  g.alias, g.name as goodname,                 ' +
-        '  prngr.usr$name as prngroupname,              ' +
-        '  ol.usr$quantity as q,                        ' +
-        '  setprn.usr$printername as printername,       ' +
-        '  cause.usr$name as cn                         ' +
-        'from                                           ' +
-        '  gd_document doc                              ' +
-        '  join usr$mn_order o on doc.id = o.documentkey and doc.id = :docid  ' +
-        '  join usr$mn_orderline ol on o.documentkey = ol.masterkey ' +
-        '    and ol.documentkey = :lineID                           ' +
-        '  join gd_document docl on docl.id = ol.documentkey        ' +
-        '  join gd_good g on g.id = ol.usr$goodkey                  ' +
-        '  join usr$mn_prngroup prngr on prngr.id = g.usr$prngroupkey   ' +
-        '  join usr$mn_prngroupset setprn on setprn.usr$prngroup = prngr.id   ' +
-        '  JOIN gd_contact comp ON comp.id = doc.companykey                   ' +
-        '  JOIN USR$MN_CAUSEDELETEORDERLINE cause on cause.id = ol.usr$causedeletekey  ' +
-        '  LEFT JOIN usr$mn_p_getcontact_department(o.usr$respkey) cd ON 0 = 0  ' +
-        '  LEFT JOIN gd_contact con ON con.id = cd.peoplekey        ' +
-        '  LEFT JOIN gd_contact dept ON dept.id = cd.departmentkey  ' +
-        'where                                                      ' +
-        '  setprn.usr$printername = :printername                    ' +
-        '  and ol.usr$causedeletekey is not null                    ' +
-        '  and setprn.usr$computername = :COMP                      ' +
-        '  and setprn.usr$kassa = 0 ';
-      if PrnGrID <> 0 then
-        S := S + '  and prngr.id = :prngrid ';
-      Header.SQL := S;
-      Header.ParamByName('docid').AsInteger := DocumentKey;
-      Header.ParamByName('LineID').AsInteger := MasterKey;
-      Header.ParambyName('printername').AsString := PrinterName;
-      Header.ParambyName('comp').AsString := FFrontBase.GetLocalComputerName;
-      if PrnGrID <> 0 then
-        Header.ParambyName('prngrid').Value := PrnGrID;
-      Header.Open;
+      InitReportParams(FReport, PrinterName);
 
-      FfrxDBDataset.Name := Header.DataSet.Name;
-      FfrxDBDataset.DataSet := TDataSet(Header.DataSet);
+      Str := TMemoryStream.Create;
+      FfrxDBDataset := TfrxDBDataset.Create(nil);
+      try
+        Header := BaseQueryList.Query[BaseQueryList.Add('HEADER', False)];
+        S :=
+          'select ' +
+          '  doc.documentdate, doc.number as NUM, ' +
+          '  comp.name compname,  ' +
+          '  o.usr$guestcount guest, ' +
+          '  con.name conname, o.usr$timeorder as open1,  ' +
+          '  ol.documentkey,                              ' +
+          '  g.alias, g.name as goodname,                 ' +
+          '  prngr.usr$name as prngroupname,              ' +
+          '  ol.usr$quantity as q,                        ' +
+          '  setprn.usr$printername as printername,       ' +
+          '  cause.usr$name as cn                         ' +
+          'from                                           ' +
+          '  gd_document doc                              ' +
+          '  join usr$mn_order o on doc.id = o.documentkey and doc.id = :docid  ' +
+          '  join usr$mn_orderline ol on o.documentkey = ol.masterkey ' +
+          '    and ol.documentkey = :lineID                           ' +
+          '  join gd_document docl on docl.id = ol.documentkey        ' +
+          '  join gd_good g on g.id = ol.usr$goodkey                  ' +
+          '  join usr$mn_prngroup prngr on prngr.id = g.usr$prngroupkey   ' +
+          '  join usr$mn_prngroupset setprn on setprn.usr$prngroup = prngr.id   ' +
+          '  JOIN gd_contact comp ON comp.id = doc.companykey                   ' +
+          '  JOIN USR$MN_CAUSEDELETEORDERLINE cause on cause.id = ol.usr$causedeletekey  ' +
+          '  LEFT JOIN usr$mn_p_getcontact_department(o.usr$respkey) cd ON 0 = 0  ' +
+          '  LEFT JOIN gd_contact con ON con.id = cd.peoplekey        ' +
+          '  LEFT JOIN gd_contact dept ON dept.id = cd.departmentkey  ' +
+          'where                                                      ' +
+          '  setprn.usr$printername = :printername                    ' +
+          '  and ol.usr$causedeletekey is not null                    ' +
+          '  and setprn.usr$computername = :COMP                      ' +
+          '  and setprn.usr$kassa = 0 ';
+        if PrnGrID <> 0 then
+          S := S + '  and prngr.id = :prngrid ';
+        Header.SQL := S;
+        Header.ParamByName('docid').AsInteger := DocumentKey;
+        Header.ParamByName('LineID').AsInteger := MasterKey;
+        Header.ParambyName('printername').AsString := PrinterName;
+        Header.ParambyName('comp').AsString := FFrontBase.GetLocalComputerName;
+        if PrnGrID <> 0 then
+          Header.ParambyName('prngrid').Value := PrnGrID;
+        Header.Open;
 
-      FReport.DataSets.Add(FfrxDBDataset);
-      FReport.EnabledDataSets.Add(FfrxDBDataset);
-      GetTemplateStreamByRuid(147373760, 1033124911, Str);
-      if Str.Size > 0 then
-      begin
-        Str.Position := 0;
-        FReport.LoadFromStream(Str);
+        FfrxDBDataset.Name := Header.DataSet.Name;
+        FfrxDBDataset.DataSet := TDataSet(Header.DataSet);
+
+        FReport.DataSets.Add(FfrxDBDataset);
+        FReport.EnabledDataSets.Add(FfrxDBDataset);
+        GetTemplateStreamByRuid(147373760, 1033124911, Str);
+        if Str.Size > 0 then
+        begin
+          Str.Position := 0;
+          FReport.LoadFromStream(Str);
+        end;
+        //
+        FReport.Variables.Clear;
+        FReport.Variables[' ' + cn_RestParam] := Null;
+        FReport.Variables.AddVariable(cn_RestParam, 'PrnGrID', '''' + VarToStr(PrnGrID) + '''');
+        FReport.Variables.AddVariable(cn_RestParam, 'DocID', '''' + VarToStr(MasterKey) + '''');
+        FReport.Variables.AddVariable(cn_RestParam, 'LineID', '''' + VarToStr(DocumentKey) + '''');
+        FReport.Variables.AddVariable(cn_RestParam, 'PrinterName', '''' + VarToStr(PrinterName) + '''');
+        if FReport.PrepareReport then
+          FReport.Print;
+
+        Result := True;
+      finally
+        Str.Free;
+        FfrxDBDataset.Free;
       end;
-      //
-      FReport.Variables.Clear;
-      FReport.Variables[' ' + cn_RestParam] := Null;
-      FReport.Variables.AddVariable(cn_RestParam, 'PrnGrID', '''' + VarToStr(PrnGrID) + '''');
-      FReport.Variables.AddVariable(cn_RestParam, 'DocID', '''' + VarToStr(MasterKey) + '''');
-      FReport.Variables.AddVariable(cn_RestParam, 'LineID', '''' + VarToStr(DocumentKey) + '''');
-      FReport.Variables.AddVariable(cn_RestParam, 'PrinterName', '''' + VarToStr(PrinterName) + '''');
-      if FReport.PrepareReport then
-        FReport.Print;
-
-      Result := True;
-    finally
-      Str.Free;
-      FfrxDBDataset.Free;
+    except
+      Result := False;
+      raise;
     end;
   finally
     FReport.Free;

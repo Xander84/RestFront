@@ -405,82 +405,43 @@ begin
           CancelDocument;
           exit;
         end;
-//Hint        TotalDiscount := 0;
       end;
 
-      // проверять на ISFISCAL ???
-
-
-      // сначала кредитка
-      PayLine.DisableControls;
-      try
-        PayLine.First;
-        while not PayLine.Eof do
+      // кредитная карта
+      if FSums.FCardSum > 0 then
+      begin
+        Res := Tender2(FSums.FCardSum, 1, '', '');
+        if res <> 0 then
         begin
-          if (PayLine.FieldByName('PAYTYPE').AsInteger = 1) and
-            (PayLine.FieldByName('SUM').AsInteger > 0) then
-          begin
-            Res := Tender2(PayLine.FieldByName('SUM').AsInteger, 1, '', '');
-            if res <> 0 then
-            begin
-              ErrMessage(Res);
-              Res := CancelDocument;
-              if Res = 0 then
-                exit;
-            end;
-          end;
-          PayLine.Next;
+          ErrMessage(Res);
+          Res := CancelDocument;
+          if Res = 0 then
+            exit;
         end;
-      finally
-        PayLine.EnableControls;
       end;
-
       // Безнал
-      PayLine.DisableControls;
-      try
-        PayLine.First;
-        while not PayLine.Eof do
+      if (FSums.FCreditSum + FSums.FPersonalCardSum) > 0 then
+      begin
+        Res := Tender2(FSums.FCreditSum + FSums.FPersonalCardSum, 7, '', '');
+        if res <> 0 then
         begin
-          if (PayLine.FieldByName('PAYTYPE').AsInteger = 2) and
-            (PayLine.FieldByName('SUM').AsInteger > 0) then
-          begin
-            Res := Tender2(PayLine.FieldByName('SUM').AsInteger, 7, '', '');
-            if res <> 0 then
-            begin
-              ErrMessage(Res);
-              Res := CancelDocument;
-              if Res = 0 then
-                exit;
-            end;
-          end;
-          PayLine.Next;
+          ErrMessage(Res);
+          Res := CancelDocument;
+          if Res = 0 then
+            exit;
         end;
-      finally
-        PayLine.EnableControls;
       end;
-
       // наличные
-      PayLine.DisableControls;
-      try
-        PayLine.First;
-        while not PayLine.Eof do
+      if FSums.FCashSum > 0 then
+      begin
+        Res := Tender2(FSums.FCashSum, 8, '', '');
+        if res <> 0 then
         begin
-          if (PayLine.FieldByName('PAYTYPE').AsInteger = 0) and
-            (PayLine.FieldByName('SUM').AsInteger > 0) then
-          begin
-            Res := Tender2(PayLine.FieldByName('SUM').AsInteger, 8, '', '');
-            if res <> 0 then
-            begin
-              ErrMessage(Res);
-              Res := CancelDocument;
-              if Res = 0 then
-                exit;
-            end;
-          end;
-          PayLine.Next;
+          ErrMessage(Res);
+          Res := CancelDocument;
+          if Res = 0 then
+            exit;
         end;
-      finally
-        PayLine.EnableControls;
       end;
 
       Res := EndDocument;
