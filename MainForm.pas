@@ -321,13 +321,11 @@ type
 
     FFormState: TRestState;
     FPrevFormState: TRestState;
-    // Режиам только просмотра (для кассира)
+    // Режим только просмотра (для кассира)
     FViewMode: Boolean;
     FUpdateCount: Integer;
 
     FSplitForm: TSplitOrder;
-
-
   //  FFrontLog: TFrontLog;
 
     //Создание первичных наборов данных
@@ -431,10 +429,6 @@ end;
 
 procedure TRestMainForm.FormCreate(Sender: TObject);
 begin
-  {$IFDEF NEW_TABCONTROL}
-//  btnBackToMenu.Left := btnBackToMenu.Left + 4;
-  {$ENDIF}
-
   SetupGrid(DBGrMain);
   SetupGrid(DBGrInfoHeader);
   SetupGrid(DBGrInfoLine);
@@ -2307,7 +2301,6 @@ var
 {$ENDIF}
 begin
   inherited;
-
   {$IFNDEF DEBUG}
   WindowState := wsMaximized;
   BorderIcons := BorderIcons + [biSystemMenu, biMaximize];

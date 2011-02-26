@@ -504,9 +504,7 @@ begin
     FReadSQL.ExecQuery;
     if not FReadSQL.EOF then
       Result := FReadSQL.FieldByName('usr$groupKey').ASInteger;
-
     FReadSQL.Close;
-    FReadSQL.Transaction.Commit;
   except
     on E: Exception do
       AdvTaskMessageDlg('Внимание', 'Ошибка ' + E.Message, mtError, [mbOK], 0);
@@ -1042,28 +1040,32 @@ end;
 function TFrontBase.GetCauseDeleteList(
   var MemTable: TkbmMemTable): Boolean;
 begin
-  Result := False;
   FReadSQL.Close;
   MemTable.Close;
   MemTable.CreateTable;
   MemTable.Open;
-  if not FReadSQL.Transaction.InTransaction then
-    FReadSQL.Transaction.StartTransaction;
   try
-    FReadSQL.SQL.Text := cst_CauseDelete;
-    FReadSQL.ExecQuery;
-    while not FReadSQL.EOF do
-    begin
-      MemTable.Append;
-      MemTable.FieldByName('ID').AsInteger := FReadSQL.FieldByName('ID').AsInteger;
-      MemTable.FieldByName('NAME').AsString := FReadSQL.FieldByName('USR$NAME').AsString;
-      MemTable.Post;
-      FReadSQL.Next;
+    try
+      if not FReadSQL.Transaction.InTransaction then
+        FReadSQL.Transaction.StartTransaction;
+
+      FReadSQL.SQL.Text := cst_CauseDelete;
+      FReadSQL.ExecQuery;
+      while not FReadSQL.EOF do
+      begin
+        MemTable.Append;
+        MemTable.FieldByName('ID').AsInteger := FReadSQL.FieldByName('ID').AsInteger;
+        MemTable.FieldByName('NAME').AsString := FReadSQL.FieldByName('USR$NAME').AsString;
+        MemTable.Post;
+        FReadSQL.Next;
+      end;
+      Result := True;
+    except
+      Result := False;
+      raise;
     end;
-    Result := True;
   finally
     FReadSQL.Close;
-    FReadSQL.Transaction.Commit;
   end;
 end;
 
@@ -1125,7 +1127,6 @@ begin
       FSQL.Free;
     end;
     FReadSQL.Close;
-    FReadSQL.Transaction.Commit;
   except
     on E: Exception do
       AdvTaskMessageDlg('Внимание', 'Ошибка ' + E.Message, mtError, [mbOK], 0);
@@ -1172,7 +1173,6 @@ begin
       FSQL.Free;
     end;
     FReadSQL.Close;
-    FReadSQL.Transaction.Commit;
   except
     on E: Exception do
       AdvTaskMessageDlg('Внимание', 'Ошибка ' + E.Message, mtError, [mbOK], 0);
@@ -1216,7 +1216,6 @@ begin
       FSQL.Free;
     end;
     FReadSQL.Close;
-    FReadSQL.Transaction.Commit;
   except
     on E: Exception do
       AdvTaskMessageDlg('Внимание', 'Ошибка ' + E.Message, mtError, [mbOK], 0);
@@ -1249,7 +1248,6 @@ begin
     Result := True;
 
     FReadSQL.Close;
-    FReadSQL.Transaction.Commit;
   except
     on E: Exception do
       AdvTaskMessageDlg('Внимание', 'Ошибка ' + E.Message, mtError, [mbOK], 0);
@@ -1258,29 +1256,33 @@ end;
 
 function TFrontBase.GetMenuList(var MemTable: TkbmMemTable): Boolean;
 begin
-  Result := False;
   FReadSQL.Close;
   MemTable.Close;
   MemTable.CreateTable;
   MemTable.Open;
-  if not FReadSQL.Transaction.InTransaction then
-    FReadSQL.Transaction.StartTransaction;
   try
-    FReadSQL.SQL.Text := cst_MenuList;
-    FReadSQL.ParamByName('Date').ASDateTime := Now;
-    FReadSQL.ExecQuery;
-    while not FReadSQL.EOF do
-    begin
-      MemTable.Append;
-      MemTable.FieldByName('ID').AsInteger := FReadSQL.FieldByName('documentkey').AsInteger;
-      MemTable.FieldByName('NAME').AsString := FReadSQL.FieldByName('USR$NAME').AsString;
-      MemTable.Post;
-      FReadSQL.Next;
+    try
+      if not FReadSQL.Transaction.InTransaction then
+        FReadSQL.Transaction.StartTransaction;
+
+      FReadSQL.SQL.Text := cst_MenuList;
+      FReadSQL.ParamByName('Date').ASDateTime := Now;
+      FReadSQL.ExecQuery;
+      while not FReadSQL.EOF do
+      begin
+        MemTable.Append;
+        MemTable.FieldByName('ID').AsInteger := FReadSQL.FieldByName('documentkey').AsInteger;
+        MemTable.FieldByName('NAME').AsString := FReadSQL.FieldByName('USR$NAME').AsString;
+        MemTable.Post;
+        FReadSQL.Next;
+      end;
+      Result := True;
+    except
+      Result := False;
+      raise;
     end;
-    Result := True;
   finally
     FReadSQL.Close;
-    FReadSQL.Transaction.Commit;
   end;
 end;
 
@@ -1455,7 +1457,6 @@ begin
     HeaderTable.AfterPost := APost;
     LineTable.BeforePost := BPost;
     FReadSQL.Close;
-    FReadSQL.Transaction.Commit;
   end;
 end;
 
@@ -1801,141 +1802,147 @@ begin
     end
   finally
     FReadSQL.Close;
-    FReadSQL.Transaction.Commit;
   end;
 end;
 
 function TFrontBase.GetUserOrders(const ContactKey: Integer; var MemTable: TkbmMemTable): Boolean;
 begin
-  Result := False;
   FReadSQL.Close;
   MemTable.Close;
   MemTable.CreateTable;
   MemTable.Open;
-  if not FReadSQL.Transaction.InTransaction then
-    FReadSQL.Transaction.StartTransaction;
-
   try
-    FReadSQL.SQL.Text :=
-     ' SELECT  ' +
-     '   Z.ID, ' +
-     '   Z.NUMBER, ' +
-     '   U.USR$GUESTCOUNT, ' +
-     '   U.USR$LOGICDATE,  ' +
-     '   U.USR$PAY,   ' +
-     '   U.USR$TIMECLOSEORDER, ' +
-     '   U.USR$TIMEORDER, ' +
-     '   U.USR$VIP, ' +
-     '   U.USR$ISLOCKED, ' +
-     '   ( SELECT ' +
-     '     SUM ( L.USR$SUMNCUWITHDISCOUNT ) ' +
-     '   FROM ' +
-     '     USR$MN_ORDERLINE L ' +
-     '   WHERE ' +
-     '     L.MASTERKEY  =  Z.ID ' +
-     '        AND ' +
-     '      L.USR$CAUSEDELETEKEY + 0 IS NULL    ) AS USR$SUMNCUWITHDISCOUNT, ' +
-     '   Z.USR$MN_PRINTDATE ' +
-     '  FROM ' +
-     '   GD_DOCUMENT Z ' +
-     '     JOIN ' +
-     '       USR$MN_ORDER U ' +
-     '     ON ' +
-     '       U.DOCUMENTKEY  =  Z.ID ' +
-     ' WHERE ' +
-     '   Z.DOCUMENTTYPEKEY  =  :OrderTypeKey ' +
-     '      AND ' +
-     '   Z.PARENT + 0 IS NULL ' +
-     '      AND ' +
-     '   USR$RESPKEY  =  :RespKey ' +
-     '      AND ' +
-     '   ( USR$PAY  <>  1 ) ' +
-     '      AND ' +
-     '   ( USR$VIP  <>  1 OR   USR$VIP IS NULL ) ' +
-     ' ORDER BY ' +
-     '   U.USR$LOGICDATE, ' +
-     '   U.USR$TIMEORDER ';
-    if ContactKey  > 0 then
-      FReadSQL.ParamByName('RespKey').AsInteger := ContactKey
-    else
-      FReadSQL.ParamByName('RespKey').AsInteger := FContactKey;
+    try
+      if not FReadSQL.Transaction.InTransaction then
+        FReadSQL.Transaction.StartTransaction;
 
-    FReadSQL.ParamByName('OrderTypeKey').AsInteger := FOrderTypeKey;
-
-    FReadSQL.ExecQuery;
-    while not FReadSQL.EOF do
-    begin
-      MemTable.Append;
-      MemTable.FieldByName('TABLENAME').AsString := FReadSQL.FieldByName('NUMBER').AsString;
-      MemTable.FieldByName('GuestNumbers').AsInteger := FReadSQL.FieldByName('USR$GUESTCOUNT').ASInteger;
-      MemTable.FieldByName('OpenTime').ASDateTime := FReadSQL.FieldByName('USR$TIMEORDER').AsDateTime;
-      MemTable.FieldByName('Summ').AsCurrency := FReadSQL.FieldByName('USR$SUMNCUWITHDISCOUNT').AsCurrency;
-      MemTable.FieldByName('ID').AsInteger := FReadSQL.FieldByName('ID').AsInteger;
-      if FReadSQL.FieldByName('USR$PAY').ASInteger = 1 then
-        MemTable.FieldByName('Status').AsInteger := Integer(osOrderPayed)
-      else if not FReadSQL.FieldByName('USR$TIMECLOSEORDER').IsNull then
-        MemTable.FieldByName('Status').AsInteger := Integer(osOrderClose)
+      FReadSQL.SQL.Text :=
+       ' SELECT  ' +
+       '   Z.ID, ' +
+       '   Z.NUMBER, ' +
+       '   U.USR$GUESTCOUNT, ' +
+       '   U.USR$LOGICDATE,  ' +
+       '   U.USR$PAY,   ' +
+       '   U.USR$TIMECLOSEORDER, ' +
+       '   U.USR$TIMEORDER, ' +
+       '   U.USR$VIP, ' +
+       '   U.USR$ISLOCKED, ' +
+       '   ( SELECT ' +
+       '     SUM ( L.USR$SUMNCUWITHDISCOUNT ) ' +
+       '   FROM ' +
+       '     USR$MN_ORDERLINE L ' +
+       '   WHERE ' +
+       '     L.MASTERKEY  =  Z.ID ' +
+       '        AND ' +
+       '      L.USR$CAUSEDELETEKEY + 0 IS NULL    ) AS USR$SUMNCUWITHDISCOUNT, ' +
+       '   Z.USR$MN_PRINTDATE ' +
+       '  FROM ' +
+       '   GD_DOCUMENT Z ' +
+       '     JOIN ' +
+       '       USR$MN_ORDER U ' +
+       '     ON ' +
+       '       U.DOCUMENTKEY  =  Z.ID ' +
+       ' WHERE ' +
+       '   Z.DOCUMENTTYPEKEY  =  :OrderTypeKey ' +
+       '      AND ' +
+       '   Z.PARENT + 0 IS NULL ' +
+       '      AND ' +
+       '   USR$RESPKEY  =  :RespKey ' +
+       '      AND ' +
+       '   ( USR$PAY  <>  1 ) ' +
+       '      AND ' +
+       '   ( USR$VIP  <>  1 OR   USR$VIP IS NULL ) ' +
+       ' ORDER BY ' +
+       '   U.USR$LOGICDATE, ' +
+       '   U.USR$TIMEORDER ';
+      if ContactKey  > 0 then
+        FReadSQL.ParamByName('RespKey').AsInteger := ContactKey
       else
-        MemTable.FieldByName('Status').AsInteger := Integer(osOrderOpen);
-      MemTable.FieldByName('ISLOCKED').AsInteger := FReadSQL.FieldByName('USR$ISLOCKED').AsInteger;
-      MemTable.Post;
-      FReadSQL.Next;
+        FReadSQL.ParamByName('RespKey').AsInteger := FContactKey;
+
+      FReadSQL.ParamByName('OrderTypeKey').AsInteger := FOrderTypeKey;
+
+      FReadSQL.ExecQuery;
+      while not FReadSQL.EOF do
+      begin
+        MemTable.Append;
+        MemTable.FieldByName('TABLENAME').AsString := FReadSQL.FieldByName('NUMBER').AsString;
+        MemTable.FieldByName('GuestNumbers').AsInteger := FReadSQL.FieldByName('USR$GUESTCOUNT').ASInteger;
+        MemTable.FieldByName('OpenTime').ASDateTime := FReadSQL.FieldByName('USR$TIMEORDER').AsDateTime;
+        MemTable.FieldByName('Summ').AsCurrency := FReadSQL.FieldByName('USR$SUMNCUWITHDISCOUNT').AsCurrency;
+        MemTable.FieldByName('ID').AsInteger := FReadSQL.FieldByName('ID').AsInteger;
+        if FReadSQL.FieldByName('USR$PAY').ASInteger = 1 then
+          MemTable.FieldByName('Status').AsInteger := Integer(osOrderPayed)
+        else if not FReadSQL.FieldByName('USR$TIMECLOSEORDER').IsNull then
+          MemTable.FieldByName('Status').AsInteger := Integer(osOrderClose)
+        else
+          MemTable.FieldByName('Status').AsInteger := Integer(osOrderOpen);
+        MemTable.FieldByName('ISLOCKED').AsInteger := FReadSQL.FieldByName('USR$ISLOCKED').AsInteger;
+        MemTable.Post;
+        FReadSQL.Next;
+      end;
+      Result := True;
+    except
+      Result := False;
+      raise;
     end;
-    Result := True;
   finally
     FReadSQL.Close;
-    FReadSQL.Transaction.Commit;
   end;
 end;
 
 function TFrontBase.GetActiveWaiterList(var MemTable: TkbmMemTable; WithPrecheck: Boolean): Boolean;
 begin
-  Result := False;
   FReadSQL.Close;
   MemTable.Close;
   MemTable.CreateTable;
   MemTable.Open;
-  if not FReadSQL.Transaction.InTransaction then
-    FReadSQL.Transaction.StartTransaction;
   try
-    FReadSQL.SQL.Text :=
-      ' select    ' +
-      '   distinct  ' +
-      '   u.contactkey,    ' +
-      '   u.ingroup,   ' +
-      '   con.name as fullname    ' +
-      ' from    ' +
-      '   gd_user u    ' +
-      '   join gd_contact con on con.id = u.contactkey    ' +
-      ' where  ' +
-      '   u.disabled <> 1    ' +
-      '   and u.usr$mn_isfrontuser = 1    ' +
-      '   and exists (select o.documentkey from usr$mn_order o where o.usr$pay <> 1 and o.usr$respkey = con.id ' ;
-    if WithPrecheck then
-      FReadSQL.SQL.Text := FReadSQL.SQL.Text +
-        '   and o.usr$timecloseorder + 0 is not null ';
-    if Options.OrderCurrentLDate then
-      FReadSQL.SQL.Text := FReadSQL.SQL.Text + ' AND o.USR$LOGICDATE = :LDate ' ;
-    FReadSQL.SQL.Text := FReadSQL.SQL.Text + '   ) ' +
-      ' order by    ' +
-      '   con.name asc  ';
-    if Options.OrderCurrentLDate then
-      FReadSQL.ParamByName('LDate').AsDateTime := GetLogicDate;
+    try
+      if not FReadSQL.Transaction.InTransaction then
+        FReadSQL.Transaction.StartTransaction;
 
-    FReadSQL.ExecQuery;
-    while not FReadSQL.EOF do
-    begin
-      MemTable.Append;
-      MemTable.FieldByName('ID').AsInteger := FReadSQL.FieldByName('Contactkey').AsInteger;
-      MemTable.FieldByName('NAME').AsString := FReadSQL.FieldByName('fullname').AsString;
-      MemTable.FieldByName('ingroup').ASInteger := FReadSQL.FieldByName('ingroup').AsInteger;
-      MemTable.Post;
-      FReadSQL.Next;
+      FReadSQL.SQL.Text :=
+        ' select    ' +
+        '   distinct  ' +
+        '   u.contactkey,    ' +
+        '   u.ingroup,   ' +
+        '   con.name as fullname    ' +
+        ' from    ' +
+        '   gd_user u    ' +
+        '   join gd_contact con on con.id = u.contactkey    ' +
+        ' where  ' +
+        '   u.disabled <> 1    ' +
+        '   and u.usr$mn_isfrontuser = 1    ' +
+        '   and exists (select o.documentkey from usr$mn_order o where o.usr$pay <> 1 and o.usr$respkey = con.id ' ;
+      if WithPrecheck then
+        FReadSQL.SQL.Text := FReadSQL.SQL.Text +
+          '   and o.usr$timecloseorder + 0 is not null ';
+      if Options.OrderCurrentLDate then
+        FReadSQL.SQL.Text := FReadSQL.SQL.Text + ' AND o.USR$LOGICDATE = :LDate ' ;
+      FReadSQL.SQL.Text := FReadSQL.SQL.Text + '   ) ' +
+        ' order by    ' +
+        '   con.name asc  ';
+      if Options.OrderCurrentLDate then
+        FReadSQL.ParamByName('LDate').AsDateTime := GetLogicDate;
+
+      FReadSQL.ExecQuery;
+      while not FReadSQL.EOF do
+      begin
+        MemTable.Append;
+        MemTable.FieldByName('ID').AsInteger := FReadSQL.FieldByName('Contactkey').AsInteger;
+        MemTable.FieldByName('NAME').AsString := FReadSQL.FieldByName('fullname').AsString;
+        MemTable.FieldByName('ingroup').ASInteger := FReadSQL.FieldByName('ingroup').AsInteger;
+        MemTable.Post;
+        FReadSQL.Next;
+      end;
+      Result := True;
+    except
+      Result := False;
+      raise;
     end;
-    Result := True;
   finally
     FReadSQL.Close;
-    FReadSQL.Transaction.Commit;
   end;
 end;
 
@@ -1985,8 +1992,6 @@ begin
     else
       FCompanyKey := -1;
     FReadSQL.Close;
-
-    FReadSQL.Transaction.Commit;
   except
     raise;
   end;
@@ -2030,7 +2035,6 @@ begin
       end
     finally
       FReadSQL.Close;
-      FReadSQL.Transaction.Commit;
     end;
   end
 end;
@@ -2041,17 +2045,22 @@ begin
   if not Options.UseCurrentDate then
   begin
     FReadSQL.Close;
-    if not FReadSQL.Transaction.InTransaction then
-      FReadSQL.Transaction.StartTransaction;
     try
-      FReadSQL.SQL.Text :=
-        'select max(op.usr$logicdate) as LDate ' +
-        '  from usr$mn_options op ';
-      FReadSQL.ExecQuery;
-      if not FReadSQL.EOF then
-        GetLogicDate := FReadSQL.FieldByName('Ldate').AsDateTime;
+      try
+        if not FReadSQL.Transaction.InTransaction then
+          FReadSQL.Transaction.StartTransaction;
+
+        FReadSQL.SQL.Text :=
+          'select max(op.usr$logicdate) as LDate ' +
+          '  from usr$mn_options op ';
+        FReadSQL.ExecQuery;
+        if not FReadSQL.EOF then
+          GetLogicDate := FReadSQL.FieldByName('Ldate').AsDateTime;
+      except
+        raise;
+      end;
     finally
-      FReadSQL.Transaction.Commit;
+      FReadSQL.Close;
     end;
   end;
 end;
@@ -2059,57 +2068,62 @@ end;
 function TFrontBase.GetModificationList(var MemTable: TkbmMemTable;
   const GoodKey, ModifyGroupKey: Integer): Boolean;
 begin
-  Result := False;
   FReadSQL.Close;
   MemTable.Close;
   MemTable.CreateTable;
   MemTable.Open;
-  if not FReadSQL.Transaction.InTransaction then
-    FReadSQL.Transaction.StartTransaction;
   try
-    if GoodKey <> -1 then
-    begin
-      FReadSQL.SQL.Text :=
-        'Select ' +
-        'm.usr$name, m.id, c.usr$mn_modifykey, c.usr$gd_goodkey ' +
-        'FROM usr$mn_modify m ' +
-        '  JOIN USR$CROSS36_416793598 c ON c.usr$mn_modifykey = m.id ' +
-        'WHERE c.usr$gd_goodkey = :goodkey ';
-      FReadSQL.ParamByName('goodkey').AsInteger := GoodKey;
-      FReadSQL.ExecQuery;
-      while not FReadSQL.Eof do
-      begin
-        MemTable.Append;
-        MemTable.FieldByName('ID').AsInteger := FReadSQL.FieldByName('ID').AsInteger;
-        MemTable.FieldByName('NAME').AsString := FReadSQL.FieldByName('USR$NAME').AsString;
-        MemTable.Post;
+    try
+      if not FReadSQL.Transaction.InTransaction then
+        FReadSQL.Transaction.StartTransaction;
 
-        FReadSQL.Next;
-      end;
-    end else
-    if ModifyGroupKey <> -1 then
-    begin
-      FReadSQL.SQL.Text :=
-        'SELECT m.id, m.USR$NAME FROM usr$mn_modify mn ' +
-        'LEFT JOIN usr$mn_modify m ON m.LB >= mn.LB ' +
-        '  AND  m.RB <= mn.RB ' +
-        'WHERE m.USR$ISGROUP <> 1 ' +
-        '  AND mn.ID = :modifygroupkey ';
-      FReadSQL.ParamByName('modifygroupkey').AsInteger := ModifyGroupKey;
-      FReadSQL.ExecQuery;
-      while not FReadSQL.Eof do
+      if GoodKey <> -1 then
       begin
-        MemTable.Append;
-        MemTable.FieldByName('ID').AsInteger := FReadSQL.FieldByName('ID').AsInteger;
-        MemTable.FieldByName('NAME').AsString := FReadSQL.FieldByName('USR$NAME').AsString;
-        MemTable.Post;
+        FReadSQL.SQL.Text :=
+          'Select ' +
+          'm.usr$name, m.id, c.usr$mn_modifykey, c.usr$gd_goodkey ' +
+          'FROM usr$mn_modify m ' +
+          '  JOIN USR$CROSS36_416793598 c ON c.usr$mn_modifykey = m.id ' +
+          'WHERE c.usr$gd_goodkey = :goodkey ';
+        FReadSQL.ParamByName('goodkey').AsInteger := GoodKey;
+        FReadSQL.ExecQuery;
+        while not FReadSQL.Eof do
+        begin
+          MemTable.Append;
+          MemTable.FieldByName('ID').AsInteger := FReadSQL.FieldByName('ID').AsInteger;
+          MemTable.FieldByName('NAME').AsString := FReadSQL.FieldByName('USR$NAME').AsString;
+          MemTable.Post;
 
-        FReadSQL.Next;
+          FReadSQL.Next;
+        end;
+      end else
+      if ModifyGroupKey <> -1 then
+      begin
+        FReadSQL.SQL.Text :=
+          'SELECT m.id, m.USR$NAME FROM usr$mn_modify mn ' +
+          'LEFT JOIN usr$mn_modify m ON m.LB >= mn.LB ' +
+          '  AND  m.RB <= mn.RB ' +
+          'WHERE m.USR$ISGROUP <> 1 ' +
+          '  AND mn.ID = :modifygroupkey ';
+        FReadSQL.ParamByName('modifygroupkey').AsInteger := ModifyGroupKey;
+        FReadSQL.ExecQuery;
+        while not FReadSQL.Eof do
+        begin
+          MemTable.Append;
+          MemTable.FieldByName('ID').AsInteger := FReadSQL.FieldByName('ID').AsInteger;
+          MemTable.FieldByName('NAME').AsString := FReadSQL.FieldByName('USR$NAME').AsString;
+          MemTable.Post;
+
+          FReadSQL.Next;
+        end;
       end;
+      Result := True;
+    except
+      Result := False;
+      raise;
     end;
-    Result := True;
   finally
-    FReadSQL.Transaction.Commit;
+    FReadSQL.Close;
   end;
 end;
 
@@ -2117,36 +2131,42 @@ procedure TFrontBase.InitDisplay;
 begin
   FDisplayInitialized := False;
   FReadSQL.Close;
-  if not FReadSQL.Transaction.InTransaction then
-    FReadSQL.Transaction.StartTransaction;
   try
-    FReadSQL.SQL.Text :=
-      ' SELECT * FROM USR$MN_SALEDEVICE sd ' +
-      ' WHERE sd.USR$COMPUTERNAME = :ComputerName and sd.usr$active = 1 ';
-    FReadSQL.Params[0].AsString := GetLocalComputerName;
-    FReadSQL.ExecQuery;
-    if not FReadSQL.Eof then
-    begin
-      while not FReadSQL.Eof do
-      begin
-        if FReadSQL.FieldByName('USR$DEVICETYPE').AsInteger = 0 then
-        begin
-          FDisplay := TDisplay.Create;
-          FDisplay.ComPort := FReadSQL.FieldByName('USR$COMPORT').AsInteger;
-          FDisplay.Init(True, 1);
+    try
+      if not FReadSQL.Transaction.InTransaction then
+        FReadSQL.Transaction.StartTransaction;
 
-          Break;
+      FReadSQL.SQL.Text :=
+        ' SELECT * FROM USR$MN_SALEDEVICE sd ' +
+        ' WHERE sd.USR$COMPUTERNAME = :ComputerName and sd.usr$active = 1 ';
+      FReadSQL.Params[0].AsString := GetLocalComputerName;
+      FReadSQL.ExecQuery;
+      if not FReadSQL.Eof then
+      begin
+        while not FReadSQL.Eof do
+        begin
+          if FReadSQL.FieldByName('USR$DEVICETYPE').AsInteger = 0 then
+          begin
+            FDisplay := TDisplay.Create;
+            FDisplay.ComPort := FReadSQL.FieldByName('USR$COMPORT').AsInteger;
+            FDisplay.Init(True, 1);
+
+            Break;
+          end;
+          FReadSQL.Next;
         end;
-        FReadSQL.Next;
+      end else
+      begin
+        FDisplay := TDisplay.Create;
+        FDisplay.Init(False, -1);
       end;
-    end else
-    begin
-      FDisplay := TDisplay.Create;
-      FDisplay.Init(False, -1);
+      FDisplayInitialized := True;
+    except
+      FDisplayInitialized := False;
+      raise;
     end;
-    FDisplayInitialized := True;
   finally
-    FReadSQL.Transaction.Commit;
+    FReadSQL.Close;
   end;
 end;
 
@@ -2175,79 +2195,89 @@ function TFrontBase.GetPayKindType(var MemTable: TkbmMemTable;
 var
   S: String;
 begin
-  Result := False;
   FReadSQL.Close;
   MemTable.Close;
   MemTable.CreateTable;
   MemTable.Open;
-  if not FReadSQL.Transaction.InTransaction then
-    FReadSQL.Transaction.StartTransaction;
   try
-    S :=
-      ' SELECT USR$NAME, USR$PAYTYPEKEY, USR$NOFISCAL, ID FROM USR$MN_KINDTYPE ' +
-      ' WHERE USR$PAYTYPEKEY = :paytype ';
-    if IsPlCard = 1 then
-      S := S + ' AND USR$ISPLCARD = 1 '
-    else
-      S := S + ' AND ((USR$ISPLCARD IS NULL) OR (USR$ISPLCARD = 0))';
+    try
+      if not FReadSQL.Transaction.InTransaction then
+        FReadSQL.Transaction.StartTransaction;
 
-    FReadSQL.SQL.Text := S;
-    FReadSQL.Params[0].AsInteger := PayType;
-    FReadSQL.ExecQuery;
-    while not FReadSQL.Eof do
-    begin
-      MemTable.Append;
-      MemTable.FieldByName('USR$NAME').AsString := FReadSQL.FieldByName('USR$NAME').AsString;
-      MemTable.FieldByName('USR$PAYTYPEKEY').AsInteger := FReadSQL.FieldByName('ID').AsInteger;
-      MemTable.FieldByName('USR$NOFISCAL').AsInteger := FReadSQL.FieldByName('USR$NOFISCAL').AsInteger;
-      MemTable.Post;
+      S :=
+        ' SELECT USR$NAME, USR$PAYTYPEKEY, USR$NOFISCAL, ID FROM USR$MN_KINDTYPE ' +
+        ' WHERE USR$PAYTYPEKEY = :paytype ';
+      if IsPlCard = 1 then
+        S := S + ' AND USR$ISPLCARD = 1 '
+      else
+        S := S + ' AND ((USR$ISPLCARD IS NULL) OR (USR$ISPLCARD = 0))';
 
-      FReadSQL.Next;
+      FReadSQL.SQL.Text := S;
+      FReadSQL.Params[0].AsInteger := PayType;
+      FReadSQL.ExecQuery;
+      while not FReadSQL.Eof do
+      begin
+        MemTable.Append;
+        MemTable.FieldByName('USR$NAME').AsString := FReadSQL.FieldByName('USR$NAME').AsString;
+        MemTable.FieldByName('USR$PAYTYPEKEY').AsInteger := FReadSQL.FieldByName('ID').AsInteger;
+        MemTable.FieldByName('USR$NOFISCAL').AsInteger := FReadSQL.FieldByName('USR$NOFISCAL').AsInteger;
+        MemTable.Post;
+
+        FReadSQL.Next;
+      end;
+      Result := True;
+    except
+      Result := False;
+      raise;
     end;
-    Result := True;
   finally
-    FReadSQL.Transaction.Commit;
+    FReadSQL.Close;
   end;
 end;
 
 function TFrontBase.GetPersonalCardInfo(const MemTable: TkbmMemTable;
   const Pass: String; const PersonalCardID: Integer): Boolean;
 begin
-  Result := False;
-
   FReadSQL.Close;
   MemTable.Close;
   MemTable.CreateTable;
   MemTable.Open;
-  if not FReadSQL.Transaction.InTransaction then
-    FReadSQL.Transaction.StartTransaction;
   try
-    FReadSQL.SQL.Text :=
-      'SELECT C.*, T.USR$NOFISCAL FROM USR$MN_PERSONALCARD C ' +
-      'JOIN USR$MN_KINDTYPE T ON 1 = 1 ' +
-      'WHERE T.ID = :ID AND C.USR$CODE = :pass ';
-    FReadSQL.ParamByName('pass').AsString := Pass;
-    FReadSQL.ParamByName('ID').AsInteger := PersonalCardID;
-    FReadSQL.ExecQuery;
-    while not FReadSQL.Eof do
-    begin
-      if FReadSQL.FieldByName('USR$DISABLED').AsInteger = 1 then
-      begin
-        AdvTaskMessageDlg('Внимание', 'Данная карта отключена!', mtError, [mbOK], 0);
-        exit;
-      end;
-      MemTable.Append;
-      MemTable.FieldByName('USR$NAME').AsString := FReadSQL.FieldByName('USR$NAME').AsString;
-      MemTable.FieldByName('USR$CODE').AsString := FReadSQL.FieldByName('USR$CODE').AsString;
-      MemTable.FieldByName('ID').AsInteger := FReadSQL.FieldByName('ID').AsInteger;
-      MemTable.FieldByName('USR$NOFISCAL').AsInteger := FReadSQL.FieldByName('USR$NOFISCAL').AsInteger;
-      MemTable.Post;
+    try
+      if not FReadSQL.Transaction.InTransaction then
+        FReadSQL.Transaction.StartTransaction;
 
-      FReadSQL.Next;
+      FReadSQL.SQL.Text :=
+        'SELECT C.*, T.USR$NOFISCAL FROM USR$MN_PERSONALCARD C ' +
+        'JOIN USR$MN_KINDTYPE T ON 1 = 1 ' +
+        'WHERE T.ID = :ID AND C.USR$CODE = :pass ';
+      FReadSQL.ParamByName('pass').AsString := Pass;
+      FReadSQL.ParamByName('ID').AsInteger := PersonalCardID;
+      FReadSQL.ExecQuery;
+      while not FReadSQL.Eof do
+      begin
+        if FReadSQL.FieldByName('USR$DISABLED').AsInteger = 1 then
+        begin
+          AdvTaskMessageDlg('Внимание', 'Данная карта отключена!', mtError, [mbOK], 0);
+          Result := False;
+          exit;
+        end;
+        MemTable.Append;
+        MemTable.FieldByName('USR$NAME').AsString := FReadSQL.FieldByName('USR$NAME').AsString;
+        MemTable.FieldByName('USR$CODE').AsString := FReadSQL.FieldByName('USR$CODE').AsString;
+        MemTable.FieldByName('ID').AsInteger := FReadSQL.FieldByName('ID').AsInteger;
+        MemTable.FieldByName('USR$NOFISCAL').AsInteger := FReadSQL.FieldByName('USR$NOFISCAL').AsInteger;
+        MemTable.Post;
+
+        FReadSQL.Next;
+      end;
+      Result := True;
+    except
+      Result := False;
+      raise;
     end;
-    Result := True;
   finally
-    FReadSQL.Transaction.Commit;
+    FReadSQL.Close;
   end;
 end;
 
@@ -2365,7 +2395,6 @@ begin
     Result.XID := XID;
     Result.DBID := DBID;
   finally
-    FReadSQL.Transaction.Commit;;
     FReadSQL.Close;
   end;
 end;
@@ -2373,38 +2402,43 @@ end;
 procedure TFrontBase.GetCashInfo;
 begin
   FReadSQL.Close;
-  if not FReadSQL.Transaction.InTransaction then
-    FReadSQL.Transaction.StartTransaction;
   try
-    FReadSQL.SQL.Text :=
-      ' select ' +
-      '   first(1) ' +
-      '   s.usr$cashcode as code, s.USR$COMPORT as comport, s.usr$cashnumber as number, s.id ' +
-      ' from ' +
-      '   usr$mn_pointofsaleset  s  ' +
-      ' where ' +
-      '   upper(s.usr$computer) = upper(:comp) ' +
-      '   and coalesce(s.usr$active, 0) = 0 ' +
-      '   and s.usr$kassa > '''' ' +
-      ' order by  ' +
-      '   s.id desc ';
-    FReadSQL.Params[0].AsString := AnsiUpperCase(GetLocalComputerName);
-    FReadSQL.ExecQuery;
-    if not FReadSQL.Eof then
-    begin
-      FCashCode := FReadSQL.FieldByName('code').AsInteger;
-      FFiscalComPort := FReadSQL.FieldByName('comport').AsInteger;
-      FCashNumber := FReadSQL.FieldByName('number').AsInteger;
-      FIsMainCash := True;
-    end else
-    begin
-      FCashCode := -1;
-      FFiscalComPort := -1;
-      FCashNumber := -1;
-      FIsMainCash := False;
+    try
+      if not FReadSQL.Transaction.InTransaction then
+        FReadSQL.Transaction.StartTransaction;
+
+      FReadSQL.SQL.Text :=
+        ' select ' +
+        '   first(1) ' +
+        '   s.usr$cashcode as code, s.USR$COMPORT as comport, s.usr$cashnumber as number, s.id ' +
+        ' from ' +
+        '   usr$mn_pointofsaleset  s  ' +
+        ' where ' +
+        '   upper(s.usr$computer) = upper(:comp) ' +
+        '   and coalesce(s.usr$active, 0) = 0 ' +
+        '   and s.usr$kassa > '''' ' +
+        ' order by  ' +
+        '   s.id desc ';
+      FReadSQL.Params[0].AsString := AnsiUpperCase(GetLocalComputerName);
+      FReadSQL.ExecQuery;
+      if not FReadSQL.Eof then
+      begin
+        FCashCode := FReadSQL.FieldByName('code').AsInteger;
+        FFiscalComPort := FReadSQL.FieldByName('comport').AsInteger;
+        FCashNumber := FReadSQL.FieldByName('number').AsInteger;
+        FIsMainCash := True;
+      end else
+      begin
+        FCashCode := -1;
+        FFiscalComPort := -1;
+        FCashNumber := -1;
+        FIsMainCash := False;
+      end;
+    except
+      raise;
     end;
   finally
-    FReadSQL.Transaction.Commit;
+    FReadSQL.Close;
   end;
 end;
 
@@ -2444,41 +2478,46 @@ begin
   Result := '';
 
   FReadSQL.Close;
-  if not FReadSQL.Transaction.InTransaction then
-    FReadSQL.Transaction.StartTransaction;
   try
-    FReadSQL.SQL.Text :=
-      ' select ' +
-      '   con.name, u.ingroup ' +
-      ' from ' +
-      '   gd_contact con ' +
-      '   join gd_user u on u.contactkey = con.id ' +
-      ' where ' +
-      '   con.id = :id ';
-    FReadSQL.Params[0].AsInteger := ID;
-    FReadSQL.ExecQuery;
-    if not FReadSQL.Eof then
-    begin
-      if TwoRows then
-        S := #13#10
-      else
-        S := '';
+    try
+      if not FReadSQL.Transaction.InTransaction then
+        FReadSQL.Transaction.StartTransaction;
 
-      if WithGroup then
+      FReadSQL.SQL.Text :=
+        ' select ' +
+        '   con.name, u.ingroup ' +
+        ' from ' +
+        '   gd_contact con ' +
+        '   join gd_user u on u.contactkey = con.id ' +
+        ' where ' +
+        '   con.id = :id ';
+      FReadSQL.Params[0].AsInteger := ID;
+      FReadSQL.ExecQuery;
+      if not FReadSQL.Eof then
       begin
-        if (FReadSQL.FieldByName('InGroup').AsInteger and Options.ManagerGroupMask) <> 0 then
-          UserInGroupName := 'Менеджер: '
-        else if (FReadSQL.FieldByName('InGroup').AsInteger and Options.KassaGroupMask) <> 0 then
-          UserInGroupName := 'Кассир: '
+        if TwoRows then
+          S := #13#10
         else
-          UserInGroupName := 'Официант: ';
+          S := '';
 
-        S := UserInGroupName + S;
+        if WithGroup then
+        begin
+          if (FReadSQL.FieldByName('InGroup').AsInteger and Options.ManagerGroupMask) <> 0 then
+            UserInGroupName := 'Менеджер: '
+          else if (FReadSQL.FieldByName('InGroup').AsInteger and Options.KassaGroupMask) <> 0 then
+            UserInGroupName := 'Кассир: '
+          else
+            UserInGroupName := 'Официант: ';
+
+          S := UserInGroupName + S;
+        end;
+        Result := S + FReadSQL.FieldByName('name').AsString;
       end;
-      Result := S + FReadSQL.FieldByName('name').AsString;
+    except
+      raise;
     end;
   finally
-    FReadSQL.Transaction.Commit;
+    FReadSQL.Close;
   end;
 end;
 
@@ -2586,7 +2625,7 @@ begin
         FReadSQL.ExecQuery;
         Curr := FReadSQL.Fields[0].AsCurrency;
       finally
-        FReadSQL.Transaction.Commit;
+        FReadSQL.Close;
       end;
 
       FSQL.ParamByName('USR$WAITERKEY').AsInteger := WaiterKey;
@@ -2654,7 +2693,7 @@ begin
         end else
           AdvTaskMessageDlg('Внимание', 'Введён неверный пароль!', mtError, [mbOK], 0);
       finally
-        FReadSQL.Transaction.Commit;
+        FReadSQL.Close;
       end;
     end;  
   finally
@@ -2719,10 +2758,13 @@ end;
 function TFrontBase.SaveAndReloadOrder(var HeaderTable, LineTable,
   ModifyTable: TkbmMemTable; OrderKey: Integer): Boolean;
 begin
-  Result := False;
-  CreateNewOrder(HeaderTable, LineTable, ModifyTable, OrderKey);
-  LockUserOrder(OrderKey);
-  Result := GetOrder(HeaderTable, LineTable, ModifyTable, OrderKey);
+  try
+    CreateNewOrder(HeaderTable, LineTable, ModifyTable, OrderKey);
+    LockUserOrder(OrderKey);
+    Result := GetOrder(HeaderTable, LineTable, ModifyTable, OrderKey);
+  except
+    raise;
+  end;
 end;
 
 function TFrontBase.LockUserOrder(const OrderKey :Integer): Boolean;
@@ -2798,25 +2840,30 @@ end;
 function TFrontBase.GetPrinterName: String;
 begin
   FReadSQL.Close;
-  if not FReadSQL.Transaction.InTransaction then
-    FReadSQL.Transaction.StartTransaction;
   try
-    FReadSQL.SQL.Text :=
-      'select first(1) ' +
-      '  prnset.usr$printername, prnset.USR$ENCLOSE, prnset.usr$printerid ' +
-      'from ' +
-      '  usr$mn_prngroupset prnset ' +
-      'where ' +
-      '  prnset.usr$kassa = 1 ' +
-      '  and prnset.usr$computername = :comp ';
-    FReadSQL.Params[0].AsString := GetLocalComputerName;
-    FReadSQL.ExecQuery;
-    if not FReadSQL.Eof then
-      Result := FReadSQL.FieldByName('usr$printername').AsString
-    else
-      Result := '';
+    try
+      if not FReadSQL.Transaction.InTransaction then
+        FReadSQL.Transaction.StartTransaction;
+
+      FReadSQL.SQL.Text :=
+        'select first(1) ' +
+        '  prnset.usr$printername, prnset.USR$ENCLOSE, prnset.usr$printerid ' +
+        'from ' +
+        '  usr$mn_prngroupset prnset ' +
+        'where ' +
+        '  prnset.usr$kassa = 1 ' +
+        '  and prnset.usr$computername = :comp ';
+      FReadSQL.Params[0].AsString := GetLocalComputerName;
+      FReadSQL.ExecQuery;
+      if not FReadSQL.Eof then
+        Result := FReadSQL.FieldByName('usr$printername').AsString
+      else
+        Result := '';
+    except
+      raise;
+    end;
   finally
-    FReadSQL.Transaction.Commit;
+    FReadSQL.Close;
   end;
 end;
 
@@ -2825,26 +2872,30 @@ begin
   Result := False;
 
   FReadSQL.Close;
-  if not FReadSQL.Transaction.InTransaction then
-    FReadSQL.Transaction.StartTransaction;
   try
-    FReadSQL.SQL.Text :=
-      'SELECT USR$TEMPLATEDATA AS TEMPLATEDATA '  +
-      'FROM USR$MN_REPORT  ' +
-      'WHERE ID = :ID ';
-{      'SELECT TM.TEMPLATEDATA ' +
-      'FROM RP_REPORTLIST L ' +
-      'JOIN RP_REPORTTEMPLATE TM ON L.TEMPLATEKEY = TM.ID ' +
-      'WHERE L.ID = :ID ';        }
-    FReadSQL.Params[0].AsInteger := ID;
-    FReadSQL.ExecQuery;
-    if not FReadSQL.Eof then
-    begin
-      Result := True;
-      FReadSQL.FieldByName('templatedata').SaveToStream(Stream);
+    try
+      if not FReadSQL.Transaction.InTransaction then
+        FReadSQL.Transaction.StartTransaction;
+      FReadSQL.SQL.Text :=
+        'SELECT USR$TEMPLATEDATA AS TEMPLATEDATA '  +
+        'FROM USR$MN_REPORT  ' +
+        'WHERE ID = :ID ';
+  {      'SELECT TM.TEMPLATEDATA ' +
+        'FROM RP_REPORTLIST L ' +
+        'JOIN RP_REPORTTEMPLATE TM ON L.TEMPLATEKEY = TM.ID ' +
+        'WHERE L.ID = :ID ';        }
+      FReadSQL.Params[0].AsInteger := ID;
+      FReadSQL.ExecQuery;
+      if not FReadSQL.Eof then
+      begin
+        Result := True;
+        FReadSQL.FieldByName('templatedata').SaveToStream(Stream);
+      end;
+    except
+      raise;
     end;
   finally
-    FReadSQL.Transaction.Commit;
+    FReadSQL.Close;
   end;
 end;
 
@@ -2853,18 +2904,23 @@ begin
   Result := False;
 
   FReadSQL.Close;
-  if not FReadSQL.Transaction.InTransaction then
-    FReadSQL.Transaction.StartTransaction;
   try
-    FReadSQL.SQL.Text :=
-      'SELECT usr$pay FROM USR$MN_ORDER ' +
-      'where documentkey = :id ';
-    FReadSQL.Params[0].AsInteger := ID;
-    FReadSQL.ExecQuery;
-    if FReadSQL.FieldByName('usr$pay').AsInteger = 1 then
-      Result := True;
+    try
+      if not FReadSQL.Transaction.InTransaction then
+        FReadSQL.Transaction.StartTransaction;
+
+      FReadSQL.SQL.Text :=
+        'SELECT usr$pay FROM USR$MN_ORDER ' +
+        'where documentkey = :id ';
+      FReadSQL.Params[0].AsInteger := ID;
+      FReadSQL.ExecQuery;
+      if FReadSQL.FieldByName('usr$pay').AsInteger = 1 then
+        Result := True;
+    except
+      raise;
+    end;
   finally
-    FReadSQL.Transaction.Commit;
+    FReadSQL.Close;
   end;
 end;
 
@@ -2875,131 +2931,135 @@ end;
 
 function TFrontBase.GetDiscount(const DiscKey, GoodKey: Integer;
   DocDate: TDateTime; PersDiscount: Currency): Currency;
-var
-  FSQL: TIBSQL;
-  DidActivate: Boolean;
 begin
   Result := 0;
 
-  DidActivate := FReadSQL.Transaction.InTransaction;
-  FSQL := TIBSQL.Create(nil);
-  FSQL.Transaction := FReadSQL.Transaction;
+  FReadSQL.Close;
   try
-    if not DidActivate then
-      FReadSQL.Transaction.StartTransaction;
+    try
+      if not FReadSQL.Transaction.InTransaction then
+        FReadSQL.Transaction.StartTransaction;
 
-    FSQL.SQL.Text :=
-      'SELECT G.DISCOUNT ' +
-      'FROM USR$MN_P_GETDISCOUNT(:disckey, :goodkey, :docdate, :persdiscount) G ';
-    FSQL.ParamByName('disckey').AsInteger := DiscKey;
-    FSQL.ParamByName('goodkey').AsInteger := GoodKey;
-    FSQL.ParamByName('docdate').AsDateTime := DocDate;
-    FSQL.ParamByName('persdiscount').AsCurrency := PersDiscount;
-    FSQL.ExecQuery;
-    if not FSQL.Eof then
-      Result := FSQL.FieldByName('DISCOUNT').AsCurrency;
-
+      FReadSQL.SQL.Text :=
+        'SELECT G.DISCOUNT ' +
+        'FROM USR$MN_P_GETDISCOUNT(:disckey, :goodkey, :docdate, :persdiscount) G ';
+      FReadSQL.ParamByName('disckey').AsInteger := DiscKey;
+      FReadSQL.ParamByName('goodkey').AsInteger := GoodKey;
+      FReadSQL.ParamByName('docdate').AsDateTime := DocDate;
+      FReadSQL.ParamByName('persdiscount').AsCurrency := PersDiscount;
+      FReadSQL.ExecQuery;
+      if not FReadSQL.Eof then
+        Result := FReadSQL.FieldByName('DISCOUNT').AsCurrency;
+    except
+      raise;
+    end;
   finally
-    if not DidActivate then
-      FReadSQL.Transaction.Commit;
-    FSQL.Free;
+    FReadSQL.Close;
   end;
 end;
 
 function TFrontBase.GetDiscountList(var MemTable: TkbmMemTable): Boolean;
 begin
-  Result := False;
   FReadSQL.Close;
   MemTable.Close;
   MemTable.CreateTable;
   MemTable.Open;
-  if not FReadSQL.Transaction.InTransaction then
-    FReadSQL.Transaction.StartTransaction;
   try
-    FReadSQL.SQL.Text := 'select ID, USR$NAME from USR$MN_DISCOUNTNAME';
-    FReadSQL.ExecQuery;
-    while not FReadSQL.EOF do
-    begin
-      MemTable.Append;
-      MemTable.FieldByName('ID').AsInteger := FReadSQL.FieldByName('ID').AsInteger;
-      MemTable.FieldByName('USR$NAME').AsString := FReadSQL.FieldByName('USR$NAME').AsString;
-      MemTable.Post;
-      FReadSQL.Next;
+    try
+      if not FReadSQL.Transaction.InTransaction then
+        FReadSQL.Transaction.StartTransaction;
+
+      FReadSQL.SQL.Text := 'SELECT ID, USR$NAME from USR$MN_DISCOUNTNAME';
+      FReadSQL.ExecQuery;
+      while not FReadSQL.EOF do
+      begin
+        MemTable.Append;
+        MemTable.FieldByName('ID').AsInteger := FReadSQL.FieldByName('ID').AsInteger;
+        MemTable.FieldByName('USR$NAME').AsString := FReadSQL.FieldByName('USR$NAME').AsString;
+        MemTable.Post;
+        FReadSQL.Next;
+      end;
+      Result := True;
+    except
+      Result := False;
+      raise;
     end;
-    Result := True;
   finally
     FReadSQL.Close;
-    FReadSQL.Transaction.Commit;
   end;
 end;
 
 function TFrontBase.GetDiscountCardInfo(
   var MemTable: TkbmMemTable; const CardID: Integer; LDate: TDateTime; Pass: String): Boolean;
 begin
-  Result := False;
   FReadSQL.Close;
   MemTable.Close;
   MemTable.CreateTable;
   MemTable.Open;
-  if not FReadSQL.Transaction.InTransaction then
-    FReadSQL.Transaction.StartTransaction;
   try
-    if Pass = '' then
-      FReadSQL.SQL.Text :=
-        '  select first(1) ' +
-        '    c.id, name.usr$name as discountname,  ' +
-        '    dt.usr$percent as discpers, ' +
-        '    coalesce(c.usr$surname, '''') || '' '' || coalesce(c.usr$firstname, '''') || '' '' || coalesce(c.usr$middlename, '''') as contactname, ' +
-        '    dt.usr$fromdate, ' +
-        '    name.id DiscKey, name.usr$bonus, c.USR$BALANCE  ' +
-        '  from                                              ' +
-        '    usr$mn_discountcard c                           ' +
-        '    left join usr$mn_discountname name on name.id = c.usr$discountnamekey ' +
-        '    left join usr$mn_discounttype dt on dt.usr$discountnamekey = name.id and dt.usr$fromdate <= :adate  ' +
-        '  where c.id = :id  ' +
-        '    and c.usr$datebegin <= :adate  ' +
-        '    and (c.usr$dateend >= :adate or c.usr$dateend is null) ' +
-        '  order by dt.usr$fromdate desc '
-    else
-      FReadSQL.SQL.Text :=
-        '  select first(1) ' +
-        '    c.id, name.usr$name as discountname,  ' +
-        '    dt.usr$percent as discpers, ' +
-        '    coalesce(c.usr$surname, '''') || '' '' || coalesce(c.usr$firstname, '''') || '' '' || coalesce(c.usr$middlename, '''') as contactname, ' +
-        '    dt.usr$fromdate, ' +
-        '    name.id DiscKey, name.usr$bonus, c.USR$BALANCE  ' +
-        '  from                                              ' +
-        '    usr$mn_discountcard c                           ' +
-        '    left join usr$mn_discountname name on name.id = c.usr$discountnamekey ' +
-        '    left join usr$mn_discounttype dt on dt.usr$discountnamekey = name.id and dt.usr$fromdate <= :adate  ' +
-        '  where c.usr$code = :pass  ' +
-        '    and c.usr$datebegin <= :adate  ' +
-        '    and (c.usr$dateend >= :adate or c.usr$dateend is null) ' +
-        '  order by dt.usr$fromdate desc ';
+    try
+      if not FReadSQL.Transaction.InTransaction then
+        FReadSQL.Transaction.StartTransaction;
 
-    FReadSQL.ParamByName('adate').AsDateTime := LDate;
-    if Pass = '' then
-      FReadSQL.ParamByName('id').AsInteger := CardID
-    else
-      FReadSQL.ParamByName('pass').AsString := Pass;
-    FReadSQL.ExecQuery;
-    while not FReadSQL.EOF do
-    begin
-      MemTable.Append;
-      MemTable.FieldByName('ID').AsInteger := FReadSQL.FieldByName('ID').AsInteger;
-      MemTable.FieldByName('contactname').AsString := FReadSQL.FieldByName('contactname').AsString;
-      MemTable.FieldByName('Discountname').AsString := FReadSQL.FieldByName('Discountname').AsString;
-      MemTable.FieldByName('DiscPers').AsCurrency := FReadSQL.FieldByName('DiscPers').AsCurrency;
-      MemTable.FieldByName('usr$bonus').AsCurrency := FReadSQL.FieldByName('usr$bonus').AsCurrency;
-      MemTable.FieldByName('USR$BALANCE').AsCurrency := FReadSQL.FieldByName('USR$BALANCE').AsCurrency;
-      MemTable.FieldByName('DiscKey').AsInteger := FReadSQL.FieldByName('DiscKey').AsInteger;
-      MemTable.Post;
-      FReadSQL.Next;
+      if Pass = '' then
+        FReadSQL.SQL.Text :=
+          '  select first(1) ' +
+          '    c.id, name.usr$name as discountname,  ' +
+          '    dt.usr$percent as discpers, ' +
+          '    coalesce(c.usr$surname, '''') || '' '' || coalesce(c.usr$firstname, '''') || '' '' || coalesce(c.usr$middlename, '''') as contactname, ' +
+          '    dt.usr$fromdate, ' +
+          '    name.id DiscKey, name.usr$bonus, c.USR$BALANCE  ' +
+          '  from                                              ' +
+          '    usr$mn_discountcard c                           ' +
+          '    left join usr$mn_discountname name on name.id = c.usr$discountnamekey ' +
+          '    left join usr$mn_discounttype dt on dt.usr$discountnamekey = name.id and dt.usr$fromdate <= :adate  ' +
+          '  where c.id = :id  ' +
+          '    and c.usr$datebegin <= :adate  ' +
+          '    and (c.usr$dateend >= :adate or c.usr$dateend is null) ' +
+          '  order by dt.usr$fromdate desc '
+      else
+        FReadSQL.SQL.Text :=
+          '  select first(1) ' +
+          '    c.id, name.usr$name as discountname,  ' +
+          '    dt.usr$percent as discpers, ' +
+          '    coalesce(c.usr$surname, '''') || '' '' || coalesce(c.usr$firstname, '''') || '' '' || coalesce(c.usr$middlename, '''') as contactname, ' +
+          '    dt.usr$fromdate, ' +
+          '    name.id DiscKey, name.usr$bonus, c.USR$BALANCE  ' +
+          '  from                                              ' +
+          '    usr$mn_discountcard c                           ' +
+          '    left join usr$mn_discountname name on name.id = c.usr$discountnamekey ' +
+          '    left join usr$mn_discounttype dt on dt.usr$discountnamekey = name.id and dt.usr$fromdate <= :adate  ' +
+          '  where c.usr$code = :pass  ' +
+          '    and c.usr$datebegin <= :adate  ' +
+          '    and (c.usr$dateend >= :adate or c.usr$dateend is null) ' +
+          '  order by dt.usr$fromdate desc ';
+
+      FReadSQL.ParamByName('adate').AsDateTime := LDate;
+      if Pass = '' then
+        FReadSQL.ParamByName('id').AsInteger := CardID
+      else
+        FReadSQL.ParamByName('pass').AsString := Pass;
+      FReadSQL.ExecQuery;
+      while not FReadSQL.EOF do
+      begin
+        MemTable.Append;
+        MemTable.FieldByName('ID').AsInteger := FReadSQL.FieldByName('ID').AsInteger;
+        MemTable.FieldByName('contactname').AsString := FReadSQL.FieldByName('contactname').AsString;
+        MemTable.FieldByName('Discountname').AsString := FReadSQL.FieldByName('Discountname').AsString;
+        MemTable.FieldByName('DiscPers').AsCurrency := FReadSQL.FieldByName('DiscPers').AsCurrency;
+        MemTable.FieldByName('usr$bonus').AsCurrency := FReadSQL.FieldByName('usr$bonus').AsCurrency;
+        MemTable.FieldByName('USR$BALANCE').AsCurrency := FReadSQL.FieldByName('USR$BALANCE').AsCurrency;
+        MemTable.FieldByName('DiscKey').AsInteger := FReadSQL.FieldByName('DiscKey').AsInteger;
+        MemTable.Post;
+        FReadSQL.Next;
+      end;
+      Result := True;
+    except
+      Result := False;
+      raise;
     end;
-    Result := True;
   finally
     FReadSQL.Close;
-    FReadSQL.Transaction.Commit;
   end;
 end;
 
@@ -3016,7 +3076,6 @@ begin
 // 3. Создаем IB запись
 // 4. Добавляем запись в GD_USER
 // 5. Добавляем запись в GD_USERCOMPANY
-  Result := False;
   FSQL := TIBSQL.Create(nil);
   Tr := TIBTransaction.Create(nil);
   try
@@ -3113,52 +3172,56 @@ function TFrontBase.CalcBonusSum(var DataSet: TDataSet;
 var
   SumCheck: Currency;
 begin
-  Result := False;
   FReadSQL.Close;
-  if not FReadSQL.Transaction.InTransaction then
-    FReadSQL.Transaction.StartTransaction;
   try
-    FReadSQL.SQL.Text :=
-      'SELECT d.usr$bonus ' +
-      'FROM usr$mn_discountname d ' +
-      'where d.id = :id ';
-    FReadSQL.Params[0].AsInteger := DataSet.FieldByname('USR$DISCOUNTKEY').AsInteger;
-    FReadSQL.ExecQuery;
-    
-    Bonus := (FReadSQL.FieldByName('USR$BONUS').AsInteger = 1);
-    if Bonus then
-    begin
-      SumCheck := 0;
+    try
+      if not FReadSQL.Transaction.InTransaction then
+        FReadSQL.Transaction.StartTransaction;
 
-      FLine.First;
-      FReadSQL.Close;
       FReadSQL.SQL.Text :=
-        'SELECT g.usr$nobonus ' +
-        'FROM gd_good g ' +
-        'where g.id = :id ';
-      while not FLine.Eof do
-      begin
-        FReadSQL.Params[0].AsInteger := FLine.FieldByName('USR$GOODKEY').AsInteger;
-        FReadSQL.ExecQuery;
-        if FReadSQL.FieldByName('usr$nobonus').AsInteger <> 1 then
-          SumCheck := SumCheck + FLine.FieldByName('usr$sumncu').AsCurrency;
+        'SELECT d.usr$bonus ' +
+        'FROM usr$mn_discountname d ' +
+        'where d.id = :id ';
+      FReadSQL.Params[0].AsInteger := DataSet.FieldByname('USR$DISCOUNTKEY').AsInteger;
+      FReadSQL.ExecQuery;
 
+      Bonus := (FReadSQL.FieldByName('USR$BONUS').AsInteger = 1);
+      if Bonus then
+      begin
+        SumCheck := 0;
+
+        FLine.First;
         FReadSQL.Close;
-        FLine.Next;
-      end;
+        FReadSQL.SQL.Text :=
+          'SELECT g.usr$nobonus ' +
+          'FROM gd_good g ' +
+          'where g.id = :id ';
+        while not FLine.Eof do
+        begin
+          FReadSQL.Params[0].AsInteger := FLine.FieldByName('USR$GOODKEY').AsInteger;
+          FReadSQL.ExecQuery;
+          if FReadSQL.FieldByName('usr$nobonus').AsInteger <> 1 then
+            SumCheck := SumCheck + FLine.FieldByName('usr$sumncu').AsCurrency;
 
-      if SumCheck <> 0 then
-      begin
-        PercDisc := DataSet.FieldByName('USR$BONUSSUM').AsCurrency / SumCheck * 100;
-        if PercDisc > 70 then
-          PercDisc := 70;
-      end else
-        PercDisc := 0;
+          FReadSQL.Close;
+          FLine.Next;
+        end;
+
+        if SumCheck <> 0 then
+        begin
+          PercDisc := DataSet.FieldByName('USR$BONUSSUM').AsCurrency / SumCheck * 100;
+          if PercDisc > 70 then
+            PercDisc := 70;
+        end else
+          PercDisc := 0;
+      end;
+      Result := True;
+    except
+      Result := False;
+      raise;
     end;
-    Result := True;
   finally
     FReadSQL.Close;
-    FReadSQL.Transaction.Commit;
   end;
 end;
 
@@ -3266,39 +3329,43 @@ function TFrontBase.GetServiceCheckOptions(const DocID: Integer;
 begin
   Result := False;
   FReadSQL.Close;
-  if not FReadSQL.Transaction.InTransaction then
-    FReadSQL.Transaction.StartTransaction;
   try
-    FReadSQL.SQL.Text :=
-      'select ' +
-      '  DISTINCT   ' +
-      '  IIF(setprn.usr$concatchecks = 0, prn.id, null) as prngrid, prn.usr$divide,  ' +
-      '  setprn.usr$printername, setprn.usr$printerid, o.documentkey, setprn.USR$DOSPRINTER  ' +
-      'from   ' +
-      '  usr$mn_order o  ' +
-      '  join usr$mn_orderline l on o.documentkey = l.masterkey  ' +
-      '  join gd_document doc on doc.id = l.documentkey and doc.usr$mn_printdate is null  ' +
-      '  join gd_good g on g.id = l.usr$goodkey  ' +
-      '  join usr$mn_prngroup prn on prn.id = g.usr$prngroupkey  ' +
-      '  join usr$mn_prngroupset setprn on setprn.usr$prngroup = prn.id  ' +
-      'where o.documentkey = :docid  ' +
-      ' and setprn.usr$computername = :comp   ' +
-      ' and setprn.usr$kassa = 0   ' +
-      'order by  ' +
-      '  setprn.usr$printername, prn.id  ';
-    FReadSQL.ParamByName('docid').AsInteger := DocID;
-    FReadSQL.ParamByName('comp').AsString := GetLocalComputerName;
-    FReadSQL.ExecQuery;
-    if not FReadSQL.Eof then
-    begin
-      PrinterName := FReadSQL.FieldByName('usr$printername').AsString;
-      PrnGrid := FReadSQL.FieldByName('prngrid').AsInteger;
+    try
+      if not FReadSQL.Transaction.InTransaction then
+        FReadSQL.Transaction.StartTransaction;
 
-      Result := True;
+      FReadSQL.SQL.Text :=
+        'select ' +
+        '  DISTINCT   ' +
+        '  IIF(setprn.usr$concatchecks = 0, prn.id, null) as prngrid, prn.usr$divide,  ' +
+        '  setprn.usr$printername, setprn.usr$printerid, o.documentkey, setprn.USR$DOSPRINTER  ' +
+        'from   ' +
+        '  usr$mn_order o  ' +
+        '  join usr$mn_orderline l on o.documentkey = l.masterkey  ' +
+        '  join gd_document doc on doc.id = l.documentkey and doc.usr$mn_printdate is null  ' +
+        '  join gd_good g on g.id = l.usr$goodkey  ' +
+        '  join usr$mn_prngroup prn on prn.id = g.usr$prngroupkey  ' +
+        '  join usr$mn_prngroupset setprn on setprn.usr$prngroup = prn.id  ' +
+        'where o.documentkey = :docid  ' +
+        ' and setprn.usr$computername = :comp   ' +
+        ' and setprn.usr$kassa = 0   ' +
+        'order by  ' +
+        '  setprn.usr$printername, prn.id  ';
+      FReadSQL.ParamByName('docid').AsInteger := DocID;
+      FReadSQL.ParamByName('comp').AsString := GetLocalComputerName;
+      FReadSQL.ExecQuery;
+      if not FReadSQL.Eof then
+      begin
+        PrinterName := FReadSQL.FieldByName('usr$printername').AsString;
+        PrnGrid := FReadSQL.FieldByName('prngrid').AsInteger;
+
+        Result := True;
+      end;
+    except
+      raise;
     end;
   finally
     FReadSQL.Close;
-    FReadSQL.Transaction.Commit;
   end;
 end;
 
@@ -3466,7 +3533,6 @@ begin
       Result := True;
     finally
       FReadSQL.Close;
-      FReadSQL.Transaction.Commit;
     end;
   except
     on E: Exception do
@@ -3499,7 +3565,6 @@ begin
       Result := True;
     finally
       FReadSQL.Close;
-      FReadSQL.Transaction.Commit;
     end;
   except
     on E: Exception do
@@ -3512,71 +3577,79 @@ function TFrontBase.GetDeleteServiceCheckOptions(const DocID,
 begin
   Result := False;
   FReadSQL.Close;
-  if not FReadSQL.Transaction.InTransaction then
-    FReadSQL.Transaction.StartTransaction;
   try
-    FReadSQL.SQL.Text :=
-      'select ' +
-      '  DISTINCT  ' +
-      '  IIF(setprn.usr$concatchecks = 0, prn.id, null) as prngrid, ' +
-      '  setprn.usr$printername,                                    ' +
-      '  o.documentkey, prn.usr$name, setprn.usr$PRINTERID          ' +
-      'from                                                         ' +
-      '  usr$mn_order o                                             ' +
-      '  join usr$mn_orderline l on o.documentkey = l.masterkey     ' +
-      '  join gd_document doc on doc.id = l.documentkey             ' +
-      '  join gd_good g on g.id = l.usr$goodkey                     ' +
-      '  join usr$mn_prngroup prn on prn.id = g.usr$prngroupkey     ' +
-      '  join usr$mn_prngroupset setprn on setprn.usr$prngroup = prn.id  ' +
-      'where                                                        ' +
-      ' o.documentkey = :masterkey                                  ' +
-      ' and l.documentkey = :docid                                  ' +
-      ' and setprn.usr$computername = :comp                         ' +
-      ' and setprn.usr$kassa = 0                                    ' +
-      'order by                                                     ' +
-      '  setprn.usr$printername,                                    ' +
-      '  prn.usr$name ';
-    FReadSQL.ParamByName('docid').AsInteger := DocID;
-    FReadSQL.ParamByName('masterkey').AsInteger := MasterKey;
-    FReadSQL.ParamByName('comp').AsString := GetLocalComputerName;
-    FReadSQL.ExecQuery;
-    if not FReadSQL.Eof then
-    begin
-      PrinterName := FReadSQL.FieldByName('usr$printername').AsString;
-      PrnGrid := FReadSQL.FieldByName('prngrid').AsInteger;
+    try
+      if not FReadSQL.Transaction.InTransaction then
+        FReadSQL.Transaction.StartTransaction;
 
-      Result := True;
+      FReadSQL.SQL.Text :=
+        'select ' +
+        '  DISTINCT  ' +
+        '  IIF(setprn.usr$concatchecks = 0, prn.id, null) as prngrid, ' +
+        '  setprn.usr$printername,                                    ' +
+        '  o.documentkey, prn.usr$name, setprn.usr$PRINTERID          ' +
+        'from                                                         ' +
+        '  usr$mn_order o                                             ' +
+        '  join usr$mn_orderline l on o.documentkey = l.masterkey     ' +
+        '  join gd_document doc on doc.id = l.documentkey             ' +
+        '  join gd_good g on g.id = l.usr$goodkey                     ' +
+        '  join usr$mn_prngroup prn on prn.id = g.usr$prngroupkey     ' +
+        '  join usr$mn_prngroupset setprn on setprn.usr$prngroup = prn.id  ' +
+        'where                                                        ' +
+        ' o.documentkey = :masterkey                                  ' +
+        ' and l.documentkey = :docid                                  ' +
+        ' and setprn.usr$computername = :comp                         ' +
+        ' and setprn.usr$kassa = 0                                    ' +
+        'order by                                                     ' +
+        '  setprn.usr$printername,                                    ' +
+        '  prn.usr$name ';
+      FReadSQL.ParamByName('docid').AsInteger := DocID;
+      FReadSQL.ParamByName('masterkey').AsInteger := MasterKey;
+      FReadSQL.ParamByName('comp').AsString := GetLocalComputerName;
+      FReadSQL.ExecQuery;
+      if not FReadSQL.Eof then
+      begin
+        PrinterName := FReadSQL.FieldByName('usr$printername').AsString;
+        PrnGrid := FReadSQL.FieldByName('prngrid').AsInteger;
+
+        Result := True;
+      end;
+    except
+      raise;
     end;
   finally
     FReadSQL.Close;
-    FReadSQL.Transaction.Commit;
   end;
 end;
 
 function TFrontBase.GetReportList(var MemTable: TkbmMemTable): Boolean;
 begin
-  Result := False;
   FReadSQL.Close;
   MemTable.Close;
   MemTable.CreateTable;
   MemTable.Open;
-  if not FReadSQL.Transaction.InTransaction then
-    FReadSQL.Transaction.StartTransaction;
   try
-    FReadSQL.SQL.Text := 'select ID, USR$NAME FROM USR$MN_REPORT';
-    FReadSQL.ExecQuery;
-    while not FReadSQL.EOF do
-    begin
-      MemTable.Append;
-      MemTable.FieldByName('ID').AsInteger := FReadSQL.FieldByName('ID').AsInteger;
-      MemTable.FieldByName('NAME').AsString := FReadSQL.FieldByName('USR$NAME').AsString;
-      MemTable.Post;
-      FReadSQL.Next;
+    try
+      if not FReadSQL.Transaction.InTransaction then
+        FReadSQL.Transaction.StartTransaction;
+
+      FReadSQL.SQL.Text := 'SELECT ID, USR$NAME FROM USR$MN_REPORT';
+      FReadSQL.ExecQuery;
+      while not FReadSQL.EOF do
+      begin
+        MemTable.Append;
+        MemTable.FieldByName('ID').AsInteger := FReadSQL.FieldByName('ID').AsInteger;
+        MemTable.FieldByName('NAME').AsString := FReadSQL.FieldByName('USR$NAME').AsString;
+        MemTable.Post;
+        FReadSQL.Next;
+      end;
+      Result := True;
+    except
+      Result := False;
+      raise;
     end;
-    Result := True;
   finally
     FReadSQL.Close;
-    FReadSQL.Transaction.Commit;
   end;
 end;
 
@@ -3665,7 +3738,7 @@ begin
           exit;
       end;
   finally
-    FReadSQL.Transaction.Commit;
+    FReadSQL.Close;
   end;
 end;
 
@@ -3754,7 +3827,7 @@ begin
           exit;
       end;
   finally
-    FReadSQL.Transaction.Commit;
+    FReadSQL.Close;
   end;
 end;
 
@@ -3983,8 +4056,7 @@ begin
 
       FReadSQL.Next;
     end;
-
-    FReadSQL.Transaction.Commit;
+    FReadSQL.Close;
   except
     on E: Exception do
       AdvTaskMessageDlg('Внимание', 'Ошибка при загрузке настроек ' + E.Message, mtError, [mbOK], 0);
@@ -4004,7 +4076,7 @@ begin
 
     Result := FReadSQL.FieldByName('ID').AsInteger;
 
-    FReadSQL.Transaction.Commit;
+    FReadSQL.Close;
   except
     on E: Exception do
       AdvTaskMessageDlg('Внимание', 'Ошибка ' + E.Message, mtError, [mbOK], 0);
@@ -4032,7 +4104,7 @@ begin
 
     Result := (FReadSQL.FieldByName('countOrder').AsInteger > Options.MaxOpenedOrders - 1);
 
-    FReadSQL.Transaction.Commit;
+    FReadSQL.Close;
   except
     on E: Exception do
       AdvTaskMessageDlg('Внимание', 'Ошибка ' + E.Message, mtError, [mbOK], 0);

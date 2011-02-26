@@ -2,7 +2,7 @@ object RestMainForm: TRestMainForm
   Left = 286
   Top = 64
   BorderIcons = []
-  Caption = 'RestMainForm'
+  Caption = #1056#1077#1089#1090#1086#1088#1072#1085
   ClientHeight = 740
   ClientWidth = 1016
   Color = clBtnFace
@@ -30,7 +30,7 @@ object RestMainForm: TRestMainForm
       Top = 0
       Width = 934
       Height = 721
-      ActivePage = tsPassWord
+      ActivePage = tsMain
       ActiveFont.Charset = DEFAULT_CHARSET
       ActiveFont.Color = clWindowText
       ActiveFont.Height = -11
@@ -507,7 +507,7 @@ object RestMainForm: TRestMainForm
             Top = 1
             Width = 690
             Height = 699
-            ActivePage = tsManagerPage
+            ActivePage = tsUserOrder
             ActiveFont.Charset = DEFAULT_CHARSET
             ActiveFont.Color = clWindowText
             ActiveFont.Height = -11
