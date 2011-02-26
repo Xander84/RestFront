@@ -21,14 +21,14 @@
 #define pnglang_EPNGCannotChangeTransparentText 64746
 #define pnglang_EPNGHeaderNotPresentText 64747
 #define pnglang_EInvalidNewSize 64748
-#define DbUtilsEh_SQuoteIsAbsentEh 64752
-#define DbUtilsEh_SLeftBracketExpectedEh 64753
-#define DbUtilsEh_SRightBracketExpectedEh 64754
-#define DbUtilsEh_SErrorInExpressionEh 64755
-#define DbUtilsEh_SUnexpectedExpressionBeforeNullEh 64756
-#define DbUtilsEh_SUnexpectedExpressionAfterOperatorEh 64757
-#define DbUtilsEh_SIncorrectExpressionEh 64758
-#define DbUtilsEh_SUnexpectedANDorOREh 64759
+#define JclResources_RsIntelCacheDescrEA 64752
+#define JclResources_RsIntelCacheDescrEB 64753
+#define JclResources_RsIntelCacheDescrEC 64754
+#define JclResources_RsIntelCacheDescrF0 64755
+#define JclResources_RsIntelCacheDescrF1 64756
+#define JclResources_RsIntelCacheDescrFF 64757
+#define JclResources_RsELibraryNotFound 64758
+#define JclResources_RsEFunctionNotFound 64759
 #define pnglang_EPngInvalidCRCText 64760
 #define pnglang_EPNGInvalidIHDRText 64761
 #define pnglang_EPNGMissingMultipleIDATText 64762
@@ -37,134 +37,134 @@
 #define pnglang_EPNGInvalidFileHeaderText 64765
 #define pnglang_EPNGIHDRNotFirstText 64766
 #define pnglang_EPNGSizeExceedsText 64767
-#define EhLibConsts_SCopyEh 64768
-#define EhLibConsts_SPasteEh 64769
-#define EhLibConsts_SDeleteEh 64770
-#define EhLibConsts_SSelectAllEh 64771
-#define EhLibConsts_SSTFilterListItem_Empties 64772
-#define EhLibConsts_SSTFilterListItem_NotEmpties 64773
-#define EhLibConsts_SSTFilterListItem_All 64774
-#define EhLibConsts_SSTFilterListItem_ClearFilter 64775
-#define EhLibConsts_SSTFilterListItem_SortingByDescend 64776
-#define EhLibConsts_SSTFilterListItem_SortingByAscend 64777
-#define DbUtilsEh_SNotOperatorEh 64778
-#define DbUtilsEh_SAndOperatorEh 64779
-#define DbUtilsEh_SOrOperatorEh 64780
-#define DbUtilsEh_SLikePredicatEh 64781
-#define DbUtilsEh_SInPredicatEh 64782
-#define DbUtilsEh_SNullConstEh 64783
-#define JclResources_RsIntelCacheDescrEA 64784
-#define JclResources_RsIntelCacheDescrEB 64785
-#define JclResources_RsIntelCacheDescrEC 64786
-#define JclResources_RsIntelCacheDescrF0 64787
-#define JclResources_RsIntelCacheDescrF1 64788
-#define JclResources_RsIntelCacheDescrFF 64789
-#define JclResources_RsELibraryNotFound 64790
-#define JclResources_RsEFunctionNotFound 64791
-#define EhLibConsts_SClearSelectedCellsEh 64792
-#define EhLibConsts_SInvalidTextFormatEh 64793
-#define EhLibConsts_SInvalidVCLDBIFFormatEh 64794
-#define EhLibConsts_SErrorDuringInsertValueEh 64795
-#define EhLibConsts_SIgnoreErrorEh 64796
-#define EhLibConsts_SFieldNameNotFoundEh 64797
-#define EhLibConsts_SVisibleColumnsEh 64798
-#define EhLibConsts_SCutEh 64799
-#define JclResources_RsIntelCacheDescrB4 64800
-#define JclResources_RsIntelCacheDescrBA 64801
-#define JclResources_RsIntelCacheDescrC0 64802
-#define JclResources_RsIntelCacheDescrCA 64803
-#define JclResources_RsIntelCacheDescrD0 64804
-#define JclResources_RsIntelCacheDescrD1 64805
-#define JclResources_RsIntelCacheDescrD2 64806
-#define JclResources_RsIntelCacheDescrD6 64807
-#define JclResources_RsIntelCacheDescrD7 64808
-#define JclResources_RsIntelCacheDescrD8 64809
-#define JclResources_RsIntelCacheDescrDC 64810
-#define JclResources_RsIntelCacheDescrDD 64811
-#define JclResources_RsIntelCacheDescrDE 64812
-#define JclResources_RsIntelCacheDescrE2 64813
-#define JclResources_RsIntelCacheDescrE3 64814
-#define JclResources_RsIntelCacheDescrE4 64815
-#define JclResources_RsIntelCacheDescr7A 64816
-#define JclResources_RsIntelCacheDescr7B 64817
-#define JclResources_RsIntelCacheDescr7C 64818
-#define JclResources_RsIntelCacheDescr7D 64819
-#define JclResources_RsIntelCacheDescr7F 64820
-#define JclResources_RsIntelCacheDescr80 64821
-#define JclResources_RsIntelCacheDescr82 64822
-#define JclResources_RsIntelCacheDescr83 64823
-#define JclResources_RsIntelCacheDescr84 64824
-#define JclResources_RsIntelCacheDescr85 64825
-#define JclResources_RsIntelCacheDescr86 64826
-#define JclResources_RsIntelCacheDescr87 64827
-#define JclResources_RsIntelCacheDescrB0 64828
-#define JclResources_RsIntelCacheDescrB1 64829
-#define JclResources_RsIntelCacheDescrB2 64830
-#define JclResources_RsIntelCacheDescrB3 64831
-#define JclResources_RsIntelCacheDescr57 64832
-#define JclResources_RsIntelCacheDescr59 64833
-#define JclResources_RsIntelCacheDescr5A 64834
-#define JclResources_RsIntelCacheDescr5B 64835
-#define JclResources_RsIntelCacheDescr5C 64836
-#define JclResources_RsIntelCacheDescr5D 64837
-#define JclResources_RsIntelCacheDescr60 64838
-#define JclResources_RsIntelCacheDescr66 64839
-#define JclResources_RsIntelCacheDescr67 64840
-#define JclResources_RsIntelCacheDescr68 64841
-#define JclResources_RsIntelCacheDescr70 64842
-#define JclResources_RsIntelCacheDescr71 64843
-#define JclResources_RsIntelCacheDescr72 64844
-#define JclResources_RsIntelCacheDescr73 64845
-#define JclResources_RsIntelCacheDescr78 64846
-#define JclResources_RsIntelCacheDescr79 64847
-#define JclResources_RsIntelCacheDescr45 64848
-#define JclResources_RsIntelCacheDescr46 64849
-#define JclResources_RsIntelCacheDescr47 64850
-#define JclResources_RsIntelCacheDescr48 64851
-#define JclResources_RsIntelCacheDescr49 64852
-#define JclResources_RsIntelCacheDescr4A 64853
-#define JclResources_RsIntelCacheDescr4B 64854
-#define JclResources_RsIntelCacheDescr4C 64855
-#define JclResources_RsIntelCacheDescr4D 64856
-#define JclResources_RsIntelCacheDescr4E 64857
-#define JclResources_RsIntelCacheDescr4F 64858
-#define JclResources_RsIntelCacheDescr50 64859
-#define JclResources_RsIntelCacheDescr51 64860
-#define JclResources_RsIntelCacheDescr52 64861
-#define JclResources_RsIntelCacheDescr55 64862
-#define JclResources_RsIntelCacheDescr56 64863
-#define JclResources_RsIntelCacheDescr23 64864
-#define JclResources_RsIntelCacheDescr25 64865
-#define JclResources_RsIntelCacheDescr29 64866
-#define JclResources_RsIntelCacheDescr2C 64867
-#define JclResources_RsIntelCacheDescr30 64868
-#define JclResources_RsIntelCacheDescr39 64869
-#define JclResources_RsIntelCacheDescr3A 64870
-#define JclResources_RsIntelCacheDescr3B 64871
-#define JclResources_RsIntelCacheDescr3C 64872
-#define JclResources_RsIntelCacheDescr3D 64873
-#define JclResources_RsIntelCacheDescr3E 64874
-#define JclResources_RsIntelCacheDescr40 64875
-#define JclResources_RsIntelCacheDescr41 64876
-#define JclResources_RsIntelCacheDescr42 64877
-#define JclResources_RsIntelCacheDescr43 64878
-#define JclResources_RsIntelCacheDescr44 64879
-#define JclResources_RsIntelCacheDescr00 64880
-#define JclResources_RsIntelCacheDescr01 64881
-#define JclResources_RsIntelCacheDescr02 64882
-#define JclResources_RsIntelCacheDescr03 64883
-#define JclResources_RsIntelCacheDescr04 64884
-#define JclResources_RsIntelCacheDescr05 64885
-#define JclResources_RsIntelCacheDescr06 64886
-#define JclResources_RsIntelCacheDescr08 64887
-#define JclResources_RsIntelCacheDescr09 64888
-#define JclResources_RsIntelCacheDescr0A 64889
-#define JclResources_RsIntelCacheDescr0B 64890
-#define JclResources_RsIntelCacheDescr0C 64891
-#define JclResources_RsIntelCacheDescr0D 64892
-#define JclResources_RsIntelCacheDescr0E 64893
-#define JclResources_RsIntelCacheDescr21 64894
-#define JclResources_RsIntelCacheDescr22 64895
+#define JclResources_RsIntelCacheDescrB4 64768
+#define JclResources_RsIntelCacheDescrBA 64769
+#define JclResources_RsIntelCacheDescrC0 64770
+#define JclResources_RsIntelCacheDescrCA 64771
+#define JclResources_RsIntelCacheDescrD0 64772
+#define JclResources_RsIntelCacheDescrD1 64773
+#define JclResources_RsIntelCacheDescrD2 64774
+#define JclResources_RsIntelCacheDescrD6 64775
+#define JclResources_RsIntelCacheDescrD7 64776
+#define JclResources_RsIntelCacheDescrD8 64777
+#define JclResources_RsIntelCacheDescrDC 64778
+#define JclResources_RsIntelCacheDescrDD 64779
+#define JclResources_RsIntelCacheDescrDE 64780
+#define JclResources_RsIntelCacheDescrE2 64781
+#define JclResources_RsIntelCacheDescrE3 64782
+#define JclResources_RsIntelCacheDescrE4 64783
+#define JclResources_RsIntelCacheDescr7A 64784
+#define JclResources_RsIntelCacheDescr7B 64785
+#define JclResources_RsIntelCacheDescr7C 64786
+#define JclResources_RsIntelCacheDescr7D 64787
+#define JclResources_RsIntelCacheDescr7F 64788
+#define JclResources_RsIntelCacheDescr80 64789
+#define JclResources_RsIntelCacheDescr82 64790
+#define JclResources_RsIntelCacheDescr83 64791
+#define JclResources_RsIntelCacheDescr84 64792
+#define JclResources_RsIntelCacheDescr85 64793
+#define JclResources_RsIntelCacheDescr86 64794
+#define JclResources_RsIntelCacheDescr87 64795
+#define JclResources_RsIntelCacheDescrB0 64796
+#define JclResources_RsIntelCacheDescrB1 64797
+#define JclResources_RsIntelCacheDescrB2 64798
+#define JclResources_RsIntelCacheDescrB3 64799
+#define JclResources_RsIntelCacheDescr57 64800
+#define JclResources_RsIntelCacheDescr59 64801
+#define JclResources_RsIntelCacheDescr5A 64802
+#define JclResources_RsIntelCacheDescr5B 64803
+#define JclResources_RsIntelCacheDescr5C 64804
+#define JclResources_RsIntelCacheDescr5D 64805
+#define JclResources_RsIntelCacheDescr60 64806
+#define JclResources_RsIntelCacheDescr66 64807
+#define JclResources_RsIntelCacheDescr67 64808
+#define JclResources_RsIntelCacheDescr68 64809
+#define JclResources_RsIntelCacheDescr70 64810
+#define JclResources_RsIntelCacheDescr71 64811
+#define JclResources_RsIntelCacheDescr72 64812
+#define JclResources_RsIntelCacheDescr73 64813
+#define JclResources_RsIntelCacheDescr78 64814
+#define JclResources_RsIntelCacheDescr79 64815
+#define JclResources_RsIntelCacheDescr45 64816
+#define JclResources_RsIntelCacheDescr46 64817
+#define JclResources_RsIntelCacheDescr47 64818
+#define JclResources_RsIntelCacheDescr48 64819
+#define JclResources_RsIntelCacheDescr49 64820
+#define JclResources_RsIntelCacheDescr4A 64821
+#define JclResources_RsIntelCacheDescr4B 64822
+#define JclResources_RsIntelCacheDescr4C 64823
+#define JclResources_RsIntelCacheDescr4D 64824
+#define JclResources_RsIntelCacheDescr4E 64825
+#define JclResources_RsIntelCacheDescr4F 64826
+#define JclResources_RsIntelCacheDescr50 64827
+#define JclResources_RsIntelCacheDescr51 64828
+#define JclResources_RsIntelCacheDescr52 64829
+#define JclResources_RsIntelCacheDescr55 64830
+#define JclResources_RsIntelCacheDescr56 64831
+#define JclResources_RsIntelCacheDescr23 64832
+#define JclResources_RsIntelCacheDescr25 64833
+#define JclResources_RsIntelCacheDescr29 64834
+#define JclResources_RsIntelCacheDescr2C 64835
+#define JclResources_RsIntelCacheDescr30 64836
+#define JclResources_RsIntelCacheDescr39 64837
+#define JclResources_RsIntelCacheDescr3A 64838
+#define JclResources_RsIntelCacheDescr3B 64839
+#define JclResources_RsIntelCacheDescr3C 64840
+#define JclResources_RsIntelCacheDescr3D 64841
+#define JclResources_RsIntelCacheDescr3E 64842
+#define JclResources_RsIntelCacheDescr40 64843
+#define JclResources_RsIntelCacheDescr41 64844
+#define JclResources_RsIntelCacheDescr42 64845
+#define JclResources_RsIntelCacheDescr43 64846
+#define JclResources_RsIntelCacheDescr44 64847
+#define JclResources_RsIntelCacheDescr00 64848
+#define JclResources_RsIntelCacheDescr01 64849
+#define JclResources_RsIntelCacheDescr02 64850
+#define JclResources_RsIntelCacheDescr03 64851
+#define JclResources_RsIntelCacheDescr04 64852
+#define JclResources_RsIntelCacheDescr05 64853
+#define JclResources_RsIntelCacheDescr06 64854
+#define JclResources_RsIntelCacheDescr08 64855
+#define JclResources_RsIntelCacheDescr09 64856
+#define JclResources_RsIntelCacheDescr0A 64857
+#define JclResources_RsIntelCacheDescr0B 64858
+#define JclResources_RsIntelCacheDescr0C 64859
+#define JclResources_RsIntelCacheDescr0D 64860
+#define JclResources_RsIntelCacheDescr0E 64861
+#define JclResources_RsIntelCacheDescr21 64862
+#define JclResources_RsIntelCacheDescr22 64863
+#define DbUtilsEh_SOrOperatorEh 64864
+#define DbUtilsEh_SLikePredicatEh 64865
+#define DbUtilsEh_SInPredicatEh 64866
+#define DbUtilsEh_SNullConstEh 64867
+#define DbUtilsEh_SQuoteIsAbsentEh 64868
+#define DbUtilsEh_SLeftBracketExpectedEh 64869
+#define DbUtilsEh_SRightBracketExpectedEh 64870
+#define DbUtilsEh_SErrorInExpressionEh 64871
+#define DbUtilsEh_SUnexpectedExpressionBeforeNullEh 64872
+#define DbUtilsEh_SUnexpectedExpressionAfterOperatorEh 64873
+#define DbUtilsEh_SIncorrectExpressionEh 64874
+#define DbUtilsEh_SUnexpectedANDorOREh 64875
+#define JclResources_RsEReplacementChar 64876
+#define JclResources_RsStringHashMapMustBeEmpty 64877
+#define JclResources_RsStringHashMapDuplicate 64878
+#define JclResources_RsStringHashMapNoTraits 64879
+#define EhLibConsts_SIgnoreErrorEh 64880
+#define EhLibConsts_SFieldNameNotFoundEh 64881
+#define EhLibConsts_SVisibleColumnsEh 64882
+#define EhLibConsts_SCutEh 64883
+#define EhLibConsts_SCopyEh 64884
+#define EhLibConsts_SPasteEh 64885
+#define EhLibConsts_SDeleteEh 64886
+#define EhLibConsts_SSelectAllEh 64887
+#define EhLibConsts_SSTFilterListItem_Empties 64888
+#define EhLibConsts_SSTFilterListItem_NotEmpties 64889
+#define EhLibConsts_SSTFilterListItem_All 64890
+#define EhLibConsts_SSTFilterListItem_ClearFilter 64891
+#define EhLibConsts_SSTFilterListItem_SortingByDescend 64892
+#define EhLibConsts_SSTFilterListItem_SortingByAscend 64893
+#define DbUtilsEh_SNotOperatorEh 64894
+#define DbUtilsEh_SAndOperatorEh 64895
 #define IBSQLMonitor_StrNULL 64896
 #define IBSQLMonitor_StrBLOB 64897
 #define IBSQLMonitor_StrFetch 64898
@@ -177,10 +177,10 @@
 #define IBSQLMonitor_StrRollbackRetainin 64905
 #define IBSQLMonitor_StrStartTransaction 64906
 #define IBSQLMonitor_StrApplication 64907
-#define JclResources_RsEReplacementChar 64908
-#define JclResources_RsStringHashMapMustBeEmpty 64909
-#define JclResources_RsStringHashMapDuplicate 64910
-#define JclResources_RsStringHashMapNoTraits 64911
+#define EhLibConsts_SClearSelectedCellsEh 64908
+#define EhLibConsts_SInvalidTextFormatEh 64909
+#define EhLibConsts_SInvalidVCLDBIFFormatEh 64910
+#define EhLibConsts_SErrorDuringInsertValueEh 64911
 #define IBXConst_SNoTimers 64912
 #define IBXConst_SIB65feature 64913
 #define IBXConst_SLoginPromptFailure 64914
@@ -820,38 +820,6 @@ BEGIN
 	pnglang_EPNGCannotChangeTransparentText,	"Setting bit transparency color is not allowed for png images containing alpha value for each pixel (COLOR_RGBALPHA and COLOR_GRAYSCALEALPHA)"
 	pnglang_EPNGHeaderNotPresentText,	"This operation is not valid because the current image contains no valid header."
 	pnglang_EInvalidNewSize,	"The new size provided for image resizing is invalid."
-	DbUtilsEh_SQuoteIsAbsentEh,	"Quote is absent: "
-	DbUtilsEh_SLeftBracketExpectedEh,	"'(' expected: "
-	DbUtilsEh_SRightBracketExpectedEh,	"')' expected: "
-	DbUtilsEh_SErrorInExpressionEh,	"Error in expression: "
-	DbUtilsEh_SUnexpectedExpressionBeforeNullEh,	"Unexpected expression before Null: "
-	DbUtilsEh_SUnexpectedExpressionAfterOperatorEh,	"Unexpected expression after operator: "
-	DbUtilsEh_SIncorrectExpressionEh,	"Incorrect expression: "
-	DbUtilsEh_SUnexpectedANDorOREh,	"Unexpected AND or OR: "
-	pnglang_EPngInvalidCRCText,	"This \"Portable Network Graphics\" image is not valid because it contains invalid pieces of data (crc error)"
-	pnglang_EPNGInvalidIHDRText,	"The \"Portable Network Graphics\" image could not be loaded because one of its main piece of data (ihdr) might be corrupted"
-	pnglang_EPNGMissingMultipleIDATText,	"This \"Portable Network Graphics\" image is invalid because it has missing image parts."
-	pnglang_EPNGZLIBErrorText,	"Could not decompress the image because it contains invalid compressed data.\r\n Description: "
-	pnglang_EPNGInvalidPaletteText,	"The \"Portable Network Graphics\" image contains an invalid palette."
-	pnglang_EPNGInvalidFileHeaderText,	"The file being read is not a valid \"Portable Network Graphics\" image because it contains an invalid header. This file may be corrupted, try obtaining it again"
-	pnglang_EPNGIHDRNotFirstText,	"This \"Portable Network Graphics\" image is not supported or it might be invalid.\r\n(IHDR chunk is not the first)"
-	pnglang_EPNGSizeExceedsText,	"This \"Portable Network Graphics\" image is not supported because either it's width or height exceeds the maximum size, which is 65535 pixels length."
-	EhLibConsts_SCopyEh,	"Copy"
-	EhLibConsts_SPasteEh,	"Paste"
-	EhLibConsts_SDeleteEh,	"Delete"
-	EhLibConsts_SSelectAllEh,	"Select All"
-	EhLibConsts_SSTFilterListItem_Empties,	"(Empty)"
-	EhLibConsts_SSTFilterListItem_NotEmpties,	"(Not empty)"
-	EhLibConsts_SSTFilterListItem_All,	"(All)"
-	EhLibConsts_SSTFilterListItem_ClearFilter,	"(Clear filter)"
-	EhLibConsts_SSTFilterListItem_SortingByDescend,	"(Order by ascending)"
-	EhLibConsts_SSTFilterListItem_SortingByAscend,	"(Order by descending)"
-	DbUtilsEh_SNotOperatorEh,	"Not"
-	DbUtilsEh_SAndOperatorEh,	"AND"
-	DbUtilsEh_SOrOperatorEh,	"OR"
-	DbUtilsEh_SLikePredicatEh,	""
-	DbUtilsEh_SInPredicatEh,	"In"
-	DbUtilsEh_SNullConstEh,	"Null"
 	JclResources_RsIntelCacheDescrEA,	"3rd-level cache: 12 MByte, 24-way set associative, 64 byte line size"
 	JclResources_RsIntelCacheDescrEB,	"3rd-level cache: 18 MByte, 24-way set associative, 64 byte line size"
 	JclResources_RsIntelCacheDescrEC,	"3rd-level cache: 24 MByte, 24-way set associative, 64 byte line size"
@@ -860,14 +828,14 @@ BEGIN
 	JclResources_RsIntelCacheDescrFF,	"CPUID leaf 2 does not report cache descriptor information, use CPUID leaf 4 to query cache parameters"
 	JclResources_RsELibraryNotFound,	"Library not found: %s"
 	JclResources_RsEFunctionNotFound,	"Function not found: %s.%s"
-	EhLibConsts_SClearSelectedCellsEh,	"Clear selected cells?"
-	EhLibConsts_SInvalidTextFormatEh,	"Invalid text format"
-	EhLibConsts_SInvalidVCLDBIFFormatEh,	"Invalid VCLDBIF format"
-	EhLibConsts_SErrorDuringInsertValueEh,	"Error during insert value:"
-	EhLibConsts_SIgnoreErrorEh,	"Ignore error?"
-	EhLibConsts_SFieldNameNotFoundEh,	"Field name '%s' not found"
-	EhLibConsts_SVisibleColumnsEh,	"Visible columns"
-	EhLibConsts_SCutEh,	"Cut"
+	pnglang_EPngInvalidCRCText,	"This \"Portable Network Graphics\" image is not valid because it contains invalid pieces of data (crc error)"
+	pnglang_EPNGInvalidIHDRText,	"The \"Portable Network Graphics\" image could not be loaded because one of its main piece of data (ihdr) might be corrupted"
+	pnglang_EPNGMissingMultipleIDATText,	"This \"Portable Network Graphics\" image is invalid because it has missing image parts."
+	pnglang_EPNGZLIBErrorText,	"Could not decompress the image because it contains invalid compressed data.\r\n Description: "
+	pnglang_EPNGInvalidPaletteText,	"The \"Portable Network Graphics\" image contains an invalid palette."
+	pnglang_EPNGInvalidFileHeaderText,	"The file being read is not a valid \"Portable Network Graphics\" image because it contains an invalid header. This file may be corrupted, try obtaining it again"
+	pnglang_EPNGIHDRNotFirstText,	"This \"Portable Network Graphics\" image is not supported or it might be invalid.\r\n(IHDR chunk is not the first)"
+	pnglang_EPNGSizeExceedsText,	"This \"Portable Network Graphics\" image is not supported because either it's width or height exceeds the maximum size, which is 65535 pixels length."
 	JclResources_RsIntelCacheDescrB4,	"Data TLB1: 4 KByte pages, 4-way set associative, 256 entries"
 	JclResources_RsIntelCacheDescrBA,	"Data TLB1: 4 KByte pages, 4-way set associative, 64 entries"
 	JclResources_RsIntelCacheDescrC0,	"Data TLB: 4 KByte and 4 MByte pages, 4-way set associative, 8 entries"
@@ -964,6 +932,38 @@ BEGIN
 	JclResources_RsIntelCacheDescr0E,	"1st level data cache: 24 KBytes, 6-way set associative, 64 byte line size"
 	JclResources_RsIntelCacheDescr21,	"2nd level cache: 256 KBytes, 8-way set associative, 64 byte line size"
 	JclResources_RsIntelCacheDescr22,	"3rd level cache: 512 KBytes, 4-way set associative, 64 byte line size, 2 lines per sector"
+	DbUtilsEh_SOrOperatorEh,	"OR"
+	DbUtilsEh_SLikePredicatEh,	""
+	DbUtilsEh_SInPredicatEh,	"In"
+	DbUtilsEh_SNullConstEh,	"Null"
+	DbUtilsEh_SQuoteIsAbsentEh,	"Quote is absent: "
+	DbUtilsEh_SLeftBracketExpectedEh,	"'(' expected: "
+	DbUtilsEh_SRightBracketExpectedEh,	"')' expected: "
+	DbUtilsEh_SErrorInExpressionEh,	"Error in expression: "
+	DbUtilsEh_SUnexpectedExpressionBeforeNullEh,	"Unexpected expression before Null: "
+	DbUtilsEh_SUnexpectedExpressionAfterOperatorEh,	"Unexpected expression after operator: "
+	DbUtilsEh_SIncorrectExpressionEh,	"Incorrect expression: "
+	DbUtilsEh_SUnexpectedANDorOREh,	"Unexpected AND or OR: "
+	JclResources_RsEReplacementChar,	"Failed to get ANSI replacement character"
+	JclResources_RsStringHashMapMustBeEmpty,	"HashList: must be empty to set size to zero"
+	JclResources_RsStringHashMapDuplicate,	"Duplicate hash list entry: %s"
+	JclResources_RsStringHashMapNoTraits,	"HashList must have traits"
+	EhLibConsts_SIgnoreErrorEh,	"Ignore error?"
+	EhLibConsts_SFieldNameNotFoundEh,	"Field name '%s' not found"
+	EhLibConsts_SVisibleColumnsEh,	"Visible columns"
+	EhLibConsts_SCutEh,	"Cut"
+	EhLibConsts_SCopyEh,	"Copy"
+	EhLibConsts_SPasteEh,	"Paste"
+	EhLibConsts_SDeleteEh,	"Delete"
+	EhLibConsts_SSelectAllEh,	"Select All"
+	EhLibConsts_SSTFilterListItem_Empties,	"(Empty)"
+	EhLibConsts_SSTFilterListItem_NotEmpties,	"(Not empty)"
+	EhLibConsts_SSTFilterListItem_All,	"(All)"
+	EhLibConsts_SSTFilterListItem_ClearFilter,	"(Clear filter)"
+	EhLibConsts_SSTFilterListItem_SortingByDescend,	"(Order by ascending)"
+	EhLibConsts_SSTFilterListItem_SortingByAscend,	"(Order by descending)"
+	DbUtilsEh_SNotOperatorEh,	"Not"
+	DbUtilsEh_SAndOperatorEh,	"AND"
 	IBSQLMonitor_StrNULL,	"<NULL>"
 	IBSQLMonitor_StrBLOB,	"<BLOB>"
 	IBSQLMonitor_StrFetch,	": [Fetch] "
@@ -976,10 +976,10 @@ BEGIN
 	IBSQLMonitor_StrRollbackRetainin,	": [Rollback retaining (Soft rollback)]"
 	IBSQLMonitor_StrStartTransaction,	": [Start transaction]"
 	IBSQLMonitor_StrApplication,	"[Application: "
-	JclResources_RsEReplacementChar,	"Failed to get ANSI replacement character"
-	JclResources_RsStringHashMapMustBeEmpty,	"HashList: must be empty to set size to zero"
-	JclResources_RsStringHashMapDuplicate,	"Duplicate hash list entry: %s"
-	JclResources_RsStringHashMapNoTraits,	"HashList must have traits"
+	EhLibConsts_SClearSelectedCellsEh,	"Clear selected cells?"
+	EhLibConsts_SInvalidTextFormatEh,	"Invalid text format"
+	EhLibConsts_SInvalidVCLDBIFFormatEh,	"Invalid VCLDBIF format"
+	EhLibConsts_SErrorDuringInsertValueEh,	"Error during insert value:"
 	IBXConst_SNoTimers,	"Not enough timers available"
 	IBXConst_SIB65feature,	"%s is an InterBase 6.5 function. Please upgrade to InterBase 6.5 to use this functonality"
 	IBXConst_SLoginPromptFailure,	"Can not find default login prompt dialog.  Please add DBLogDlg to the uses section of your main file."
@@ -1617,15 +1617,15 @@ END
 /* c:\program files (x86)\embarcadero\rad studio\7.0\lib\DBPWDlg.dfm */
 /* c:\program files (x86)\embarcadero\rad studio\7.0\lib\DBLogDlg.dfm */
 /* c:\program files (x86)\embarcadero\rad studio\7.0\lib\DBCtrls.res */
-/* D:\Front\Source\TMS\TASKDIALOG.RES */
 /* c:\program files (x86)\embarcadero\rad studio\7.0\lib\DBGrids.res */
 /* D:\Front\Source\Components\EhLib\Common\CalculatorEh.DFM */
 /* D:\Front\Source\Components\EhLib\Common\DBGridEhFindDlgs.dfm */
 /* D:\Front\Source\Components\EhLib\Common\DBGRIDEH.RES */
 /* Report\rp_frmGrid_unit.DFM */
 /* Report\rp_dlgViewResult_unit.DFM */
-/* D:\Front\Source\TMS\AdvSmoothTouchKeyBoard.res */
+/* D:\Front\Source\TMS\TASKDIALOG.RES */
 /* FrontData_Unit.dfm */
+/* D:\Front\Source\TMS\AdvSmoothTouchKeyBoard.res */
 /* CardCodeForm_Unit.dfm */
 /* BaseFrontForm_Unit.dfm */
 /* c:\program files (x86)\embarcadero\rad studio\7.0\lib\FileCtrl.res */
@@ -1707,9 +1707,9 @@ END
 /* PayForm_Unit.dfm */
 /* SellParamForm_Unit.dfm */
 /* RKCardCodeForm_Unit.dfm */
-/* Modification_Unit.dfm */
-/* DeleteOrderLine_unit.dfm */
+/* D:\Front\Source\Modification_Unit.dfm */
 /* GuestForm_unit.dfm */
-/* MainForm.dfm */
+/* DeleteOrderLine_unit.dfm */
+/* D:\Front\Source\MainForm.dfm */
 /* D:\Front\Source\RestFront.res */
 /* D:\Front\Source\RestFront.drf */

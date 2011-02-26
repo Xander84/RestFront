@@ -226,6 +226,68 @@ object ModificationForm: TModificationForm
       Version = '1.6.9.0'
       OnClick = btnInputModClick
     end
+    object btnScrollUp: TAdvSmoothButton
+      Left = 17
+      Top = 169
+      Width = 137
+      Height = 47
+      Action = actGoodUp
+      Appearance.PictureAlignment = taCenter
+      Appearance.Font.Charset = DEFAULT_CHARSET
+      Appearance.Font.Color = clWindowText
+      Appearance.Font.Height = -19
+      Appearance.Font.Name = 'Times New Roman'
+      Appearance.Font.Style = [fsBold]
+      Status.Caption = '0'
+      Status.Appearance.Fill.Color = clRed
+      Status.Appearance.Fill.ColorMirror = clNone
+      Status.Appearance.Fill.ColorMirrorTo = clNone
+      Status.Appearance.Fill.GradientType = gtSolid
+      Status.Appearance.Fill.BorderColor = clGray
+      Status.Appearance.Fill.Rounding = 0
+      Status.Appearance.Fill.ShadowOffset = 0
+      Status.Appearance.Font.Charset = DEFAULT_CHARSET
+      Status.Appearance.Font.Color = clWhite
+      Status.Appearance.Font.Height = -11
+      Status.Appearance.Font.Name = 'Tahoma'
+      Status.Appearance.Font.Style = []
+      Bevel = False
+      Color = 15195349
+      ParentFont = False
+      TabOrder = 3
+      Version = '1.6.9.0'
+    end
+    object btnScrollDown: TAdvSmoothButton
+      Left = 17
+      Top = 222
+      Width = 137
+      Height = 47
+      Action = actGoodDown
+      Appearance.PictureAlignment = taCenter
+      Appearance.Font.Charset = DEFAULT_CHARSET
+      Appearance.Font.Color = clWindowText
+      Appearance.Font.Height = -19
+      Appearance.Font.Name = 'Times New Roman'
+      Appearance.Font.Style = [fsBold]
+      Status.Caption = '0'
+      Status.Appearance.Fill.Color = clRed
+      Status.Appearance.Fill.ColorMirror = clNone
+      Status.Appearance.Fill.ColorMirrorTo = clNone
+      Status.Appearance.Fill.GradientType = gtSolid
+      Status.Appearance.Fill.BorderColor = clGray
+      Status.Appearance.Fill.Rounding = 0
+      Status.Appearance.Fill.ShadowOffset = 0
+      Status.Appearance.Font.Charset = DEFAULT_CHARSET
+      Status.Appearance.Font.Color = clWhite
+      Status.Appearance.Font.Height = -11
+      Status.Appearance.Font.Name = 'Tahoma'
+      Status.Appearance.Font.Style = []
+      Bevel = False
+      Color = 15195349
+      ParentFont = False
+      TabOrder = 4
+      Version = '1.6.9.0'
+    end
   end
   object pnlMain: TAdvPanel
     Left = 0
@@ -265,6 +327,8 @@ object ModificationForm: TModificationForm
     StatusBar.ColorTo = 16374724
     StatusBar.GradientDirection = gdVertical
     Styler = FrontData.FrontPanelStyler
+    ExplicitLeft = -6
+    ExplicitTop = 86
     FullHeight = 432
   end
   object aclModify: TActionList
@@ -279,6 +343,14 @@ object ModificationForm: TModificationForm
       Caption = #1054#1090#1084#1077#1085#1072
       OnExecute = actCancelExecute
       OnUpdate = actCancelUpdate
+    end
+    object actGoodUp: TAction
+      OnExecute = actGoodUpExecute
+      OnUpdate = actGoodUpUpdate
+    end
+    object actGoodDown: TAction
+      OnExecute = actGoodDownExecute
+      OnUpdate = actGoodDownUpdate
     end
   end
 end

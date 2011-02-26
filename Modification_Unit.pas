@@ -8,6 +8,10 @@ uses
   ActnList, AdvPanel, FrontData_Unit, AdvSmoothButton, AdvStyleIF,
   AdvSmoothToggleButton, BaseFrontForm_Unit, RKCardCodeForm_Unit;
 
+const
+  btnHeight = 51;
+  btnWidth = 145;
+
 type
   TModificationForm = class(TBaseFrontForm)
     pnlTop: TAdvPanel;
@@ -21,6 +25,10 @@ type
     btnCancel: TAdvSmoothButton;
     btnInputMod: TAdvSmoothButton;
     lbCaption: TLabel;
+    btnScrollUp: TAdvSmoothButton;
+    btnScrollDown: TAdvSmoothButton;
+    actGoodUp: TAction;
+    actGoodDown: TAction;
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure FormShow(Sender: TObject);
     procedure actOKExecute(Sender: TObject);
@@ -28,6 +36,10 @@ type
     procedure actCancelExecute(Sender: TObject);
     procedure actCancelUpdate(Sender: TObject);
     procedure btnInputModClick(Sender: TObject);
+    procedure actGoodUpExecute(Sender: TObject);
+    procedure actGoodDownExecute(Sender: TObject);
+    procedure actGoodUpUpdate(Sender: TObject);
+    procedure actGoodDownUpdate(Sender: TObject);
   private
     FModificationTable: TkbmMemTable;
     FLineModifyTable: TkbmMemTable;
@@ -36,6 +48,7 @@ type
     FModifyGroupKey: Integer;
     FIsEmptyLine: Boolean;
     //
+    FFirstTopButton          : Integer;
     FLastLeftButton          : Integer;
     FLastTopButton           : Integer;
     FModificationButtonNumber: Integer;
@@ -54,6 +67,8 @@ type
     procedure ModifyButtonOnClick(Sender: TObject);
     procedure SetGoodName(const Value: String);
     procedure SetExtraModifyString(const Value: String);
+    procedure ScrollControl(const FControl: TWinControl; const Down: Boolean;
+      var Top: Integer; var Bottom: Integer);
   public
     property FrontBase: TFrontBase read FFrontBase write SetFrontBase;
     //Если модификатор обязателен, то смотрим GoodKey
@@ -84,6 +99,7 @@ begin
   inherited Create(AOwner);
   FrontBase := FBase;
 
+  FFirstTopButton := 8;
   FLastLeftButton := 8;
   FLastTopButton  := 8;
   FModificationButtonNumber := 1;
@@ -100,6 +116,38 @@ begin
   FIsEmptyLine := True;
 
   FButtonList := TObjectList.Create;
+
+  btnScrollUp.Picture := FrontData.RestPictureContainer.FindPicture('Up');
+  btnScrollDown.Picture := FrontData.RestPictureContainer.FindPicture('Down');
+end;
+
+procedure TModificationForm.ScrollControl(const FControl: TWinControl;
+  const Down: Boolean; var Top, Bottom: Integer);
+var
+  Step: Integer;
+begin
+  Step := 0;
+  if Down then
+  begin
+    while (Step < btnHeight + 8) and (Bottom + btnHeight > FControl.Height) do
+    begin
+      FControl.ScrollBy(0, -1);
+
+      Dec(Bottom);
+      Inc(Top);
+      Inc(Step);
+    end;
+  end else
+  begin
+    while (Step < btnHeight + 8) and (Top > 8) do
+    begin
+      FControl.ScrollBy(0, 1);
+
+      Inc(Bottom);
+      Dec(Top);
+      Inc(Step);
+    end;
+  end;
 end;
 
 procedure TModificationForm.SetExtraModifyString(const Value: String);
@@ -130,16 +178,16 @@ begin
   FButton.OnClick := ModifyButtonOnClick;
   FButton.Name := Format('btnModification%d', [FModificationButtonNumber]);
   FButton.GroupIndex := FModificationButtonNumber;
-  FButton.Height := 51;
-  FButton.Width  := 145;
+  FButton.Height := btnHeight;
+  FButton.Width  := btnWidth;
   FButton.Appearance.Font.Name := cn_FontType;
   FButton.Appearance.Font.Size := cn_ButtonFontSize;
   FButton.SetComponentStyle(tsOffice2007Silver);
 
   //проверяем, есть ли ещё место в ряду
-  if (FLastLeftButton + 145) > pnlMain.Width then
+  if (FLastLeftButton + btnWidth) > pnlMain.Width then
   begin
-    FLastTopButton := FLastTopButton + 51 + 8;
+    FLastTopButton := FLastTopButton + btnHeight + 8;
     FLastLeftButton := 8;
 
     FButton.Left := FLastLeftButton;
@@ -153,7 +201,7 @@ begin
   FButton.Tag := FModificationTable.FieldByName('ID').AsInteger;
   FButton.Caption := FModificationTable.FieldByName('NAME').AsString;
 
-  FLastLeftButton := FLastLeftButton + 145 + 10;
+  FLastLeftButton := FLastLeftButton + btnWidth + 10;
 
   FButtonList.Add(FButton);
   Inc(FModificationButtonNumber);
@@ -275,6 +323,36 @@ end;
 procedure TModificationForm.actCancelUpdate(Sender: TObject);
 begin
   actCancel.Enabled := not (GoodKey <> -1);
+end;
+
+procedure TModificationForm.actGoodDownExecute(Sender: TObject);
+begin
+  LockWindowUpdate(TForm(Self).Handle);
+  try
+    ScrollControl(pnlMain, True, FFirstTopButton, FLastTopButton);
+  finally
+    LockWindowUpdate(0);
+  end;
+end;
+
+procedure TModificationForm.actGoodDownUpdate(Sender: TObject);
+begin
+  actGoodDown.Enabled := (FLastTopButton + btnHeight > pnlMain.Height);
+end;
+
+procedure TModificationForm.actGoodUpExecute(Sender: TObject);
+begin
+  LockWindowUpdate(TForm(Self).Handle);
+  try
+    ScrollControl(pnlMain, False, FFirstTopButton, FLastTopButton);
+  finally
+    LockWindowUpdate(0);
+  end;
+end;
+
+procedure TModificationForm.actGoodUpUpdate(Sender: TObject);
+begin
+  actGoodUp.Enabled := (FFirstTopButton > 8);
 end;
 
 procedure TModificationForm.CheckModificationButtonList;
