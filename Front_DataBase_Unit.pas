@@ -297,6 +297,7 @@ type
     function GetCashNumber: Integer;
     function GetIsMainCash: Boolean;
     function GetServerName: String;
+    function GetReadTransaction: TIBTransaction;
   public
     constructor Create;
     destructor Destroy; override;
@@ -409,6 +410,7 @@ type
     property ServerName: String read GetServerName;
     property QueryList: TgsQueryList read FQueryList;
     property CompanyKey: Integer read FCompanyKey;
+    property ReadTransaction: TIBTransaction read GetReadTransaction;
   end;
 
   procedure GetHeaderTable(var DS: TkbmMemTable);
@@ -3624,6 +3626,11 @@ begin
   finally
     FReadSQL.Close;
   end;
+end;
+
+function TFrontBase.GetReadTransaction: TIBTransaction;
+begin
+  Result := FReadTransaction;
 end;
 
 function TFrontBase.GetReportList(var MemTable: TkbmMemTable): Boolean;
