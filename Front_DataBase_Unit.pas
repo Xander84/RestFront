@@ -92,6 +92,7 @@ const
      '   o.usr$register,           ' +
      '   o.usr$whopayoffkey,       ' +
      '   o.usr$vip,                ' +
+     '   o.usr$tablekey,           ' +
      ' ( SELECT SUM(L.USR$SUMNCUWITHDISCOUNT) FROM USR$MN_ORDERLINE L WHERE L.MASTERKEY = doc.ID AND L.USR$CAUSEDELETEKEY IS NULL) AS USR$SUMNCUWITHDISCOUNT ' +
      ' FROM gd_document doc        ' +
      '  join usr$mn_order o on o.documentkey = doc.id  ' +
@@ -227,6 +228,7 @@ type
     PrintCopyCheck:    Boolean;
     SaveAllOrder:      Boolean;
     BackType:          Integer;
+    UseHalls:          Boolean;
   end;
 
   TUserInfo = record
@@ -323,6 +325,9 @@ type
     function GetGoodList(var MemTable: TkbmMemTable; const MenuKey, GroupKey: Integer): Boolean;
     function GetGoodByID(var MemTable: TkbmMemTable; const GoodKey: Integer): Boolean;
     function GetPopularGoodList(var MemTable: TkbmMemTable): Boolean;
+
+    procedure GetHallsInfo(const MemTable: TkbmMemTable);
+    procedure GetTablesInfo(const MemTable: TkbmMemTable; const HallKey: Integer);
 
     function LockUserOrder(const OrderKey: Integer): Boolean;
     function UnLockUserOrder(const OrderKey: Integer): Boolean;
@@ -448,6 +453,7 @@ begin
   DS.FieldDefs.Add('usr$bonussum', ftCurrency, 0);
   DS.FieldDefs.Add('editorkey', ftInteger, 0);
   DS.FieldDefs.Add('editiondate', ftTimeStamp, 0);
+  DS.FieldDefs.Add('USR$TABLEKEY', ftInteger, 0);
   DS.CreateTable;
 end;
 
@@ -624,7 +630,8 @@ const
     '       usr$disccardkey,         ' +
     '       usr$userdisckey,         ' +
     '       usr$discountkey,         ' +
-    '       usr$bonussum)            ' +
+    '       usr$bonussum,            ' +
+    '       usr$tablekey)            ' +
     '     values (                   ' +
     '       :documentkey,            ' +
     '       :usr$respkey,            ' +
@@ -636,7 +643,8 @@ const
     '       :usr$disccardkey,        ' +
     '       :usr$userdisckey,        ' +
     '       :usr$discountkey,        ' +
-    '       :usr$bonussum)           ';
+    '       :usr$bonussum,           ' +
+    '       :usr$tablekey)           ';
 
   OrderLineInsert =
     '  insert into usr$mn_orderline (    ' +
@@ -837,6 +845,7 @@ begin
           InsOrder.ParamByName('usr$bonussum').AsCurrency := HeaderTable.FieldByName('usr$bonussum').AsCurrency;
           InsOrder.ParamByName('usr$timecloseorder').Value := HeaderTable.FieldByName('usr$timecloseorder').Value;
           InsOrder.ParamByName('documentkey').AsInteger := MasterID;
+          InsOrder.ParamByName('usr$tablekey').AsInteger := HeaderTable.FieldByName('usr$tablekey').AsInteger;
           InsOrder.ExecQuery;
         end;
       end;
@@ -1372,6 +1381,7 @@ begin
           HeaderTable.FieldByName('usr$bonussum').Value := FReadSQL.FieldByName('usr$bonussum').Value;
           HeaderTable.FieldByName('editorkey').Value := FReadSQL.FieldByName('editorkey').Value;
           HeaderTable.FieldByName('editiondate').Value := FReadSQL.FieldByName('editiondate').Value;
+          HeaderTable.FieldByName('usr$tablekey').AsInteger := FReadSQL.FieldByName('usr$tablekey').AsInteger;
           HeaderTable.Post;
           FReadSQL.Next;
         end;
@@ -2663,6 +2673,34 @@ begin
   Result := 1 shl (AGroupID - 1);
 end;
 
+procedure TFrontBase.GetHallsInfo(const MemTable: TkbmMemTable);
+begin
+  MemTable.Close;
+  MemTable.CreateTable;
+  MemTable.Open;
+{ TODO : Делать ограничение под текущий ресторан? }
+  FReadSQL.Close;
+  try
+    FReadSQL.SQL.Text :=
+      ' SELECT * FROM USR$MN_HALL ';
+    FReadSQL.ExecQuery;
+    while not FReadSQL.Eof do
+    begin
+      MemTable.Append;
+      MemTable.FieldByName('ID').AsInteger := FReadSQL.FieldByName('ID').AsInteger;
+      MemTable.FieldByName('USR$NAME').AsString := FReadSQL.FieldByName('USR$NAME').AsString;
+      MemTable.FieldByName('USR$LENGTH').AsInteger := FReadSQL.FieldByName('USR$LENGTH').AsInteger;
+      MemTable.FieldByName('USR$WIDTH').AsInteger := FReadSQL.FieldByName('USR$WIDTH').AsInteger;
+      MemTable.FieldByName('USR$RESTAURANTKEY').AsInteger := FReadSQL.FieldByName('USR$RESTAURANTKEY').AsInteger;
+      MemTable.Post;
+
+      FReadSQL.Next;
+    end;
+  finally
+    FReadSQL.Close;
+  end;
+end;
+
 function TFrontBase.CheckUserPasswordWithForm: TUserInfo;
 var
   FForm: TCardCode;
@@ -3296,6 +3334,44 @@ begin
   end;
 end;
 
+procedure TFrontBase.GetTablesInfo(const MemTable: TkbmMemTable;
+  const HallKey: Integer);
+begin
+  MemTable.Close;
+  MemTable.CreateTable;
+  MemTable.Open;
+
+  FReadSQL.Close;
+  try
+    FReadSQL.SQL.Text :=
+      'SELECT T.*, U.USR$RESPKEY, U.USR$ISLOCKED, U.DOCUMENTKEY ' +
+      'FROM USR$MN_TABLE T ' +
+      'LEFT JOIN USR$MN_ORDER U ON U.USR$TABLEKEY = T.ID ' +
+      'WHERE T.USR$HALLKEY = :ID ';
+    FReadSQL.Params[0].AsInteger := HallKey;
+    FReadSQL.ExecQuery;
+    while not FReadSQL.Eof do
+    begin
+      MemTable.Append;
+      MemTable.FieldByName('ID').AsInteger := FReadSQL.FieldByName('ID').AsInteger;
+      MemTable.FieldByName('USR$NUMBER').AsString := FReadSQL.FieldByName('USR$NUMBER').AsString;
+      MemTable.FieldByName('USR$POSY').AsInteger := FReadSQL.FieldByName('USR$POSY').AsInteger;
+      MemTable.FieldByName('USR$POSX').AsInteger := FReadSQL.FieldByName('USR$POSX').AsInteger;
+      MemTable.FieldByName('USR$TYPE').AsInteger := FReadSQL.FieldByName('USR$TYPE').AsInteger;
+      MemTable.FieldByName('USR$MAINTABLEKEY').AsInteger := FReadSQL.FieldByName('USR$MAINTABLEKEY').AsInteger;
+      MemTable.FieldByName('USR$RESPKEY').AsInteger := FReadSQL.FieldByName('USR$RESPKEY').AsInteger;
+      MemTable.FieldByName('ORDERKEY').AsInteger := FReadSQL.FieldByName('DOCUMENTKEY').AsInteger;
+      MemTable.FieldByName('ISLOCKED').AsInteger := FReadSQL.FieldByName('USR$ISLOCKED').AsInteger;
+      MemTable.Post;
+
+      FReadSQL.Next;
+    end;
+  finally
+    FReadSQL.Close;
+  end;
+
+end;
+
 function TFrontBase.GetServerName: String;
 var
   A, B, I: Integer;
@@ -3888,6 +3964,8 @@ begin
       MaxOpenedOrders := 100;
       MaxGuestCount := 10;
       MinGuestCount := 1;
+
+      UseHalls := True;
     end;
 
     FReadSQL.Close;

@@ -48,9 +48,6 @@ object RestMainForm: TRestMainForm
         ColorTo = 14986888
         TabColor = clBtnFace
         TabColorTo = clNone
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 0
         DesignSize = (
           934
           701)
@@ -109,9 +106,6 @@ object RestMainForm: TRestMainForm
         ImageIndex = 1
         TabColor = clBtnFace
         TabColorTo = clNone
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 0
         object pnlRight: TAdvPanel
           Left = 692
           Top = 0
@@ -170,7 +164,7 @@ object RestMainForm: TRestMainForm
               Top = 0
               Width = 242
               Height = 660
-              ActivePage = tsMenu
+              ActivePage = tsHalls
               ActiveFont.Charset = DEFAULT_CHARSET
               ActiveFont.Color = clWindowText
               ActiveFont.Height = -11
@@ -395,6 +389,61 @@ object RestMainForm: TRestMainForm
                   end
                 end
               end
+              object tsHalls: TAdvTabSheet
+                Caption = #1047#1072#1083#1099
+                Color = clBtnFace
+                ColorTo = clNone
+                TabColor = clBtnFace
+                TabColorTo = clNone
+                ExplicitLeft = 24
+                ExplicitTop = 0
+                ExplicitWidth = 100
+                ExplicitHeight = 100
+                object pnlHalls: TAdvPanel
+                  Left = 0
+                  Top = 0
+                  Width = 242
+                  Height = 640
+                  Align = alClient
+                  BevelOuter = bvNone
+                  Color = 16640730
+                  TabOrder = 0
+                  UseDockManager = True
+                  Version = '2.0.1.0'
+                  BorderColor = clGray
+                  Caption.Color = 14059353
+                  Caption.ColorTo = 9648131
+                  Caption.Font.Charset = DEFAULT_CHARSET
+                  Caption.Font.Color = clWhite
+                  Caption.Font.Height = -11
+                  Caption.Font.Name = 'MS Sans Serif'
+                  Caption.Font.Style = []
+                  Caption.GradientDirection = gdVertical
+                  Caption.Indent = 2
+                  Caption.ShadeLight = 255
+                  CollapsColor = clNone
+                  CollapsDelay = 0
+                  ColorTo = 14986888
+                  ShadowColor = clBlack
+                  ShadowOffset = 0
+                  StatusBar.BorderColor = clNone
+                  StatusBar.BorderStyle = bsSingle
+                  StatusBar.Font.Charset = DEFAULT_CHARSET
+                  StatusBar.Font.Color = clWhite
+                  StatusBar.Font.Height = -11
+                  StatusBar.Font.Name = 'Tahoma'
+                  StatusBar.Font.Style = []
+                  StatusBar.Color = 14716773
+                  StatusBar.ColorTo = 16374724
+                  StatusBar.GradientDirection = gdVertical
+                  Styler = FrontData.FrontPanelStyler
+                  ExplicitLeft = 22
+                  ExplicitTop = 92
+                  ExplicitWidth = 185
+                  ExplicitHeight = 97
+                  FullHeight = 0
+                end
+              end
             end
             object Panel1: TAdvPanel
               Left = 0
@@ -513,7 +562,7 @@ object RestMainForm: TRestMainForm
             Top = 1
             Width = 690
             Height = 699
-            ActivePage = tsOrderInfo
+            ActivePage = tsUserOrder
             ActiveFont.Charset = DEFAULT_CHARSET
             ActiveFont.Color = clWindowText
             ActiveFont.Height = -11
@@ -532,9 +581,6 @@ object RestMainForm: TRestMainForm
               ColorTo = 14986888
               TabColor = clBtnFace
               TabColorTo = clNone
-              ExplicitTop = 0
-              ExplicitWidth = 0
-              ExplicitHeight = 0
               object btnNewOrder: TAdvSmoothButton
                 Left = 16
                 Top = 8
@@ -1230,16 +1276,16 @@ object RestMainForm: TRestMainForm
               ColorTo = clNone
               TabColor = clBtnFace
               TabColorTo = clNone
-              ExplicitTop = 0
-              ExplicitWidth = 0
-              ExplicitHeight = 0
               object sbTable: TScrollBox
                 Left = 0
                 Top = 0
                 Width = 690
                 Height = 679
                 Align = alClient
+                BorderStyle = bsNone
                 TabOrder = 0
+                ExplicitLeft = 4
+                ExplicitTop = 35
               end
             end
           end
@@ -1251,9 +1297,6 @@ object RestMainForm: TRestMainForm
         ColorTo = clNone
         TabColor = clBtnFace
         TabColorTo = clNone
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 0
         object pnlManagerInfo: TPanel
           Left = 0
           Top = 0
@@ -1541,7 +1584,7 @@ object RestMainForm: TRestMainForm
         Top = 1
         Width = 80
         Height = 719
-        ActivePage = tsOrderButton
+        ActivePage = tsFunctionButton
         ActiveFont.Charset = DEFAULT_CHARSET
         ActiveFont.Color = clWindowText
         ActiveFont.Height = -11
@@ -1559,9 +1602,6 @@ object RestMainForm: TRestMainForm
           ColorTo = clNone
           TabColor = clBtnFace
           TabColorTo = clNone
-          ExplicitTop = 0
-          ExplicitWidth = 0
-          ExplicitHeight = 0
           object btnExitWindows: TAdvSmoothButton
             Left = 4
             Top = 1
@@ -1661,9 +1701,6 @@ object RestMainForm: TRestMainForm
           ImageIndex = 1
           TabColor = clBtnFace
           TabColorTo = clNone
-          ExplicitTop = 0
-          ExplicitWidth = 0
-          ExplicitHeight = 0
           DesignSize = (
             80
             699)
@@ -2043,10 +2080,6 @@ object RestMainForm: TRestMainForm
           ImageIndex = 2
           TabColor = clBtnFace
           TabColorTo = clNone
-          ExplicitLeft = -5
-          ExplicitTop = 15
-          ExplicitWidth = 0
-          ExplicitHeight = 0
           DesignSize = (
             80
             699)
@@ -2239,9 +2272,6 @@ object RestMainForm: TRestMainForm
           ColorTo = clNone
           TabColor = clBtnFace
           TabColorTo = clNone
-          ExplicitTop = 0
-          ExplicitWidth = 0
-          ExplicitHeight = 0
           DesignSize = (
             80
             699)
@@ -2531,9 +2561,6 @@ object RestMainForm: TRestMainForm
           ColorTo = clNone
           TabColor = clBtnFace
           TabColorTo = clNone
-          ExplicitTop = 0
-          ExplicitWidth = 0
-          ExplicitHeight = 0
           DesignSize = (
             80
             699)

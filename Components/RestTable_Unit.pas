@@ -21,6 +21,9 @@ type
     FTransparentColor: TColor;
     FImageList: TImageList;
     FID: Integer;
+    FOrderKey: Integer;
+    FRespKey: Integer;
+    FIsLocked: Boolean;
     procedure SetPosX(const Value: Integer);
     procedure SetPosY(const Value: Integer);
     procedure SetHallKey(const Value: Integer);
@@ -35,6 +38,9 @@ type
     procedure SetID(const Value: Integer);
     function GetPosX: Integer;
     function GetPosY: Integer;
+    procedure SetOrderKey(const Value: Integer);
+    procedure SetRespKey(const Value: Integer);
+    procedure SetIsLocked(const Value: Boolean);
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -49,7 +55,10 @@ type
     property MainTableKey: Integer read FMainTableKey write SetMainTableKey;
     // занят или нет
     property IsEmpty: Boolean read FIsEmpty write SetIsEmpty;
+    property IsLocked: Boolean read FIsLocked write SetIsLocked;
     property ID: Integer read FID write SetID;
+    property OrderKey: Integer read FOrderKey write SetOrderKey;
+    property RespKey: Integer read FRespKey write SetRespKey;
     property FrontBase: TFrontBase read FFrontBase write SetFrontBase;
   published
     // номер стола
@@ -256,9 +265,19 @@ begin
   FIsEmpty := Value;
 end;
 
+procedure TRestTable.SetIsLocked(const Value: Boolean);
+begin
+  FIsLocked := Value;
+end;
+
 procedure TRestTable.SetMainTableKey(const Value: Integer);
 begin
   FMainTableKey := Value;
+end;
+
+procedure TRestTable.SetOrderKey(const Value: Integer);
+begin
+  FOrderKey := Value;
 end;
 
 procedure TRestTable.SetPosX(const Value: Integer);
@@ -271,6 +290,11 @@ procedure TRestTable.SetPosY(const Value: Integer);
 begin
   FPosY := Value;
   Left := Value;
+end;
+
+procedure TRestTable.SetRespKey(const Value: Integer);
+begin
+  FRespKey := Value;
 end;
 
 procedure TRestTable.SetTableType(const Value: Integer);
