@@ -229,6 +229,7 @@ type
     SaveAllOrder:      Boolean;
     BackType:          Integer;
     UseHalls:          Boolean;
+    NoPrintEmptyCheck: Boolean;
   end;
 
   TUserInfo = record
@@ -2866,6 +2867,7 @@ begin
     try
       FSQL.ExecQuery;
       FSQL.Close;
+      Result := True;
     except
       on E: Exception do
       begin
@@ -3965,7 +3967,8 @@ begin
       MaxGuestCount := 10;
       MinGuestCount := 1;
 
-      UseHalls := True;
+      UseHalls := False;
+      NoPrintEmptyCheck := True;
     end;
 
     FReadSQL.Close;
@@ -4097,6 +4100,14 @@ begin
       if FName = 'PRINTCOPYCHECK' then
       begin
         FOptions.PrintCopyCheck := (FReadSQL.FieldByName('INT_DATA').AsInteger = 1);
+      end else
+      if FName = 'USEHALLS' then
+      begin
+        FOptions.UseHalls := (FReadSQL.FieldByName('INT_DATA').AsInteger = 1);
+      end else
+      if FName = 'NOPRINTEMPTYCHECK' then
+      begin
+        FOptions.NoPrintEmptyCheck := (FReadSQL.FieldByName('INT_DATA').AsInteger = 1);
       end;
 
       FReadSQL.Next;

@@ -1046,11 +1046,9 @@ var
   FGuestCount: Integer;
 begin
   ClearDisplay;
-
 { TODO : Проверка на Max кол-во гостей }
-  if (FFrontBase.UserKey and FFrontBase.Options.ManagerGroupMask) <> 0 then
-    // входит в группу менеджеры
-  else begin
+  if (FFrontBase.UserKey and FFrontBase.Options.ManagerGroupMask) = 0 then
+  begin
     if FFrontBase.CheckCountOrderByResp(FFrontBase.ContactKey) then
     begin
       AdvTaskMessageDlg('Внимание', 'Превышено максимально возможное число открытых заказов!', mtWarning, [mbOK], 0);
@@ -1175,14 +1173,11 @@ begin
 end;
 
 procedure TRestMainForm.HallButtonOnClick(Sender: TObject);
-var
-  FHallKey: Integer;
 begin
   LockWindowUpdate(TForm(Self).Handle);
   try
     RemoveTableButton;
-    FHallKey := TButton(Sender).Tag;
-    CreateTableButtonList(FHallKey);
+    CreateTableButtonList(TButton(Sender).Tag);
   finally
     LockWindowUpdate(0);
   end;
@@ -1382,9 +1377,8 @@ begin
         FUserInfo := FFrontBase.CheckUserPasswordWithForm;
         if FUserInfo.CheckedUserPassword then
         begin
-          if (FUserInfo.UserInGroup and FFrontBase.Options.ManagerGroupMask) <> 0 then
-            //
-          else begin
+          if (FUserInfo.UserInGroup and FFrontBase.Options.ManagerGroupMask) = 0 then
+          begin
             AdvTaskMessageDlg('Внимание', cn_dontManagerPermission, mtWarning, [mbOK], 0);
             exit;
           end;
@@ -1580,9 +1574,8 @@ begin
       FUserInfo := FFrontBase.CheckUserPasswordWithForm;
       if FUserInfo.CheckedUserPassword then
       begin
-        if (FUserInfo.UserInGroup and FFrontBase.Options.ManagerGroupMask) <> 0 then
-          //
-        else begin
+        if (FUserInfo.UserInGroup and FFrontBase.Options.ManagerGroupMask) = 0 then
+        begin
           AdvTaskMessageDlg('Внимание', cn_dontManagerPermission, mtWarning, [mbOK], 0);
           exit;
         end;
@@ -1627,9 +1620,8 @@ begin
       FUserInfo := FFrontBase.CheckUserPasswordWithForm;
       if FUserInfo.CheckedUserPassword then
       begin
-        if (FUserInfo.UserInGroup and FFrontBase.Options.ManagerGroupMask) <> 0 then
-          //
-        else begin
+        if (FUserInfo.UserInGroup and FFrontBase.Options.ManagerGroupMask) = 0 then
+        begin
           AdvTaskMessageDlg('Внимание', cn_dontManagerPermission, mtWarning, [mbOK], 0);
           exit;
         end;
@@ -1739,9 +1731,8 @@ begin
   FUserInfo := FFrontBase.CheckUserPasswordWithForm;
   if FUserInfo.CheckedUserPassword then
   begin
-    if (FUserInfo.UserInGroup and FFrontBase.Options.ManagerGroupMask) <> 0 then
-      //
-    else begin
+    if (FUserInfo.UserInGroup and FFrontBase.Options.ManagerGroupMask) = 0 then
+    begin
       AdvTaskMessageDlg('Внимание', cn_dontManagerPermission, mtWarning, [mbOK], 0);
       exit;
     end;
@@ -1948,6 +1939,9 @@ begin
   finally
     FLineTable.EnableControls;
   end;
+
+  if (FFrontBase.Options.NoPrintEmptyCheck) and (SumToPay = 0) then
+    exit;
 
   FForm := TSellParamForm.CreateWithFrontBase(nil, FFrontBase);
   try
@@ -2509,7 +2503,7 @@ begin
     end;
   finally
     FButton.Appearance.EndUpdate;
-  end;    
+  end;
 
   FUserOrderLastLeftButton := FUserOrderLastLeftButton + btnWidth + 8{10};
 
@@ -2732,7 +2726,6 @@ begin
   then
     FReport.PrintDeleteServiceCheck(1, PrnGrid, MasterKey,
       DocumentKey, PrinterName);
-
 end;
 
 procedure TRestMainForm.OnFilterLine(DataSet: TDataSet;
@@ -2748,7 +2741,6 @@ var
   S: String;
 begin
   S := FLineTable.FieldByName('MODIFYSTRING').AsString;
-
   if S > '' then
     Params.Text := Params.Text + #13#10 + S
 end;
@@ -2797,7 +2789,6 @@ begin
   begin
     FSplitForm.OrderKey := TButton(Sender).Tag;
     FSplitForm.FrontBase := FFrontBase;
-
     try
       FSplitForm.ShowModal;
       FormState := OrderMenu;
@@ -2823,9 +2814,8 @@ begin
         FUserInfo := FFrontBase.CheckUserPasswordWithForm;
         if FUserInfo.CheckedUserPassword then
         begin
-          if (FUserInfo.UserInGroup and FFrontBase.Options.ManagerGroupMask) <> 0 then
-            //
-          else begin
+          if (FUserInfo.UserInGroup and FFrontBase.Options.ManagerGroupMask) = 0 then
+          begin
             AdvTaskMessageDlg('Внимание', cn_dontManagerPermission, mtWarning, [mbOK], 0);
             exit;
           end;
@@ -3030,8 +3020,8 @@ begin
   FUserInfo := FFrontBase.CheckUserPasswordWithForm;
   if FUserInfo.CheckedUserPassword then
   begin
-    if (FUserInfo.UserInGroup and FFrontBase.Options.ManagerGroupMask) <> 0 then
-    else begin
+    if (FUserInfo.UserInGroup and FFrontBase.Options.ManagerGroupMask) = 0 then
+    begin
       AdvTaskMessageDlg('Внимание', cn_dontManagerPermission, mtWarning, [mbOK], 0);
       exit;
     end;
@@ -3043,7 +3033,6 @@ begin
       FForm.Free;
     end;
   end;
-
   tmrClose.Enabled := not FFrontBase.Options.NoPassword;
 end;
 
