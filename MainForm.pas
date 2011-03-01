@@ -319,6 +319,7 @@ type
     FUserOrderButtonNumber   : Integer;
     FMaxUserOrderButtonLeft  : Integer;
 
+    FPayed: Boolean;
     //Список объектов для уничтожения компонентов
     FMenuButtonList   : TObjectList;
     FOrderButtonList  : TObjectList;
@@ -1500,12 +1501,12 @@ begin
 
     MenuInfo:
       begin
-        if AdvTaskMessageDlg('Внимание', 'Выйти из заказа?',
-          mtInformation, [mbYes, mbNo], 0) = IDYES then
+        if FPayed or (AdvTaskMessageDlg('Внимание', 'Выйти из заказа?',
+          mtInformation, [mbYes, mbNo], 0) = IDYES) then
         begin
-          if not FOrderDataSet.IsEmpty then
+          if not FHeaderTable.IsEmpty then
           begin
-            if FFrontBase.UnLockUserOrder(FOrderDataSet.FieldByName('ID').AsInteger) then
+            if FFrontBase.UnLockUserOrder(FHeaderTable.FieldByName('ID').AsInteger) then
             begin
               if FPrevFormState = ManagerPage then
                 CreateManagerPage
@@ -1954,6 +1955,7 @@ begin
     begin
       //сохранить и выйти
       SaveCheck;
+      FPayed := True;
       actCancel.Execute;
     end;
   finally
@@ -2206,6 +2208,7 @@ begin
         pcExtraButton.ActivePage := tsFunctionButton;
         pcOrder.ActivePage := tsOrderInfo;
         pnlChoose.Visible := True;
+        FPayed := False;
       end;
 
     ManagerInfo:
@@ -2831,8 +2834,6 @@ begin
         exit;
       end;
 
-
-    // Проверка на СВОЙ заказ!!!!
     FFrontBase.GetOrder(FHeaderTable, FLineTable, FModificationDataSet, FOrderKey);
     FFrontBase.LockUserOrder(FOrderKey);
     if not Assigned(dsMain.DataSet) then

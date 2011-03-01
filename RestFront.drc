@@ -53,7 +53,7 @@
 #define OleConst_SNoWindowHandle 64781
 #define OleConst_SLinkProperties 64782
 #define OleConst_SInvalidLinkSource 64783
-#define DbUtilsEh_SUnexpectedANDorOREh 64784
+#define JclResources_RsEFunctionNotFound 64784
 #define JConsts_sChangeJPGSize 64785
 #define JConsts_sJPEGError 64786
 #define JConsts_sJPEGImageFile 64787
@@ -69,150 +69,150 @@
 #define bdeconst_SDatabaseClosed 64797
 #define bdeconst_SDatabaseHandleSet 64798
 #define bdeconst_SSessionActive 64799
-#define EhLibConsts_SSTFilterListItem_ClearFilter 64800
-#define EhLibConsts_SSTFilterListItem_SortingByDescend 64801
-#define EhLibConsts_SSTFilterListItem_SortingByAscend 64802
-#define DbUtilsEh_SNotOperatorEh 64803
-#define DbUtilsEh_SAndOperatorEh 64804
-#define DbUtilsEh_SOrOperatorEh 64805
-#define DbUtilsEh_SLikePredicatEh 64806
-#define DbUtilsEh_SInPredicatEh 64807
-#define DbUtilsEh_SNullConstEh 64808
-#define DbUtilsEh_SQuoteIsAbsentEh 64809
-#define DbUtilsEh_SLeftBracketExpectedEh 64810
-#define DbUtilsEh_SRightBracketExpectedEh 64811
-#define DbUtilsEh_SErrorInExpressionEh 64812
-#define DbUtilsEh_SUnexpectedExpressionBeforeNullEh 64813
-#define DbUtilsEh_SUnexpectedExpressionAfterOperatorEh 64814
-#define DbUtilsEh_SIncorrectExpressionEh 64815
-#define VDBConsts_SRemoteLogin 64816
-#define EhLibConsts_SClearSelectedCellsEh 64817
-#define EhLibConsts_SInvalidTextFormatEh 64818
-#define EhLibConsts_SInvalidVCLDBIFFormatEh 64819
-#define EhLibConsts_SErrorDuringInsertValueEh 64820
-#define EhLibConsts_SIgnoreErrorEh 64821
-#define EhLibConsts_SFieldNameNotFoundEh 64822
-#define EhLibConsts_SVisibleColumnsEh 64823
-#define EhLibConsts_SCutEh 64824
-#define EhLibConsts_SCopyEh 64825
-#define EhLibConsts_SPasteEh 64826
-#define EhLibConsts_SDeleteEh 64827
-#define EhLibConsts_SSelectAllEh 64828
-#define EhLibConsts_SSTFilterListItem_Empties 64829
-#define EhLibConsts_SSTFilterListItem_NotEmpties 64830
-#define EhLibConsts_SSTFilterListItem_All 64831
-#define JclResources_RsIntelCacheDescrF1 64832
-#define JclResources_RsIntelCacheDescrFF 64833
-#define JclResources_RsELibraryNotFound 64834
-#define JclResources_RsEFunctionNotFound 64835
-#define VDBConsts_SFirstRecord 64836
-#define VDBConsts_SPriorRecord 64837
-#define VDBConsts_SNextRecord 64838
-#define VDBConsts_SLastRecord 64839
-#define VDBConsts_SInsertRecord 64840
-#define VDBConsts_SDeleteRecord 64841
-#define VDBConsts_SEditRecord 64842
-#define VDBConsts_SPostEdit 64843
-#define VDBConsts_SCancelEdit 64844
-#define VDBConsts_SRefreshRecord 64845
-#define VDBConsts_SDataSourceFixed 64846
-#define VDBConsts_SPropDefByLookup 64847
-#define JclResources_RsIntelCacheDescrD0 64848
-#define JclResources_RsIntelCacheDescrD1 64849
-#define JclResources_RsIntelCacheDescrD2 64850
-#define JclResources_RsIntelCacheDescrD6 64851
-#define JclResources_RsIntelCacheDescrD7 64852
-#define JclResources_RsIntelCacheDescrD8 64853
-#define JclResources_RsIntelCacheDescrDC 64854
-#define JclResources_RsIntelCacheDescrDD 64855
-#define JclResources_RsIntelCacheDescrDE 64856
-#define JclResources_RsIntelCacheDescrE2 64857
-#define JclResources_RsIntelCacheDescrE3 64858
-#define JclResources_RsIntelCacheDescrE4 64859
-#define JclResources_RsIntelCacheDescrEA 64860
-#define JclResources_RsIntelCacheDescrEB 64861
-#define JclResources_RsIntelCacheDescrEC 64862
-#define JclResources_RsIntelCacheDescrF0 64863
-#define JclResources_RsIntelCacheDescr7F 64864
-#define JclResources_RsIntelCacheDescr80 64865
-#define JclResources_RsIntelCacheDescr82 64866
-#define JclResources_RsIntelCacheDescr83 64867
-#define JclResources_RsIntelCacheDescr84 64868
-#define JclResources_RsIntelCacheDescr85 64869
-#define JclResources_RsIntelCacheDescr86 64870
-#define JclResources_RsIntelCacheDescr87 64871
-#define JclResources_RsIntelCacheDescrB0 64872
-#define JclResources_RsIntelCacheDescrB1 64873
-#define JclResources_RsIntelCacheDescrB2 64874
-#define JclResources_RsIntelCacheDescrB3 64875
-#define JclResources_RsIntelCacheDescrB4 64876
-#define JclResources_RsIntelCacheDescrBA 64877
-#define JclResources_RsIntelCacheDescrC0 64878
-#define JclResources_RsIntelCacheDescrCA 64879
-#define JclResources_RsIntelCacheDescr5C 64880
-#define JclResources_RsIntelCacheDescr5D 64881
-#define JclResources_RsIntelCacheDescr60 64882
-#define JclResources_RsIntelCacheDescr66 64883
-#define JclResources_RsIntelCacheDescr67 64884
-#define JclResources_RsIntelCacheDescr68 64885
-#define JclResources_RsIntelCacheDescr70 64886
-#define JclResources_RsIntelCacheDescr71 64887
-#define JclResources_RsIntelCacheDescr72 64888
-#define JclResources_RsIntelCacheDescr73 64889
-#define JclResources_RsIntelCacheDescr78 64890
-#define JclResources_RsIntelCacheDescr79 64891
-#define JclResources_RsIntelCacheDescr7A 64892
-#define JclResources_RsIntelCacheDescr7B 64893
-#define JclResources_RsIntelCacheDescr7C 64894
-#define JclResources_RsIntelCacheDescr7D 64895
-#define JclResources_RsIntelCacheDescr49 64896
-#define JclResources_RsIntelCacheDescr4A 64897
-#define JclResources_RsIntelCacheDescr4B 64898
-#define JclResources_RsIntelCacheDescr4C 64899
-#define JclResources_RsIntelCacheDescr4D 64900
-#define JclResources_RsIntelCacheDescr4E 64901
-#define JclResources_RsIntelCacheDescr4F 64902
-#define JclResources_RsIntelCacheDescr50 64903
-#define JclResources_RsIntelCacheDescr51 64904
-#define JclResources_RsIntelCacheDescr52 64905
-#define JclResources_RsIntelCacheDescr55 64906
-#define JclResources_RsIntelCacheDescr56 64907
-#define JclResources_RsIntelCacheDescr57 64908
-#define JclResources_RsIntelCacheDescr59 64909
-#define JclResources_RsIntelCacheDescr5A 64910
-#define JclResources_RsIntelCacheDescr5B 64911
-#define JclResources_RsIntelCacheDescr30 64912
-#define JclResources_RsIntelCacheDescr39 64913
-#define JclResources_RsIntelCacheDescr3A 64914
-#define JclResources_RsIntelCacheDescr3B 64915
-#define JclResources_RsIntelCacheDescr3C 64916
-#define JclResources_RsIntelCacheDescr3D 64917
-#define JclResources_RsIntelCacheDescr3E 64918
-#define JclResources_RsIntelCacheDescr40 64919
-#define JclResources_RsIntelCacheDescr41 64920
-#define JclResources_RsIntelCacheDescr42 64921
-#define JclResources_RsIntelCacheDescr43 64922
-#define JclResources_RsIntelCacheDescr44 64923
-#define JclResources_RsIntelCacheDescr45 64924
-#define JclResources_RsIntelCacheDescr46 64925
-#define JclResources_RsIntelCacheDescr47 64926
-#define JclResources_RsIntelCacheDescr48 64927
-#define JclResources_RsIntelCacheDescr04 64928
-#define JclResources_RsIntelCacheDescr05 64929
-#define JclResources_RsIntelCacheDescr06 64930
-#define JclResources_RsIntelCacheDescr08 64931
-#define JclResources_RsIntelCacheDescr09 64932
-#define JclResources_RsIntelCacheDescr0A 64933
-#define JclResources_RsIntelCacheDescr0B 64934
-#define JclResources_RsIntelCacheDescr0C 64935
-#define JclResources_RsIntelCacheDescr0D 64936
-#define JclResources_RsIntelCacheDescr0E 64937
-#define JclResources_RsIntelCacheDescr21 64938
-#define JclResources_RsIntelCacheDescr22 64939
-#define JclResources_RsIntelCacheDescr23 64940
-#define JclResources_RsIntelCacheDescr25 64941
-#define JclResources_RsIntelCacheDescr29 64942
-#define JclResources_RsIntelCacheDescr2C 64943
+#define JclResources_RsIntelCacheDescrD6 64800
+#define JclResources_RsIntelCacheDescrD7 64801
+#define JclResources_RsIntelCacheDescrD8 64802
+#define JclResources_RsIntelCacheDescrDC 64803
+#define JclResources_RsIntelCacheDescrDD 64804
+#define JclResources_RsIntelCacheDescrDE 64805
+#define JclResources_RsIntelCacheDescrE2 64806
+#define JclResources_RsIntelCacheDescrE3 64807
+#define JclResources_RsIntelCacheDescrE4 64808
+#define JclResources_RsIntelCacheDescrEA 64809
+#define JclResources_RsIntelCacheDescrEB 64810
+#define JclResources_RsIntelCacheDescrEC 64811
+#define JclResources_RsIntelCacheDescrF0 64812
+#define JclResources_RsIntelCacheDescrF1 64813
+#define JclResources_RsIntelCacheDescrFF 64814
+#define JclResources_RsELibraryNotFound 64815
+#define JclResources_RsIntelCacheDescr83 64816
+#define JclResources_RsIntelCacheDescr84 64817
+#define JclResources_RsIntelCacheDescr85 64818
+#define JclResources_RsIntelCacheDescr86 64819
+#define JclResources_RsIntelCacheDescr87 64820
+#define JclResources_RsIntelCacheDescrB0 64821
+#define JclResources_RsIntelCacheDescrB1 64822
+#define JclResources_RsIntelCacheDescrB2 64823
+#define JclResources_RsIntelCacheDescrB3 64824
+#define JclResources_RsIntelCacheDescrB4 64825
+#define JclResources_RsIntelCacheDescrBA 64826
+#define JclResources_RsIntelCacheDescrC0 64827
+#define JclResources_RsIntelCacheDescrCA 64828
+#define JclResources_RsIntelCacheDescrD0 64829
+#define JclResources_RsIntelCacheDescrD1 64830
+#define JclResources_RsIntelCacheDescrD2 64831
+#define JclResources_RsIntelCacheDescr66 64832
+#define JclResources_RsIntelCacheDescr67 64833
+#define JclResources_RsIntelCacheDescr68 64834
+#define JclResources_RsIntelCacheDescr70 64835
+#define JclResources_RsIntelCacheDescr71 64836
+#define JclResources_RsIntelCacheDescr72 64837
+#define JclResources_RsIntelCacheDescr73 64838
+#define JclResources_RsIntelCacheDescr78 64839
+#define JclResources_RsIntelCacheDescr79 64840
+#define JclResources_RsIntelCacheDescr7A 64841
+#define JclResources_RsIntelCacheDescr7B 64842
+#define JclResources_RsIntelCacheDescr7C 64843
+#define JclResources_RsIntelCacheDescr7D 64844
+#define JclResources_RsIntelCacheDescr7F 64845
+#define JclResources_RsIntelCacheDescr80 64846
+#define JclResources_RsIntelCacheDescr82 64847
+#define JclResources_RsIntelCacheDescr4C 64848
+#define JclResources_RsIntelCacheDescr4D 64849
+#define JclResources_RsIntelCacheDescr4E 64850
+#define JclResources_RsIntelCacheDescr4F 64851
+#define JclResources_RsIntelCacheDescr50 64852
+#define JclResources_RsIntelCacheDescr51 64853
+#define JclResources_RsIntelCacheDescr52 64854
+#define JclResources_RsIntelCacheDescr55 64855
+#define JclResources_RsIntelCacheDescr56 64856
+#define JclResources_RsIntelCacheDescr57 64857
+#define JclResources_RsIntelCacheDescr59 64858
+#define JclResources_RsIntelCacheDescr5A 64859
+#define JclResources_RsIntelCacheDescr5B 64860
+#define JclResources_RsIntelCacheDescr5C 64861
+#define JclResources_RsIntelCacheDescr5D 64862
+#define JclResources_RsIntelCacheDescr60 64863
+#define JclResources_RsIntelCacheDescr3B 64864
+#define JclResources_RsIntelCacheDescr3C 64865
+#define JclResources_RsIntelCacheDescr3D 64866
+#define JclResources_RsIntelCacheDescr3E 64867
+#define JclResources_RsIntelCacheDescr40 64868
+#define JclResources_RsIntelCacheDescr41 64869
+#define JclResources_RsIntelCacheDescr42 64870
+#define JclResources_RsIntelCacheDescr43 64871
+#define JclResources_RsIntelCacheDescr44 64872
+#define JclResources_RsIntelCacheDescr45 64873
+#define JclResources_RsIntelCacheDescr46 64874
+#define JclResources_RsIntelCacheDescr47 64875
+#define JclResources_RsIntelCacheDescr48 64876
+#define JclResources_RsIntelCacheDescr49 64877
+#define JclResources_RsIntelCacheDescr4A 64878
+#define JclResources_RsIntelCacheDescr4B 64879
+#define JclResources_RsIntelCacheDescr08 64880
+#define JclResources_RsIntelCacheDescr09 64881
+#define JclResources_RsIntelCacheDescr0A 64882
+#define JclResources_RsIntelCacheDescr0B 64883
+#define JclResources_RsIntelCacheDescr0C 64884
+#define JclResources_RsIntelCacheDescr0D 64885
+#define JclResources_RsIntelCacheDescr0E 64886
+#define JclResources_RsIntelCacheDescr21 64887
+#define JclResources_RsIntelCacheDescr22 64888
+#define JclResources_RsIntelCacheDescr23 64889
+#define JclResources_RsIntelCacheDescr25 64890
+#define JclResources_RsIntelCacheDescr29 64891
+#define JclResources_RsIntelCacheDescr2C 64892
+#define JclResources_RsIntelCacheDescr30 64893
+#define JclResources_RsIntelCacheDescr39 64894
+#define JclResources_RsIntelCacheDescr3A 64895
+#define DbUtilsEh_SErrorInExpressionEh 64896
+#define DbUtilsEh_SUnexpectedExpressionBeforeNullEh 64897
+#define DbUtilsEh_SUnexpectedExpressionAfterOperatorEh 64898
+#define DbUtilsEh_SIncorrectExpressionEh 64899
+#define DbUtilsEh_SUnexpectedANDorOREh 64900
+#define JclResources_RsEReplacementChar 64901
+#define JclResources_RsStringHashMapMustBeEmpty 64902
+#define JclResources_RsStringHashMapDuplicate 64903
+#define JclResources_RsStringHashMapNoTraits 64904
+#define JclResources_RsIntelCacheDescr00 64905
+#define JclResources_RsIntelCacheDescr01 64906
+#define JclResources_RsIntelCacheDescr02 64907
+#define JclResources_RsIntelCacheDescr03 64908
+#define JclResources_RsIntelCacheDescr04 64909
+#define JclResources_RsIntelCacheDescr05 64910
+#define JclResources_RsIntelCacheDescr06 64911
+#define EhLibConsts_SSelectAllEh 64912
+#define EhLibConsts_SSTFilterListItem_Empties 64913
+#define EhLibConsts_SSTFilterListItem_NotEmpties 64914
+#define EhLibConsts_SSTFilterListItem_All 64915
+#define EhLibConsts_SSTFilterListItem_ClearFilter 64916
+#define EhLibConsts_SSTFilterListItem_SortingByDescend 64917
+#define EhLibConsts_SSTFilterListItem_SortingByAscend 64918
+#define DbUtilsEh_SNotOperatorEh 64919
+#define DbUtilsEh_SAndOperatorEh 64920
+#define DbUtilsEh_SOrOperatorEh 64921
+#define DbUtilsEh_SLikePredicatEh 64922
+#define DbUtilsEh_SInPredicatEh 64923
+#define DbUtilsEh_SNullConstEh 64924
+#define DbUtilsEh_SQuoteIsAbsentEh 64925
+#define DbUtilsEh_SLeftBracketExpectedEh 64926
+#define DbUtilsEh_SRightBracketExpectedEh 64927
+#define VDBConsts_SCancelEdit 64928
+#define VDBConsts_SRefreshRecord 64929
+#define VDBConsts_SDataSourceFixed 64930
+#define VDBConsts_SPropDefByLookup 64931
+#define VDBConsts_SRemoteLogin 64932
+#define EhLibConsts_SClearSelectedCellsEh 64933
+#define EhLibConsts_SInvalidTextFormatEh 64934
+#define EhLibConsts_SInvalidVCLDBIFFormatEh 64935
+#define EhLibConsts_SErrorDuringInsertValueEh 64936
+#define EhLibConsts_SIgnoreErrorEh 64937
+#define EhLibConsts_SFieldNameNotFoundEh 64938
+#define EhLibConsts_SVisibleColumnsEh 64939
+#define EhLibConsts_SCutEh 64940
+#define EhLibConsts_SCopyEh 64941
+#define EhLibConsts_SPasteEh 64942
+#define EhLibConsts_SDeleteEh 64943
 #define IBSQLMonitor_StrPlan 64944
 #define IBSQLMonitor_StrPlanCantRetrive 64945
 #define IBSQLMonitor_StrCommitHardComm 64946
@@ -221,14 +221,14 @@
 #define IBSQLMonitor_StrRollbackRetainin 64949
 #define IBSQLMonitor_StrStartTransaction 64950
 #define IBSQLMonitor_StrApplication 64951
-#define JclResources_RsEReplacementChar 64952
-#define JclResources_RsStringHashMapMustBeEmpty 64953
-#define JclResources_RsStringHashMapDuplicate 64954
-#define JclResources_RsStringHashMapNoTraits 64955
-#define JclResources_RsIntelCacheDescr00 64956
-#define JclResources_RsIntelCacheDescr01 64957
-#define JclResources_RsIntelCacheDescr02 64958
-#define JclResources_RsIntelCacheDescr03 64959
+#define VDBConsts_SFirstRecord 64952
+#define VDBConsts_SPriorRecord 64953
+#define VDBConsts_SNextRecord 64954
+#define VDBConsts_SLastRecord 64955
+#define VDBConsts_SInsertRecord 64956
+#define VDBConsts_SDeleteRecord 64957
+#define VDBConsts_SEditRecord 64958
+#define VDBConsts_SPostEdit 64959
 #define IBXConst_SIB71feature 64960
 #define IBXConst_SIB75feature 64961
 #define IBXConst_SIB80feature 64962
@@ -852,7 +852,7 @@ BEGIN
 	OleConst_SNoWindowHandle,	"Could not obtain OLE control window handle"
 	OleConst_SLinkProperties,	"Link Properties"
 	OleConst_SInvalidLinkSource,	"Cannot link to an invalid source."
-	DbUtilsEh_SUnexpectedANDorOREh,	"Unexpected AND or OR: "
+	JclResources_RsEFunctionNotFound,	"Function not found: %s.%s"
 	JConsts_sChangeJPGSize,	"Cannot change the size of a JPEG image"
 	JConsts_sJPEGError,	"JPEG error #%d"
 	JConsts_sJPEGImageFile,	"JPEG Image File"
@@ -868,57 +868,6 @@ BEGIN
 	bdeconst_SDatabaseClosed,	"Cannot perform this operation on a closed database"
 	bdeconst_SDatabaseHandleSet,	"Database handle owned by a different session"
 	bdeconst_SSessionActive,	"Cannot perform this operation on an active session"
-	EhLibConsts_SSTFilterListItem_ClearFilter,	"(Clear filter)"
-	EhLibConsts_SSTFilterListItem_SortingByDescend,	"(Order by ascending)"
-	EhLibConsts_SSTFilterListItem_SortingByAscend,	"(Order by descending)"
-	DbUtilsEh_SNotOperatorEh,	"Not"
-	DbUtilsEh_SAndOperatorEh,	"AND"
-	DbUtilsEh_SOrOperatorEh,	"OR"
-	DbUtilsEh_SLikePredicatEh,	""
-	DbUtilsEh_SInPredicatEh,	"In"
-	DbUtilsEh_SNullConstEh,	"Null"
-	DbUtilsEh_SQuoteIsAbsentEh,	"Quote is absent: "
-	DbUtilsEh_SLeftBracketExpectedEh,	"'(' expected: "
-	DbUtilsEh_SRightBracketExpectedEh,	"')' expected: "
-	DbUtilsEh_SErrorInExpressionEh,	"Error in expression: "
-	DbUtilsEh_SUnexpectedExpressionBeforeNullEh,	"Unexpected expression before Null: "
-	DbUtilsEh_SUnexpectedExpressionAfterOperatorEh,	"Unexpected expression after operator: "
-	DbUtilsEh_SIncorrectExpressionEh,	"Incorrect expression: "
-	VDBConsts_SRemoteLogin,	"Remote Login"
-	EhLibConsts_SClearSelectedCellsEh,	"Clear selected cells?"
-	EhLibConsts_SInvalidTextFormatEh,	"Invalid text format"
-	EhLibConsts_SInvalidVCLDBIFFormatEh,	"Invalid VCLDBIF format"
-	EhLibConsts_SErrorDuringInsertValueEh,	"Error during insert value:"
-	EhLibConsts_SIgnoreErrorEh,	"Ignore error?"
-	EhLibConsts_SFieldNameNotFoundEh,	"Field name '%s' not found"
-	EhLibConsts_SVisibleColumnsEh,	"Visible columns"
-	EhLibConsts_SCutEh,	"Cut"
-	EhLibConsts_SCopyEh,	"Copy"
-	EhLibConsts_SPasteEh,	"Paste"
-	EhLibConsts_SDeleteEh,	"Delete"
-	EhLibConsts_SSelectAllEh,	"Select All"
-	EhLibConsts_SSTFilterListItem_Empties,	"(Empty)"
-	EhLibConsts_SSTFilterListItem_NotEmpties,	"(Not empty)"
-	EhLibConsts_SSTFilterListItem_All,	"(All)"
-	JclResources_RsIntelCacheDescrF1,	"128-Byte Prefetching"
-	JclResources_RsIntelCacheDescrFF,	"CPUID leaf 2 does not report cache descriptor information, use CPUID leaf 4 to query cache parameters"
-	JclResources_RsELibraryNotFound,	"Library not found: %s"
-	JclResources_RsEFunctionNotFound,	"Function not found: %s.%s"
-	VDBConsts_SFirstRecord,	"First record"
-	VDBConsts_SPriorRecord,	"Prior record"
-	VDBConsts_SNextRecord,	"Next record"
-	VDBConsts_SLastRecord,	"Last record"
-	VDBConsts_SInsertRecord,	"Insert record"
-	VDBConsts_SDeleteRecord,	"Delete record"
-	VDBConsts_SEditRecord,	"Edit record"
-	VDBConsts_SPostEdit,	"Post edit"
-	VDBConsts_SCancelEdit,	"Cancel edit"
-	VDBConsts_SRefreshRecord,	"Refresh data"
-	VDBConsts_SDataSourceFixed,	"Operation not allowed in a DBCtrlGrid"
-	VDBConsts_SPropDefByLookup,	"Property already defined by lookup field"
-	JclResources_RsIntelCacheDescrD0,	"3rd-level cache: 512 KByte, 4-way set associative, 64 byte line size"
-	JclResources_RsIntelCacheDescrD1,	"3rd-level cache: 1 MByte, 4-way set associative, 64 byte line size"
-	JclResources_RsIntelCacheDescrD2,	"3rd-level cache: 2 MByte, 4-way set associative, 64 byte line size"
 	JclResources_RsIntelCacheDescrD6,	"3rd-level cache: 1 MByte, 8-way set associative, 64 byte line size"
 	JclResources_RsIntelCacheDescrD7,	"3rd-level cache: 2 MByte, 8-way set associative, 64 byte line size"
 	JclResources_RsIntelCacheDescrD8,	"3rd-level cache: 4 MByte, 8-way set associative, 64 byte line size"
@@ -932,9 +881,9 @@ BEGIN
 	JclResources_RsIntelCacheDescrEB,	"3rd-level cache: 18 MByte, 24-way set associative, 64 byte line size"
 	JclResources_RsIntelCacheDescrEC,	"3rd-level cache: 24 MByte, 24-way set associative, 64 byte line size"
 	JclResources_RsIntelCacheDescrF0,	"64-Byte Prefetching"
-	JclResources_RsIntelCacheDescr7F,	"2nd-level cache: 512 KBytes, 2-way set associative, 64 byte line size"
-	JclResources_RsIntelCacheDescr80,	"2nd-level cache: 512 KBytes, 8-way set associative, 64 byte line size"
-	JclResources_RsIntelCacheDescr82,	"2nd-level cache: 256 KBytes, 8-way associative, 32 byte line size"
+	JclResources_RsIntelCacheDescrF1,	"128-Byte Prefetching"
+	JclResources_RsIntelCacheDescrFF,	"CPUID leaf 2 does not report cache descriptor information, use CPUID leaf 4 to query cache parameters"
+	JclResources_RsELibraryNotFound,	"Library not found: %s"
 	JclResources_RsIntelCacheDescr83,	"2nd-level cache: 512 KBytes, 8-way associative, 32 byte line size"
 	JclResources_RsIntelCacheDescr84,	"2nd-level cache: 1 MBytes, 8-way associative, 32 byte line size"
 	JclResources_RsIntelCacheDescr85,	"2nd-level cache: 2 MBytes, 8-way associative, 32 byte line size"
@@ -948,9 +897,9 @@ BEGIN
 	JclResources_RsIntelCacheDescrBA,	"Data TLB1: 4 KByte pages, 4-way set associative, 64 entries"
 	JclResources_RsIntelCacheDescrC0,	"Data TLB: 4 KByte and 4 MByte pages, 4-way set associative, 8 entries"
 	JclResources_RsIntelCacheDescrCA,	"Shared 2nd-Level TLB: 4 KByte pages, 4-way associative, 512 entries"
-	JclResources_RsIntelCacheDescr5C,	"Data TLB: 4 KByte and 4 MByte pages, 128 Entries"
-	JclResources_RsIntelCacheDescr5D,	"Data TLB: 4 KByte and 4 MByte pages, 256 Entries"
-	JclResources_RsIntelCacheDescr60,	"1st-level data cache: 16 KByte, 8-way set associative, 64 byte line size"
+	JclResources_RsIntelCacheDescrD0,	"3rd-level cache: 512 KByte, 4-way set associative, 64 byte line size"
+	JclResources_RsIntelCacheDescrD1,	"3rd-level cache: 1 MByte, 4-way set associative, 64 byte line size"
+	JclResources_RsIntelCacheDescrD2,	"3rd-level cache: 2 MByte, 4-way set associative, 64 byte line size"
 	JclResources_RsIntelCacheDescr66,	"1st-level data cache: 8 KBytes, 4-way set associative, 64 byte line size"
 	JclResources_RsIntelCacheDescr67,	"1st-level data cache: 16 KBytes, 4-way set associative, 64 byte line size"
 	JclResources_RsIntelCacheDescr68,	"1st-level data cache: 32 KBytes, 4-way set associative, 64 byte line size"
@@ -964,9 +913,9 @@ BEGIN
 	JclResources_RsIntelCacheDescr7B,	"2nd-level cache: 512 KBytes, 8-way set associative, 64 bytes line size, 2 lines per sector"
 	JclResources_RsIntelCacheDescr7C,	"2nd-level cache: 1 MBytes, 8-way set associative, 64 bytes line size, 2 lines per sector"
 	JclResources_RsIntelCacheDescr7D,	"2nd-level cache: 2 MBytes, 8-way set associative, 64 byte line size"
-	JclResources_RsIntelCacheDescr49,	"2nd-level cache: 4 MBytes, 16-way set associative, 64 byte line size"
-	JclResources_RsIntelCacheDescr4A,	"3rd-level cache: 6MByte, 12-way set associative, 64 byte line size"
-	JclResources_RsIntelCacheDescr4B,	"3rd-level cache: 8MByte, 16-way set associative, 64 byte line size"
+	JclResources_RsIntelCacheDescr7F,	"2nd-level cache: 512 KBytes, 2-way set associative, 64 byte line size"
+	JclResources_RsIntelCacheDescr80,	"2nd-level cache: 512 KBytes, 8-way set associative, 64 byte line size"
+	JclResources_RsIntelCacheDescr82,	"2nd-level cache: 256 KBytes, 8-way associative, 32 byte line size"
 	JclResources_RsIntelCacheDescr4C,	"3rd-level cache: 12MByte, 12-way set associative, 64 byte line size"
 	JclResources_RsIntelCacheDescr4D,	"3rd-level cache: 16MByte, 16-way set associative, 64 byte line size"
 	JclResources_RsIntelCacheDescr4E,	"2nd-level cache: 6MByte, 24-way set associative, 64 byte line size"
@@ -980,9 +929,9 @@ BEGIN
 	JclResources_RsIntelCacheDescr59,	"Data TLB0: 4 KByte pages, fully associative, 16 entries"
 	JclResources_RsIntelCacheDescr5A,	"Data TLB0: 2 MByte or 4 MByte pages, 4-way set associative, 32 entries"
 	JclResources_RsIntelCacheDescr5B,	"Data TLB: 4 KByte and 4 MByte pages, 64 Entries"
-	JclResources_RsIntelCacheDescr30,	"1st level instruction cache: 32 KBytes, 8-way set associative, 64 byte line size"
-	JclResources_RsIntelCacheDescr39,	"2nd-level cache: 128 KBytes, 4-way set associative, sectored cache, 64-byte line size"
-	JclResources_RsIntelCacheDescr3A,	"2nd-level cache: 192 KBytes, 6-way set associative, sectored cache, 64-byte line size"
+	JclResources_RsIntelCacheDescr5C,	"Data TLB: 4 KByte and 4 MByte pages, 128 Entries"
+	JclResources_RsIntelCacheDescr5D,	"Data TLB: 4 KByte and 4 MByte pages, 256 Entries"
+	JclResources_RsIntelCacheDescr60,	"1st-level data cache: 16 KByte, 8-way set associative, 64 byte line size"
 	JclResources_RsIntelCacheDescr3B,	"2nd-level cache: 128 KBytes, 2-way set associative, sectored cache, 64-byte line size"
 	JclResources_RsIntelCacheDescr3C,	"2nd-level cache: 256 KBytes, 4-way set associative, sectored cache, 64-byte line size"
 	JclResources_RsIntelCacheDescr3D,	"2nd-level cache: 384 KBytes, 6-way set associative, sectored cache, 64-byte line size"
@@ -996,9 +945,9 @@ BEGIN
 	JclResources_RsIntelCacheDescr46,	"3rd-level cache: 4 MBytes, 4-way set associative, 64 byte line size"
 	JclResources_RsIntelCacheDescr47,	"3rd-level cache: 8 MBytes, 4-way set associative, 64 byte line size"
 	JclResources_RsIntelCacheDescr48,	"3rd-level cache: 8 MByte, 8-way set associative, 64 byte line size"
-	JclResources_RsIntelCacheDescr04,	"Data TLB: 4 MByte pages, 4-way set associative, 8 entries"
-	JclResources_RsIntelCacheDescr05,	"Data TLB1: 4 MByte pages, 4-way set associative, 32 entries"
-	JclResources_RsIntelCacheDescr06,	"1st level instruction cache: 8 KBytes, 4-way set associative, 32 byte line size"
+	JclResources_RsIntelCacheDescr49,	"2nd-level cache: 4 MBytes, 16-way set associative, 64 byte line size"
+	JclResources_RsIntelCacheDescr4A,	"3rd-level cache: 6MByte, 12-way set associative, 64 byte line size"
+	JclResources_RsIntelCacheDescr4B,	"3rd-level cache: 8MByte, 16-way set associative, 64 byte line size"
 	JclResources_RsIntelCacheDescr08,	"1st level instruction cache: 16 KBytes, 4-way set associative, 32 byte line size"
 	JclResources_RsIntelCacheDescr09,	"1st level instruction cache: 32 KBytes, 4-way set associative, 64 byte line size"
 	JclResources_RsIntelCacheDescr0A,	"1st level data cache: 8 KBytes, 2-way set associative, 32 byte line size"
@@ -1012,14 +961,14 @@ BEGIN
 	JclResources_RsIntelCacheDescr25,	"3rd level cache: 2 MBytes, 8-way set associative, 64 byte line size, 2 lines per sector"
 	JclResources_RsIntelCacheDescr29,	"3rd level cache: 4 MBytes, 8-way set associative, 64 byte line size, 2 lines per sector"
 	JclResources_RsIntelCacheDescr2C,	"1st level data cache: 32 KBytes, 8-way set associative, 64 byte line size"
-	IBSQLMonitor_StrPlan,	"  Plan: "
-	IBSQLMonitor_StrPlanCantRetrive,	"  Plan: Can't retrieve plan - too large"
-	IBSQLMonitor_StrCommitHardComm,	": [Commit (Hard commit)]"
-	IBSQLMonitor_StrCommitRetaining,	": [Commit retaining (Soft commit)]"
-	IBSQLMonitor_StrRollback,	": [Rollback]"
-	IBSQLMonitor_StrRollbackRetainin,	": [Rollback retaining (Soft rollback)]"
-	IBSQLMonitor_StrStartTransaction,	": [Start transaction]"
-	IBSQLMonitor_StrApplication,	"[Application: "
+	JclResources_RsIntelCacheDescr30,	"1st level instruction cache: 32 KBytes, 8-way set associative, 64 byte line size"
+	JclResources_RsIntelCacheDescr39,	"2nd-level cache: 128 KBytes, 4-way set associative, sectored cache, 64-byte line size"
+	JclResources_RsIntelCacheDescr3A,	"2nd-level cache: 192 KBytes, 6-way set associative, sectored cache, 64-byte line size"
+	DbUtilsEh_SErrorInExpressionEh,	"Error in expression: "
+	DbUtilsEh_SUnexpectedExpressionBeforeNullEh,	"Unexpected expression before Null: "
+	DbUtilsEh_SUnexpectedExpressionAfterOperatorEh,	"Unexpected expression after operator: "
+	DbUtilsEh_SIncorrectExpressionEh,	"Incorrect expression: "
+	DbUtilsEh_SUnexpectedANDorOREh,	"Unexpected AND or OR: "
 	JclResources_RsEReplacementChar,	"Failed to get ANSI replacement character"
 	JclResources_RsStringHashMapMustBeEmpty,	"HashList: must be empty to set size to zero"
 	JclResources_RsStringHashMapDuplicate,	"Duplicate hash list entry: %s"
@@ -1028,6 +977,57 @@ BEGIN
 	JclResources_RsIntelCacheDescr01,	"Instruction TLB: 4 KByte pages, 4-way set associative, 32 entries"
 	JclResources_RsIntelCacheDescr02,	"Instruction TLB: 4 MByte pages, 4-way set associative, 2 entries"
 	JclResources_RsIntelCacheDescr03,	"Data TLB: 4 KByte pages, 4-way set associative, 64 entries"
+	JclResources_RsIntelCacheDescr04,	"Data TLB: 4 MByte pages, 4-way set associative, 8 entries"
+	JclResources_RsIntelCacheDescr05,	"Data TLB1: 4 MByte pages, 4-way set associative, 32 entries"
+	JclResources_RsIntelCacheDescr06,	"1st level instruction cache: 8 KBytes, 4-way set associative, 32 byte line size"
+	EhLibConsts_SSelectAllEh,	"Select All"
+	EhLibConsts_SSTFilterListItem_Empties,	"(Empty)"
+	EhLibConsts_SSTFilterListItem_NotEmpties,	"(Not empty)"
+	EhLibConsts_SSTFilterListItem_All,	"(All)"
+	EhLibConsts_SSTFilterListItem_ClearFilter,	"(Clear filter)"
+	EhLibConsts_SSTFilterListItem_SortingByDescend,	"(Order by ascending)"
+	EhLibConsts_SSTFilterListItem_SortingByAscend,	"(Order by descending)"
+	DbUtilsEh_SNotOperatorEh,	"Not"
+	DbUtilsEh_SAndOperatorEh,	"AND"
+	DbUtilsEh_SOrOperatorEh,	"OR"
+	DbUtilsEh_SLikePredicatEh,	""
+	DbUtilsEh_SInPredicatEh,	"In"
+	DbUtilsEh_SNullConstEh,	"Null"
+	DbUtilsEh_SQuoteIsAbsentEh,	"Quote is absent: "
+	DbUtilsEh_SLeftBracketExpectedEh,	"'(' expected: "
+	DbUtilsEh_SRightBracketExpectedEh,	"')' expected: "
+	VDBConsts_SCancelEdit,	"Cancel edit"
+	VDBConsts_SRefreshRecord,	"Refresh data"
+	VDBConsts_SDataSourceFixed,	"Operation not allowed in a DBCtrlGrid"
+	VDBConsts_SPropDefByLookup,	"Property already defined by lookup field"
+	VDBConsts_SRemoteLogin,	"Remote Login"
+	EhLibConsts_SClearSelectedCellsEh,	"Clear selected cells?"
+	EhLibConsts_SInvalidTextFormatEh,	"Invalid text format"
+	EhLibConsts_SInvalidVCLDBIFFormatEh,	"Invalid VCLDBIF format"
+	EhLibConsts_SErrorDuringInsertValueEh,	"Error during insert value:"
+	EhLibConsts_SIgnoreErrorEh,	"Ignore error?"
+	EhLibConsts_SFieldNameNotFoundEh,	"Field name '%s' not found"
+	EhLibConsts_SVisibleColumnsEh,	"Visible columns"
+	EhLibConsts_SCutEh,	"Cut"
+	EhLibConsts_SCopyEh,	"Copy"
+	EhLibConsts_SPasteEh,	"Paste"
+	EhLibConsts_SDeleteEh,	"Delete"
+	IBSQLMonitor_StrPlan,	"  Plan: "
+	IBSQLMonitor_StrPlanCantRetrive,	"  Plan: Can't retrieve plan - too large"
+	IBSQLMonitor_StrCommitHardComm,	": [Commit (Hard commit)]"
+	IBSQLMonitor_StrCommitRetaining,	": [Commit retaining (Soft commit)]"
+	IBSQLMonitor_StrRollback,	": [Rollback]"
+	IBSQLMonitor_StrRollbackRetainin,	": [Rollback retaining (Soft rollback)]"
+	IBSQLMonitor_StrStartTransaction,	": [Start transaction]"
+	IBSQLMonitor_StrApplication,	"[Application: "
+	VDBConsts_SFirstRecord,	"First record"
+	VDBConsts_SPriorRecord,	"Prior record"
+	VDBConsts_SNextRecord,	"Next record"
+	VDBConsts_SLastRecord,	"Last record"
+	VDBConsts_SInsertRecord,	"Insert record"
+	VDBConsts_SDeleteRecord,	"Delete record"
+	VDBConsts_SEditRecord,	"Edit record"
+	VDBConsts_SPostEdit,	"Post edit"
 	IBXConst_SIB71feature,	"%s is an InterBase 7.1 function. Please upgrade to InterBase 7.1 to use this functonality"
 	IBXConst_SIB75feature,	"%s is an InterBase 7.5 function. Please upgrade to InterBase 7.5 to use this functonality"
 	IBXConst_SIB80feature,	"%s is an InterBase 2007 function. Please upgrade to InterBase 2007 to use this functonality"
@@ -1609,7 +1609,6 @@ END
 /* c:\program files (x86)\embarcadero\rad studio\7.0\Lib\Debug\character.res */
 /* c:\program files (x86)\embarcadero\rad studio\7.0\lib\Controls.res */
 /* c:\program files (x86)\embarcadero\rad studio\7.0\lib\midas.res */
-/* D:\Front\Source\TMS\TASKDIALOG.RES */
 /* c:\program files (x86)\embarcadero\rad studio\7.0\lib\Buttons.res */
 /* c:\program files (x86)\embarcadero\rad studio\7.0\lib\DBPWDlg.dfm */
 /* c:\program files (x86)\embarcadero\rad studio\7.0\lib\DBLogDlg.dfm */
@@ -1620,12 +1619,13 @@ END
 /* D:\Front\Source\Components\EhLib\Common\DBGRIDEH.RES */
 /* Report\rp_frmGrid_unit.DFM */
 /* Report\rp_dlgViewResult_unit.DFM */
-/* D:\Front\Source\TMS\AdvSmoothTouchKeyBoard.res */
+/* D:\Front\Source\TMS\TASKDIALOG.RES */
 /* D:\Front\Source\TMS\AdvColorPickerDropDown.RES */
 /* D:\Front\Source\TMS\ASGSPIN.RES */
 /* D:\Front\Source\TMS\ADVGRID.RES */
 /* D:\Front\Source\TMS\ASGRES.RES */
 /* FrontData_Unit.dfm */
+/* D:\Front\Source\TMS\AdvSmoothTouchKeyBoard.res */
 /* BaseFrontForm_Unit.dfm */
 /* CardCodeForm_Unit.dfm */
 /* OrderNumber_Unit.dfm */

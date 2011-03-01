@@ -3348,7 +3348,7 @@ begin
     FReadSQL.SQL.Text :=
       'SELECT T.*, U.USR$RESPKEY, U.USR$ISLOCKED, U.DOCUMENTKEY ' +
       'FROM USR$MN_TABLE T ' +
-      'LEFT JOIN USR$MN_ORDER U ON U.USR$TABLEKEY = T.ID ' +
+      'LEFT JOIN USR$MN_ORDER U ON (U.USR$TABLEKEY = T.ID AND U.USR$PAY <> 1) ' +
       'WHERE T.USR$HALLKEY = :ID ';
     FReadSQL.Params[0].AsInteger := HallKey;
     FReadSQL.ExecQuery;
