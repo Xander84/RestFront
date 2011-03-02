@@ -13,7 +13,7 @@ uses
   SplitOrderForm_Unit, Report_Unit, FrontData_Unit, BaseFrontForm_Unit,
   AdvSmoothButton, AdvPanel, AdvPageControl, AdvSmoothTouchKeyBoard,
   TaskDialog, FrontLog_Unit, Grids, Menus, AddUserForm_unit, AdminForm_Unit,
-  Buttons, RestTable_Unit;
+  Buttons, RestTable_Unit, dxfDesigner;
 
 const
   btnHeight = 65;
@@ -144,7 +144,6 @@ type
     btnUserLeft: TAdvSmoothButton;
     btnUserRight: TAdvSmoothButton;
     tsOrderButton: TAdvTabSheet;
-    btnAdminOptions: TAdvSmoothButton;
     btnCashForm: TAdvSmoothButton;
     btnShowKeyBoard: TAdvSmoothButton;
     actAdminOptions: TAction;
@@ -186,6 +185,10 @@ type
     btnCancel3: TAdvSmoothButton;
     tsHalls: TAdvTabSheet;
     pnlHalls: TAdvPanel;
+    dxfDesigner: TdxfDesigner;
+    btnAdminOptions: TAdvSmoothButton;
+    AdvSmoothButton1: TAdvSmoothButton;
+    AdvSmoothButton2: TAdvSmoothButton;
 
     //Проверка введёного пароля
     procedure actPassEnterExecute(Sender: TObject);
@@ -256,6 +259,8 @@ type
     procedure btnPrintIncomeReportClick(Sender: TObject);
     procedure tmrCloseTimer(Sender: TObject);
     procedure btnCheckRegisterClick(Sender: TObject);
+    procedure AdvSmoothButton1Click(Sender: TObject);
+    procedure AdvSmoothButton2Click(Sender: TObject);
   private
     //Компонент обращения к БД
     FFrontBase: TFrontBase;
@@ -756,11 +761,12 @@ begin
   FButton.IsEmpty := FTablesInfoTable.FieldByName('ORDERKEY').AsInteger = 0;
   FButton.PosX := FTablesInfoTable.FieldByName('USR$POSX').AsInteger;
   FButton.PosY := FTablesInfoTable.FieldByName('USR$POSY').AsInteger;
-  FButton.Number := FTablesInfoTable.FieldByName('USR$NUMBER').AsString;
+//  FButton.Number := FTablesInfoTable.FieldByName('USR$NUMBER').AsString;
   FButton.TableTypeKey := FTablesInfoTable.FieldByName('USR$TYPE').AsInteger;
   FButton.OrderKey := FTablesInfoTable.FieldByName('ORDERKEY').AsInteger;
   FButton.RespKey := FTablesInfoTable.FieldByName('USR$RESPKEY').AsInteger;
   FButton.IsLocked := FTablesInfoTable.FieldByName('ISLOCKED').AsInteger = 1;
+  FButton.Number := FTablesInfoTable.FieldByName('USR$NUMBER').AsString;
   FButton.OnClick := TableButtonOnClick;
 
   FTablesList.Add(FButton);
@@ -2009,7 +2015,7 @@ begin
           FMenuButtonCount := 0;
 
           btnCashForm.Visible := False;
-          btnAdminOptions.Visible := False;
+          btnAdminOptions.Visible := True;
           btnAllChecks.Visible := False;
           btnManagerInfo.Visible := False;
 
@@ -2092,7 +2098,7 @@ begin
           FTablesInfoTable.Open;
           //
           btnCashForm.Visible := True;
-          btnAdminOptions.Visible := True;
+          btnAdminOptions.Visible := False;
           btnAllChecks.Visible := True;
           btnManagerInfo.Visible := True;
 
@@ -2159,7 +2165,7 @@ begin
           FTablesInfoTable.Open;
           //
           btnCashForm.Visible := True;
-          btnAdminOptions.Visible := True;
+          btnAdminOptions.Visible := False;
           btnAllChecks.Visible := True;
           btnManagerInfo.Visible := True;
 
@@ -2254,7 +2260,7 @@ begin
           pcExtraButton.ActivePage := tsEmpty;
 
           btnCashForm.Visible := True;
-          btnAdminOptions.Visible := True;
+          btnAdminOptions.Visible := False;
           btnAllChecks.Visible := True;
 
           FUserFirstTop       := btnFirstTop;
@@ -2512,6 +2518,23 @@ begin
 
   FUsersOrderButtonList.Add(FButton);
   Inc(FUserOrderButtonNumber);
+end;
+
+procedure TRestMainForm.AdvSmoothButton1Click(Sender: TObject);
+begin
+  dxfDesigner.EditControl := sbTable;
+  dxfDesigner.Active := True;
+end;
+
+procedure TRestMainForm.AdvSmoothButton2Click(Sender: TObject);
+var
+  I: Integer;
+begin
+  dxfDesigner.EditControl := nil;
+  dxfDesigner.Active := False;
+  for I := 0 to sbTable.ControlCount - 1 do
+    if sbTable.Controls[I] is TRestTable then
+      TRestTable(sbTable.Controls[I]).SaveTablePositionToDB;
 end;
 
 procedure TRestMainForm.btnAllChecClick(Sender: TObject);
@@ -2806,6 +2829,9 @@ var
   FTableKey, FOrderKey: Integer;
   FUserInfo: TUserInfo;
 begin
+  if dxfDesigner.Active then
+    exit;
+
   FOrderKey := TRestTable(Sender).OrderKey;
   FTableKey := TRestTable(Sender).ID;
   if FOrderKey > 0 then

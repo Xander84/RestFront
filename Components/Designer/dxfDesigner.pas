@@ -13,7 +13,9 @@ unit dxfDesigner;
 
 interface
 
-uses Classes, Graphics, Forms, Windows, Controls, Messages, Menus, SysUtils, IniFiles;
+uses
+  Classes, Graphics, Forms, Windows, Controls, Messages, Menus, SysUtils, IniFiles,
+  RestTable_Unit;
 
 type
   TOrderInfo = class
@@ -57,6 +59,7 @@ type
     FMode: Integer;
     FPopupMenu: TPopupMenu;
     FEditingControls: TStrings;
+    FEditControl: TWinControl;
     procedure SetStepToGrid(Value: Integer);
     procedure SetActive(Value: Boolean);
     procedure ApplicationMessages(var Msg: TMsg; var Handled: Boolean);
@@ -66,6 +69,7 @@ type
     procedure SetChecked(AControl: TControl);
     function GetActiveForm: TForm;
     procedure SetEditingControls(Value: TStrings);
+    procedure SetEditControl(const Value: TWinControl);
   protected
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
   public
@@ -73,6 +77,7 @@ type
     destructor Destroy; override;
     procedure LoadPosition;
     procedure SavePosition;
+    property EditControl: TWinControl read FEditControl write SetEditControl;
   published
     property StepToGrid: Integer read FStepToGrid write SetStepToGrid;
     property Active: Boolean read FActive write SetActive;
@@ -250,6 +255,11 @@ begin
     if AComponent = FOldControl then
       FOldControl := nil;
   end;
+end;
+
+procedure TdxfDesigner.SetEditControl(const Value: TWinControl);
+begin
+  FEditControl := Value;
 end;
 
 procedure TdxfDesigner.SetEditingControls(Value: TStrings);
@@ -452,6 +462,9 @@ var
   ARect: TRect;
 begin
   Result := nil;
+  if FEditControl <> nil then
+    AControl := FEditControl;
+
   for I := AControl.ControlCount - 1 downto 0 do
     with AControl.Controls[I] do
     begin
@@ -487,10 +500,10 @@ begin
        ARect := Rect(PC.X , PC.Y +  D , PC.X + D , PC.Y + Height - D);
        if PtInRect(ARect, P) then Mode := 8;
 
-       if AControl.Controls[I] is TWinControl then
+       if AControl.Controls[I] is TRestTable {TWinControl} then
        begin
-         Result := FindMoveControl(AControl.Controls[I] as TWinControl, P, Mode);
-         if Result = nil then
+//         Result := FindMoveControl(AControl.Controls[I] as TWinControl, P, Mode);
+//         if Result = nil then
            Result := AControl.Controls[I];
        end;
        Break;

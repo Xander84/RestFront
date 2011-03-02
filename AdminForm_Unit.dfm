@@ -2,8 +2,8 @@ object AdminForm: TAdminForm
   Left = 0
   Top = 0
   BorderStyle = bsSingle
-  Caption = 'AdminForm'
-  ClientHeight = 181
+  Caption = #1040#1076#1084#1080#1085#1080#1089#1090#1088#1072#1090#1086#1088
+  ClientHeight = 196
   ClientWidth = 324
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -19,7 +19,7 @@ object AdminForm: TAdminForm
     Left = 0
     Top = 0
     Width = 324
-    Height = 181
+    Height = 196
     Align = alClient
     BevelOuter = bvNone
     Color = 16640730
@@ -59,12 +59,11 @@ object AdminForm: TAdminForm
     StatusBar.ColorTo = 16374724
     StatusBar.GradientDirection = gdVertical
     Styler = FrontData.FrontPanelStyler
-    ExplicitWidth = 330
-    ExplicitHeight = 331
+    ExplicitHeight = 181
     FullHeight = 0
     object btnAddUser: TAdvSmoothButton
       Left = 14
-      Top = 10
+      Top = 6
       Width = 296
       Height = 40
       Action = actAddUser
@@ -94,7 +93,7 @@ object AdminForm: TAdminForm
     end
     object btnEditReport: TAdvSmoothButton
       Left = 14
-      Top = 56
+      Top = 52
       Width = 296
       Height = 40
       Action = actEditReport
@@ -125,7 +124,7 @@ object AdminForm: TAdminForm
   end
   object btnExit: TAdvSmoothButton
     Left = 14
-    Top = 129
+    Top = 144
     Width = 296
     Height = 40
     Hint = #1042#1099#1093#1086#1076

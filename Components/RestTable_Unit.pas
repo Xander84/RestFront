@@ -3,11 +3,11 @@ unit RestTable_Unit;
 interface
 
 uses
-  SysUtils, Classes, Controls, AdvToolBtn, Front_DataBase_Unit, Graphics, IBSQL,
-  IBDatabase;
+  SysUtils, Classes, Controls, Front_DataBase_Unit, Graphics, IBSQL,
+  IBDatabase, PngSpeedButton, pngimage, Buttons;
 
 type
-  TRestTable = class(TAdvToolButton)
+  TRestTable = class(TPngSpeedButton)
   private
     FNumber: String;
     FPosX: Integer;
@@ -19,7 +19,6 @@ type
     FFrontBase: TFrontBase;
     FTransparent: Boolean;
     FTransparentColor: TColor;
-    FImageList: TImageList;
     FID: Integer;
     FOrderKey: Integer;
     FRespKey: Integer;
@@ -41,6 +40,7 @@ type
     procedure SetOrderKey(const Value: Integer);
     procedure SetRespKey(const Value: Integer);
     procedure SetIsLocked(const Value: Boolean);
+    procedure SetNumber(const Value: String);
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -62,7 +62,7 @@ type
     property FrontBase: TFrontBase read FFrontBase write SetFrontBase;
   published
     // номер стола
-    property Number: String read FNumber write FNumber;
+    property Number: String read FNumber write SetNumber;
     property PosX: Integer read GetPosX write SetPosX;
     property PosY: Integer read GetPosY write SetPosY;
     property Transparent: Boolean read FTransparent write SetTransparent;
@@ -75,7 +75,7 @@ implementation
 
 procedure Register;
 begin
-  RegisterComponents('RF Components', [TRestTable]);
+  RegisterComponents('RestFront', [TRestTable]);
 end;
 
 { TRestTable }
@@ -86,12 +86,12 @@ begin
   FTableTypeKey := -1;
   FIsEmpty := True;
   FID := -1;
-  FImageList := TImageList.Create(nil);
+  Flat := True;
+//  Layout := blGlyphTop;
 end;
 
 destructor TRestTable.Destroy;
 begin
-  FImageList.Free;
   inherited;
 end;
 
@@ -108,13 +108,12 @@ end;
 procedure TRestTable.ReadTableType;
 var
   FSQL: TIBSQL;
-  ResBmp: TBitmap;
+  FPng: TPngImage;
   Str: TStream;
 begin
   Assert(Assigned(FFrontBase), 'FrontBase not Assigned');
   if FTableTypeKey > -1 then
   begin
-    FImageList.Clear;
     FSQL := TIBSQL.Create(nil);
     Str := TMemoryStream.Create;
     try
@@ -135,37 +134,27 @@ begin
         FTransparentColor := FSQL.FieldByName('USR$TRANSPARENTCOLOR').AsInteger;
         if FIsEmpty and (not FSQL.FieldByName('USR$PICTURE1').IsNull) then
         begin
-          ResBmp := TBitmap.Create;
+          FPng := TPngImage.Create;
           try
             FSQL.FieldByName('USR$PICTURE1').SaveToStream(Str);
             Str.Position := 0;
-            ResBmp.LoadFromStream(Str);
-            ResBmp.Transparent := FTransparent;
-            if FTransparentColor <> 0 then
-              ResBmp.TransparentColor := FTransparentColor;
-          except
-            ResBmp.Free;
+            FPng.LoadFromStream(Str);
+            PngImage := FPng;
+          finally
+            FPng.Free;
           end;
-          FImageList.Add(ResBmp, nil);
-          Images := FImageList;
-          ImageIndex := 1;
         end else
         if not IsEmpty and (not FSQL.FieldByName('USR$PICTURE2').IsNull) then
         begin
-          ResBmp := TBitmap.Create;
+          FPng := TPngImage.Create;
           try
             FSQL.FieldByName('USR$PICTURE2').SaveToStream(Str);
             Str.Position := 0;
-            ResBmp.LoadFromStream(Str);
-            ResBmp.Transparent := FTransparent;
-            if FTransparentColor <> 0 then
-              ResBmp.TransparentColor := FTransparentColor;
-          except
-            ResBmp.Free;
+            FPng.LoadFromStream(Str);
+            PngImage := FPng;
+          finally
+            FPng.Free;
           end;
-          FImageList.Add(ResBmp, nil);
-          Images := FImageList;
-          ImageIndex := 1;
         end;
       end;
       FSQL.Close;
@@ -273,6 +262,29 @@ end;
 procedure TRestTable.SetMainTableKey(const Value: Integer);
 begin
   FMainTableKey := Value;
+end;
+
+procedure TRestTable.SetNumber(const Value: String);
+var
+  bm: TBitmap;
+begin
+  FNumber := Value;
+  if Assigned(PngImage) then
+  begin
+    bm := TBitmap.Create;
+    try
+      bm.Width := PngImage.Width;
+      bm.Height := PngImage.Height;
+      bm.Canvas.Draw(0, 0, PngImage);
+      bm.Transparent := true;
+      bm.Canvas.Brush.Style := bsClear;
+      bm.Canvas.TextOut(0, 0, FNumber);
+
+      PngImage.Assign(bm);
+    finally
+      bm.Free;
+    end;
+  end;
 end;
 
 procedure TRestTable.SetOrderKey(const Value: Integer);

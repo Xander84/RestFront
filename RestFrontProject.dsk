@@ -1,23 +1,19 @@
 ﻿[Closed Files]
-File_0=TSourceModule,'D:\Front\Source\TMS\advexplorertreeview.pas',0,1,7214,12,7217,0,0,,
+File_0=TSourceModule,'D:\Front\Source\Components\kbmMemTable\Source\kbmMemTable.pas',0,1,2550,17,2572,0,0,,
+File_1=TSourceModule,'D:\Front\Source\TMS\advexplorertreeview.pas',0,1,7214,12,7217,0,0,,
 
 [Modules]
-Module0=D:\Front\Source\Components\EhLib\RADStudio2009\DclEhLib120.dproj
-Module1=default.htm
-Count=2
+Module0=default.htm
+Count=1
 EditWindowCount=1
-
-[D:\Front\Source\Components\EhLib\RADStudio2009\DclEhLib120.dproj]
-ModuleType=TBaseProject
 
 [default.htm]
 ModuleType=TURLModule
 
 [EditWindow0]
-ViewCount=2
-CurrentEditView=D:\Front\Source\Components\EhLib\RADStudio2009\DclEhLib120.dpk
+ViewCount=1
+CurrentView=0
 View0=0
-View1=1
 PercentageSizes=1
 Create=1
 Visible=1
@@ -34,9 +30,9 @@ ClientHeight=9186
 DockedToMainForm=1
 BorlandEditorCodeExplorer=BorlandEditorCodeExplorer@EditWindow0
 TopPanelSize=0
-LeftPanelSize=1894
+LeftPanelSize=2012
 LeftPanelClients=PropertyInspector,DockSite3
-LeftPanelData=00000800010100000000361000000000000001660700000000000001000000005E0E000009000000446F636B53697465330100000000D21C00001100000050726F7065727479496E73706563746F72FFFFFFFF
+LeftPanelData=00000800010100000000361000000000000001DC0700000000000001000000005E0E000009000000446F636B53697465330100000000D21C00001100000050726F7065727479496E73706563746F72FFFFFFFF
 RightPanelSize=2000
 RightPanelClients=DockSite2,DockSite4
 RightPanelData=00000800010100000000361000000000000001D00700000000000001000000004612000009000000446F636B53697465320100000000D21C000009000000446F636B5369746534FFFFFFFF
@@ -50,17 +46,6 @@ BottomMiddelPanelData=0000080001000100000009000000446F636B53697465302C1900000000
 [View0]
 CustomEditViewType=TWelcomePageView
 WelcomePageURL=bds:/default.htm
-
-[View1]
-CustomEditViewType=TEditView
-Module=D:\Front\Source\Components\EhLib\RADStudio2009\DclEhLib120.dpk
-CursorX=7
-CursorY=31
-TopLine=19
-LeftCol=1
-Elisions=
-Bookmarks=
-EditViewName=D:\Front\Source\Components\EhLib\RADStudio2009\DclEhLib120.dpk
 
 [Watches]
 Count=9
@@ -392,17 +377,17 @@ Docked=1
 State=0
 Left=0
 Top=353
-Width=1894
+Width=2012
 Height=3567
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=1894
+ClientWidth=2012
 ClientHeight=3567
 TBDockHeight=6915
-LRDockWidth=1894
+LRDockWidth=2012
 Dockable=1
 StayOnTop=0
-SplitPos=111
+SplitPos=117
 
 [ModelViewTool]
 PercentageSizes=1
@@ -429,7 +414,7 @@ Create=1
 Visible=0
 Docked=1
 State=0
-Left=-151
+Left=-161
 Top=-93
 Width=1844
 Height=3142
@@ -476,11 +461,11 @@ Docked=1
 State=0
 Left=0
 Top=0
-Width=1894
+Width=2012
 Height=3498
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=1894
+ClientWidth=2012
 ClientHeight=3498
 TBDockHeight=3670
 LRDockWidth=1894
@@ -591,14 +576,14 @@ Docked=1
 State=0
 Left=0
 Top=22
-Width=1894
+Width=2012
 Height=3498
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=1894
+ClientWidth=2012
 ClientHeight=3498
 TBDockHeight=6915
-LRDockWidth=1894
+LRDockWidth=2012
 Dockable=1
 StayOnTop=0
 TabPosition=1
@@ -630,5 +615,5 @@ ActiveTabID=ToolForm
 TabDockClients=ToolForm,TemplateView
 
 [ActiveProject]
-ActiveProject=9
+ActiveProject=6
 

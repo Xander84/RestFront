@@ -533,6 +533,7 @@ begin
   FDataBase := TIBDataBase.Create(nil);
   FDataBase.LoginPrompt := False;
   FDataBase.DefaultTransaction := FReadTransaction;
+  FReadTransaction.DefaultDatabase := FDataBase;
 
   FReadSQL := TIBSQL.Create(nil);
   FReadSQL.Transaction := FReadTransaction;
