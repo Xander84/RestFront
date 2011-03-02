@@ -15,7 +15,7 @@ interface
 
 uses
   Classes, Graphics, Forms, Windows, Controls, Messages, Menus, SysUtils, IniFiles,
-  RestTable_Unit;
+  RestTable_Unit, Types;
 
 type
   TOrderInfo = class
