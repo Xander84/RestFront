@@ -2258,7 +2258,7 @@ object RestMainForm: TRestMainForm
             Version = '1.6.9.0'
           end
           object AdvSmoothButton1: TAdvSmoothButton
-            Left = 4
+            Left = 3
             Top = 225
             Width = 72
             Height = 50
@@ -2286,12 +2286,11 @@ object RestMainForm: TRestMainForm
             Color = 15195349
             ParentFont = False
             TabOrder = 5
-            Visible = False
             Version = '1.6.9.0'
             OnClick = AdvSmoothButton1Click
           end
           object AdvSmoothButton2: TAdvSmoothButton
-            Left = 4
+            Left = 3
             Top = 281
             Width = 72
             Height = 50
@@ -2319,7 +2318,6 @@ object RestMainForm: TRestMainForm
             Color = 15195349
             ParentFont = False
             TabOrder = 6
-            Visible = False
             Version = '1.6.9.0'
             OnClick = AdvSmoothButton2Click
           end

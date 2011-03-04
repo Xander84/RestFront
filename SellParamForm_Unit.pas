@@ -34,26 +34,36 @@ type
     btnPay: TAdvSmoothButton;
     btnCancel: TAdvSmoothButton;
     btnCashPay: TAdvSmoothToggleButton;
-    btnBeznalPay: TAdvSmoothToggleButton;
+    btnCreditlPay: TAdvSmoothToggleButton;
     btnCardPay: TAdvSmoothToggleButton;
     actDeletePay: TAction;
     btnDelPay: TAdvSmoothButton;
     DBAdvGrMain: TDBAdvGrid;
     btnPersonalCard: TAdvSmoothToggleButton;
+    actCancel: TAction;
+    actCashPay: TAction;
+    actPersonalCard: TAction;
+    actCardPay: TAction;
+    actCreditPay: TAction;
     procedure edMainKeyPress(Sender: TObject; var Key: Char);
     procedure edMainChange(Sender: TObject);
-    procedure btnCashPayClick(Sender: TObject);
-    procedure btnBeznalPayClick(Sender: TObject);
-    procedure btnCardPayClick(Sender: TObject);
     procedure actPayExecute(Sender: TObject);
     procedure actPayUpdate(Sender: TObject);
     procedure TouchKeyBoardKeyClick(Sender: TObject; Index: Integer);
-    procedure btnCancelClick(Sender: TObject);
     procedure actDeletePayUpdate(Sender: TObject);
     procedure actDeletePayExecute(Sender: TObject);
     procedure DBAdvGrMainFooterCalc(Sender: TObject; ACol, ARow: Integer;
       var Value: String);
-    procedure btnPersonalCardClick(Sender: TObject);
+    procedure actCancelExecute(Sender: TObject);
+    procedure actCancelUpdate(Sender: TObject);
+    procedure actCashPayUpdate(Sender: TObject);
+    procedure actCashPayExecute(Sender: TObject);
+    procedure actPersonalCardExecute(Sender: TObject);
+    procedure actPersonalCardUpdate(Sender: TObject);
+    procedure actCardPayUpdate(Sender: TObject);
+    procedure actCardPayExecute(Sender: TObject);
+    procedure actCreditPayUpdate(Sender: TObject);
+    procedure actCreditPayExecute(Sender: TObject);
   private
     FFrontBase: TFrontBase;
     // сумма к оплате
@@ -65,6 +75,7 @@ type
     // структура оплаты
     FSums: TSaleSums;
 
+    FPrinting: Boolean;
     FInDeleteOrUpdate: Boolean;
     FInInsert: Boolean;
     FInBrowse: Boolean;
@@ -187,6 +198,7 @@ begin
   FInDeleteOrUpdate := False;
   FInInsert := False;
   FInBrowse := False;
+  FPrinting := False;
 
   dsPayLine := TkbmMemTable.Create(nil);
   dsPayLine.Close;
@@ -295,112 +307,10 @@ begin
   end;
 end;
 
-procedure TSellParamForm.btnCashPayClick(Sender: TObject);
-begin
-  if TAdvSmoothToggleButton(Sender).Down then
-  begin
-    FPersonalCardKey := -1;
-    FCurrentPayType := FFrontBase.GetIDByRUID(mn_RUBpaytypeXID, mn_RUBpaytypeDBID);
-    FCurrentPayName := 'Рубли';
-    FNoFiscal := 0;
-    FPayType := cn_paytype_cash;
-    edMain.Text := '';
-  end;
-  Assert(FCurrentPayType <> -1, 'Invalid RUID');
-end;
-
-procedure TSellParamForm.btnPersonalCardClick(Sender: TObject);
-var
-  FForm: TPersonalCardForm;
-begin
-  if TAdvSmoothToggleButton(Sender).Down = False then
-    TAdvSmoothToggleButton(Sender).Down := True;
-
-  FForm := TPersonalCardForm.Create(nil);
-  FForm.FrontBase := FFrontBase;
-  FForm.PersonalCardID := FPersonalCardID;
-  try
-    FForm.ShowModal;
-    if FForm.ModalResult = mrOK then
-    begin
-      FCurrentPayType := FPersonalCardID;
-      FCurrentPayName := 'Персональная карта';
-      FPayType := cn_paytype_personalcard;
-      FPersonalCardKey := FForm.HeaderTable.FieldByName('ID').AsInteger;
-      FNoFiscal := FForm.HeaderTable.FieldByName('USR$NOFISCAL').AsInteger;
-      if edMain.Text = '0' then
-        edMain.Text := ''
-      else
-        edMain.Text := '0';
-    end else
-      PrevSettings(FPayType);
-  finally
-    FForm.Free;
-  end;
-end;
-
-procedure TSellParamForm.btnBeznalPayClick(Sender: TObject);
-var
-  FForm: TPayForm;
-begin
-  if TAdvSmoothToggleButton(Sender).Down = False then
-    TAdvSmoothToggleButton(Sender).Down := True;
-  FForm := TPayForm.CreateWithFrontBase(nil, FFrontBase);
-  FForm.PayType := FBezNalID;
-  FForm.IsPlCard := 0;
-  try
-    FForm.ShowModal;
-    if FForm.ModalResult = mrOK then
-    begin
-      FPersonalCardKey := -1;
-      FCurrentPayType := FForm.PayFormDataSet.FieldByName('USR$PAYTYPEKEY').AsInteger;
-      FCurrentPayName := FForm.PayFormDataSet.FieldByName('USR$NAME').AsString;
-      FNoFiscal := FForm.PayFormDataSet.FieldByName('USR$NOFISCAL').AsInteger;
-      FPayType := cn_paytype_noncash;
-      if edMain.Text = '0' then
-        edMain.Text := ''
-      else
-        edMain.Text := '0';
-    end else
-      PrevSettings(FPayType);
-  finally
-    FForm.Free;
-  end;
-end;
-
 procedure TSellParamForm.SetSumToPay(const Value: Currency);
 begin
   FSumToPay := Value;
   lblToPay.Caption := Format(DBAdvGrMain.FloatFormat, [Value]);
-end;
-
-procedure TSellParamForm.btnCardPayClick(Sender: TObject);
-var
-  FForm: TPayForm;
-begin
-  if TAdvSmoothToggleButton(Sender).Down = False then
-    TAdvSmoothToggleButton(Sender).Down := True;
-  FForm := TPayForm.CreateWithFrontBase(nil, FFrontBase);
-  FForm.PayType := FBezNalID;
-  FForm.IsPlCard := 1;
-  try
-    FForm.ShowModal;
-    if FForm.ModalResult = mrOK then
-    begin
-      FPersonalCardKey := -1;
-      FCurrentPayType := FForm.PayFormDataSet.FieldByName('USR$PAYTYPEKEY').AsInteger;
-      FCurrentPayName := FForm.PayFormDataSet.FieldByName('USR$NAME').AsString;
-      FNoFiscal := FForm.PayFormDataSet.FieldByName('USR$NOFISCAL').AsInteger;
-      FPayType := cn_paytype_credit;
-      if edMain.Text = '0' then
-        edMain.Text := ''
-      else
-        edMain.Text := '0';
-    end else
-      PrevSettings(FPayType);
-  finally
-    FForm.Free;
-  end;
 end;
 
 procedure TSellParamForm.SetFiscalRegister(const Value: TFiscalRegister);
@@ -421,6 +331,7 @@ end;
 procedure TSellParamForm.actPayExecute(Sender: TObject);
 var
   FReport: TRestReport;
+  Ev: TAdvSmoothTouchKeyEvent;
 begin
   if (lblChange.Caption = '') or (FChange < 0) then
   begin
@@ -455,43 +366,88 @@ begin
   end;
   FSums.FChangeSum := FChange;
 
-  FFrontBase.Display.Payed;
-  if Assigned(FFiscalRegiter) then
-  begin
-    FInBrowse := True;
-    try
-      if FNoFiscalPayment then
-        FFiscalRegiter.InitFiscalRegister(4)
-      else
-        FFiscalRegiter.InitFiscalRegister(FFrontBase.CashCode);
-      FFiscalRegiter.OpenDrawer;
-      if FFiscalRegiter.PrintCheck(Doc, DocLine, dsPayLine, FSums) then
-      begin
-        if FFrontBase.Options.PrintCopyCheck then
+  FPrinting := True;
+  Ev := TouchKeyBoard.OnKeyClick;
+  TouchKeyBoard.OnKeyClick := nil;
+  DBAdvGrMain.Enabled := False;
+  try
+    FFrontBase.Display.Payed;
+    if Assigned(FFiscalRegiter) then
+    begin
+      FInBrowse := True;
+      try
+        if FNoFiscalPayment then
+          FFiscalRegiter.InitFiscalRegister(4)
+        else
+          FFiscalRegiter.InitFiscalRegister(FFrontBase.CashCode);
+        FFiscalRegiter.OpenDrawer;
+        if FFiscalRegiter.PrintCheck(Doc, DocLine, dsPayLine, FSums) then
         begin
-          FReport := TRestReport.Create(Self);
-          FReport.FrontBase := FFrontBase;
-          try
-            FReport.PrintAfterSalePreCheck(FDoc.FieldByName('ID').AsInteger, FSums);
-          finally
-            FReport.Free;
+          if FFrontBase.Options.PrintCopyCheck then
+          begin
+            FReport := TRestReport.Create(Self);
+            FReport.FrontBase := FFrontBase;
+            try
+              FReport.PrintAfterSalePreCheck(FDoc.FieldByName('ID').AsInteger, FSums);
+            finally
+              FReport.Free;
+            end;
           end;
-        end;
 
-        Self.ModalResult := mrOk;
+          Self.ModalResult := mrOk;
+        end;
+      finally
+        FInBrowse := False;
       end;
-    finally
-      FInBrowse := False;
-    end;
-  end else
-    MessageBox(Application.Handle, PChar('Для данной рабочей станции не указан кассовый терминал!'),
-      'Внимание', MB_OK or MB_ICONEXCLAMATION);
+    end else
+      MessageBox(Application.Handle, PChar('Для данной рабочей станции не указан кассовый терминал!'),
+        'Внимание', MB_OK or MB_ICONEXCLAMATION);
+  finally
+    FPrinting := False;
+    TouchKeyBoard.OnKeyClick := Ev;
+    DBAdvGrMain.Enabled := True;
+  end;
 end;
 
 procedure TSellParamForm.actPayUpdate(Sender: TObject);
 begin
   actPay.Enabled := (Assigned(FFrontBase)) and
-    (Assigned(FDoc)) and (Assigned(FDocLine));
+    (Assigned(FDoc)) and (Assigned(FDocLine)) and (not FPrinting);
+end;
+
+procedure TSellParamForm.actPersonalCardExecute(Sender: TObject);
+var
+  FForm: TPersonalCardForm;
+begin
+  if btnPersonalCard.Down = False then
+    btnPersonalCard.Down := True;
+
+  FForm := TPersonalCardForm.Create(nil);
+  FForm.FrontBase := FFrontBase;
+  FForm.PersonalCardID := FPersonalCardID;
+  try
+    FForm.ShowModal;
+    if FForm.ModalResult = mrOK then
+    begin
+      FCurrentPayType := FPersonalCardID;
+      FCurrentPayName := 'Персональная карта';
+      FPayType := cn_paytype_personalcard;
+      FPersonalCardKey := FForm.HeaderTable.FieldByName('ID').AsInteger;
+      FNoFiscal := FForm.HeaderTable.FieldByName('USR$NOFISCAL').AsInteger;
+      if edMain.Text = '0' then
+        edMain.Text := ''
+      else
+        edMain.Text := '0';
+    end else
+      PrevSettings(FPayType);
+  finally
+    FForm.Free;
+  end;
+end;
+
+procedure TSellParamForm.actPersonalCardUpdate(Sender: TObject);
+begin
+  actPersonalCard.Enabled := not FPrinting;
 end;
 
 procedure TSellParamForm.TouchKeyBoardKeyClick(Sender: TObject;
@@ -506,14 +462,106 @@ begin
   end;
 end;
 
-procedure TSellParamForm.btnCancelClick(Sender: TObject);
+procedure TSellParamForm.actDeletePayUpdate(Sender: TObject);
+begin
+  actDeletePay.Enabled := (not dsPayLine.IsEmpty) and (not FPrinting);
+end;
+
+procedure TSellParamForm.actCancelExecute(Sender: TObject);
 begin
   ModalResult := mrCancel;
 end;
 
-procedure TSellParamForm.actDeletePayUpdate(Sender: TObject);
+procedure TSellParamForm.actCancelUpdate(Sender: TObject);
 begin
-  actDeletePay.Enabled := (not dsPayLine.IsEmpty);
+  actCancel.Enabled := not FPrinting;
+end;
+
+procedure TSellParamForm.actCardPayExecute(Sender: TObject);
+var
+  FForm: TPayForm;
+begin
+  if btnCardPay.Down = False then
+    btnCardPay.Down := True;
+  FForm := TPayForm.CreateWithFrontBase(nil, FFrontBase);
+  FForm.PayType := FBezNalID;
+  FForm.IsPlCard := 1;
+  try
+    FForm.ShowModal;
+    if FForm.ModalResult = mrOK then
+    begin
+      FPersonalCardKey := -1;
+      FCurrentPayType := FForm.PayFormDataSet.FieldByName('USR$PAYTYPEKEY').AsInteger;
+      FCurrentPayName := FForm.PayFormDataSet.FieldByName('USR$NAME').AsString;
+      FNoFiscal := FForm.PayFormDataSet.FieldByName('USR$NOFISCAL').AsInteger;
+      FPayType := cn_paytype_credit;
+      if edMain.Text = '0' then
+        edMain.Text := ''
+      else
+        edMain.Text := '0';
+    end else
+      PrevSettings(FPayType);
+  finally
+    FForm.Free;
+  end;
+end;
+
+procedure TSellParamForm.actCardPayUpdate(Sender: TObject);
+begin
+  actCardPay.Enabled := not FPrinting;
+end;
+
+procedure TSellParamForm.actCashPayExecute(Sender: TObject);
+begin
+  if btnCashPay.Down then
+  begin
+    FPersonalCardKey := -1;
+    FCurrentPayType := FFrontBase.GetIDByRUID(mn_RUBpaytypeXID, mn_RUBpaytypeDBID);
+    FCurrentPayName := 'Рубли';
+    FNoFiscal := 0;
+    FPayType := cn_paytype_cash;
+    edMain.Text := '';
+  end;
+  Assert(FCurrentPayType <> -1, 'Invalid RUID');
+end;
+
+procedure TSellParamForm.actCashPayUpdate(Sender: TObject);
+begin
+  actCashPay.Enabled := not FPrinting;
+end;
+
+procedure TSellParamForm.actCreditPayExecute(Sender: TObject);
+var
+  FForm: TPayForm;
+begin
+  if btnCreditlPay.Down = False then
+    btnCreditlPay.Down := True;
+  FForm := TPayForm.CreateWithFrontBase(nil, FFrontBase);
+  FForm.PayType := FBezNalID;
+  FForm.IsPlCard := 0;
+  try
+    FForm.ShowModal;
+    if FForm.ModalResult = mrOK then
+    begin
+      FPersonalCardKey := -1;
+      FCurrentPayType := FForm.PayFormDataSet.FieldByName('USR$PAYTYPEKEY').AsInteger;
+      FCurrentPayName := FForm.PayFormDataSet.FieldByName('USR$NAME').AsString;
+      FNoFiscal := FForm.PayFormDataSet.FieldByName('USR$NOFISCAL').AsInteger;
+      FPayType := cn_paytype_noncash;
+      if edMain.Text = '0' then
+        edMain.Text := ''
+      else
+        edMain.Text := '0';
+    end else
+      PrevSettings(FPayType);
+  finally
+    FForm.Free;
+  end;
+end;
+
+procedure TSellParamForm.actCreditPayUpdate(Sender: TObject);
+begin
+  actCreditPay.Enabled := not FPrinting;
 end;
 
 procedure TSellParamForm.actDeletePayExecute(Sender: TObject);
@@ -583,7 +631,7 @@ begin
          btnCardPay.Down := True;
 
        cn_paytype_noncash:
-         btnBeznalPay.Down := True;
+         btnCreditlPay.Down := True;
 
        cn_paytype_personalcard:
          btnPersonalCard.Down := True;

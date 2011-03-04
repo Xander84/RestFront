@@ -343,6 +343,7 @@ object SellParamForm: TSellParamForm
       Top = 363
       Width = 268
       Height = 57
+      Action = actCancel
       Appearance.Font.Charset = DEFAULT_CHARSET
       Appearance.Font.Color = clWindowText
       Appearance.Font.Height = -19
@@ -362,12 +363,10 @@ object SellParamForm: TSellParamForm
       Status.Appearance.Font.Name = 'Tahoma'
       Status.Appearance.Font.Style = []
       Bevel = False
-      Caption = #1054#1090#1084#1077#1085#1072
       Color = 15195349
       ParentFont = False
       TabOrder = 3
       Version = '1.6.9.0'
-      OnClick = btnCancelClick
     end
     object btnCashPay: TAdvSmoothToggleButton
       Left = 307
@@ -385,7 +384,6 @@ object SellParamForm: TSellParamForm
       Appearance.Font.Height = -19
       Appearance.Font.Name = 'Times New Roman'
       Appearance.Font.Style = []
-      Caption = #1053#1072#1083#1080#1095#1085#1099#1084#1080
       Version = '1.1.8.0'
       Status.Caption = '0'
       Status.Appearance.Fill.Color = clRed
@@ -400,12 +398,11 @@ object SellParamForm: TSellParamForm
       Status.Appearance.Font.Height = -11
       Status.Appearance.Font.Name = 'Tahoma'
       Status.Appearance.Font.Style = []
-      GroupIndex = 1
       ParentFont = False
+      Action = actCashPay
       TabOrder = 4
-      OnClick = btnCashPayClick
     end
-    object btnBeznalPay: TAdvSmoothToggleButton
+    object btnCreditlPay: TAdvSmoothToggleButton
       Left = 307
       Top = 117
       Width = 174
@@ -421,7 +418,6 @@ object SellParamForm: TSellParamForm
       Appearance.Font.Height = -19
       Appearance.Font.Name = 'Times New Roman'
       Appearance.Font.Style = []
-      Caption = #1041#1077#1079#1085#1072#1083#1080#1095#1085#1099#1084#1080
       Version = '1.1.8.0'
       Status.Caption = '0'
       Status.Appearance.Fill.Color = clRed
@@ -438,8 +434,8 @@ object SellParamForm: TSellParamForm
       Status.Appearance.Font.Style = []
       GroupIndex = 1
       ParentFont = False
+      Action = actCreditPay
       TabOrder = 5
-      OnClick = btnBeznalPayClick
     end
     object btnCardPay: TAdvSmoothToggleButton
       Left = 307
@@ -457,7 +453,6 @@ object SellParamForm: TSellParamForm
       Appearance.Font.Height = -19
       Appearance.Font.Name = 'Times New Roman'
       Appearance.Font.Style = []
-      Caption = #1055#1083#1072#1090'. '#1082#1072#1088#1090#1086#1081
       Version = '1.1.8.0'
       Status.Caption = '0'
       Status.Appearance.Fill.Color = clRed
@@ -474,8 +469,8 @@ object SellParamForm: TSellParamForm
       Status.Appearance.Font.Style = []
       GroupIndex = 1
       ParentFont = False
+      Action = actCardPay
       TabOrder = 6
-      OnClick = btnCardPayClick
     end
     object btnDelPay: TAdvSmoothButton
       Left = 308
@@ -731,7 +726,6 @@ object SellParamForm: TSellParamForm
       Appearance.Font.Height = -19
       Appearance.Font.Name = 'Times New Roman'
       Appearance.Font.Style = []
-      Caption = #1055#1077#1088#1089'. '#1082#1072#1088#1090#1086#1081
       Version = '1.1.8.0'
       Status.Caption = '0'
       Status.Appearance.Fill.Color = clRed
@@ -746,10 +740,9 @@ object SellParamForm: TSellParamForm
       Status.Appearance.Font.Height = -11
       Status.Appearance.Font.Name = 'Tahoma'
       Status.Appearance.Font.Style = []
-      GroupIndex = 1
       ParentFont = False
+      Action = actPersonalCard
       TabOrder = 9
-      OnClick = btnPersonalCardClick
     end
   end
   object dsMain: TDataSource
@@ -768,6 +761,31 @@ object SellParamForm: TSellParamForm
       Caption = #1059#1076#1072#1083#1080#1090#1100
       OnExecute = actDeletePayExecute
       OnUpdate = actDeletePayUpdate
+    end
+    object actCancel: TAction
+      Caption = #1054#1090#1084#1077#1085#1072
+      OnExecute = actCancelExecute
+      OnUpdate = actCancelUpdate
+    end
+    object actCashPay: TAction
+      Caption = #1053#1072#1083#1080#1095#1085#1099#1084#1080
+      OnExecute = actCashPayExecute
+      OnUpdate = actCashPayUpdate
+    end
+    object actPersonalCard: TAction
+      Caption = #1055#1077#1088#1089'. '#1082#1072#1088#1090#1086#1081
+      OnExecute = actPersonalCardExecute
+      OnUpdate = actPersonalCardUpdate
+    end
+    object actCardPay: TAction
+      Caption = #1055#1083#1072#1090'. '#1082#1072#1088#1090#1086#1081
+      OnExecute = actCardPayExecute
+      OnUpdate = actCardPayUpdate
+    end
+    object actCreditPay: TAction
+      Caption = #1041#1077#1079#1085#1072#1083#1080#1095#1085#1099#1084#1080
+      OnExecute = actCreditPayExecute
+      OnUpdate = actCreditPayUpdate
     end
   end
 end

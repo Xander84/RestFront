@@ -26,7 +26,7 @@
 		<PropertyGroup Condition="'$(Base)'!=''">
 			<DCC_DependencyCheckOutputName>..\DCU\RestFront.exe</DCC_DependencyCheckOutputName>
 			<DCC_ImageBase>00400000</DCC_ImageBase>
-			<DCC_UnitSearchPath>D:\Front\Source;D:\Front\Source\Spark617;D:\Front\Source\Components\kbmMemTable\Source;D:\Front\Source\Components\EhLib\Common;D:\Front\Source\Components\FastReport 4\Source;D:\Front\Source\Components\FastReport 4\FastScript;D:\Front\Source\Components\FastReport 4\Source\ExportPack;D:\Front\Source\TMS;$(DELPHI)\Lib\Debug;D:\Front\Source\jcl\source\windows;D:\Front\Source\jcl\source;D:\Front\Source\jcl\source\vcl;D:\Front\Source\jcl\source\common;D:\Front\Source\Components\FastReport 4\Source\IBX;D:\Front\Source\FastMM;D:\Front\Source\Common;D:\Front\Source\Display;D:\Front\Source\Merc;D:\Front\Source\Shtrih;D:\Front\Source\jcl\source\include;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+			<DCC_UnitSearchPath>D:\Front\Source;D:\Front\Source\Spark617;D:\Front\Source\Components\kbmMemTable\Source;D:\Front\Source\Components\EhLib\Common;D:\Front\Source\Components\FastReport 4\Source;D:\Front\Source\Components\FastReport 4\FastScript;D:\Front\Source\Components\FastReport 4\Source\ExportPack;D:\Front\Source\TMS;$(DELPHI)\Lib\Debug;D:\Front\Source\jcl\source\windows;D:\Front\Source\jcl\source;D:\Front\Source\jcl\source\vcl;D:\Front\Source\jcl\source\common;D:\Front\Source\Components\FastReport 4\Source\IBX;D:\Front\Source\FastMM;D:\Front\Source\Common;D:\Front\Source\Display;D:\Front\Source\Merc;D:\Front\Source\Shtrih;D:\Front\Source\jcl\source\include;D:\Front\Source\Components;D:\Front\Source\Components\PNGcomp_D2009_D2010\Source;D:\Front\Source\Components\Designer;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
 			<DCC_UsePackage>vcl;rtl;vclx;indy;inet;xmlrtl;vclie;inetdbbde;inetdbxpress;dbrtl;dsnap;dsnapcon;vcldb;soaprtl;VclSmp;dbexpress;dbxcds;inetdb;bdertl;vcldbx;webdsnap;websnap;adortl;ibxpress;teeui;teedb;tee;dss;visualclx;visualdbclx;vclactnband;vclshlctrls;IntrawebDB_50_70;Intraweb_50_70;Rave50CLX;Rave50VCL;dclOfficeXP;kbmMemD7Run;TMSD7;tmsexd7</DCC_UsePackage>
 			<DCC_MapFile>3</DCC_MapFile>
 			<DCC_ExeOutput>D:\Front\DCU</DCC_ExeOutput>
@@ -162,10 +162,10 @@
 						<Source Name="MainSource">RestFront.dpr</Source>
 					</Source>
 					<Parameters>
-						<Parameters Name="RunParams">/SN localhost:D:\Front\DISPLAY.FDB /USER SYSDBA /PASSWORD masterkey</Parameters>
 						<Parameters Name="UseLauncher">False</Parameters>
 						<Parameters Name="LoadAllSymbols">True</Parameters>
 						<Parameters Name="LoadUnspecifiedSymbols">False</Parameters>
+						<Parameters Name="RunParams">/SN localhost:D:\Front\DISPLAY.FDB /USER SYSDBA /PASSWORD masterkey</Parameters>
 					</Parameters>
 					<VersionInfo>
 						<VersionInfo Name="IncludeVerInfo">True</VersionInfo>

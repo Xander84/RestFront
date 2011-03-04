@@ -94,7 +94,7 @@ var
 begin
   Assert(Assigned(FFrontBase), 'FrontBase not Assigned');
 
-  if FiscalType <> FLastFiscalType then
+  if (FiscalType <> FLastFiscalType) or (FiscalType < 0) then
   begin
     FLastFiscalType := FiscalType;
     if Assigned(FFiscalRegister) then

@@ -1,68 +1,57 @@
 ﻿[Closed Files]
-File_0=TSourceModule,'c:\program files (x86)\embarcadero\rad studio\7.0\SOURCE\WIN32\VCL\Controls.pas',0,1,2469,31,2505,0,0,,
-File_1=TSourceModule,'c:\program files (x86)\embarcadero\rad studio\7.0\SOURCE\WIN32\VCL\ImgList.pas',0,1,51,1,69,0,0,,
-File_2=TSourceModule,'D:\Front\Source\TMS\htmlbtns.pas',0,1,3243,50,3276,0,0,,
-File_3=TSourceModule,'D:\Front\Source\TMS\advcalculatordropdown.pas',0,1,2106,12,2125,0,0,,
-File_4=TSourceModule,'D:\Front\Source\jcl\experts\versioncontrol\JclVersionControlImpl.pas',0,1,1074,50,1097,0,0,,
-File_5=TSourceModule,'c:\program files (x86)\embarcadero\rad studio\7.0\source\Win32\rtl\win\CommCtrl.pas',0,1,9940,1,9958,0,0,,
-File_6=TSourceModule,'D:\Front\Source\TMS\advpanel.pas',0,1,439,36,456,0,0,,
-File_7=TSourceModule,'c:\program files (x86)\embarcadero\rad studio\7.0\source\Win32\db\DB.pas',0,1,11782,1,11801,0,0,,
-File_8=TSourceModule,'c:\program files (x86)\embarcadero\rad studio\7.0\SOURCE\WIN32\RTL\SYS\System.pas',0,1,13659,1,13689,0,0,,
-File_9=TSourceModule,'c:\program files (x86)\embarcadero\rad studio\7.0\SOURCE\WIN32\VCL\Forms.pas',0,1,9915,1,9926,0,0,,
-File_10=TSourceModule,'c:\program files (x86)\embarcadero\rad studio\7.0\source\Win32\rtl\common\Classes.pas',0,1,13000,1,13018,0,0,,
-File_11=TSourceModule,'D:\Front\Source\TMS\AdvSmoothButton.pas',0,1,484,1,505,0,0,,
-File_12=TSourceModule,'c:\program files (x86)\embarcadero\rad studio\7.0\SOURCE\WIN32\IBX\IB.pas',0,1,389,1,405,0,0,,
-File_13=TSourceModule,'c:\program files (x86)\embarcadero\rad studio\7.0\SOURCE\WIN32\IBX\IBDatabase.pas',0,1,1128,1,1150,0,0,,
-File_14=TSourceModule,'D:\Front\Source\jcl\source\prototypes\_Graphics.pas',0,1,481,17,500,0,0,,
+File_0=TSourceModule,'c:\program files (x86)\embarcadero\rad studio\7.0\SOURCE\WIN32\VCL\Grids.pas',0,1,586,1,604,0,0,,
+File_1=TSourceModule,'D:\Front\Source\Components\PNGcomp_D2009_D2010\Source\PngButtonFunctions.pas',0,1,25,1,44,0,0,,
+File_2=TSourceModule,'D:\Front\Source\Components\PNGcomp_D2009_D2010\Source\PngSpeedButton.pas',0,1,64,51,78,0,0,,
+File_3=TSourceModule,'D:\Front\Source\Components\PNGcomp_D2009_D2010\Source\PngFunctions.pas',0,1,1,57,6,0,0,,
+File_4=TSourceModule,'c:\program files (x86)\embarcadero\rad studio\7.0\SOURCE\WIN32\VCL\Graphics.pas',0,1,4110,1,4126,0,0,,
+File_5=TSourceModule,'c:\program files (x86)\embarcadero\rad studio\7.0\source\Win32\rtl\win\Windows.pas',0,1,3179,1,3197,0,0,,
+File_6=TSourceModule,'D:\Front\Source\Components\FastReport 4\LibD5\frxUtils.pas',0,1,654,53,654,0,0,,
+File_7=TSourceModule,'D:\Front\Source\Components\Buttons\nviac\library\simple\button\NVIAC_Button_Unit.pas',0,1,494,23,519,0,0,,
+File_8=TSourceModule,'c:\program files (x86)\embarcadero\rad studio\7.0\SOURCE\WIN32\RTL\SYS\System.pas',0,1,5985,1,6001,0,0,,
+File_9=TSourceModule,'D:\Front\Source\Components\EhLib\Common\PrnDbgeh.pas',0,1,1937,15,1964,0,0,,
+File_10=TSourceModule,'D:\Front\Source\Components\Buttons\cvbutton\CanvasButton.pas',0,1,393,11,411,0,0,,
+File_11=TSourceModule,'c:\program files (x86)\embarcadero\rad studio\7.0\SOURCE\WIN32\VCL\Controls.pas',0,1,5952,3,5969,0,0,,
+File_12=TSourceModule,'D:\Front\Source\Components\Buttons\freebutton\FreeButton.pas',0,1,255,21,285,0,0,,
+File_13=TSourceModule,'D:\Front\Source\Components\Buttons\btncomps\ButtonComps.pas',0,1,287,21,308,0,0,,
+File_14=TSourceModule,'c:\program files (x86)\embarcadero\rad studio\7.0\SOURCE\WIN32\IBX\IB.pas',0,1,338,1,354,0,0,,
 
 [Modules]
-Module0=D:\Front\Source\Components\RestTable_Unit.pas
-Module1=default.htm
-Module2=D:\Front\Source\RestFront.dproj
-Module3=c:\program files (x86)\embarcadero\rad studio\7.0\SOURCE\WIN32\VCL\pngimage.pas
-Module4=D:\Front\Source\TMS\advtoolbtn.pas
-Module5=c:\program files (x86)\embarcadero\rad studio\7.0\SOURCE\WIN32\VCL\ExtCtrls.pas
-Module6=c:\program files (x86)\embarcadero\rad studio\7.0\SOURCE\WIN32\VCL\Graphics.pas
-Module7=D:\Front\Source\MainForm.pas
-Module8=D:\Front\Source\ChooseDiscountCardForm_Unit.pas
-Module9=D:\Front\Source\Front_DataBase_Unit.pas
-Module10=D:\Front\Source\Report\Report_Unit.pas
-Module11=c:\program files (x86)\embarcadero\rad studio\7.0\SOURCE\WIN32\IBX\IBSQL.pas
-Module12=D:\Front\Source\Shtrih\ShtrihFR_Unit.pas
-Module13=D:\Front\Source\Base_FiscalRegister_unit.pas
-Module14=D:\Front\Source\Merc\MercFP_Unit.pas
-Module15=D:\Front\Source\Spark617\Spark617_Unit.pas
+Module0=D:\Front\Source\SellParamForm_Unit.pas
+Module1=D:\Front\Source\TMS\AdvSmoothTouchKeyBoard.pas
+Module2=D:\Front\Source\AdminForm_Unit.pas
+Module3=D:\Front\Source\Components\Designer\dxfDesigner.pas
+Module4=D:\Front\Source\MainForm.pas
+Module5=D:\Front\Source\Front_DataBase_Unit.pas
+Module6=D:\Front\Source\Components\RestTable_Unit.pas
+Module7=c:\program files (x86)\embarcadero\rad studio\7.0\SOURCE\WIN32\VCL\Buttons.pas
+Module8=D:\Front\Source\Shtrih\ShtrihFR_Unit.pas
+Module9=D:\Front\Source\Base_FiscalRegister_unit.pas
+Module10=D:\Front\Source\Spark617\Spark617_Unit.pas
+Module11=default.htm
+Module12=D:\Front\Source\RestFront.dproj
+Module13=D:\Front\Source\ChooseDiscountCardForm_Unit.pas
+Module14=D:\Front\Source\Report\Report_Unit.pas
+Module15=D:\Front\Source\Merc\MercFP_Unit.pas
 Module16=D:\Front\Source\PersonalCardForm_Unit.pas
 Count=17
 EditWindowCount=1
 
-[D:\Front\Source\Components\RestTable_Unit.pas]
+[D:\Front\Source\SellParamForm_Unit.pas]
+ModuleType=TSourceModule
+FormState=1
+FormOnTop=0
+
+[D:\Front\Source\TMS\AdvSmoothTouchKeyBoard.pas]
 ModuleType=TSourceModule
 FormState=0
 FormOnTop=0
 
-[default.htm]
-ModuleType=TURLModule
-
-[D:\Front\Source\RestFront.dproj]
-ModuleType=TBaseProject
-
-[c:\program files (x86)\embarcadero\rad studio\7.0\SOURCE\WIN32\VCL\pngimage.pas]
+[D:\Front\Source\AdminForm_Unit.pas]
 ModuleType=TSourceModule
-FormState=0
+FormState=1
 FormOnTop=0
 
-[D:\Front\Source\TMS\advtoolbtn.pas]
-ModuleType=TSourceModule
-FormState=0
-FormOnTop=0
-
-[c:\program files (x86)\embarcadero\rad studio\7.0\SOURCE\WIN32\VCL\ExtCtrls.pas]
-ModuleType=TSourceModule
-FormState=0
-FormOnTop=0
-
-[c:\program files (x86)\embarcadero\rad studio\7.0\SOURCE\WIN32\VCL\Graphics.pas]
+[D:\Front\Source\Components\Designer\dxfDesigner.pas]
 ModuleType=TSourceModule
 FormState=0
 FormOnTop=0
@@ -72,22 +61,17 @@ ModuleType=TSourceModule
 FormState=1
 FormOnTop=0
 
-[D:\Front\Source\ChooseDiscountCardForm_Unit.pas]
-ModuleType=TSourceModule
-FormState=1
-FormOnTop=0
-
 [D:\Front\Source\Front_DataBase_Unit.pas]
 ModuleType=TSourceModule
 FormState=0
 FormOnTop=0
 
-[D:\Front\Source\Report\Report_Unit.pas]
+[D:\Front\Source\Components\RestTable_Unit.pas]
 ModuleType=TSourceModule
 FormState=0
 FormOnTop=0
 
-[c:\program files (x86)\embarcadero\rad studio\7.0\SOURCE\WIN32\IBX\IBSQL.pas]
+[c:\program files (x86)\embarcadero\rad studio\7.0\SOURCE\WIN32\VCL\Buttons.pas]
 ModuleType=TSourceModule
 FormState=0
 FormOnTop=0
@@ -102,12 +86,28 @@ ModuleType=TSourceModule
 FormState=0
 FormOnTop=0
 
-[D:\Front\Source\Merc\MercFP_Unit.pas]
+[D:\Front\Source\Spark617\Spark617_Unit.pas]
 ModuleType=TSourceModule
 FormState=0
 FormOnTop=0
 
-[D:\Front\Source\Spark617\Spark617_Unit.pas]
+[default.htm]
+ModuleType=TURLModule
+
+[D:\Front\Source\RestFront.dproj]
+ModuleType=TBaseProject
+
+[D:\Front\Source\ChooseDiscountCardForm_Unit.pas]
+ModuleType=TSourceModule
+FormState=1
+FormOnTop=0
+
+[D:\Front\Source\Report\Report_Unit.pas]
+ModuleType=TSourceModule
+FormState=0
+FormOnTop=0
+
+[D:\Front\Source\Merc\MercFP_Unit.pas]
 ModuleType=TSourceModule
 FormState=0
 FormOnTop=0
@@ -127,7 +127,7 @@ FormOnTop=0
 
 [EditWindow0]
 ViewCount=17
-CurrentEditView=D:\Front\Source\Components\RestTable_Unit.pas
+CurrentEditView=D:\Front\Source\SellParamForm_Unit.pas
 View0=0
 View1=1
 View2=2
@@ -161,15 +161,15 @@ ClientHeight=9186
 DockedToMainForm=1
 BorlandEditorCodeExplorer=BorlandEditorCodeExplorer@EditWindow0
 TopPanelSize=0
-LeftPanelSize=1988
+LeftPanelSize=2012
 LeftPanelClients=PropertyInspector,DockSite3
-LeftPanelData=00000800010100000000361000000000000001C40700000000000001000000005E0E000009000000446F636B53697465330100000000D21C00001100000050726F7065727479496E73706563746F72FFFFFFFF
+LeftPanelData=000008000101000000005C1000000000000001DC0700000000000001000000005E0E000009000000446F636B53697465330100000000141D00001100000050726F7065727479496E73706563746F72FFFFFFFF
 RightPanelSize=2000
 RightPanelClients=DockSite2,DockSite4
-RightPanelData=00000800010100000000361000000000000001D00700000000000001000000004612000009000000446F636B53697465320100000000D21C000009000000446F636B5369746534FFFFFFFF
-BottomPanelSize=1489
+RightPanelData=000008000101000000005C1000000000000001D00700000000000001000000004612000009000000446F636B53697465320100000000141D000009000000446F636B5369746534FFFFFFFF
+BottomPanelSize=1422
 BottomPanelClients=DockSite1,MessageView
-BottomPanelData=0000080001020100000009000000446F636B5369746531724500000000000002D1050000000000000100000000724500000F0000004D65737361676556696577466F726DFFFFFFFF
+BottomPanelData=0000080001020100000009000000446F636B53697465317245000000000000028E050000000000000100000000724500000F0000004D65737361676556696577466F726DFFFFFFFF
 BottomMiddlePanelSize=0
 BottomMiddlePanelClients=DockSite0
 BottomMiddelPanelData=0000080001000100000009000000446F636B53697465302C1900000000000000791B000000000000FFFFFFFF
@@ -269,93 +269,93 @@ EditViewName=D:\Front\Source\Shtrih\ShtrihFR_Unit.pas
 [View9]
 CustomEditViewType=TEditView
 Module=D:\Front\Source\MainForm.pas
-CursorX=22
-CursorY=522
-TopLine=501
+CursorX=52
+CursorY=2524
+TopLine=2512
 LeftCol=1
 Elisions=
-Bookmarks={0,2120,1}{6,1106,7}{9,2205,37}
+Bookmarks={0,2126,1}{6,1112,7}{9,2211,37}
 EditViewName=D:\Front\Source\MainForm.pas
 
 [View10]
 CustomEditViewType=TEditView
-Module=c:\program files (x86)\embarcadero\rad studio\7.0\SOURCE\WIN32\VCL\ExtCtrls.pas
-CursorX=30
-CursorY=244
-TopLine=222
+Module=D:\Front\Source\SellParamForm_Unit.pas
+CursorX=1
+CursorY=57
+TopLine=39
 LeftCol=1
 Elisions=
 Bookmarks=
-EditViewName=c:\program files (x86)\embarcadero\rad studio\7.0\SOURCE\WIN32\VCL\ExtCtrls.pas
+EditViewName=D:\Front\Source\SellParamForm_Unit.pas
 
 [View11]
 CustomEditViewType=TEditView
+Module=D:\Front\Source\TMS\AdvSmoothTouchKeyBoard.pas
+CursorX=1
+CursorY=495
+TopLine=477
+LeftCol=1
+Elisions=
+Bookmarks=
+EditViewName=D:\Front\Source\TMS\AdvSmoothTouchKeyBoard.pas
+
+[View12]
+CustomEditViewType=TEditView
+Module=D:\Front\Source\Components\Designer\dxfDesigner.pas
+CursorX=45
+CursorY=11
+TopLine=1
+LeftCol=1
+Elisions=
+Bookmarks=
+EditViewName=D:\Front\Source\Components\Designer\dxfDesigner.pas
+
+[View13]
+CustomEditViewType=TEditView
+Module=D:\Front\Source\AdminForm_Unit.pas
+CursorX=43
+CursorY=43
+TopLine=25
+LeftCol=1
+Elisions=
+Bookmarks=
+EditViewName=D:\Front\Source\AdminForm_Unit.pas
+
+[View14]
+CustomEditViewType=TEditView
 Module=D:\Front\Source\Components\RestTable_Unit.pas
-CursorX=20
-CursorY=22
-TopLine=4
+CursorX=6
+CursorY=287
+TopLine=257
 LeftCol=1
 Elisions=
 Bookmarks=
 EditViewName=D:\Front\Source\Components\RestTable_Unit.pas
 
-[View12]
-CustomEditViewType=TEditView
-Module=D:\Front\Source\TMS\advtoolbtn.pas
-CursorX=49
-CursorY=568
-TopLine=543
-LeftCol=1
-Elisions=
-Bookmarks=
-EditViewName=D:\Front\Source\TMS\advtoolbtn.pas
-
-[View13]
-CustomEditViewType=TEditView
-Module=c:\program files (x86)\embarcadero\rad studio\7.0\SOURCE\WIN32\VCL\pngimage.pas
-CursorX=12
-CursorY=272
-TopLine=244
-LeftCol=1
-Elisions=
-Bookmarks=
-EditViewName=c:\program files (x86)\embarcadero\rad studio\7.0\SOURCE\WIN32\VCL\pngimage.pas
-
-[View14]
-CustomEditViewType=TEditView
-Module=c:\program files (x86)\embarcadero\rad studio\7.0\SOURCE\WIN32\VCL\Graphics.pas
-CursorX=1
-CursorY=956
-TopLine=934
-LeftCol=1
-Elisions=
-Bookmarks=
-EditViewName=c:\program files (x86)\embarcadero\rad studio\7.0\SOURCE\WIN32\VCL\Graphics.pas
-
 [View15]
 CustomEditViewType=TEditView
+Module=c:\program files (x86)\embarcadero\rad studio\7.0\SOURCE\WIN32\VCL\Buttons.pas
+CursorX=31
+CursorY=45
+TopLine=39
+LeftCol=1
+Elisions=
+Bookmarks=
+EditViewName=c:\program files (x86)\embarcadero\rad studio\7.0\SOURCE\WIN32\VCL\Buttons.pas
+
+[View16]
+CustomEditViewType=TEditView
 Module=D:\Front\Source\Front_DataBase_Unit.pas
-CursorX=27
-CursorY=3348
-TopLine=3337
+CursorX=3
+CursorY=1317
+TopLine=1300
 LeftCol=1
 Elisions=
 Bookmarks=
 EditViewName=D:\Front\Source\Front_DataBase_Unit.pas
 
-[View16]
-CustomEditViewType=TEditView
-Module=c:\program files (x86)\embarcadero\rad studio\7.0\SOURCE\WIN32\IBX\IBSQL.pas
-CursorX=31
-CursorY=482
-TopLine=464
-LeftCol=1
-Elisions=
-Bookmarks=
-EditViewName=c:\program files (x86)\embarcadero\rad studio\7.0\SOURCE\WIN32\IBX\IBSQL.pas
-
 [Watches]
-Count=12
+Count=17
 Watch0='Form.Components[i].Name',256,0,18,1,0,'Watches',0
 Watch1='TCustomAdvPanel(Owner.Components[i - 1]).Name',256,0,18,1,0,'Watches',0
 Watch2='DBAdvGrMain.FixedRows',256,0,18,1,0,'Watches',0
@@ -368,6 +368,11 @@ Watch8='self.State',256,0,18,1,0,'Watches',0
 Watch9='DataSource.State',256,0,18,1,0,'Watches',0
 Watch10='FDataLink.DataSet.State',256,0,18,1,0,'Watches',0
 Watch11='E',256,0,18,1,0,'Watches',0
+Watch12='AControl.Name',256,0,18,1,0,'Watches',1
+Watch13='AControl.Controls[I].Name',256,0,18,1,0,'Watches',1
+Watch14='I',256,0,18,1,0,'Watches',1
+Watch15='FFrontBase.ReadTransaction',256,0,18,1,0,'Watches',1
+Watch16='FFrontBase.ReadTransaction',256,0,18,1,0,'Watches',1
 
 [WatchWindow]
 WatchColumnWidth=120
@@ -380,11 +385,11 @@ State=0
 Left=0
 Top=0
 Width=3825
-Height=998
+Height=929
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=3825
-ClientHeight=998
+ClientHeight=929
 TBDockHeight=218
 LRDockWidth=13600
 Dockable=1
@@ -444,12 +449,12 @@ State=0
 Left=0
 Top=22
 Width=10000
-Height=1284
+Height=1216
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=10000
-ClientHeight=1284
-TBDockHeight=1284
+ClientHeight=1216
+TBDockHeight=1216
 LRDockWidth=2769
 Dockable=1
 StayOnTop=0
@@ -463,11 +468,11 @@ State=0
 Left=0
 Top=0
 Width=2000
-Height=2534
+Height=2603
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=2000
-ClientHeight=2534
+ClientHeight=2603
 TBDockHeight=7156
 LRDockWidth=2000
 Dockable=1
@@ -504,11 +509,11 @@ State=0
 Left=0
 Top=0
 Width=3825
-Height=998
+Height=929
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=3825
-ClientHeight=998
+ClientHeight=929
 TBDockHeight=413
 LRDockWidth=4950
 Dockable=1
@@ -523,11 +528,11 @@ State=0
 Left=0
 Top=0
 Width=3825
-Height=998
+Height=929
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=3825
-ClientHeight=998
+ClientHeight=929
 TBDockHeight=218
 LRDockWidth=7406
 Dockable=1
@@ -547,11 +552,11 @@ State=0
 Left=0
 Top=0
 Width=3825
-Height=998
+Height=929
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=3825
-ClientHeight=998
+ClientHeight=929
 TBDockHeight=1537
 LRDockWidth=3481
 Dockable=1
@@ -566,11 +571,11 @@ State=0
 Left=0
 Top=0
 Width=3825
-Height=998
+Height=929
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=3825
-ClientHeight=998
+ClientHeight=929
 TBDockHeight=2064
 LRDockWidth=3481
 Dockable=1
@@ -687,17 +692,22 @@ Docked=1
 State=0
 Left=0
 Top=353
-Width=1988
-Height=3567
+Width=2012
+Height=3635
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=1988
-ClientHeight=3567
+ClientWidth=2012
+ClientHeight=3635
 TBDockHeight=6915
-LRDockWidth=1988
+LRDockWidth=2012
 Dockable=1
 StayOnTop=0
-SplitPos=116
+SplitPos=117
+
+[PropInspDesignerSelection]
+ArrangeBy=Name
+SelectedItem=Action,OnClick
+ExpandedItems=Anchors=0,AutoSize=0,Caption=0,Constraints=0,Font=0,Margins=0,Position=0,StatusBar=0,Styler=0,Images=0,BorderIcons=0,GlassFrame=0,HorzScrollBar=0,Padding=0,Touch=0,VertScrollBar=0,BevelEdges=0,Touch.InteractiveGestureOptions=0,Touch.InteractiveGestures=0,Touch.TabletOptions=0,Action=1,Appearance=0,Status=0,AutoCompletion=0,SmallFont=0,DataSource=0,FilterDropDown=0,FixedFont=0,FloatingFooter=0,Grouping=0,MouseActions=0,Navigation=0,OfficeHint=0,Options=0,ProgressAppearance=0
 
 [ModelViewTool]
 PercentageSizes=1
@@ -724,7 +734,7 @@ Create=1
 Visible=0
 Docked=1
 State=0
-Left=-159
+Left=-161
 Top=-93
 Width=1844
 Height=3142
@@ -746,11 +756,11 @@ State=0
 Left=0
 Top=0
 Width=3825
-Height=998
+Height=929
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=3825
-ClientHeight=998
+ClientHeight=929
 TBDockHeight=1548
 LRDockWidth=8744
 Dockable=1
@@ -771,11 +781,11 @@ Docked=1
 State=0
 Left=0
 Top=0
-Width=1988
+Width=2012
 Height=3498
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=1988
+ClientWidth=2012
 ClientHeight=3498
 TBDockHeight=3670
 LRDockWidth=1894
@@ -839,12 +849,12 @@ State=0
 Left=0
 Top=22
 Width=3825
-Height=1284
+Height=1216
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=3825
-ClientHeight=1284
-TBDockHeight=1284
+ClientHeight=1216
+TBDockHeight=1216
 LRDockWidth=3825
 Dockable=1
 StayOnTop=0
@@ -886,14 +896,14 @@ Docked=1
 State=0
 Left=0
 Top=22
-Width=1988
+Width=2012
 Height=3498
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=1988
+ClientWidth=2012
 ClientHeight=3498
 TBDockHeight=6915
-LRDockWidth=1988
+LRDockWidth=2012
 Dockable=1
 StayOnTop=0
 TabPosition=1
@@ -911,11 +921,11 @@ State=0
 Left=0
 Top=443
 Width=2000
-Height=2534
+Height=2603
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=2000
-ClientHeight=2534
+ClientHeight=2603
 TBDockHeight=6915
 LRDockWidth=2000
 Dockable=1
