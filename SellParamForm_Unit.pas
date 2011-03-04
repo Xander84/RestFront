@@ -12,10 +12,10 @@ uses
 
 const
   cn_maxpay = 1000000;
-  mn_nalXID = 147142772;
-  mn_nalDBID = 354772515;
-  mn_beznalXID = 147142771;
-  mn_beznalDBID = 362821871;
+  mn_CashXID = 147142772;
+  mn_CashlDBID = 354772515;
+  mn_CreditlXID = 147142771;
+  mn_CreditDBID = 362821871;
   mn_personalcardXID = 147733997;
   mn_personalcardDBID = 1604829035;
 
@@ -79,8 +79,8 @@ type
     FInDeleteOrUpdate: Boolean;
     FInInsert: Boolean;
     FInBrowse: Boolean;
-    FNalID: Integer;
-    FBezNalID: Integer;
+    FCashID: Integer;
+    FCreditID: Integer;
     FPersonalCardID: Integer;
     FPersonalCardKey: Integer;
     FCurrentPayType: Integer;
@@ -215,10 +215,10 @@ begin
   dsMain.DataSet := dsPayLine;
   dsPayLine.Open;
 
-  FNalID := FFrontBase.GetIDByRUID(mn_nalXID, mn_nalDBID);
-  Assert(FNalID <> -1, 'Invalid RUID');
-  FBezNalID := FFrontBase.GetIDByRUID(mn_beznalXID, mn_beznalDBID);
-  Assert(FBezNalID <> -1, 'Invalid RUID');
+  FCashID := FFrontBase.GetIDByRUID(mn_CashXID, mn_CashlDBID);
+  Assert(FCashID <> -1, 'Invalid RUID');
+  FCreditID := FFrontBase.GetIDByRUID(mn_CreditlXID, mn_CreditDBID);
+  Assert(FCreditID <> -1, 'Invalid RUID');
   FPersonalCardID := FFrontBase.GetIDByRUID(mn_personalcardXID, mn_personalcardDBID);
   Assert(FPersonalCardID <> -1, 'Invalid RUID');
 
@@ -483,7 +483,7 @@ begin
   if btnCardPay.Down = False then
     btnCardPay.Down := True;
   FForm := TPayForm.CreateWithFrontBase(nil, FFrontBase);
-  FForm.PayType := FBezNalID;
+  FForm.PayType := FCreditID;
   FForm.IsPlCard := 1;
   try
     FForm.ShowModal;
@@ -535,7 +535,7 @@ begin
   if btnCreditlPay.Down = False then
     btnCreditlPay.Down := True;
   FForm := TPayForm.CreateWithFrontBase(nil, FFrontBase);
-  FForm.PayType := FBezNalID;
+  FForm.PayType := FCreditID;
   FForm.IsPlCard := 0;
   try
     FForm.ShowModal;
