@@ -1932,41 +1932,46 @@ var
   FForm: TSellParamForm;
   SumToPay: Currency;
 begin
-  SaveCheck;
+  if FFrontBase.CashCode <> -1 then
+  begin
+    SaveCheck;
 
-  SumToPay := 0;
-  FLineTable.DisableControls;
-  try
-    FLineTable.First;
-    while not FLineTable.Eof do
-    begin
-      SumToPay := SumToPay + FLineTable.FieldByName('usr$sumncuwithdiscount').AsCurrency;
-      FLineTable.Next;
+    SumToPay := 0;
+    FLineTable.DisableControls;
+    try
+      FLineTable.First;
+      while not FLineTable.Eof do
+      begin
+        SumToPay := SumToPay + FLineTable.FieldByName('usr$sumncuwithdiscount').AsCurrency;
+        FLineTable.Next;
+      end;
+    finally
+      FLineTable.EnableControls;
     end;
-  finally
-    FLineTable.EnableControls;
-  end;
 
-  if (FFrontBase.Options.NoPrintEmptyCheck) and (SumToPay = 0) then
-    exit;
+    if (FFrontBase.Options.NoPrintEmptyCheck) and (SumToPay = 0) then
+      exit;
 
-  FForm := TSellParamForm.CreateWithFrontBase(nil, FFrontBase);
-  try
-    FForm.FiscalRegistry := FFiscal;
-    FForm.Doc := FHeaderTable;
-    FForm.DocLine := FLineTable;
-    FForm.SumToPay := SumToPay;
-    FForm.ShowModal;
-    if FForm.ModalResult = mrOK then
-    begin
-      //сохранить и выйти
-      SaveCheck;
-      FPayed := True;
-      actCancel.Execute;
+    FForm := TSellParamForm.CreateWithFrontBase(nil, FFrontBase);
+    try
+      FForm.FiscalRegistry := FFiscal;
+      FForm.Doc := FHeaderTable;
+      FForm.DocLine := FLineTable;
+      FForm.SumToPay := SumToPay;
+      FForm.ShowModal;
+      if FForm.ModalResult = mrOK then
+      begin
+        //сохранить и выйти
+        SaveCheck;
+        FPayed := True;
+        actCancel.Execute;
+      end;
+    finally
+      FForm.Free;
     end;
-  finally
-    FForm.Free;
-  end;
+  end else
+    AdvTaskMessageDlg('¬нимание', 'ƒл€ данной рабочей станции не указан кассовый терминал!',
+      mtWarning, [mbOK], 0)
 end;
 
 procedure TRestMainForm.SetFormState(const Value: TRestState);
@@ -3122,7 +3127,8 @@ end;
 
 procedure TRestMainForm.actPayUpdate(Sender: TObject);
 begin
-  actPay.Enabled := not FLineTable.IsEmpty;
+  actPay.Enabled := (not FLineTable.IsEmpty)
+    and ((FFrontBase.UserKey and FFrontBase.Options.KassaGroupMask) <> 0);
 end;
 
 procedure TRestMainForm.OnAfterPost(DataSet: TDataSet);
