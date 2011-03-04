@@ -434,10 +434,9 @@ begin
       FPayType := cn_paytype_personalcard;
       FPersonalCardKey := FForm.HeaderTable.FieldByName('ID').AsInteger;
       FNoFiscal := FForm.HeaderTable.FieldByName('USR$NOFISCAL').AsInteger;
-      if edMain.Text = '0' then
-        edMain.Text := ''
-      else
-        edMain.Text := '0';
+      edMain.Text := '';
+      if dsPayLine.IsEmpty then
+        edMain.Text := CurrToStr(FSumToPay);
     end else
       PrevSettings(FPayType);
   finally
@@ -495,10 +494,9 @@ begin
       FCurrentPayName := FForm.PayFormDataSet.FieldByName('USR$NAME').AsString;
       FNoFiscal := FForm.PayFormDataSet.FieldByName('USR$NOFISCAL').AsInteger;
       FPayType := cn_paytype_credit;
-      if edMain.Text = '0' then
-        edMain.Text := ''
-      else
-        edMain.Text := '0';
+      edMain.Text := '';
+      if dsPayLine.IsEmpty then
+        edMain.Text := CurrToStr(FSumToPay);
     end else
       PrevSettings(FPayType);
   finally
@@ -548,10 +546,9 @@ begin
       FCurrentPayName := FForm.PayFormDataSet.FieldByName('USR$NAME').AsString;
       FNoFiscal := FForm.PayFormDataSet.FieldByName('USR$NOFISCAL').AsInteger;
       FPayType := cn_paytype_noncash;
-      if edMain.Text = '0' then
-        edMain.Text := ''
-      else
-        edMain.Text := '0';
+      edMain.Text := '';
+      if dsPayLine.IsEmpty then
+        edMain.Text := CurrToStr(FSumToPay);
     end else
       PrevSettings(FPayType);
   finally

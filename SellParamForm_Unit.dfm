@@ -398,6 +398,7 @@ object SellParamForm: TSellParamForm
       Status.Appearance.Font.Height = -11
       Status.Appearance.Font.Name = 'Tahoma'
       Status.Appearance.Font.Style = []
+      GroupIndex = 1
       ParentFont = False
       Action = actCashPay
       TabOrder = 4
@@ -740,6 +741,7 @@ object SellParamForm: TSellParamForm
       Status.Appearance.Font.Height = -11
       Status.Appearance.Font.Name = 'Tahoma'
       Status.Appearance.Font.Style = []
+      GroupIndex = 1
       ParentFont = False
       Action = actPersonalCard
       TabOrder = 9
@@ -769,21 +771,25 @@ object SellParamForm: TSellParamForm
     end
     object actCashPay: TAction
       Caption = #1053#1072#1083#1080#1095#1085#1099#1084#1080
+      GroupIndex = 1
       OnExecute = actCashPayExecute
       OnUpdate = actCashPayUpdate
     end
     object actPersonalCard: TAction
       Caption = #1055#1077#1088#1089'. '#1082#1072#1088#1090#1086#1081
+      GroupIndex = 1
       OnExecute = actPersonalCardExecute
       OnUpdate = actPersonalCardUpdate
     end
     object actCardPay: TAction
       Caption = #1055#1083#1072#1090'. '#1082#1072#1088#1090#1086#1081
+      GroupIndex = 1
       OnExecute = actCardPayExecute
       OnUpdate = actCardPayUpdate
     end
     object actCreditPay: TAction
       Caption = #1041#1077#1079#1085#1072#1083#1080#1095#1085#1099#1084#1080
+      GroupIndex = 1
       OnExecute = actCreditPayExecute
       OnUpdate = actCreditPayUpdate
     end
