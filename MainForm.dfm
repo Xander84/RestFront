@@ -164,7 +164,7 @@ object RestMainForm: TRestMainForm
               Top = 0
               Width = 242
               Height = 660
-              ActivePage = tsHalls
+              ActivePage = tsMenu
               ActiveFont.Charset = DEFAULT_CHARSET
               ActiveFont.Color = clWindowText
               ActiveFont.Height = -11
@@ -221,6 +221,7 @@ object RestMainForm: TRestMainForm
                   StatusBar.ColorTo = 16374724
                   StatusBar.GradientDirection = gdVertical
                   Styler = FrontData.FrontPanelStyler
+                  Touch.GestureManager = gmFront
                   FullHeight = 287
                 end
                 object pnlExtraGoodGroup: TAdvPanel
@@ -262,6 +263,7 @@ object RestMainForm: TRestMainForm
                   StatusBar.ColorTo = 16374724
                   StatusBar.GradientDirection = gdVertical
                   Styler = FrontData.FrontPanelStyler
+                  Touch.GestureManager = gmFront
                   FullHeight = 295
                 end
               end
@@ -316,6 +318,7 @@ object RestMainForm: TRestMainForm
                   StatusBar.ColorTo = 16374724
                   StatusBar.GradientDirection = gdVertical
                   Styler = FrontData.FrontPanelStyler
+                  Touch.GestureManager = gmFront
                   FullHeight = 524
                 end
                 object Panel4: TAdvPanel
@@ -554,7 +557,7 @@ object RestMainForm: TRestMainForm
             Top = 1
             Width = 690
             Height = 699
-            ActivePage = tsUserOrder
+            ActivePage = tsManagerPage
             ActiveFont.Charset = DEFAULT_CHARSET
             ActiveFont.Color = clWindowText
             ActiveFont.Height = -11
@@ -773,6 +776,7 @@ object RestMainForm: TRestMainForm
                   StatusBar.ColorTo = 16374724
                   StatusBar.GradientDirection = gdVertical
                   Styler = FrontData.FrontPanelStyler
+                  Touch.GestureManager = gmFront
                   FullHeight = 0
                 end
               end
@@ -1028,7 +1032,7 @@ object RestMainForm: TRestMainForm
                   Top = 7
                   Width = 72
                   Height = 50
-                  Action = actUserLeft
+                  Action = actUsersLeft
                   Anchors = [akTop, akRight]
                   Appearance.PictureAlignment = taCenter
                   Appearance.Font.Charset = DEFAULT_CHARSET
@@ -1060,7 +1064,7 @@ object RestMainForm: TRestMainForm
                   Top = 7
                   Width = 72
                   Height = 50
-                  Action = actUserRight
+                  Action = actUsersRight
                   Anchors = [akTop, akRight]
                   Appearance.PictureAlignment = taCenter
                   Appearance.Font.Charset = DEFAULT_CHARSET
@@ -1148,6 +1152,7 @@ object RestMainForm: TRestMainForm
                   StatusBar.ColorTo = 16374724
                   StatusBar.GradientDirection = gdVertical
                   Styler = FrontData.FrontPanelStyler
+                  Touch.GestureManager = gmFront
                   FullHeight = 528
                 end
                 object pnlUserOrders: TAdvPanel
@@ -1188,6 +1193,7 @@ object RestMainForm: TRestMainForm
                   StatusBar.ColorTo = 16374724
                   StatusBar.GradientDirection = gdVertical
                   Styler = FrontData.FrontPanelStyler
+                  Touch.GestureManager = gmFront
                   FullHeight = 528
                 end
                 object pnlManagerBottom: TAdvPanel
@@ -2798,13 +2804,13 @@ object RestMainForm: TRestMainForm
       OnExecute = actDevideExecute
       OnUpdate = actDevideUpdate
     end
-    object actUserLeft: TAction
+    object actUsersLeft: TAction
       Category = 'menu'
-      OnExecute = actUserLeftExecute
+      OnExecute = actUsersLeftExecute
     end
-    object actUserRight: TAction
+    object actUsersRight: TAction
       Category = 'menu'
-      OnExecute = actUserRightExecute
+      OnExecute = actUsersRightExecute
     end
     object actExitWindows: TAction
       Category = 'menu'
@@ -2876,5 +2882,90 @@ object RestMainForm: TRestMainForm
     Active = False
     Left = 368
     Top = 144
+  end
+  object gmFront: TGestureManager
+    Left = 568
+    Top = 144
+    GestureData = <
+      item
+        Control = pnlGood
+        Collection = <
+          item
+            Action = actGoodUp
+            GestureID = sgiUp
+          end
+          item
+            Action = actGoodDown
+            GestureID = sgiDown
+          end>
+      end
+      item
+        Control = pnlUsers
+        Collection = <
+          item
+            Action = actUsersUp
+            GestureID = sgiUp
+          end
+          item
+            Action = actUsersDown
+            GestureID = sgiDown
+          end>
+      end
+      item
+        Control = pnlUserOrders
+        Collection = <
+          item
+            Action = actUsersLeft
+            GestureID = sgiLeft
+          end
+          item
+            Action = actUsersRight
+            GestureID = sgiRight
+          end
+          item
+            Action = actUsersUp
+            GestureID = sgiUp
+          end
+          item
+            Action = actUsersDown
+            GestureID = sgiDown
+          end>
+      end
+      item
+        Control = pnlGoodGroup
+        Collection = <
+          item
+            Action = actScrollUp
+            GestureID = sgiUp
+          end
+          item
+            Action = actScrollDown
+            GestureID = sgiDown
+          end>
+      end
+      item
+        Control = pnlMenu
+        Collection = <
+          item
+            Action = actScrollUp
+            GestureID = sgiUp
+          end
+          item
+            Action = actScrollDown
+            GestureID = sgiDown
+          end>
+      end
+      item
+        Control = pnlExtraGoodGroup
+        Collection = <
+          item
+            Action = actScrollDown
+            GestureID = sgiDown
+          end
+          item
+            Action = actScrollUp
+            GestureID = sgiUp
+          end>
+      end>
   end
 end

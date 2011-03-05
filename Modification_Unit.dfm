@@ -327,8 +327,8 @@ object ModificationForm: TModificationForm
     StatusBar.ColorTo = 16374724
     StatusBar.GradientDirection = gdVertical
     Styler = FrontData.FrontPanelStyler
+    Touch.GestureManager = gmModficator
     ExplicitLeft = -6
-    ExplicitTop = 86
     FullHeight = 432
   end
   object aclModify: TActionList
@@ -352,5 +352,22 @@ object ModificationForm: TModificationForm
       OnExecute = actGoodDownExecute
       OnUpdate = actGoodDownUpdate
     end
+  end
+  object gmModficator: TGestureManager
+    Left = 208
+    Top = 104
+    GestureData = <
+      item
+        Control = pnlMain
+        Collection = <
+          item
+            Action = actGoodUp
+            GestureID = sgiUp
+          end
+          item
+            Action = actGoodDown
+            GestureID = sgiDown
+          end>
+      end>
   end
 end

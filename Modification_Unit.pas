@@ -6,7 +6,7 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, ExtCtrls, kbmMemTable, DB, Front_DataBase_Unit, Contnrs,
   ActnList, AdvPanel, FrontData_Unit, AdvSmoothButton, AdvStyleIF,
-  AdvSmoothToggleButton, BaseFrontForm_Unit, RKCardCodeForm_Unit;
+  AdvSmoothToggleButton, BaseFrontForm_Unit, RKCardCodeForm_Unit, GestureMgr;
 
 const
   btnHeight = 51;
@@ -29,6 +29,7 @@ type
     btnScrollDown: TAdvSmoothButton;
     actGoodUp: TAction;
     actGoodDown: TAction;
+    gmModficator: TGestureManager;
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure FormShow(Sender: TObject);
     procedure actOKExecute(Sender: TObject);

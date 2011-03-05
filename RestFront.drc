@@ -8,627 +8,648 @@
   resources were bound to the produced executable.
 */
 
-#define bdeconst_SLocalTransDirty 64736
-#define OleConst_SCannotActivate 64737
-#define OleConst_SNoWindowHandle 64738
-#define OleConst_SLinkProperties 64739
-#define OleConst_SInvalidLinkSource 64740
-#define OleConst_SCannotBreakLink 64741
-#define OleConst_SEmptyContainer 64742
-#define OleConst_SInvalidVerb 64743
-#define OleConst_SPropDlgCaption 64744
-#define OleConst_SInvalidStreamFormat 64745
-#define OleConst_SInvalidLicense 64746
-#define OleConst_SNotLicensed 64747
-#define OleConst_sNoRunningObject 64748
-#define bdeconst_SSessionNameMissing 64752
-#define bdeconst_SDatabaseOpen 64753
-#define bdeconst_SDatabaseClosed 64754
-#define bdeconst_SDatabaseHandleSet 64755
-#define bdeconst_SSessionActive 64756
-#define bdeconst_SHandleError 64757
-#define bdeconst_SNoReferenceTableName 64758
-#define bdeconst_SNoParameterValue 64759
-#define bdeconst_SLoginError 64760
-#define bdeconst_SInitError 64761
-#define bdeconst_SIDAPILangID 64762
-#define bdeconst_SBDEError 64763
-#define bdeconst_SNoDataSetField 64764
-#define bdeconst_SNoCachedUpdates 64765
-#define bdeconst_SNoFieldAccess 64766
-#define bdeconst_SUntitled 64767
-#define JclResources_RsIntelCacheDescrEC 64768
-#define JclResources_RsIntelCacheDescrF0 64769
-#define JclResources_RsIntelCacheDescrF1 64770
-#define JclResources_RsIntelCacheDescrFF 64771
-#define JclResources_RsELibraryNotFound 64772
-#define JclResources_RsEFunctionNotFound 64773
-#define JConsts_sChangeJPGSize 64774
-#define JConsts_sJPEGError 64775
-#define JConsts_sJPEGImageFile 64776
-#define bdeconst_SAutoSessionExclusive 64777
-#define bdeconst_SAutoSessionExists 64778
-#define bdeconst_SAutoSessionActive 64779
-#define bdeconst_SDuplicateDatabaseName 64780
-#define bdeconst_SDuplicateSessionName 64781
-#define bdeconst_SInvalidSessionName 64782
-#define bdeconst_SDatabaseNameMissing 64783
-#define JclResources_RsIntelCacheDescrC0 64784
-#define JclResources_RsIntelCacheDescrCA 64785
-#define JclResources_RsIntelCacheDescrD0 64786
-#define JclResources_RsIntelCacheDescrD1 64787
-#define JclResources_RsIntelCacheDescrD2 64788
-#define JclResources_RsIntelCacheDescrD6 64789
-#define JclResources_RsIntelCacheDescrD7 64790
-#define JclResources_RsIntelCacheDescrD8 64791
-#define JclResources_RsIntelCacheDescrDC 64792
-#define JclResources_RsIntelCacheDescrDD 64793
-#define JclResources_RsIntelCacheDescrDE 64794
-#define JclResources_RsIntelCacheDescrE2 64795
-#define JclResources_RsIntelCacheDescrE3 64796
-#define JclResources_RsIntelCacheDescrE4 64797
-#define JclResources_RsIntelCacheDescrEA 64798
-#define JclResources_RsIntelCacheDescrEB 64799
-#define JclResources_RsIntelCacheDescr7C 64800
-#define JclResources_RsIntelCacheDescr7D 64801
-#define JclResources_RsIntelCacheDescr7F 64802
-#define JclResources_RsIntelCacheDescr80 64803
-#define JclResources_RsIntelCacheDescr82 64804
-#define JclResources_RsIntelCacheDescr83 64805
-#define JclResources_RsIntelCacheDescr84 64806
-#define JclResources_RsIntelCacheDescr85 64807
-#define JclResources_RsIntelCacheDescr86 64808
-#define JclResources_RsIntelCacheDescr87 64809
-#define JclResources_RsIntelCacheDescrB0 64810
-#define JclResources_RsIntelCacheDescrB1 64811
-#define JclResources_RsIntelCacheDescrB2 64812
-#define JclResources_RsIntelCacheDescrB3 64813
-#define JclResources_RsIntelCacheDescrB4 64814
-#define JclResources_RsIntelCacheDescrBA 64815
-#define JclResources_RsIntelCacheDescr5A 64816
-#define JclResources_RsIntelCacheDescr5B 64817
-#define JclResources_RsIntelCacheDescr5C 64818
-#define JclResources_RsIntelCacheDescr5D 64819
-#define JclResources_RsIntelCacheDescr60 64820
-#define JclResources_RsIntelCacheDescr66 64821
-#define JclResources_RsIntelCacheDescr67 64822
-#define JclResources_RsIntelCacheDescr68 64823
-#define JclResources_RsIntelCacheDescr70 64824
-#define JclResources_RsIntelCacheDescr71 64825
-#define JclResources_RsIntelCacheDescr72 64826
-#define JclResources_RsIntelCacheDescr73 64827
-#define JclResources_RsIntelCacheDescr78 64828
-#define JclResources_RsIntelCacheDescr79 64829
-#define JclResources_RsIntelCacheDescr7A 64830
-#define JclResources_RsIntelCacheDescr7B 64831
-#define JclResources_RsIntelCacheDescr47 64832
-#define JclResources_RsIntelCacheDescr48 64833
-#define JclResources_RsIntelCacheDescr49 64834
-#define JclResources_RsIntelCacheDescr4A 64835
-#define JclResources_RsIntelCacheDescr4B 64836
-#define JclResources_RsIntelCacheDescr4C 64837
-#define JclResources_RsIntelCacheDescr4D 64838
-#define JclResources_RsIntelCacheDescr4E 64839
-#define JclResources_RsIntelCacheDescr4F 64840
-#define JclResources_RsIntelCacheDescr50 64841
-#define JclResources_RsIntelCacheDescr51 64842
-#define JclResources_RsIntelCacheDescr52 64843
-#define JclResources_RsIntelCacheDescr55 64844
-#define JclResources_RsIntelCacheDescr56 64845
-#define JclResources_RsIntelCacheDescr57 64846
-#define JclResources_RsIntelCacheDescr59 64847
-#define JclResources_RsIntelCacheDescr29 64848
-#define JclResources_RsIntelCacheDescr2C 64849
-#define JclResources_RsIntelCacheDescr30 64850
-#define JclResources_RsIntelCacheDescr39 64851
-#define JclResources_RsIntelCacheDescr3A 64852
-#define JclResources_RsIntelCacheDescr3B 64853
-#define JclResources_RsIntelCacheDescr3C 64854
-#define JclResources_RsIntelCacheDescr3D 64855
-#define JclResources_RsIntelCacheDescr3E 64856
-#define JclResources_RsIntelCacheDescr40 64857
-#define JclResources_RsIntelCacheDescr41 64858
-#define JclResources_RsIntelCacheDescr42 64859
-#define JclResources_RsIntelCacheDescr43 64860
-#define JclResources_RsIntelCacheDescr44 64861
-#define JclResources_RsIntelCacheDescr45 64862
-#define JclResources_RsIntelCacheDescr46 64863
-#define JclResources_RsIntelCacheDescr02 64864
-#define JclResources_RsIntelCacheDescr03 64865
-#define JclResources_RsIntelCacheDescr04 64866
-#define JclResources_RsIntelCacheDescr05 64867
-#define JclResources_RsIntelCacheDescr06 64868
-#define JclResources_RsIntelCacheDescr08 64869
-#define JclResources_RsIntelCacheDescr09 64870
-#define JclResources_RsIntelCacheDescr0A 64871
-#define JclResources_RsIntelCacheDescr0B 64872
-#define JclResources_RsIntelCacheDescr0C 64873
-#define JclResources_RsIntelCacheDescr0D 64874
-#define JclResources_RsIntelCacheDescr0E 64875
-#define JclResources_RsIntelCacheDescr21 64876
-#define JclResources_RsIntelCacheDescr22 64877
-#define JclResources_RsIntelCacheDescr23 64878
-#define JclResources_RsIntelCacheDescr25 64879
-#define DbUtilsEh_SInPredicatEh 64880
-#define DbUtilsEh_SNullConstEh 64881
-#define DbUtilsEh_SQuoteIsAbsentEh 64882
-#define DbUtilsEh_SLeftBracketExpectedEh 64883
-#define DbUtilsEh_SRightBracketExpectedEh 64884
-#define DbUtilsEh_SErrorInExpressionEh 64885
-#define DbUtilsEh_SUnexpectedExpressionBeforeNullEh 64886
-#define DbUtilsEh_SUnexpectedExpressionAfterOperatorEh 64887
-#define DbUtilsEh_SIncorrectExpressionEh 64888
-#define DbUtilsEh_SUnexpectedANDorOREh 64889
-#define JclResources_RsEReplacementChar 64890
-#define JclResources_RsStringHashMapMustBeEmpty 64891
-#define JclResources_RsStringHashMapDuplicate 64892
-#define JclResources_RsStringHashMapNoTraits 64893
-#define JclResources_RsIntelCacheDescr00 64894
-#define JclResources_RsIntelCacheDescr01 64895
-#define EhLibConsts_SVisibleColumnsEh 64896
-#define EhLibConsts_SCutEh 64897
-#define EhLibConsts_SCopyEh 64898
-#define EhLibConsts_SPasteEh 64899
-#define EhLibConsts_SDeleteEh 64900
-#define EhLibConsts_SSelectAllEh 64901
-#define EhLibConsts_SSTFilterListItem_Empties 64902
-#define EhLibConsts_SSTFilterListItem_NotEmpties 64903
-#define EhLibConsts_SSTFilterListItem_All 64904
-#define EhLibConsts_SSTFilterListItem_ClearFilter 64905
-#define EhLibConsts_SSTFilterListItem_SortingByDescend 64906
-#define EhLibConsts_SSTFilterListItem_SortingByAscend 64907
-#define DbUtilsEh_SNotOperatorEh 64908
-#define DbUtilsEh_SAndOperatorEh 64909
-#define DbUtilsEh_SOrOperatorEh 64910
-#define DbUtilsEh_SLikePredicatEh 64911
-#define VDBConsts_SLastRecord 64912
-#define VDBConsts_SInsertRecord 64913
-#define VDBConsts_SDeleteRecord 64914
-#define VDBConsts_SEditRecord 64915
-#define VDBConsts_SPostEdit 64916
-#define VDBConsts_SCancelEdit 64917
-#define VDBConsts_SRefreshRecord 64918
-#define VDBConsts_SDataSourceFixed 64919
-#define VDBConsts_SPropDefByLookup 64920
-#define VDBConsts_SRemoteLogin 64921
-#define EhLibConsts_SClearSelectedCellsEh 64922
-#define EhLibConsts_SInvalidTextFormatEh 64923
-#define EhLibConsts_SInvalidVCLDBIFFormatEh 64924
-#define EhLibConsts_SErrorDuringInsertValueEh 64925
-#define EhLibConsts_SIgnoreErrorEh 64926
-#define EhLibConsts_SFieldNameNotFoundEh 64927
-#define IBSQLMonitor_StrExecute 64928
-#define IBSQLMonitor_StrNULL 64929
-#define IBSQLMonitor_StrBLOB 64930
-#define IBSQLMonitor_StrFetch 64931
-#define IBSQLMonitor_StrPrepare 64932
-#define IBSQLMonitor_StrPlan 64933
-#define IBSQLMonitor_StrPlanCantRetrive 64934
-#define IBSQLMonitor_StrCommitHardComm 64935
-#define IBSQLMonitor_StrCommitRetaining 64936
-#define IBSQLMonitor_StrRollback 64937
-#define IBSQLMonitor_StrRollbackRetainin 64938
-#define IBSQLMonitor_StrStartTransaction 64939
-#define IBSQLMonitor_StrApplication 64940
-#define VDBConsts_SFirstRecord 64941
-#define VDBConsts_SPriorRecord 64942
-#define VDBConsts_SNextRecord 64943
-#define IBXConst_SStringTooLarge 64944
-#define IBXConst_SNoTimers 64945
-#define IBXConst_SIB65feature 64946
-#define IBXConst_SLoginPromptFailure 64947
-#define IBXConst_SIB70feature 64948
-#define IBXConst_SIB71feature 64949
-#define IBXConst_SIB75feature 64950
-#define IBXConst_SIB80feature 64951
-#define IBSQLMonitor_StrConnect 64952
-#define IBSQLMonitor_StrDisconnect 64953
-#define IBSQLMonitor_StrMisc 64954
-#define IBSQLMonitor_StrError 64955
-#define IBSQLMonitor_StrAttach 64956
-#define IBSQLMonitor_StrDetach 64957
-#define IBSQLMonitor_StrQuery 64958
-#define IBSQLMonitor_StrStart 64959
-#define IBXConst_SSuccess 64960
-#define IBXConst_SDelphiException 64961
-#define IBXConst_SNoOptionsSet 64962
-#define IBXConst_SNoDestinationDirectory 64963
-#define IBXConst_SNosourceDirectory 64964
-#define IBXConst_SNoUninstallFile 64965
-#define IBXConst_SOptionNeedsClient 64966
-#define IBXConst_SOptionNeedsServer 64967
-#define IBXConst_SInvalidOption 64968
-#define IBXConst_SInvalidOnErrorResult 64969
-#define IBXConst_SInvalidOnStatusResult 64970
-#define IBXConst_SDPBConstantUnknownEx 64971
-#define IBXConst_STPBConstantUnknownEx 64972
-#define IBXConst_SUnknownPlan 64973
-#define IBXConst_SFieldSizeMismatch 64974
-#define IBXConst_SEventAlreadyRegistered 64975
-#define IBXConst_SSQLDialectInvalid 64976
-#define IBXConst_SSPBConstantNotSupported 64977
-#define IBXConst_SSPBConstantUnknown 64978
-#define IBXConst_SServiceActive 64979
-#define IBXConst_SServiceInActive 64980
-#define IBXConst_SServerNameMissing 64981
-#define IBXConst_SQueryParamsError 64982
-#define IBXConst_SStartParamsError 64983
-#define IBXConst_SOutputParsingError 64984
-#define IBXConst_SUseSpecificProcedures 64985
-#define IBXConst_SSQLMonitorAlreadyPresent 64986
-#define IBXConst_SCantPrintValue 64987
-#define IBXConst_SEOFReached 64988
-#define IBXConst_SEOFInComment 64989
-#define IBXConst_SEOFInString 64990
-#define IBXConst_SParamNameExpected 64991
-#define IBXConst_SNotCachedUpdates 64992
-#define IBXConst_SNotLiveRequest 64993
-#define IBXConst_SNoProvider 64994
-#define IBXConst_SNoRecordsAffected 64995
-#define IBXConst_SNoTableName 64996
-#define IBXConst_SCannotCreatePrimaryIndex 64997
-#define IBXConst_SCannotDropSystemIndex 64998
-#define IBXConst_STableNameMismatch 64999
-#define IBXConst_SIndexFieldMissing 65000
-#define IBXConst_SInvalidCancellation 65001
-#define IBXConst_SInvalidEvent 65002
-#define IBXConst_SMaximumEvents 65003
-#define IBXConst_SNoEventsRegistered 65004
-#define IBXConst_SInvalidQueueing 65005
-#define IBXConst_SInvalidRegistration 65006
-#define IBXConst_SInvalidBatchMove 65007
-#define IBXConst_SSQLParseError 65008
-#define IBXConst_SUserAbort 65009
-#define IBXConst_SDataSetUniDirectional 65010
-#define IBXConst_SCannotCreateSharedResource 65011
-#define IBXConst_SWindowsAPIError 65012
-#define IBXConst_SColumnListsDontMatch 65013
-#define IBXConst_SColumnTypesDontMatch 65014
-#define IBXConst_SCantEndSharedTransaction 65015
-#define IBXConst_SFieldUnsupportedType 65016
-#define IBXConst_SCircularDataLink 65017
-#define IBXConst_SEmptySQLStatement 65018
-#define IBXConst_SIsASelectStatement 65019
-#define IBXConst_SRequiredParamNotSet 65020
-#define IBXConst_SNoStoredProcName 65021
-#define IBXConst_SIsAExecuteProcedure 65022
-#define IBXConst_SUpdateFailed 65023
-#define IBXConst_SColumnIsNotNullable 65024
-#define IBXConst_SBlobCannotBeRead 65025
-#define IBXConst_SBlobCannotBeWritten 65026
-#define IBXConst_SEmptyQuery 65027
-#define IBXConst_SCannotOpenNonSQLSelect 65028
-#define IBXConst_SNoFieldAccess 65029
-#define IBXConst_SFieldReadOnly 65030
-#define IBXConst_SFieldNotFound 65031
-#define IBXConst_SNotEditing 65032
-#define IBXConst_SCannotInsert 65033
-#define IBXConst_SCannotPost 65034
-#define IBXConst_SCannotUpdate 65035
-#define IBXConst_SCannotDelete 65036
-#define IBXConst_SCannotRefresh 65037
-#define IBXConst_SBufferNotSet 65038
-#define IBXConst_SCircularReference 65039
-#define IBXConst_SUpdateWrongTR 65040
-#define IBXConst_SDatabaseNotAssigned 65041
-#define IBXConst_STransactionNotAssigned 65042
-#define IBXConst_SXSQLDAIndexOutOfRange 65043
-#define IBXConst_SXSQLDANameDoesNotExist 65044
-#define IBXConst_SEOF 65045
-#define IBXConst_SBOF 65046
-#define IBXConst_SInvalidStatementHandle 65047
-#define IBXConst_SSQLOpen 65048
-#define IBXConst_SSQLClosed 65049
-#define IBXConst_SDatasetOpen 65050
-#define IBXConst_SDatasetClosed 65051
-#define IBXConst_SUnknownSQLDataType 65052
-#define IBXConst_SInvalidColumnIndex 65053
-#define IBXConst_SInvalidParamColumnIndex 65054
-#define IBXConst_SInvalidDataConversion 65055
-#define IBXConst_SConnectionTimeout 65056
-#define IBXConst_SCannotSetDatabase 65057
-#define IBXConst_SCannotSetTransaction 65058
-#define IBXConst_SOperationCancelled 65059
-#define IBXConst_SDPBConstantNotSupported 65060
-#define IBXConst_SDPBConstantUnknown 65061
-#define IBXConst_STPBConstantNotSupported 65062
-#define IBXConst_STPBConstantUnknown 65063
-#define IBXConst_SDatabaseClosed 65064
-#define IBXConst_SDatabaseOpen 65065
-#define IBXConst_SDatabaseNameMissing 65066
-#define IBXConst_SNotInTransaction 65067
-#define IBXConst_SInTransaction 65068
-#define IBXConst_STimeoutNegative 65069
-#define IBXConst_SNoDatabasesInTransaction 65070
-#define IBXConst_SUpdateWrongDB 65071
-#define pnglang_EPNGCannotAssignChunkText 65072
-#define pnglang_EPNGUnexpectedEndText 65073
-#define pnglang_EPNGNoImageDataText 65074
-#define pnglang_EPNGCannotAddChunkText 65075
-#define pnglang_EPNGCannotAddInvalidImageText 65076
-#define pnglang_EPNGOutMemoryText 65077
-#define pnglang_EPNGCannotChangeTransparentText 65078
-#define pnglang_EPNGHeaderNotPresentText 65079
-#define pnglang_EInvalidNewSize 65080
-#define IBXConst_SUnknownError 65081
-#define IBXConst_SInterBaseMissing 65082
-#define IBXConst_SInterBaseInstallMissing 65083
-#define IBXConst_SIB60feature 65084
-#define IBXConst_SNotSupported 65085
-#define IBXConst_SNotPermitted 65086
-#define IBXConst_SFileAccessError 65087
-#define MidConst_SNoDeletesAllowed 65088
-#define MidConst_SNoInsertsAllowed 65089
-#define MidConst_SConnectionMissing 65090
-#define MidConst_SNoCircularConnection 65091
-#define pnglang_EPngInvalidCRCText 65092
-#define pnglang_EPNGInvalidIHDRText 65093
-#define pnglang_EPNGMissingMultipleIDATText 65094
-#define pnglang_EPNGZLIBErrorText 65095
-#define pnglang_EPNGInvalidPaletteText 65096
-#define pnglang_EPNGInvalidFileHeaderText 65097
-#define pnglang_EPNGIHDRNotFirstText 65098
-#define pnglang_EPNGSizeExceedsText 65099
-#define pnglang_EPNGUnknownPalEntryText 65100
-#define pnglang_EPNGUnknownCriticalChunkText 65101
-#define pnglang_EPNGUnknownCompressionText 65102
-#define pnglang_EPNGUnknownInterlaceText 65103
-#define ComConst_SDCOMNotInstalled 65104
-#define MidConst_SNoDataProvider 65105
-#define MidConst_SInvalidDataPacket 65106
-#define MidConst_SRefreshError 65107
-#define MidConst_SNoCircularReference 65108
-#define MidConst_SErrorLoadingMidas 65109
-#define MidConst_SCannotCreateDataSet 65110
-#define MidConst_SNoConnectToBroker 65111
-#define MidConst_SNoParentConnection 65112
-#define MidConst_SInvalidOptParamType 65113
-#define MidConst_SConstraintFailed 65114
-#define MidConst_SField 65115
-#define MidConst_SRecConstFail 65116
-#define MidConst_SFieldConstFail 65117
-#define MidConst_SDefExprFail 65118
-#define MidConst_SNoEditsAllowed 65119
-#define DBConsts_SExprNoAggOnCalcs 65120
-#define DBConsts_SDataSetUnidirectional 65121
-#define DBConsts_SUnassignedVar 65122
-#define DBConsts_SRecordNotFound 65123
-#define DBConsts_SBcdOverflow 65124
-#define DBConsts_SInvalidBcdValue 65125
-#define DBConsts_SInvalidFormatType 65126
-#define DBConsts_SCouldNotParseTimeStamp 65127
-#define DBConsts_SInvalidSqlTimeStamp 65128
-#define DBConsts_SDeleteRecordQuestion 65129
-#define DBConsts_SDeleteMultipleRecordsQuestion 65130
-#define DBConsts_STooManyColumns 65131
-#define ComConst_SOleError 65132
-#define ComConst_SNoMethod 65133
-#define ComConst_SVarNotObject 65134
-#define ComConst_STooManyParams 65135
-#define DBConsts_SExprTypeMis 65136
-#define DBConsts_SExprBadScope 65137
-#define DBConsts_SExprNoArith 65138
-#define DBConsts_SExprNotAgg 65139
-#define DBConsts_SExprBadConst 65140
-#define DBConsts_SExprNoAggFilter 65141
-#define DBConsts_SExprEmptyInList 65142
-#define DBConsts_SInvalidKeywordUse 65143
-#define DBConsts_STextFalse 65144
-#define DBConsts_STextTrue 65145
-#define DBConsts_SParameterNotFound 65146
-#define DBConsts_SInvalidVersion 65147
-#define DBConsts_SBadFieldType 65148
-#define DBConsts_SAggActive 65149
-#define DBConsts_SProviderSQLNotSupported 65150
-#define DBConsts_SProviderExecuteNotSupported 65151
-#define DBConsts_SDataSetEmpty 65152
-#define DBConsts_SDataSetReadOnly 65153
-#define DBConsts_SNestedDataSetClass 65154
-#define DBConsts_SExprTermination 65155
-#define DBConsts_SExprNameError 65156
-#define DBConsts_SExprStringError 65157
-#define DBConsts_SExprInvalidChar 65158
-#define DBConsts_SExprNoLParen 65159
-#define DBConsts_SExprNoRParen 65160
-#define DBConsts_SExprNoRParenOrComma 65161
-#define DBConsts_SExprExpected 65162
-#define DBConsts_SExprBadField 65163
-#define DBConsts_SExprBadNullTest 65164
-#define DBConsts_SExprRangeError 65165
-#define DBConsts_SExprIncorrect 65166
-#define DBConsts_SExprNothing 65167
-#define DBConsts_SFieldReadOnly 65168
-#define DBConsts_SFieldIndexError 65169
-#define DBConsts_SNoFieldIndexes 65170
-#define DBConsts_SNotIndexField 65171
-#define DBConsts_SIndexFieldMissing 65172
-#define DBConsts_SDuplicateIndexName 65173
-#define DBConsts_SNoIndexForFields 65174
-#define DBConsts_SIndexNotFound 65175
-#define DBConsts_SDBDuplicateName 65176
-#define DBConsts_SCircularDataLink 65177
-#define DBConsts_SLookupInfoError 65178
-#define DBConsts_SDataSourceChange 65179
-#define DBConsts_SNoNestedMasterSource 65180
-#define DBConsts_SDataSetOpen 65181
-#define DBConsts_SNotEditing 65182
-#define DBConsts_SDataSetClosed 65183
-#define DBConsts_SDuplicateFieldName 65184
-#define DBConsts_SFieldNotFound 65185
-#define DBConsts_SFieldAccessError 65186
-#define DBConsts_SFieldValueError 65187
-#define DBConsts_SFieldRangeError 65188
-#define DBConsts_SBcdFieldRangeError 65189
-#define DBConsts_SInvalidIntegerValue 65190
-#define DBConsts_SInvalidBoolValue 65191
-#define DBConsts_SInvalidFloatValue 65192
-#define DBConsts_SFieldTypeMismatch 65193
-#define DBConsts_SFieldSizeMismatch 65194
-#define DBConsts_SInvalidVarByteArray 65195
-#define DBConsts_SFieldOutOfRange 65196
-#define DBConsts_SFieldRequired 65197
-#define DBConsts_SDataSetMissing 65198
-#define DBConsts_SInvalidCalcType 65199
-#define ComStrs_sRichEditLoadFail 65200
-#define ComStrs_sRichEditSaveFail 65201
-#define ComStrs_sUDAssociated 65202
-#define ComStrs_sPageIndexError 65203
-#define ComStrs_sInvalidComCtl32 65204
-#define ComStrs_sDateTimeMax 65205
-#define ComStrs_sDateTimeMin 65206
-#define ComStrs_sNeedAllowNone 65207
-#define ComStrs_sFailSetCalDateTime 65208
-#define ComStrs_sFailSetCalMaxSelRange 65209
-#define ComStrs_sFailSetCalMinMaxRange 65210
-#define ComStrs_sFailsetCalSelRange 65211
-#define DBConsts_SInvalidFieldSize 65212
-#define DBConsts_SInvalidFieldKind 65213
-#define DBConsts_SUnknownFieldType 65214
-#define DBConsts_SFieldNameMissing 65215
-#define Consts_SWindowsVistaRequired 65216
-#define Consts_SXPThemesRequired 65217
-#define Consts_STaskDlgButtonCaption 65218
-#define Consts_STaskDlgRadioButtonCaption 65219
-#define Consts_SInvalidTaskDlgButtonCaption 65220
-#define ComStrs_sTabFailClear 65221
-#define ComStrs_sTabFailDelete 65222
-#define ComStrs_sTabFailRetrieve 65223
-#define ComStrs_sTabFailGetObject 65224
-#define ComStrs_sTabFailSet 65225
-#define ComStrs_sTabFailSetObject 65226
-#define ComStrs_sTabMustBeMultiLine 65227
-#define ComStrs_sInvalidIndex 65228
-#define ComStrs_sInsertError 65229
-#define ComStrs_sInvalidOwner 65230
-#define ComStrs_sRichEditInsertError 65231
-#define Consts_SDockZoneNotFound 65232
-#define Consts_SDockZoneHasNoCtl 65233
-#define Consts_SDockZoneVersionConflict 65234
-#define Consts_SMultiSelectRequired 65235
-#define Consts_SSeparator 65236
-#define Consts_SErrorSettingCount 65237
-#define Consts_SListBoxMustBeVirtual 65238
-#define Consts_SNoGetItemEventHandler 65239
-#define Consts_SInvalidPath 65240
-#define Consts_SANSIEncoding 65241
-#define Consts_SASCIIEncoding 65242
-#define Consts_SUnicodeEncoding 65243
-#define Consts_SBigEndianEncoding 65244
-#define Consts_SUTF8Encoding 65245
-#define Consts_SUTF7Encoding 65246
-#define Consts_SPageControlNotSet 65247
-#define Consts_SmkcDel 65248
-#define Consts_SmkcShift 65249
-#define Consts_SmkcCtrl 65250
-#define Consts_SmkcAlt 65251
-#define Consts_srNone 65252
-#define Consts_SOutOfRange 65253
-#define Consts_SInsertLineError 65254
-#define Consts_SInvalidClipFmt 65255
-#define Consts_SIconToClipboard 65256
-#define Consts_SCannotOpenClipboard 65257
-#define Consts_SInvalidMemoSize 65258
-#define Consts_SInvalidPrinterOp 65259
-#define Consts_SNoDefaultPrinter 65260
-#define Consts_SDuplicateMenus 65261
-#define Consts_SDockedCtlNeedsName 65262
-#define Consts_SDockTreeRemoveError 65263
-#define Consts_SMsgDlgYesToAll 65264
-#define Consts_SMsgDlgClose 65265
-#define Consts_SmkcBkSp 65266
-#define Consts_SmkcTab 65267
-#define Consts_SmkcEsc 65268
-#define Consts_SmkcEnter 65269
-#define Consts_SmkcSpace 65270
-#define Consts_SmkcPgUp 65271
-#define Consts_SmkcPgDn 65272
-#define Consts_SmkcEnd 65273
-#define Consts_SmkcHome 65274
-#define Consts_SmkcLeft 65275
-#define Consts_SmkcUp 65276
-#define Consts_SmkcRight 65277
-#define Consts_SmkcDown 65278
-#define Consts_SmkcIns 65279
-#define Consts_SMaskErr 65280
-#define Consts_SMaskEditErr 65281
-#define Consts_SMsgDlgWarning 65282
-#define Consts_SMsgDlgError 65283
-#define Consts_SMsgDlgInformation 65284
-#define Consts_SMsgDlgConfirm 65285
-#define Consts_SMsgDlgYes 65286
-#define Consts_SMsgDlgNo 65287
-#define Consts_SMsgDlgOK 65288
-#define Consts_SMsgDlgCancel 65289
-#define Consts_SMsgDlgHelp 65290
-#define Consts_SMsgDlgAbort 65291
-#define Consts_SMsgDlgRetry 65292
-#define Consts_SMsgDlgIgnore 65293
-#define Consts_SMsgDlgAll 65294
-#define Consts_SMsgDlgNoToAll 65295
-#define Consts_SIgnoreButton 65296
-#define Consts_SRetryButton 65297
-#define Consts_SAbortButton 65298
-#define Consts_SAllButton 65299
-#define Consts_SCannotDragForm 65300
-#define Consts_SVMetafiles 65301
-#define Consts_SVEnhMetafiles 65302
-#define Consts_SVIcons 65303
-#define Consts_SVBitmaps 65304
-#define Consts_SVTIFFImages 65305
-#define Consts_SGridTooLarge 65306
-#define Consts_STooManyDeleted 65307
-#define Consts_SIndexOutOfRange 65308
-#define Consts_SFixedColTooBig 65309
-#define Consts_SFixedRowTooBig 65310
-#define Consts_SInvalidStringGridOp 65311
-#define Consts_SNoTimers 65312
-#define Consts_SNotPrinting 65313
-#define Consts_SPrinting 65314
-#define Consts_SPrinterIndexError 65315
-#define Consts_SInvalidPrinter 65316
-#define Consts_SDeviceOnPort 65317
-#define Consts_SGroupIndexTooLow 65318
-#define Consts_SNoMDIForm 65319
-#define Consts_SImageCanvasNeedsBitmap 65320
-#define Consts_SControlParentSetToSelf 65321
-#define Consts_SOKButton 65322
-#define Consts_SCancelButton 65323
-#define Consts_SYesButton 65324
-#define Consts_SNoButton 65325
-#define Consts_SHelpButton 65326
-#define Consts_SCloseButton 65327
-#define Consts_SImageIndexError 65328
-#define Consts_SImageReadFail 65329
-#define Consts_SImageWriteFail 65330
-#define Consts_SWindowDCError 65331
-#define Consts_SWindowClass 65332
-#define Consts_SCannotFocus 65333
-#define Consts_SParentRequired 65334
-#define Consts_SParentGivenNotAParent 65335
-#define Consts_SMDIChildNotVisible 65336
-#define Consts_SVisibleChanged 65337
-#define Consts_SCannotShowModal 65338
-#define Consts_SScrollBarRange 65339
-#define Consts_SPropertyOutOfRange 65340
-#define Consts_SMenuIndexError 65341
-#define Consts_SMenuReinserted 65342
-#define Consts_SMenuNotFound 65343
-#define Consts_SInvalidBitmap 65344
-#define Consts_SInvalidIcon 65345
-#define Consts_SInvalidMetafile 65346
-#define Consts_SInvalidPixelFormat 65347
-#define Consts_SInvalidImage 65348
-#define Consts_SScanLine 65349
-#define Consts_SChangeIconSize 65350
-#define Consts_SChangeWicSize 65351
-#define Consts_SOleGraphic 65352
-#define Consts_SUnknownExtension 65353
-#define Consts_SUnknownClipboardFormat 65354
-#define Consts_SOutOfResources 65355
-#define Consts_SNoCanvasHandle 65356
-#define Consts_SInvalidImageSize 65357
-#define Consts_SInvalidImageList 65358
-#define Consts_SReplaceImage 65359
+#define OleConst_SNotLicensed 64704
+#define OleConst_sNoRunningObject 64705
+#define bdeconst_SBDEError 64720
+#define bdeconst_SNoDataSetField 64721
+#define bdeconst_SNoCachedUpdates 64722
+#define bdeconst_SNoFieldAccess 64723
+#define bdeconst_SUntitled 64724
+#define bdeconst_SLocalTransDirty 64725
+#define OleConst_SCannotActivate 64726
+#define OleConst_SNoWindowHandle 64727
+#define OleConst_SLinkProperties 64728
+#define OleConst_SInvalidLinkSource 64729
+#define OleConst_SCannotBreakLink 64730
+#define OleConst_SEmptyContainer 64731
+#define OleConst_SInvalidVerb 64732
+#define OleConst_SPropDlgCaption 64733
+#define OleConst_SInvalidStreamFormat 64734
+#define OleConst_SInvalidLicense 64735
+#define bdeconst_SAutoSessionActive 64736
+#define bdeconst_SDuplicateDatabaseName 64737
+#define bdeconst_SDuplicateSessionName 64738
+#define bdeconst_SInvalidSessionName 64739
+#define bdeconst_SDatabaseNameMissing 64740
+#define bdeconst_SSessionNameMissing 64741
+#define bdeconst_SDatabaseOpen 64742
+#define bdeconst_SDatabaseClosed 64743
+#define bdeconst_SDatabaseHandleSet 64744
+#define bdeconst_SSessionActive 64745
+#define bdeconst_SHandleError 64746
+#define bdeconst_SNoReferenceTableName 64747
+#define bdeconst_SNoParameterValue 64748
+#define bdeconst_SLoginError 64749
+#define bdeconst_SInitError 64750
+#define bdeconst_SIDAPILangID 64751
+#define JclResources_RsIntelCacheDescrE2 64752
+#define JclResources_RsIntelCacheDescrE3 64753
+#define JclResources_RsIntelCacheDescrE4 64754
+#define JclResources_RsIntelCacheDescrEA 64755
+#define JclResources_RsIntelCacheDescrEB 64756
+#define JclResources_RsIntelCacheDescrEC 64757
+#define JclResources_RsIntelCacheDescrF0 64758
+#define JclResources_RsIntelCacheDescrF1 64759
+#define JclResources_RsIntelCacheDescrFF 64760
+#define JclResources_RsELibraryNotFound 64761
+#define JclResources_RsEFunctionNotFound 64762
+#define JConsts_sChangeJPGSize 64763
+#define JConsts_sJPEGError 64764
+#define JConsts_sJPEGImageFile 64765
+#define bdeconst_SAutoSessionExclusive 64766
+#define bdeconst_SAutoSessionExists 64767
+#define JclResources_RsIntelCacheDescrB1 64768
+#define JclResources_RsIntelCacheDescrB2 64769
+#define JclResources_RsIntelCacheDescrB3 64770
+#define JclResources_RsIntelCacheDescrB4 64771
+#define JclResources_RsIntelCacheDescrBA 64772
+#define JclResources_RsIntelCacheDescrC0 64773
+#define JclResources_RsIntelCacheDescrCA 64774
+#define JclResources_RsIntelCacheDescrD0 64775
+#define JclResources_RsIntelCacheDescrD1 64776
+#define JclResources_RsIntelCacheDescrD2 64777
+#define JclResources_RsIntelCacheDescrD6 64778
+#define JclResources_RsIntelCacheDescrD7 64779
+#define JclResources_RsIntelCacheDescrD8 64780
+#define JclResources_RsIntelCacheDescrDC 64781
+#define JclResources_RsIntelCacheDescrDD 64782
+#define JclResources_RsIntelCacheDescrDE 64783
+#define JclResources_RsIntelCacheDescr73 64784
+#define JclResources_RsIntelCacheDescr78 64785
+#define JclResources_RsIntelCacheDescr79 64786
+#define JclResources_RsIntelCacheDescr7A 64787
+#define JclResources_RsIntelCacheDescr7B 64788
+#define JclResources_RsIntelCacheDescr7C 64789
+#define JclResources_RsIntelCacheDescr7D 64790
+#define JclResources_RsIntelCacheDescr7F 64791
+#define JclResources_RsIntelCacheDescr80 64792
+#define JclResources_RsIntelCacheDescr82 64793
+#define JclResources_RsIntelCacheDescr83 64794
+#define JclResources_RsIntelCacheDescr84 64795
+#define JclResources_RsIntelCacheDescr85 64796
+#define JclResources_RsIntelCacheDescr86 64797
+#define JclResources_RsIntelCacheDescr87 64798
+#define JclResources_RsIntelCacheDescrB0 64799
+#define JclResources_RsIntelCacheDescr52 64800
+#define JclResources_RsIntelCacheDescr55 64801
+#define JclResources_RsIntelCacheDescr56 64802
+#define JclResources_RsIntelCacheDescr57 64803
+#define JclResources_RsIntelCacheDescr59 64804
+#define JclResources_RsIntelCacheDescr5A 64805
+#define JclResources_RsIntelCacheDescr5B 64806
+#define JclResources_RsIntelCacheDescr5C 64807
+#define JclResources_RsIntelCacheDescr5D 64808
+#define JclResources_RsIntelCacheDescr60 64809
+#define JclResources_RsIntelCacheDescr66 64810
+#define JclResources_RsIntelCacheDescr67 64811
+#define JclResources_RsIntelCacheDescr68 64812
+#define JclResources_RsIntelCacheDescr70 64813
+#define JclResources_RsIntelCacheDescr71 64814
+#define JclResources_RsIntelCacheDescr72 64815
+#define JclResources_RsIntelCacheDescr42 64816
+#define JclResources_RsIntelCacheDescr43 64817
+#define JclResources_RsIntelCacheDescr44 64818
+#define JclResources_RsIntelCacheDescr45 64819
+#define JclResources_RsIntelCacheDescr46 64820
+#define JclResources_RsIntelCacheDescr47 64821
+#define JclResources_RsIntelCacheDescr48 64822
+#define JclResources_RsIntelCacheDescr49 64823
+#define JclResources_RsIntelCacheDescr4A 64824
+#define JclResources_RsIntelCacheDescr4B 64825
+#define JclResources_RsIntelCacheDescr4C 64826
+#define JclResources_RsIntelCacheDescr4D 64827
+#define JclResources_RsIntelCacheDescr4E 64828
+#define JclResources_RsIntelCacheDescr4F 64829
+#define JclResources_RsIntelCacheDescr50 64830
+#define JclResources_RsIntelCacheDescr51 64831
+#define JclResources_RsIntelCacheDescr0E 64832
+#define JclResources_RsIntelCacheDescr21 64833
+#define JclResources_RsIntelCacheDescr22 64834
+#define JclResources_RsIntelCacheDescr23 64835
+#define JclResources_RsIntelCacheDescr25 64836
+#define JclResources_RsIntelCacheDescr29 64837
+#define JclResources_RsIntelCacheDescr2C 64838
+#define JclResources_RsIntelCacheDescr30 64839
+#define JclResources_RsIntelCacheDescr39 64840
+#define JclResources_RsIntelCacheDescr3A 64841
+#define JclResources_RsIntelCacheDescr3B 64842
+#define JclResources_RsIntelCacheDescr3C 64843
+#define JclResources_RsIntelCacheDescr3D 64844
+#define JclResources_RsIntelCacheDescr3E 64845
+#define JclResources_RsIntelCacheDescr40 64846
+#define JclResources_RsIntelCacheDescr41 64847
+#define JclResources_RsStringHashMapMustBeEmpty 64848
+#define JclResources_RsStringHashMapDuplicate 64849
+#define JclResources_RsStringHashMapNoTraits 64850
+#define JclResources_RsIntelCacheDescr00 64851
+#define JclResources_RsIntelCacheDescr01 64852
+#define JclResources_RsIntelCacheDescr02 64853
+#define JclResources_RsIntelCacheDescr03 64854
+#define JclResources_RsIntelCacheDescr04 64855
+#define JclResources_RsIntelCacheDescr05 64856
+#define JclResources_RsIntelCacheDescr06 64857
+#define JclResources_RsIntelCacheDescr08 64858
+#define JclResources_RsIntelCacheDescr09 64859
+#define JclResources_RsIntelCacheDescr0A 64860
+#define JclResources_RsIntelCacheDescr0B 64861
+#define JclResources_RsIntelCacheDescr0C 64862
+#define JclResources_RsIntelCacheDescr0D 64863
+#define EhLibConsts_SSTFilterListItem_SortingByAscend 64864
+#define DbUtilsEh_SNotOperatorEh 64865
+#define DbUtilsEh_SAndOperatorEh 64866
+#define DbUtilsEh_SOrOperatorEh 64867
+#define DbUtilsEh_SLikePredicatEh 64868
+#define DbUtilsEh_SInPredicatEh 64869
+#define DbUtilsEh_SNullConstEh 64870
+#define DbUtilsEh_SQuoteIsAbsentEh 64871
+#define DbUtilsEh_SLeftBracketExpectedEh 64872
+#define DbUtilsEh_SRightBracketExpectedEh 64873
+#define DbUtilsEh_SErrorInExpressionEh 64874
+#define DbUtilsEh_SUnexpectedExpressionBeforeNullEh 64875
+#define DbUtilsEh_SUnexpectedExpressionAfterOperatorEh 64876
+#define DbUtilsEh_SIncorrectExpressionEh 64877
+#define DbUtilsEh_SUnexpectedANDorOREh 64878
+#define JclResources_RsEReplacementChar 64879
+#define EhLibConsts_SInvalidTextFormatEh 64880
+#define EhLibConsts_SInvalidVCLDBIFFormatEh 64881
+#define EhLibConsts_SErrorDuringInsertValueEh 64882
+#define EhLibConsts_SIgnoreErrorEh 64883
+#define EhLibConsts_SFieldNameNotFoundEh 64884
+#define EhLibConsts_SVisibleColumnsEh 64885
+#define EhLibConsts_SCutEh 64886
+#define EhLibConsts_SCopyEh 64887
+#define EhLibConsts_SPasteEh 64888
+#define EhLibConsts_SDeleteEh 64889
+#define EhLibConsts_SSelectAllEh 64890
+#define EhLibConsts_SSTFilterListItem_Empties 64891
+#define EhLibConsts_SSTFilterListItem_NotEmpties 64892
+#define EhLibConsts_SSTFilterListItem_All 64893
+#define EhLibConsts_SSTFilterListItem_ClearFilter 64894
+#define EhLibConsts_SSTFilterListItem_SortingByDescend 64895
+#define IBSQLMonitor_StrStartTransaction 64896
+#define IBSQLMonitor_StrApplication 64897
+#define VDBConsts_SFirstRecord 64898
+#define VDBConsts_SPriorRecord 64899
+#define VDBConsts_SNextRecord 64900
+#define VDBConsts_SLastRecord 64901
+#define VDBConsts_SInsertRecord 64902
+#define VDBConsts_SDeleteRecord 64903
+#define VDBConsts_SEditRecord 64904
+#define VDBConsts_SPostEdit 64905
+#define VDBConsts_SCancelEdit 64906
+#define VDBConsts_SRefreshRecord 64907
+#define VDBConsts_SDataSourceFixed 64908
+#define VDBConsts_SPropDefByLookup 64909
+#define VDBConsts_SRemoteLogin 64910
+#define EhLibConsts_SClearSelectedCellsEh 64911
+#define IBSQLMonitor_StrError 64912
+#define IBSQLMonitor_StrAttach 64913
+#define IBSQLMonitor_StrDetach 64914
+#define IBSQLMonitor_StrQuery 64915
+#define IBSQLMonitor_StrStart 64916
+#define IBSQLMonitor_StrExecute 64917
+#define IBSQLMonitor_StrNULL 64918
+#define IBSQLMonitor_StrBLOB 64919
+#define IBSQLMonitor_StrFetch 64920
+#define IBSQLMonitor_StrPrepare 64921
+#define IBSQLMonitor_StrPlan 64922
+#define IBSQLMonitor_StrPlanCantRetrive 64923
+#define IBSQLMonitor_StrCommitHardComm 64924
+#define IBSQLMonitor_StrCommitRetaining 64925
+#define IBSQLMonitor_StrRollback 64926
+#define IBSQLMonitor_StrRollbackRetainin 64927
+#define IBXConst_SDPBConstantUnknownEx 64928
+#define IBXConst_STPBConstantUnknownEx 64929
+#define IBXConst_SUnknownPlan 64930
+#define IBXConst_SFieldSizeMismatch 64931
+#define IBXConst_SEventAlreadyRegistered 64932
+#define IBXConst_SStringTooLarge 64933
+#define IBXConst_SNoTimers 64934
+#define IBXConst_SIB65feature 64935
+#define IBXConst_SLoginPromptFailure 64936
+#define IBXConst_SIB70feature 64937
+#define IBXConst_SIB71feature 64938
+#define IBXConst_SIB75feature 64939
+#define IBXConst_SIB80feature 64940
+#define IBSQLMonitor_StrConnect 64941
+#define IBSQLMonitor_StrDisconnect 64942
+#define IBSQLMonitor_StrMisc 64943
+#define IBXConst_SCantPrintValue 64944
+#define IBXConst_SEOFReached 64945
+#define IBXConst_SEOFInComment 64946
+#define IBXConst_SEOFInString 64947
+#define IBXConst_SParamNameExpected 64948
+#define IBXConst_SSuccess 64949
+#define IBXConst_SDelphiException 64950
+#define IBXConst_SNoOptionsSet 64951
+#define IBXConst_SNoDestinationDirectory 64952
+#define IBXConst_SNosourceDirectory 64953
+#define IBXConst_SNoUninstallFile 64954
+#define IBXConst_SOptionNeedsClient 64955
+#define IBXConst_SOptionNeedsServer 64956
+#define IBXConst_SInvalidOption 64957
+#define IBXConst_SInvalidOnErrorResult 64958
+#define IBXConst_SInvalidOnStatusResult 64959
+#define IBXConst_SMaximumEvents 64960
+#define IBXConst_SNoEventsRegistered 64961
+#define IBXConst_SInvalidQueueing 64962
+#define IBXConst_SInvalidRegistration 64963
+#define IBXConst_SInvalidBatchMove 64964
+#define IBXConst_SSQLDialectInvalid 64965
+#define IBXConst_SSPBConstantNotSupported 64966
+#define IBXConst_SSPBConstantUnknown 64967
+#define IBXConst_SServiceActive 64968
+#define IBXConst_SServiceInActive 64969
+#define IBXConst_SServerNameMissing 64970
+#define IBXConst_SQueryParamsError 64971
+#define IBXConst_SStartParamsError 64972
+#define IBXConst_SOutputParsingError 64973
+#define IBXConst_SUseSpecificProcedures 64974
+#define IBXConst_SSQLMonitorAlreadyPresent 64975
+#define IBXConst_SIsASelectStatement 64976
+#define IBXConst_SRequiredParamNotSet 64977
+#define IBXConst_SNoStoredProcName 64978
+#define IBXConst_SIsAExecuteProcedure 64979
+#define IBXConst_SUpdateFailed 64980
+#define IBXConst_SNotCachedUpdates 64981
+#define IBXConst_SNotLiveRequest 64982
+#define IBXConst_SNoProvider 64983
+#define IBXConst_SNoRecordsAffected 64984
+#define IBXConst_SNoTableName 64985
+#define IBXConst_SCannotCreatePrimaryIndex 64986
+#define IBXConst_SCannotDropSystemIndex 64987
+#define IBXConst_STableNameMismatch 64988
+#define IBXConst_SIndexFieldMissing 64989
+#define IBXConst_SInvalidCancellation 64990
+#define IBXConst_SInvalidEvent 64991
+#define IBXConst_SCannotUpdate 64992
+#define IBXConst_SCannotDelete 64993
+#define IBXConst_SCannotRefresh 64994
+#define IBXConst_SBufferNotSet 64995
+#define IBXConst_SCircularReference 64996
+#define IBXConst_SSQLParseError 64997
+#define IBXConst_SUserAbort 64998
+#define IBXConst_SDataSetUniDirectional 64999
+#define IBXConst_SCannotCreateSharedResource 65000
+#define IBXConst_SWindowsAPIError 65001
+#define IBXConst_SColumnListsDontMatch 65002
+#define IBXConst_SColumnTypesDontMatch 65003
+#define IBXConst_SCantEndSharedTransaction 65004
+#define IBXConst_SFieldUnsupportedType 65005
+#define IBXConst_SCircularDataLink 65006
+#define IBXConst_SEmptySQLStatement 65007
+#define IBXConst_SDatasetClosed 65008
+#define IBXConst_SUnknownSQLDataType 65009
+#define IBXConst_SInvalidColumnIndex 65010
+#define IBXConst_SInvalidParamColumnIndex 65011
+#define IBXConst_SInvalidDataConversion 65012
+#define IBXConst_SColumnIsNotNullable 65013
+#define IBXConst_SBlobCannotBeRead 65014
+#define IBXConst_SBlobCannotBeWritten 65015
+#define IBXConst_SEmptyQuery 65016
+#define IBXConst_SCannotOpenNonSQLSelect 65017
+#define IBXConst_SNoFieldAccess 65018
+#define IBXConst_SFieldReadOnly 65019
+#define IBXConst_SFieldNotFound 65020
+#define IBXConst_SNotEditing 65021
+#define IBXConst_SCannotInsert 65022
+#define IBXConst_SCannotPost 65023
+#define IBXConst_SNotInTransaction 65024
+#define IBXConst_SInTransaction 65025
+#define IBXConst_STimeoutNegative 65026
+#define IBXConst_SNoDatabasesInTransaction 65027
+#define IBXConst_SUpdateWrongDB 65028
+#define IBXConst_SUpdateWrongTR 65029
+#define IBXConst_SDatabaseNotAssigned 65030
+#define IBXConst_STransactionNotAssigned 65031
+#define IBXConst_SXSQLDAIndexOutOfRange 65032
+#define IBXConst_SXSQLDANameDoesNotExist 65033
+#define IBXConst_SEOF 65034
+#define IBXConst_SBOF 65035
+#define IBXConst_SInvalidStatementHandle 65036
+#define IBXConst_SSQLOpen 65037
+#define IBXConst_SSQLClosed 65038
+#define IBXConst_SDatasetOpen 65039
+#define IBXConst_SInterBaseInstallMissing 65040
+#define IBXConst_SIB60feature 65041
+#define IBXConst_SNotSupported 65042
+#define IBXConst_SNotPermitted 65043
+#define IBXConst_SFileAccessError 65044
+#define IBXConst_SConnectionTimeout 65045
+#define IBXConst_SCannotSetDatabase 65046
+#define IBXConst_SCannotSetTransaction 65047
+#define IBXConst_SOperationCancelled 65048
+#define IBXConst_SDPBConstantNotSupported 65049
+#define IBXConst_SDPBConstantUnknown 65050
+#define IBXConst_STPBConstantNotSupported 65051
+#define IBXConst_STPBConstantUnknown 65052
+#define IBXConst_SDatabaseClosed 65053
+#define IBXConst_SDatabaseOpen 65054
+#define IBXConst_SDatabaseNameMissing 65055
+#define pnglang_EPNGSizeExceedsText 65056
+#define pnglang_EPNGUnknownPalEntryText 65057
+#define pnglang_EPNGUnknownCriticalChunkText 65058
+#define pnglang_EPNGUnknownCompressionText 65059
+#define pnglang_EPNGUnknownInterlaceText 65060
+#define pnglang_EPNGCannotAssignChunkText 65061
+#define pnglang_EPNGUnexpectedEndText 65062
+#define pnglang_EPNGNoImageDataText 65063
+#define pnglang_EPNGCannotAddChunkText 65064
+#define pnglang_EPNGCannotAddInvalidImageText 65065
+#define pnglang_EPNGOutMemoryText 65066
+#define pnglang_EPNGCannotChangeTransparentText 65067
+#define pnglang_EPNGHeaderNotPresentText 65068
+#define pnglang_EInvalidNewSize 65069
+#define IBXConst_SUnknownError 65070
+#define IBXConst_SInterBaseMissing 65071
+#define GestureConsts_SInitialGesturePointError 65072
+#define GestureConsts_SSetStylusGestureError 65073
+#define GestureConsts_SInvalidStreamFormat 65074
+#define GestureConsts_SControlNotFound 65075
+#define GestureConsts_SRegisteredGestureNotFound 65076
+#define GestureConsts_SDuplicateRecordedGestureName 65077
+#define GestureConsts_SInvalidGestureID 65078
+#define GestureConsts_SInvalidGestureName 65079
+#define GestureConsts_SDuplicateGestureName 65080
+#define pnglang_EPngInvalidCRCText 65081
+#define pnglang_EPNGInvalidIHDRText 65082
+#define pnglang_EPNGMissingMultipleIDATText 65083
+#define pnglang_EPNGZLIBErrorText 65084
+#define pnglang_EPNGInvalidPaletteText 65085
+#define pnglang_EPNGInvalidFileHeaderText 65086
+#define pnglang_EPNGIHDRNotFirstText 65087
+#define MidConst_SField 65088
+#define MidConst_SRecConstFail 65089
+#define MidConst_SFieldConstFail 65090
+#define MidConst_SDefExprFail 65091
+#define MidConst_SNoEditsAllowed 65092
+#define MidConst_SNoDeletesAllowed 65093
+#define MidConst_SNoInsertsAllowed 65094
+#define MidConst_SConnectionMissing 65095
+#define MidConst_SNoCircularConnection 65096
+#define GestureConsts_SAddIStylusAsyncPluginError 65097
+#define GestureConsts_SAddIStylusSyncPluginError 65098
+#define GestureConsts_SRemoveIStylusAsyncPluginError 65099
+#define GestureConsts_SRemoveIStylusSyncPluginError 65100
+#define GestureConsts_SStylusHandleError 65101
+#define GestureConsts_SStylusEnableError 65102
+#define GestureConsts_SEnableRecognizerError 65103
+#define DBConsts_STooManyColumns 65104
+#define ComConst_SOleError 65105
+#define ComConst_SNoMethod 65106
+#define ComConst_SVarNotObject 65107
+#define ComConst_STooManyParams 65108
+#define ComConst_SDCOMNotInstalled 65109
+#define MidConst_SNoDataProvider 65110
+#define MidConst_SInvalidDataPacket 65111
+#define MidConst_SRefreshError 65112
+#define MidConst_SNoCircularReference 65113
+#define MidConst_SErrorLoadingMidas 65114
+#define MidConst_SCannotCreateDataSet 65115
+#define MidConst_SNoConnectToBroker 65116
+#define MidConst_SNoParentConnection 65117
+#define MidConst_SInvalidOptParamType 65118
+#define MidConst_SConstraintFailed 65119
+#define DBConsts_SInvalidVersion 65120
+#define DBConsts_SBadFieldType 65121
+#define DBConsts_SAggActive 65122
+#define DBConsts_SProviderSQLNotSupported 65123
+#define DBConsts_SProviderExecuteNotSupported 65124
+#define DBConsts_SExprNoAggOnCalcs 65125
+#define DBConsts_SDataSetUnidirectional 65126
+#define DBConsts_SUnassignedVar 65127
+#define DBConsts_SRecordNotFound 65128
+#define DBConsts_SBcdOverflow 65129
+#define DBConsts_SInvalidBcdValue 65130
+#define DBConsts_SInvalidFormatType 65131
+#define DBConsts_SCouldNotParseTimeStamp 65132
+#define DBConsts_SInvalidSqlTimeStamp 65133
+#define DBConsts_SDeleteRecordQuestion 65134
+#define DBConsts_SDeleteMultipleRecordsQuestion 65135
+#define DBConsts_SExprBadField 65136
+#define DBConsts_SExprBadNullTest 65137
+#define DBConsts_SExprRangeError 65138
+#define DBConsts_SExprIncorrect 65139
+#define DBConsts_SExprNothing 65140
+#define DBConsts_SExprTypeMis 65141
+#define DBConsts_SExprBadScope 65142
+#define DBConsts_SExprNoArith 65143
+#define DBConsts_SExprNotAgg 65144
+#define DBConsts_SExprBadConst 65145
+#define DBConsts_SExprNoAggFilter 65146
+#define DBConsts_SExprEmptyInList 65147
+#define DBConsts_SInvalidKeywordUse 65148
+#define DBConsts_STextFalse 65149
+#define DBConsts_STextTrue 65150
+#define DBConsts_SParameterNotFound 65151
+#define DBConsts_SDataSourceChange 65152
+#define DBConsts_SNoNestedMasterSource 65153
+#define DBConsts_SDataSetOpen 65154
+#define DBConsts_SNotEditing 65155
+#define DBConsts_SDataSetClosed 65156
+#define DBConsts_SDataSetEmpty 65157
+#define DBConsts_SDataSetReadOnly 65158
+#define DBConsts_SNestedDataSetClass 65159
+#define DBConsts_SExprTermination 65160
+#define DBConsts_SExprNameError 65161
+#define DBConsts_SExprStringError 65162
+#define DBConsts_SExprInvalidChar 65163
+#define DBConsts_SExprNoLParen 65164
+#define DBConsts_SExprNoRParen 65165
+#define DBConsts_SExprNoRParenOrComma 65166
+#define DBConsts_SExprExpected 65167
+#define DBConsts_SInvalidVarByteArray 65168
+#define DBConsts_SFieldOutOfRange 65169
+#define DBConsts_SFieldRequired 65170
+#define DBConsts_SDataSetMissing 65171
+#define DBConsts_SInvalidCalcType 65172
+#define DBConsts_SFieldReadOnly 65173
+#define DBConsts_SFieldIndexError 65174
+#define DBConsts_SNoFieldIndexes 65175
+#define DBConsts_SNotIndexField 65176
+#define DBConsts_SIndexFieldMissing 65177
+#define DBConsts_SDuplicateIndexName 65178
+#define DBConsts_SNoIndexForFields 65179
+#define DBConsts_SIndexNotFound 65180
+#define DBConsts_SDBDuplicateName 65181
+#define DBConsts_SCircularDataLink 65182
+#define DBConsts_SLookupInfoError 65183
+#define ComStrs_sFailsetCalSelRange 65184
+#define DBConsts_SInvalidFieldSize 65185
+#define DBConsts_SInvalidFieldKind 65186
+#define DBConsts_SUnknownFieldType 65187
+#define DBConsts_SFieldNameMissing 65188
+#define DBConsts_SDuplicateFieldName 65189
+#define DBConsts_SFieldNotFound 65190
+#define DBConsts_SFieldAccessError 65191
+#define DBConsts_SFieldValueError 65192
+#define DBConsts_SFieldRangeError 65193
+#define DBConsts_SBcdFieldRangeError 65194
+#define DBConsts_SInvalidIntegerValue 65195
+#define DBConsts_SInvalidBoolValue 65196
+#define DBConsts_SInvalidFloatValue 65197
+#define DBConsts_SFieldTypeMismatch 65198
+#define DBConsts_SFieldSizeMismatch 65199
+#define ComStrs_sTabMustBeMultiLine 65200
+#define ComStrs_sInvalidIndex 65201
+#define ComStrs_sInsertError 65202
+#define ComStrs_sInvalidOwner 65203
+#define ComStrs_sRichEditInsertError 65204
+#define ComStrs_sRichEditLoadFail 65205
+#define ComStrs_sRichEditSaveFail 65206
+#define ComStrs_sUDAssociated 65207
+#define ComStrs_sPageIndexError 65208
+#define ComStrs_sInvalidComCtl32 65209
+#define ComStrs_sDateTimeMax 65210
+#define ComStrs_sDateTimeMin 65211
+#define ComStrs_sNeedAllowNone 65212
+#define ComStrs_sFailSetCalDateTime 65213
+#define ComStrs_sFailSetCalMaxSelRange 65214
+#define ComStrs_sFailSetCalMinMaxRange 65215
+#define Consts_SUnicodeEncoding 65216
+#define Consts_SBigEndianEncoding 65217
+#define Consts_SUTF8Encoding 65218
+#define Consts_SUTF7Encoding 65219
+#define Consts_SPageControlNotSet 65220
+#define Consts_SWindowsVistaRequired 65221
+#define Consts_SXPThemesRequired 65222
+#define Consts_STaskDlgButtonCaption 65223
+#define Consts_STaskDlgRadioButtonCaption 65224
+#define Consts_SInvalidTaskDlgButtonCaption 65225
+#define ComStrs_sTabFailClear 65226
+#define ComStrs_sTabFailDelete 65227
+#define ComStrs_sTabFailRetrieve 65228
+#define ComStrs_sTabFailGetObject 65229
+#define ComStrs_sTabFailSet 65230
+#define ComStrs_sTabFailSetObject 65231
+#define Consts_SDuplicateMenus 65232
+#define Consts_SDockedCtlNeedsName 65233
+#define Consts_SDockTreeRemoveError 65234
+#define Consts_SDockZoneNotFound 65235
+#define Consts_SDockZoneHasNoCtl 65236
+#define Consts_SDockZoneVersionConflict 65237
+#define Consts_SMultiSelectRequired 65238
+#define Consts_SErrorLoadingFile 65239
+#define Consts_SSeparator 65240
+#define Consts_SErrorSettingCount 65241
+#define Consts_SListBoxMustBeVirtual 65242
+#define Consts_SUnableToSaveSettings 65243
+#define Consts_SNoGetItemEventHandler 65244
+#define Consts_SInvalidPath 65245
+#define Consts_SANSIEncoding 65246
+#define Consts_SASCIIEncoding 65247
+#define Consts_SmkcRight 65248
+#define Consts_SmkcDown 65249
+#define Consts_SmkcIns 65250
+#define Consts_SmkcDel 65251
+#define Consts_SmkcShift 65252
+#define Consts_SmkcCtrl 65253
+#define Consts_SmkcAlt 65254
+#define Consts_srNone 65255
+#define Consts_SOutOfRange 65256
+#define Consts_SInsertLineError 65257
+#define Consts_SInvalidClipFmt 65258
+#define Consts_SIconToClipboard 65259
+#define Consts_SCannotOpenClipboard 65260
+#define Consts_SInvalidMemoSize 65261
+#define Consts_SInvalidPrinterOp 65262
+#define Consts_SNoDefaultPrinter 65263
+#define Consts_SMsgDlgIgnore 65264
+#define Consts_SMsgDlgAll 65265
+#define Consts_SMsgDlgNoToAll 65266
+#define Consts_SMsgDlgYesToAll 65267
+#define Consts_SMsgDlgClose 65268
+#define Consts_SmkcBkSp 65269
+#define Consts_SmkcTab 65270
+#define Consts_SmkcEsc 65271
+#define Consts_SmkcEnter 65272
+#define Consts_SmkcSpace 65273
+#define Consts_SmkcPgUp 65274
+#define Consts_SmkcPgDn 65275
+#define Consts_SmkcEnd 65276
+#define Consts_SmkcHome 65277
+#define Consts_SmkcLeft 65278
+#define Consts_SmkcUp 65279
+#define Consts_SFixedColTooBig 65280
+#define Consts_SFixedRowTooBig 65281
+#define Consts_SInvalidStringGridOp 65282
+#define Consts_SMaskErr 65283
+#define Consts_SMaskEditErr 65284
+#define Consts_SMsgDlgWarning 65285
+#define Consts_SMsgDlgError 65286
+#define Consts_SMsgDlgInformation 65287
+#define Consts_SMsgDlgConfirm 65288
+#define Consts_SMsgDlgYes 65289
+#define Consts_SMsgDlgNo 65290
+#define Consts_SMsgDlgOK 65291
+#define Consts_SMsgDlgCancel 65292
+#define Consts_SMsgDlgHelp 65293
+#define Consts_SMsgDlgAbort 65294
+#define Consts_SMsgDlgRetry 65295
+#define Consts_SNoButton 65296
+#define Consts_SHelpButton 65297
+#define Consts_SCloseButton 65298
+#define Consts_SIgnoreButton 65299
+#define Consts_SRetryButton 65300
+#define Consts_SAbortButton 65301
+#define Consts_SAllButton 65302
+#define Consts_SCannotDragForm 65303
+#define Consts_SVMetafiles 65304
+#define Consts_SVEnhMetafiles 65305
+#define Consts_SVIcons 65306
+#define Consts_SVBitmaps 65307
+#define Consts_SVTIFFImages 65308
+#define Consts_SGridTooLarge 65309
+#define Consts_STooManyDeleted 65310
+#define Consts_SIndexOutOfRange 65311
+#define Consts_SMenuIndexError 65312
+#define Consts_SMenuReinserted 65313
+#define Consts_SMenuNotFound 65314
+#define Consts_SNoTimers 65315
+#define Consts_SNotPrinting 65316
+#define Consts_SPrinting 65317
+#define Consts_SPrinterIndexError 65318
+#define Consts_SInvalidPrinter 65319
+#define Consts_SDeviceOnPort 65320
+#define Consts_SGroupIndexTooLow 65321
+#define Consts_SNoMDIForm 65322
+#define Consts_SImageCanvasNeedsBitmap 65323
+#define Consts_SControlParentSetToSelf 65324
+#define Consts_SOKButton 65325
+#define Consts_SCancelButton 65326
+#define Consts_SYesButton 65327
+#define Consts_SInvalidImageSize 65328
+#define Consts_SInvalidImageList 65329
+#define Consts_SReplaceImage 65330
+#define Consts_SImageIndexError 65331
+#define Consts_SImageReadFail 65332
+#define Consts_SImageWriteFail 65333
+#define Consts_SWindowDCError 65334
+#define Consts_SWindowClass 65335
+#define Consts_SCannotFocus 65336
+#define Consts_SParentRequired 65337
+#define Consts_SParentGivenNotAParent 65338
+#define Consts_SMDIChildNotVisible 65339
+#define Consts_SVisibleChanged 65340
+#define Consts_SCannotShowModal 65341
+#define Consts_SScrollBarRange 65342
+#define Consts_SPropertyOutOfRange 65343
+#define Consts_SInvalidTabIndex 65344
+#define Consts_SInvalidTabPosition 65345
+#define Consts_SInvalidTabStyle 65346
+#define Consts_SInvalidBitmap 65347
+#define Consts_SInvalidIcon 65348
+#define Consts_SInvalidMetafile 65349
+#define Consts_SInvalidPixelFormat 65350
+#define Consts_SInvalidImage 65351
+#define Consts_SScanLine 65352
+#define Consts_SChangeIconSize 65353
+#define Consts_SChangeWicSize 65354
+#define Consts_SOleGraphic 65355
+#define Consts_SUnknownExtension 65356
+#define Consts_SUnknownClipboardFormat 65357
+#define Consts_SOutOfResources 65358
+#define Consts_SNoCanvasHandle 65359
 #define RTLConsts_hNoFilterViewer 65360
 #define RTLConsts_SInvalidDate 65361
 #define RTLConsts_SInvalidDateTime 65362
@@ -642,9 +663,9 @@
 #define RTLConsts_SNoTableOfContents 65370
 #define RTLConsts_SNoTopics 65371
 #define RTLConsts_SNothingFound 65372
-#define Consts_SInvalidTabIndex 65373
-#define Consts_SInvalidTabPosition 65374
-#define Consts_SInvalidTabStyle 65375
+#define RTLConsts_SArgumentOutOfRange 65373
+#define RTLConsts_SGenericItemNotFound 65374
+#define RTLConsts_SGenericDuplicateItem 65375
 #define RTLConsts_SResNotFound 65376
 #define RTLConsts_SSeekNotImplemented 65377
 #define RTLConsts_SSortedListError 65378
@@ -807,6 +828,13 @@
 #define SysConst_SZeroDivide 65535
 STRINGTABLE
 BEGIN
+	OleConst_SNotLicensed,	"License information for %s not found. You cannot use this control in design mode"
+	OleConst_sNoRunningObject,	"Unable to retrieve a pointer to a running object registered with OLE for %s/%s"
+	bdeconst_SBDEError,	"BDE error $%.4x"
+	bdeconst_SNoDataSetField,	"Missing DataSetField property"
+	bdeconst_SNoCachedUpdates,	"Not in cached update mode"
+	bdeconst_SNoFieldAccess,	"Cannot access field '%s' in a filter"
+	bdeconst_SUntitled,	"Untitled Application"
 	bdeconst_SLocalTransDirty,	"The transaction isolation level must be dirty read for local databases"
 	OleConst_SCannotActivate,	"OLE control activation failed"
 	OleConst_SNoWindowHandle,	"Could not obtain OLE control window handle"
@@ -818,8 +846,11 @@ BEGIN
 	OleConst_SPropDlgCaption,	"%s Properties"
 	OleConst_SInvalidStreamFormat,	"Invalid stream format"
 	OleConst_SInvalidLicense,	"License information for %s is invalid"
-	OleConst_SNotLicensed,	"License information for %s not found. You cannot use this control in design mode"
-	OleConst_sNoRunningObject,	"Unable to retrieve a pointer to a running object registered with OLE for %s/%s"
+	bdeconst_SAutoSessionActive,	"Cannot modify SessionName while AutoSessionName is enabled"
+	bdeconst_SDuplicateDatabaseName,	"Duplicate database name '%s'"
+	bdeconst_SDuplicateSessionName,	"Duplicate session name '%s'"
+	bdeconst_SInvalidSessionName,	"Invalid session name %s"
+	bdeconst_SDatabaseNameMissing,	"Database name missing"
 	bdeconst_SSessionNameMissing,	"Session name missing"
 	bdeconst_SDatabaseOpen,	"Cannot perform this operation on an open database"
 	bdeconst_SDatabaseClosed,	"Cannot perform this operation on a closed database"
@@ -831,11 +862,11 @@ BEGIN
 	bdeconst_SLoginError,	"Cannot connect to database '%s'"
 	bdeconst_SInitError,	"An error occurred while attempting to initialize the Borland Database Engine (error $%.4x)"
 	bdeconst_SIDAPILangID,	"0009"
-	bdeconst_SBDEError,	"BDE error $%.4x"
-	bdeconst_SNoDataSetField,	"Missing DataSetField property"
-	bdeconst_SNoCachedUpdates,	"Not in cached update mode"
-	bdeconst_SNoFieldAccess,	"Cannot access field '%s' in a filter"
-	bdeconst_SUntitled,	"Untitled Application"
+	JclResources_RsIntelCacheDescrE2,	"3rd-level cache: 2 MByte, 16-way set associative, 64 byte line size"
+	JclResources_RsIntelCacheDescrE3,	"3rd-level cache: 4 MByte, 16-way set associative, 64 byte line size"
+	JclResources_RsIntelCacheDescrE4,	"3rd-level cache: 8 MByte, 16-way set associative, 64 byte line size"
+	JclResources_RsIntelCacheDescrEA,	"3rd-level cache: 12 MByte, 24-way set associative, 64 byte line size"
+	JclResources_RsIntelCacheDescrEB,	"3rd-level cache: 18 MByte, 24-way set associative, 64 byte line size"
 	JclResources_RsIntelCacheDescrEC,	"3rd-level cache: 24 MByte, 24-way set associative, 64 byte line size"
 	JclResources_RsIntelCacheDescrF0,	"64-Byte Prefetching"
 	JclResources_RsIntelCacheDescrF1,	"128-Byte Prefetching"
@@ -847,11 +878,11 @@ BEGIN
 	JConsts_sJPEGImageFile,	"JPEG Image File"
 	bdeconst_SAutoSessionExclusive,	"Cannot enable AutoSessionName property with more than one session on a form or data-module"
 	bdeconst_SAutoSessionExists,	"Cannot add a session to the form or data-module while session '%s' has AutoSessionName enabled"
-	bdeconst_SAutoSessionActive,	"Cannot modify SessionName while AutoSessionName is enabled"
-	bdeconst_SDuplicateDatabaseName,	"Duplicate database name '%s'"
-	bdeconst_SDuplicateSessionName,	"Duplicate session name '%s'"
-	bdeconst_SInvalidSessionName,	"Invalid session name %s"
-	bdeconst_SDatabaseNameMissing,	"Database name missing"
+	JclResources_RsIntelCacheDescrB1,	"Instruction TLB: 2 MByte pages, 4-way, 8 entries or 4 MByte pages, 4-way, 4 entries"
+	JclResources_RsIntelCacheDescrB2,	"Instruction TLB: 4 KByte pages, 4-way set associative, 64 entries"
+	JclResources_RsIntelCacheDescrB3,	"Data TLB: 4 KByte pages, 4-way set associative, 128 entries"
+	JclResources_RsIntelCacheDescrB4,	"Data TLB1: 4 KByte pages, 4-way set associative, 256 entries"
+	JclResources_RsIntelCacheDescrBA,	"Data TLB1: 4 KByte pages, 4-way set associative, 64 entries"
 	JclResources_RsIntelCacheDescrC0,	"Data TLB: 4 KByte and 4 MByte pages, 4-way set associative, 8 entries"
 	JclResources_RsIntelCacheDescrCA,	"Shared 2nd-Level TLB: 4 KByte pages, 4-way associative, 512 entries"
 	JclResources_RsIntelCacheDescrD0,	"3rd-level cache: 512 KByte, 4-way set associative, 64 byte line size"
@@ -863,11 +894,11 @@ BEGIN
 	JclResources_RsIntelCacheDescrDC,	"3rd-level cache: 1.5 MByte, 12-way set associative, 64 byte line size"
 	JclResources_RsIntelCacheDescrDD,	"3rd-level cache: 3 MByte, 12-way set associative, 64 byte line size"
 	JclResources_RsIntelCacheDescrDE,	"3rd-level cache: 6 MByte, 12-way set associative, 64 byte line size"
-	JclResources_RsIntelCacheDescrE2,	"3rd-level cache: 2 MByte, 16-way set associative, 64 byte line size"
-	JclResources_RsIntelCacheDescrE3,	"3rd-level cache: 4 MByte, 16-way set associative, 64 byte line size"
-	JclResources_RsIntelCacheDescrE4,	"3rd-level cache: 8 MByte, 16-way set associative, 64 byte line size"
-	JclResources_RsIntelCacheDescrEA,	"3rd-level cache: 12 MByte, 24-way set associative, 64 byte line size"
-	JclResources_RsIntelCacheDescrEB,	"3rd-level cache: 18 MByte, 24-way set associative, 64 byte line size"
+	JclResources_RsIntelCacheDescr73,	"Trace cache: 64 K-Ops, 8-way set associative"
+	JclResources_RsIntelCacheDescr78,	"2nd-level cache: 1 MBytes, 4-way set associative, 64 bytes line size"
+	JclResources_RsIntelCacheDescr79,	"2nd-level cache: 128 KBytes, 8-way set associative, 64 bytes line size, 2 lines per sector"
+	JclResources_RsIntelCacheDescr7A,	"2nd-level cache: 256 KBytes, 8-way set associative, 64 bytes line size, 2 lines per sector"
+	JclResources_RsIntelCacheDescr7B,	"2nd-level cache: 512 KBytes, 8-way set associative, 64 bytes line size, 2 lines per sector"
 	JclResources_RsIntelCacheDescr7C,	"2nd-level cache: 1 MBytes, 8-way set associative, 64 bytes line size, 2 lines per sector"
 	JclResources_RsIntelCacheDescr7D,	"2nd-level cache: 2 MBytes, 8-way set associative, 64 byte line size"
 	JclResources_RsIntelCacheDescr7F,	"2nd-level cache: 512 KBytes, 2-way set associative, 64 byte line size"
@@ -879,11 +910,11 @@ BEGIN
 	JclResources_RsIntelCacheDescr86,	"2nd-level cache: 512 KByte, 4-way set associative, 64 byte line size"
 	JclResources_RsIntelCacheDescr87,	"2nd-level cache: 1 MByte, 8-way set associative, 64 byte line size"
 	JclResources_RsIntelCacheDescrB0,	"Instruction TLB: 4 KByte pages, 4-way set associative, 128 entries"
-	JclResources_RsIntelCacheDescrB1,	"Instruction TLB: 2 MByte pages, 4-way, 8 entries or 4 MByte pages, 4-way, 4 entries"
-	JclResources_RsIntelCacheDescrB2,	"Instruction TLB: 4 KByte pages, 4-way set associative, 64 entries"
-	JclResources_RsIntelCacheDescrB3,	"Data TLB: 4 KByte pages, 4-way set associative, 128 entries"
-	JclResources_RsIntelCacheDescrB4,	"Data TLB1: 4 KByte pages, 4-way set associative, 256 entries"
-	JclResources_RsIntelCacheDescrBA,	"Data TLB1: 4 KByte pages, 4-way set associative, 64 entries"
+	JclResources_RsIntelCacheDescr52,	"Instruction TLB: 4 KByte and 2 MByte or 4 MByte pages, 256 Entries"
+	JclResources_RsIntelCacheDescr55,	"Instruction TLB: 2-MByte or 4-MByte pages, fully associative, 7 entries"
+	JclResources_RsIntelCacheDescr56,	"Data TLB0: 4 MByte pages, 4-way set associative, 16 entries"
+	JclResources_RsIntelCacheDescr57,	"Data TLB0: 4 KByte pages, 4-way associative, 16 entries"
+	JclResources_RsIntelCacheDescr59,	"Data TLB0: 4 KByte pages, fully associative, 16 entries"
 	JclResources_RsIntelCacheDescr5A,	"Data TLB0: 2 MByte or 4 MByte pages, 4-way set associative, 32 entries"
 	JclResources_RsIntelCacheDescr5B,	"Data TLB: 4 KByte and 4 MByte pages, 64 Entries"
 	JclResources_RsIntelCacheDescr5C,	"Data TLB: 4 KByte and 4 MByte pages, 128 Entries"
@@ -895,11 +926,11 @@ BEGIN
 	JclResources_RsIntelCacheDescr70,	"Trace cache: 12 K-Ops, 8-way set associative"
 	JclResources_RsIntelCacheDescr71,	"Trace cache: 16 K-Ops, 8-way set associative"
 	JclResources_RsIntelCacheDescr72,	"Trace cache: 32 K-Ops, 8-way set associative"
-	JclResources_RsIntelCacheDescr73,	"Trace cache: 64 K-Ops, 8-way set associative"
-	JclResources_RsIntelCacheDescr78,	"2nd-level cache: 1 MBytes, 4-way set associative, 64 bytes line size"
-	JclResources_RsIntelCacheDescr79,	"2nd-level cache: 128 KBytes, 8-way set associative, 64 bytes line size, 2 lines per sector"
-	JclResources_RsIntelCacheDescr7A,	"2nd-level cache: 256 KBytes, 8-way set associative, 64 bytes line size, 2 lines per sector"
-	JclResources_RsIntelCacheDescr7B,	"2nd-level cache: 512 KBytes, 8-way set associative, 64 bytes line size, 2 lines per sector"
+	JclResources_RsIntelCacheDescr42,	"2nd-level cache: 256 KBytes, 4-way set associative, 32 byte line size"
+	JclResources_RsIntelCacheDescr43,	"2nd-level cache: 512 KBytes, 4-way set associative, 32 byte line size"
+	JclResources_RsIntelCacheDescr44,	"2nd-level cache: 1 MBytes, 4-way set associative, 32 byte line size"
+	JclResources_RsIntelCacheDescr45,	"2nd-level cache: 2 MBytes, 4-way set associative, 32 byte line size"
+	JclResources_RsIntelCacheDescr46,	"3rd-level cache: 4 MBytes, 4-way set associative, 64 byte line size"
 	JclResources_RsIntelCacheDescr47,	"3rd-level cache: 8 MBytes, 4-way set associative, 64 byte line size"
 	JclResources_RsIntelCacheDescr48,	"3rd-level cache: 8 MByte, 8-way set associative, 64 byte line size"
 	JclResources_RsIntelCacheDescr49,	"2nd-level cache: 4 MBytes, 16-way set associative, 64 byte line size"
@@ -911,11 +942,11 @@ BEGIN
 	JclResources_RsIntelCacheDescr4F,	"Instruction TLB: 4 KByte pages, 32 Entries"
 	JclResources_RsIntelCacheDescr50,	"Instruction TLB: 4 KByte and 2 MByte or 4 MByte pages, 64 Entries"
 	JclResources_RsIntelCacheDescr51,	"Instruction TLB: 4 KByte and 2 MByte or 4 MByte pages, 128 Entries"
-	JclResources_RsIntelCacheDescr52,	"Instruction TLB: 4 KByte and 2 MByte or 4 MByte pages, 256 Entries"
-	JclResources_RsIntelCacheDescr55,	"Instruction TLB: 2-MByte or 4-MByte pages, fully associative, 7 entries"
-	JclResources_RsIntelCacheDescr56,	"Data TLB0: 4 MByte pages, 4-way set associative, 16 entries"
-	JclResources_RsIntelCacheDescr57,	"Data TLB0: 4 KByte pages, 4-way associative, 16 entries"
-	JclResources_RsIntelCacheDescr59,	"Data TLB0: 4 KByte pages, fully associative, 16 entries"
+	JclResources_RsIntelCacheDescr0E,	"1st level data cache: 24 KBytes, 6-way set associative, 64 byte line size"
+	JclResources_RsIntelCacheDescr21,	"2nd level cache: 256 KBytes, 8-way set associative, 64 byte line size"
+	JclResources_RsIntelCacheDescr22,	"3rd level cache: 512 KBytes, 4-way set associative, 64 byte line size, 2 lines per sector"
+	JclResources_RsIntelCacheDescr23,	"3rd level cache: 1 MBytes, 8-way set associative, 64 byte line size, 2 lines per sector"
+	JclResources_RsIntelCacheDescr25,	"3rd level cache: 2 MBytes, 8-way set associative, 64 byte line size, 2 lines per sector"
 	JclResources_RsIntelCacheDescr29,	"3rd level cache: 4 MBytes, 8-way set associative, 64 byte line size, 2 lines per sector"
 	JclResources_RsIntelCacheDescr2C,	"1st level data cache: 32 KBytes, 8-way set associative, 64 byte line size"
 	JclResources_RsIntelCacheDescr30,	"1st level instruction cache: 32 KBytes, 8-way set associative, 64 byte line size"
@@ -927,11 +958,11 @@ BEGIN
 	JclResources_RsIntelCacheDescr3E,	"2nd-level cache: 512 KBytes, 4-way set associative, sectored cache, 64-byte line size"
 	JclResources_RsIntelCacheDescr40,	"No 2nd-level cache or, if processor contains a valid 2nd-level cache, no 3rd-level cache"
 	JclResources_RsIntelCacheDescr41,	"2nd-level cache: 128 KBytes, 4-way set associative, 32 byte line size"
-	JclResources_RsIntelCacheDescr42,	"2nd-level cache: 256 KBytes, 4-way set associative, 32 byte line size"
-	JclResources_RsIntelCacheDescr43,	"2nd-level cache: 512 KBytes, 4-way set associative, 32 byte line size"
-	JclResources_RsIntelCacheDescr44,	"2nd-level cache: 1 MBytes, 4-way set associative, 32 byte line size"
-	JclResources_RsIntelCacheDescr45,	"2nd-level cache: 2 MBytes, 4-way set associative, 32 byte line size"
-	JclResources_RsIntelCacheDescr46,	"3rd-level cache: 4 MBytes, 4-way set associative, 64 byte line size"
+	JclResources_RsStringHashMapMustBeEmpty,	"HashList: must be empty to set size to zero"
+	JclResources_RsStringHashMapDuplicate,	"Duplicate hash list entry: %s"
+	JclResources_RsStringHashMapNoTraits,	"HashList must have traits"
+	JclResources_RsIntelCacheDescr00,	"Null descriptor"
+	JclResources_RsIntelCacheDescr01,	"Instruction TLB: 4 KByte pages, 4-way set associative, 32 entries"
 	JclResources_RsIntelCacheDescr02,	"Instruction TLB: 4 MByte pages, 4-way set associative, 2 entries"
 	JclResources_RsIntelCacheDescr03,	"Data TLB: 4 KByte pages, 4-way set associative, 64 entries"
 	JclResources_RsIntelCacheDescr04,	"Data TLB: 4 MByte pages, 4-way set associative, 8 entries"
@@ -943,11 +974,11 @@ BEGIN
 	JclResources_RsIntelCacheDescr0B,	"Instruction TLB: 4 MByte pages, 4-way set associative, 4 entries"
 	JclResources_RsIntelCacheDescr0C,	"1st level data cache: 16 KBytes, 4-way set associative, 32 byte line size"
 	JclResources_RsIntelCacheDescr0D,	"1st level data cache: 16 KBytes, 4-way set associative, 64 byte line size"
-	JclResources_RsIntelCacheDescr0E,	"1st level data cache: 24 KBytes, 6-way set associative, 64 byte line size"
-	JclResources_RsIntelCacheDescr21,	"2nd level cache: 256 KBytes, 8-way set associative, 64 byte line size"
-	JclResources_RsIntelCacheDescr22,	"3rd level cache: 512 KBytes, 4-way set associative, 64 byte line size, 2 lines per sector"
-	JclResources_RsIntelCacheDescr23,	"3rd level cache: 1 MBytes, 8-way set associative, 64 byte line size, 2 lines per sector"
-	JclResources_RsIntelCacheDescr25,	"3rd level cache: 2 MBytes, 8-way set associative, 64 byte line size, 2 lines per sector"
+	EhLibConsts_SSTFilterListItem_SortingByAscend,	"(Order by descending)"
+	DbUtilsEh_SNotOperatorEh,	"Not"
+	DbUtilsEh_SAndOperatorEh,	"AND"
+	DbUtilsEh_SOrOperatorEh,	"OR"
+	DbUtilsEh_SLikePredicatEh,	""
 	DbUtilsEh_SInPredicatEh,	"In"
 	DbUtilsEh_SNullConstEh,	"Null"
 	DbUtilsEh_SQuoteIsAbsentEh,	"Quote is absent: "
@@ -959,11 +990,11 @@ BEGIN
 	DbUtilsEh_SIncorrectExpressionEh,	"Incorrect expression: "
 	DbUtilsEh_SUnexpectedANDorOREh,	"Unexpected AND or OR: "
 	JclResources_RsEReplacementChar,	"Failed to get ANSI replacement character"
-	JclResources_RsStringHashMapMustBeEmpty,	"HashList: must be empty to set size to zero"
-	JclResources_RsStringHashMapDuplicate,	"Duplicate hash list entry: %s"
-	JclResources_RsStringHashMapNoTraits,	"HashList must have traits"
-	JclResources_RsIntelCacheDescr00,	"Null descriptor"
-	JclResources_RsIntelCacheDescr01,	"Instruction TLB: 4 KByte pages, 4-way set associative, 32 entries"
+	EhLibConsts_SInvalidTextFormatEh,	"Invalid text format"
+	EhLibConsts_SInvalidVCLDBIFFormatEh,	"Invalid VCLDBIF format"
+	EhLibConsts_SErrorDuringInsertValueEh,	"Error during insert value:"
+	EhLibConsts_SIgnoreErrorEh,	"Ignore error?"
+	EhLibConsts_SFieldNameNotFoundEh,	"Field name '%s' not found"
 	EhLibConsts_SVisibleColumnsEh,	"Visible columns"
 	EhLibConsts_SCutEh,	"Cut"
 	EhLibConsts_SCopyEh,	"Copy"
@@ -975,11 +1006,11 @@ BEGIN
 	EhLibConsts_SSTFilterListItem_All,	"(All)"
 	EhLibConsts_SSTFilterListItem_ClearFilter,	"(Clear filter)"
 	EhLibConsts_SSTFilterListItem_SortingByDescend,	"(Order by ascending)"
-	EhLibConsts_SSTFilterListItem_SortingByAscend,	"(Order by descending)"
-	DbUtilsEh_SNotOperatorEh,	"Not"
-	DbUtilsEh_SAndOperatorEh,	"AND"
-	DbUtilsEh_SOrOperatorEh,	"OR"
-	DbUtilsEh_SLikePredicatEh,	""
+	IBSQLMonitor_StrStartTransaction,	": [Start transaction]"
+	IBSQLMonitor_StrApplication,	"[Application: "
+	VDBConsts_SFirstRecord,	"First record"
+	VDBConsts_SPriorRecord,	"Prior record"
+	VDBConsts_SNextRecord,	"Next record"
 	VDBConsts_SLastRecord,	"Last record"
 	VDBConsts_SInsertRecord,	"Insert record"
 	VDBConsts_SDeleteRecord,	"Delete record"
@@ -991,11 +1022,11 @@ BEGIN
 	VDBConsts_SPropDefByLookup,	"Property already defined by lookup field"
 	VDBConsts_SRemoteLogin,	"Remote Login"
 	EhLibConsts_SClearSelectedCellsEh,	"Clear selected cells?"
-	EhLibConsts_SInvalidTextFormatEh,	"Invalid text format"
-	EhLibConsts_SInvalidVCLDBIFFormatEh,	"Invalid VCLDBIF format"
-	EhLibConsts_SErrorDuringInsertValueEh,	"Error during insert value:"
-	EhLibConsts_SIgnoreErrorEh,	"Ignore error?"
-	EhLibConsts_SFieldNameNotFoundEh,	"Field name '%s' not found"
+	IBSQLMonitor_StrError,	"[Error] "
+	IBSQLMonitor_StrAttach,	": [Attach]"
+	IBSQLMonitor_StrDetach,	": [Detach]"
+	IBSQLMonitor_StrQuery,	": [Query]"
+	IBSQLMonitor_StrStart,	": [Start]"
 	IBSQLMonitor_StrExecute,	": [Execute] "
 	IBSQLMonitor_StrNULL,	"<NULL>"
 	IBSQLMonitor_StrBLOB,	"<BLOB>"
@@ -1007,11 +1038,11 @@ BEGIN
 	IBSQLMonitor_StrCommitRetaining,	": [Commit retaining (Soft commit)]"
 	IBSQLMonitor_StrRollback,	": [Rollback]"
 	IBSQLMonitor_StrRollbackRetainin,	": [Rollback retaining (Soft rollback)]"
-	IBSQLMonitor_StrStartTransaction,	": [Start transaction]"
-	IBSQLMonitor_StrApplication,	"[Application: "
-	VDBConsts_SFirstRecord,	"First record"
-	VDBConsts_SPriorRecord,	"Prior record"
-	VDBConsts_SNextRecord,	"Next record"
+	IBXConst_SDPBConstantUnknownEx,	"DPB Constant (%s) is unknown"
+	IBXConst_STPBConstantUnknownEx,	"TPB Constant (%s) is unknown"
+	IBXConst_SUnknownPlan,	"Unknown Error - Can't retrieve plan"
+	IBXConst_SFieldSizeMismatch,	"Size Mismatch - Field %s size is too small for data"
+	IBXConst_SEventAlreadyRegistered,	"Events already registered"
 	IBXConst_SStringTooLarge,	"Trying to store a string of length %d into a field that can only contain %d"
 	IBXConst_SNoTimers,	"Not enough timers available"
 	IBXConst_SIB65feature,	"%s is an InterBase 6.5 function. Please upgrade to InterBase 6.5 to use this functonality"
@@ -1023,11 +1054,11 @@ BEGIN
 	IBSQLMonitor_StrConnect,	": [Connect]"
 	IBSQLMonitor_StrDisconnect,	": [Disconnect]"
 	IBSQLMonitor_StrMisc,	"[Misc] "
-	IBSQLMonitor_StrError,	"[Error] "
-	IBSQLMonitor_StrAttach,	": [Attach]"
-	IBSQLMonitor_StrDetach,	": [Detach]"
-	IBSQLMonitor_StrQuery,	": [Query]"
-	IBSQLMonitor_StrStart,	": [Start]"
+	IBXConst_SCantPrintValue,	"Cannot print value"
+	IBXConst_SEOFReached,	"SEOFReached"
+	IBXConst_SEOFInComment,	"EOF in comment detected"
+	IBXConst_SEOFInString,	"EOF in string detected"
+	IBXConst_SParamNameExpected,	"Parameter name expected"
 	IBXConst_SSuccess,	"Successful execution"
 	IBXConst_SDelphiException,	"DelphiException %s"
 	IBXConst_SNoOptionsSet,	"No Install Options selected"
@@ -1039,11 +1070,11 @@ BEGIN
 	IBXConst_SInvalidOption,	"Invalid option specified"
 	IBXConst_SInvalidOnErrorResult,	"Unexpected onError return value"
 	IBXConst_SInvalidOnStatusResult,	"Unexpected onStatus return value"
-	IBXConst_SDPBConstantUnknownEx,	"DPB Constant (%s) is unknown"
-	IBXConst_STPBConstantUnknownEx,	"TPB Constant (%s) is unknown"
-	IBXConst_SUnknownPlan,	"Unknown Error - Can't retrieve plan"
-	IBXConst_SFieldSizeMismatch,	"Size Mismatch - Field %s size is too small for data"
-	IBXConst_SEventAlreadyRegistered,	"Events already registered"
+	IBXConst_SMaximumEvents,	"Exceded Maximum Event limits"
+	IBXConst_SNoEventsRegistered,	"No Events Registered"
+	IBXConst_SInvalidQueueing,	"Invalid Queueing"
+	IBXConst_SInvalidRegistration,	"Invalid Registration"
+	IBXConst_SInvalidBatchMove,	"Invalid Batch Move"
 	IBXConst_SSQLDialectInvalid,	"SQL Dialect Invalid"
 	IBXConst_SSPBConstantNotSupported,	"SPB Constant Not supported"
 	IBXConst_SSPBConstantUnknown,	"SPB Constant Unknown"
@@ -1055,11 +1086,11 @@ BEGIN
 	IBXConst_SOutputParsingError,	"Unexpected Output buffer value"
 	IBXConst_SUseSpecificProcedures,	"Generic ServiceStart not applicable: Use Specific Procedures to set configuration params"
 	IBXConst_SSQLMonitorAlreadyPresent,	"SQL Monitor Instance is already present"
-	IBXConst_SCantPrintValue,	"Cannot print value"
-	IBXConst_SEOFReached,	"SEOFReached"
-	IBXConst_SEOFInComment,	"EOF in comment detected"
-	IBXConst_SEOFInString,	"EOF in string detected"
-	IBXConst_SParamNameExpected,	"Parameter name expected"
+	IBXConst_SIsASelectStatement,	"use Open for a Select Statement"
+	IBXConst_SRequiredParamNotSet,	"Required Param value not set"
+	IBXConst_SNoStoredProcName,	"No Stored Procedure Name assigned"
+	IBXConst_SIsAExecuteProcedure,	"use ExecProc for Procedure; use TQuery for Select procedures"
+	IBXConst_SUpdateFailed,	"Update Failed"
 	IBXConst_SNotCachedUpdates,	"CachedUpdates not enabled"
 	IBXConst_SNotLiveRequest,	"Request is not live - cannot modify"
 	IBXConst_SNoProvider,	"No Provider"
@@ -1071,11 +1102,11 @@ BEGIN
 	IBXConst_SIndexFieldMissing,	"Index Field Missing"
 	IBXConst_SInvalidCancellation,	"Cannot Cancel events while processing"
 	IBXConst_SInvalidEvent,	"Invalid Event"
-	IBXConst_SMaximumEvents,	"Exceded Maximum Event limits"
-	IBXConst_SNoEventsRegistered,	"No Events Registered"
-	IBXConst_SInvalidQueueing,	"Invalid Queueing"
-	IBXConst_SInvalidRegistration,	"Invalid Registration"
-	IBXConst_SInvalidBatchMove,	"Invalid Batch Move"
+	IBXConst_SCannotUpdate,	"Cannot update. (No update query)"
+	IBXConst_SCannotDelete,	"Cannot delete from dataset. (No delete query)"
+	IBXConst_SCannotRefresh,	"Cannot refresh row. (No refresh query)"
+	IBXConst_SBufferNotSet,	"Buffer not set"
+	IBXConst_SCircularReference,	"Circular references not permitted"
 	IBXConst_SSQLParseError,	"SQL Parse Error:\r\n\r\n%s"
 	IBXConst_SUserAbort,	"User abort"
 	IBXConst_SDataSetUniDirectional,	"Data set is uni-directional"
@@ -1087,11 +1118,11 @@ BEGIN
 	IBXConst_SFieldUnsupportedType,	"Unsupported Field Type"
 	IBXConst_SCircularDataLink,	"Circular DataLink Reference"
 	IBXConst_SEmptySQLStatement,	"Empty SQL Statement"
-	IBXConst_SIsASelectStatement,	"use Open for a Select Statement"
-	IBXConst_SRequiredParamNotSet,	"Required Param value not set"
-	IBXConst_SNoStoredProcName,	"No Stored Procedure Name assigned"
-	IBXConst_SIsAExecuteProcedure,	"use ExecProc for Procedure; use TQuery for Select procedures"
-	IBXConst_SUpdateFailed,	"Update Failed"
+	IBXConst_SDatasetClosed,	"Dataset closed"
+	IBXConst_SUnknownSQLDataType,	"Unknown SQL Data type (%d)"
+	IBXConst_SInvalidColumnIndex,	"Invalid column index (index exceeds permitted range)"
+	IBXConst_SInvalidParamColumnIndex,	"Invalid parameter index (index exceeds permitted range)"
+	IBXConst_SInvalidDataConversion,	"Invalid data conversion"
 	IBXConst_SColumnIsNotNullable,	"Column cannot be set to null (%s)"
 	IBXConst_SBlobCannotBeRead,	"Blob stream cannot be read"
 	IBXConst_SBlobCannotBeWritten,	"Blob stream cannot be written"
@@ -1103,11 +1134,11 @@ BEGIN
 	IBXConst_SNotEditing,	"Not in edit mode"
 	IBXConst_SCannotInsert,	"Cannot insert into dataset. (No insert query)"
 	IBXConst_SCannotPost,	"Cannot post. (No update/insert query)"
-	IBXConst_SCannotUpdate,	"Cannot update. (No update query)"
-	IBXConst_SCannotDelete,	"Cannot delete from dataset. (No delete query)"
-	IBXConst_SCannotRefresh,	"Cannot refresh row. (No refresh query)"
-	IBXConst_SBufferNotSet,	"Buffer not set"
-	IBXConst_SCircularReference,	"Circular references not permitted"
+	IBXConst_SNotInTransaction,	"Transaction is not active"
+	IBXConst_SInTransaction,	"Transaction is active"
+	IBXConst_STimeoutNegative,	"Timeout values cannot be negative"
+	IBXConst_SNoDatabasesInTransaction,	"No databases are listed in transaction component"
+	IBXConst_SUpdateWrongDB,	"Updating wrong database"
 	IBXConst_SUpdateWrongTR,	"Updating wrong transaction. Unique transaction expected in set"
 	IBXConst_SDatabaseNotAssigned,	"Database not assigned"
 	IBXConst_STransactionNotAssigned,	"Transaction not assigned"
@@ -1119,11 +1150,11 @@ BEGIN
 	IBXConst_SSQLOpen,	"IBSQL Open"
 	IBXConst_SSQLClosed,	"IBSQL Closed"
 	IBXConst_SDatasetOpen,	"Dataset open"
-	IBXConst_SDatasetClosed,	"Dataset closed"
-	IBXConst_SUnknownSQLDataType,	"Unknown SQL Data type (%d)"
-	IBXConst_SInvalidColumnIndex,	"Invalid column index (index exceeds permitted range)"
-	IBXConst_SInvalidParamColumnIndex,	"Invalid parameter index (index exceeds permitted range)"
-	IBXConst_SInvalidDataConversion,	"Invalid data conversion"
+	IBXConst_SInterBaseInstallMissing,	"InterBase Install DLL ibinstall.dll not found in the path. Please install InterBase 6 to use this functionality"
+	IBXConst_SIB60feature,	"%s is an InterBase 6 function. Please upgrade to InterBase 6 to use this functonality"
+	IBXConst_SNotSupported,	"Unsupported feature"
+	IBXConst_SNotPermitted,	"Not permitted"
+	IBXConst_SFileAccessError,	"Temporary file access error"
 	IBXConst_SConnectionTimeout,	"Database connection timed out"
 	IBXConst_SCannotSetDatabase,	"Cannot set database"
 	IBXConst_SCannotSetTransaction,	"Cannot set transaction"
@@ -1135,11 +1166,11 @@ BEGIN
 	IBXConst_SDatabaseClosed,	"Cannot perform operation -- DB is not open"
 	IBXConst_SDatabaseOpen,	"Cannot perform operation -- DB is currently open"
 	IBXConst_SDatabaseNameMissing,	"Database name is missing"
-	IBXConst_SNotInTransaction,	"Transaction is not active"
-	IBXConst_SInTransaction,	"Transaction is active"
-	IBXConst_STimeoutNegative,	"Timeout values cannot be negative"
-	IBXConst_SNoDatabasesInTransaction,	"No databases are listed in transaction component"
-	IBXConst_SUpdateWrongDB,	"Updating wrong database"
+	pnglang_EPNGSizeExceedsText,	"This \"Portable Network Graphics\" image is not supported because either it's width or height exceeds the maximum size, which is 65535 pixels length."
+	pnglang_EPNGUnknownPalEntryText,	"There is no such palette entry."
+	pnglang_EPNGUnknownCriticalChunkText,	"This \"Portable Network Graphics\" image contains an unknown critical part which could not be decoded."
+	pnglang_EPNGUnknownCompressionText,	"This \"Portable Network Graphics\" image is encoded with an unknown compression scheme which could not be decoded."
+	pnglang_EPNGUnknownInterlaceText,	"This \"Portable Network Graphics\" image uses an unknown interlace scheme which could not be decoded."
 	pnglang_EPNGCannotAssignChunkText,	"The chunks must be compatible to be assigned."
 	pnglang_EPNGUnexpectedEndText,	"This \"Portable Network Graphics\" image is invalid because the decoder found an unexpected end of the file."
 	pnglang_EPNGNoImageDataText,	"This \"Portable Network Graphics\" image contains no data."
@@ -1151,15 +1182,15 @@ BEGIN
 	pnglang_EInvalidNewSize,	"The new size provided for image resizing is invalid."
 	IBXConst_SUnknownError,	"Unknown error"
 	IBXConst_SInterBaseMissing,	"InterBase library gds32.dll not found in the path. Please install InterBase to use this functionality"
-	IBXConst_SInterBaseInstallMissing,	"InterBase Install DLL ibinstall.dll not found in the path. Please install InterBase 6 to use this functionality"
-	IBXConst_SIB60feature,	"%s is an InterBase 6 function. Please upgrade to InterBase 6 to use this functonality"
-	IBXConst_SNotSupported,	"Unsupported feature"
-	IBXConst_SNotPermitted,	"Not permitted"
-	IBXConst_SFileAccessError,	"Temporary file access error"
-	MidConst_SNoDeletesAllowed,	"Deletes are not allowed"
-	MidConst_SNoInsertsAllowed,	"Inserts are not allowed"
-	MidConst_SConnectionMissing,	"Requires Connection before opening"
-	MidConst_SNoCircularConnection,	"Circular reference to Connection not allowed"
+	GestureConsts_SInitialGesturePointError,	"Unable to retrieve initial gesture point"
+	GestureConsts_SSetStylusGestureError,	"Unable to set stylus gestures: %s"
+	GestureConsts_SInvalidStreamFormat,	"Invalid stream format"
+	GestureConsts_SControlNotFound,	"Control not found"
+	GestureConsts_SRegisteredGestureNotFound,	"The following registered gestures were not found:\r\n\r\n%s"
+	GestureConsts_SDuplicateRecordedGestureName,	"A recorded gesture named %s already exists"
+	GestureConsts_SInvalidGestureID,	"Invalid gesture ID (%d)"
+	GestureConsts_SInvalidGestureName,	"Invalid gesture name (%s)"
+	GestureConsts_SDuplicateGestureName,	"Duplicate gesture name: %s"
 	pnglang_EPngInvalidCRCText,	"This \"Portable Network Graphics\" image is not valid because it contains invalid pieces of data (crc error)"
 	pnglang_EPNGInvalidIHDRText,	"The \"Portable Network Graphics\" image could not be loaded because one of its main piece of data (ihdr) might be corrupted"
 	pnglang_EPNGMissingMultipleIDATText,	"This \"Portable Network Graphics\" image is invalid because it has missing image parts."
@@ -1167,11 +1198,27 @@ BEGIN
 	pnglang_EPNGInvalidPaletteText,	"The \"Portable Network Graphics\" image contains an invalid palette."
 	pnglang_EPNGInvalidFileHeaderText,	"The file being read is not a valid \"Portable Network Graphics\" image because it contains an invalid header. This file may be corrupted, try obtaining it again"
 	pnglang_EPNGIHDRNotFirstText,	"This \"Portable Network Graphics\" image is not supported or it might be invalid.\r\n(IHDR chunk is not the first)"
-	pnglang_EPNGSizeExceedsText,	"This \"Portable Network Graphics\" image is not supported because either it's width or height exceeds the maximum size, which is 65535 pixels length."
-	pnglang_EPNGUnknownPalEntryText,	"There is no such palette entry."
-	pnglang_EPNGUnknownCriticalChunkText,	"This \"Portable Network Graphics\" image contains an unknown critical part which could not be decoded."
-	pnglang_EPNGUnknownCompressionText,	"This \"Portable Network Graphics\" image is encoded with an unknown compression scheme which could not be decoded."
-	pnglang_EPNGUnknownInterlaceText,	"This \"Portable Network Graphics\" image uses an unknown interlace scheme which could not be decoded."
+	MidConst_SField,	"Field"
+	MidConst_SRecConstFail,	"Preparation of record constraint failed with error \"%s\""
+	MidConst_SFieldConstFail,	"Preparation of field constraint failed with error \"%s\""
+	MidConst_SDefExprFail,	"Preparation of default expression failed with error \"%s\""
+	MidConst_SNoEditsAllowed,	"Modifications are not allowed"
+	MidConst_SNoDeletesAllowed,	"Deletes are not allowed"
+	MidConst_SNoInsertsAllowed,	"Inserts are not allowed"
+	MidConst_SConnectionMissing,	"Requires Connection before opening"
+	MidConst_SNoCircularConnection,	"Circular reference to Connection not allowed"
+	GestureConsts_SAddIStylusAsyncPluginError,	"Unable to add IStylusAsyncPlugin: %s"
+	GestureConsts_SAddIStylusSyncPluginError,	"Unable to add IStylusSyncPlugin: %s"
+	GestureConsts_SRemoveIStylusAsyncPluginError,	"Unable to remove IStylusAsyncPlugin: %s"
+	GestureConsts_SRemoveIStylusSyncPluginError,	"Unable to remove IStylusSyncPlugin: %s"
+	GestureConsts_SStylusHandleError,	"Unable to get or set window handle: %s"
+	GestureConsts_SStylusEnableError,	"Unable to enable or disable IRealTimeStylus: %s"
+	GestureConsts_SEnableRecognizerError,	"Unable to enable or disable IGestureRecognizer: %s"
+	DBConsts_STooManyColumns,	"Grid requested to display more than 256 columns"
+	ComConst_SOleError,	"OLE error %.8x"
+	ComConst_SNoMethod,	"Method '%s' not supported by automation object"
+	ComConst_SVarNotObject,	"Variant does not reference an automation object"
+	ComConst_STooManyParams,	"Dispatch methods do not support more than 64 parameters"
 	ComConst_SDCOMNotInstalled,	"DCOM not installed"
 	MidConst_SNoDataProvider,	"Missing data provider or data packet"
 	MidConst_SInvalidDataPacket,	"Invalid data packet"
@@ -1183,11 +1230,11 @@ BEGIN
 	MidConst_SNoParentConnection,	"ParentConnection is not assigned"
 	MidConst_SInvalidOptParamType,	"Value cannot be stored in an optional parameter"
 	MidConst_SConstraintFailed,	"Record or field constraint failed."
-	MidConst_SField,	"Field"
-	MidConst_SRecConstFail,	"Preparation of record constraint failed with error \"%s\""
-	MidConst_SFieldConstFail,	"Preparation of field constraint failed with error \"%s\""
-	MidConst_SDefExprFail,	"Preparation of default expression failed with error \"%s\""
-	MidConst_SNoEditsAllowed,	"Modifications are not allowed"
+	DBConsts_SInvalidVersion,	"Unable to load bind parameters"
+	DBConsts_SBadFieldType,	"Field '%s' is of an unsupported type"
+	DBConsts_SAggActive,	"Property may not be modified while aggregate is active"
+	DBConsts_SProviderSQLNotSupported,	"SQL not supported"
+	DBConsts_SProviderExecuteNotSupported,	"Execute not supported"
 	DBConsts_SExprNoAggOnCalcs,	"Field '%s' is not the correct type of calculated field to be used in an aggregate, use an internalcalc"
 	DBConsts_SDataSetUnidirectional,	"Operation not allowed on a unidirectional dataset"
 	DBConsts_SUnassignedVar,	"Unassigned variant value"
@@ -1199,11 +1246,11 @@ BEGIN
 	DBConsts_SInvalidSqlTimeStamp,	"Invalid SQL date/time values"
 	DBConsts_SDeleteRecordQuestion,	"Delete record?"
 	DBConsts_SDeleteMultipleRecordsQuestion,	"Delete all selected records?"
-	DBConsts_STooManyColumns,	"Grid requested to display more than 256 columns"
-	ComConst_SOleError,	"OLE error %.8x"
-	ComConst_SNoMethod,	"Method '%s' not supported by automation object"
-	ComConst_SVarNotObject,	"Variant does not reference an automation object"
-	ComConst_STooManyParams,	"Dispatch methods do not support more than 64 parameters"
+	DBConsts_SExprBadField,	"Field '%s' cannot be used in a filter expression"
+	DBConsts_SExprBadNullTest,	"NULL only allowed with '=' and '<>'"
+	DBConsts_SExprRangeError,	"Constant out of range"
+	DBConsts_SExprIncorrect,	"Incorrectly formed filter expression"
+	DBConsts_SExprNothing,	"nothing"
 	DBConsts_SExprTypeMis,	"Type mismatch in expression"
 	DBConsts_SExprBadScope,	"Operation cannot mix aggregate value with record-varying value"
 	DBConsts_SExprNoArith,	"Arithmetic in filter expressions not supported"
@@ -1215,11 +1262,11 @@ BEGIN
 	DBConsts_STextFalse,	"False"
 	DBConsts_STextTrue,	"True"
 	DBConsts_SParameterNotFound,	"Parameter '%s' not found"
-	DBConsts_SInvalidVersion,	"Unable to load bind parameters"
-	DBConsts_SBadFieldType,	"Field '%s' is of an unsupported type"
-	DBConsts_SAggActive,	"Property may not be modified while aggregate is active"
-	DBConsts_SProviderSQLNotSupported,	"SQL not supported"
-	DBConsts_SProviderExecuteNotSupported,	"Execute not supported"
+	DBConsts_SDataSourceChange,	"DataSource cannot be changed"
+	DBConsts_SNoNestedMasterSource,	"Nested datasets cannot have a MasterSource"
+	DBConsts_SDataSetOpen,	"Cannot perform this operation on an open dataset"
+	DBConsts_SNotEditing,	"Dataset not in edit or insert mode"
+	DBConsts_SDataSetClosed,	"Cannot perform this operation on a closed dataset"
 	DBConsts_SDataSetEmpty,	"Cannot perform this operation on an empty dataset"
 	DBConsts_SDataSetReadOnly,	"Cannot modify a read-only dataset"
 	DBConsts_SNestedDataSetClass,	"Nested dataset must inherit from %s"
@@ -1231,11 +1278,11 @@ BEGIN
 	DBConsts_SExprNoRParen,	"')' expected but %s found"
 	DBConsts_SExprNoRParenOrComma,	"')' or ',' expected but %s found"
 	DBConsts_SExprExpected,	"Expression expected but %s found"
-	DBConsts_SExprBadField,	"Field '%s' cannot be used in a filter expression"
-	DBConsts_SExprBadNullTest,	"NULL only allowed with '=' and '<>'"
-	DBConsts_SExprRangeError,	"Constant out of range"
-	DBConsts_SExprIncorrect,	"Incorrectly formed filter expression"
-	DBConsts_SExprNothing,	"nothing"
+	DBConsts_SInvalidVarByteArray,	"Invalid variant type or size for field '%s'"
+	DBConsts_SFieldOutOfRange,	"Value of field '%s' is out of range"
+	DBConsts_SFieldRequired,	"Field '%s' must have a value"
+	DBConsts_SDataSetMissing,	"Field '%s' has no dataset"
+	DBConsts_SInvalidCalcType,	"Field '%s' cannot be a calculated or lookup field"
 	DBConsts_SFieldReadOnly,	"Field '%s' cannot be modified"
 	DBConsts_SFieldIndexError,	"Field index out of range"
 	DBConsts_SNoFieldIndexes,	"No index currently active"
@@ -1247,11 +1294,11 @@ BEGIN
 	DBConsts_SDBDuplicateName,	"Duplicate name '%s' in %s"
 	DBConsts_SCircularDataLink,	"Circular datalinks are not allowed"
 	DBConsts_SLookupInfoError,	"Lookup information for field '%s' is incomplete"
-	DBConsts_SDataSourceChange,	"DataSource cannot be changed"
-	DBConsts_SNoNestedMasterSource,	"Nested datasets cannot have a MasterSource"
-	DBConsts_SDataSetOpen,	"Cannot perform this operation on an open dataset"
-	DBConsts_SNotEditing,	"Dataset not in edit or insert mode"
-	DBConsts_SDataSetClosed,	"Cannot perform this operation on a closed dataset"
+	ComStrs_sFailsetCalSelRange,	"Failed to set calendar selected range"
+	DBConsts_SInvalidFieldSize,	"Invalid field size"
+	DBConsts_SInvalidFieldKind,	"Invalid FieldKind"
+	DBConsts_SUnknownFieldType,	"Field '%s' is of an unknown type"
+	DBConsts_SFieldNameMissing,	"Field name missing"
 	DBConsts_SDuplicateFieldName,	"Duplicate field name '%s'"
 	DBConsts_SFieldNotFound,	"Field '%s' not found"
 	DBConsts_SFieldAccessError,	"Cannot access field '%s' as type %s"
@@ -1263,11 +1310,11 @@ BEGIN
 	DBConsts_SInvalidFloatValue,	"'%s' is not a valid floating point value for field '%s'"
 	DBConsts_SFieldTypeMismatch,	"Type mismatch for field '%s', expecting: %s actual: %s"
 	DBConsts_SFieldSizeMismatch,	"Size mismatch for field '%s', expecting: %d actual: %d"
-	DBConsts_SInvalidVarByteArray,	"Invalid variant type or size for field '%s'"
-	DBConsts_SFieldOutOfRange,	"Value of field '%s' is out of range"
-	DBConsts_SFieldRequired,	"Field '%s' must have a value"
-	DBConsts_SDataSetMissing,	"Field '%s' has no dataset"
-	DBConsts_SInvalidCalcType,	"Field '%s' cannot be a calculated or lookup field"
+	ComStrs_sTabMustBeMultiLine,	"MultiLine must be True when TabPosition is tpLeft or tpRight"
+	ComStrs_sInvalidIndex,	"Invalid index"
+	ComStrs_sInsertError,	"Unable to insert an item"
+	ComStrs_sInvalidOwner,	"Invalid owner"
+	ComStrs_sRichEditInsertError,	"RichEdit line insertion error"
 	ComStrs_sRichEditLoadFail,	"Failed to Load Stream"
 	ComStrs_sRichEditSaveFail,	"Failed to Save Stream"
 	ComStrs_sUDAssociated,	"%s is already associated with %s"
@@ -1279,11 +1326,11 @@ BEGIN
 	ComStrs_sFailSetCalDateTime,	"Failed to set calendar date or time"
 	ComStrs_sFailSetCalMaxSelRange,	"Failed to set maximum selection range"
 	ComStrs_sFailSetCalMinMaxRange,	"Failed to set calendar min/max range"
-	ComStrs_sFailsetCalSelRange,	"Failed to set calendar selected range"
-	DBConsts_SInvalidFieldSize,	"Invalid field size"
-	DBConsts_SInvalidFieldKind,	"Invalid FieldKind"
-	DBConsts_SUnknownFieldType,	"Field '%s' is of an unknown type"
-	DBConsts_SFieldNameMissing,	"Field name missing"
+	Consts_SUnicodeEncoding,	"Unicode"
+	Consts_SBigEndianEncoding,	"Big Endian Unicode"
+	Consts_SUTF8Encoding,	"UTF-8"
+	Consts_SUTF7Encoding,	"UTF-7"
+	Consts_SPageControlNotSet,	"PageControl must first be assigned"
 	Consts_SWindowsVistaRequired,	"%s requires Windows Vista or later"
 	Consts_SXPThemesRequired,	"%s requires themes to be enabled"
 	Consts_STaskDlgButtonCaption,	"Button%d"
@@ -1295,27 +1342,25 @@ BEGIN
 	ComStrs_sTabFailGetObject,	"Failed to get object at index %d"
 	ComStrs_sTabFailSet,	"Failed to set tab \"%s\" at index %d"
 	ComStrs_sTabFailSetObject,	"Failed to set object at index %d"
-	ComStrs_sTabMustBeMultiLine,	"MultiLine must be True when TabPosition is tpLeft or tpRight"
-	ComStrs_sInvalidIndex,	"Invalid index"
-	ComStrs_sInsertError,	"Unable to insert an item"
-	ComStrs_sInvalidOwner,	"Invalid owner"
-	ComStrs_sRichEditInsertError,	"RichEdit line insertion error"
+	Consts_SDuplicateMenus,	"Menu '%s' is already being used by another form"
+	Consts_SDockedCtlNeedsName,	"Docked control must have a name"
+	Consts_SDockTreeRemoveError,	"Error removing control from dock tree"
 	Consts_SDockZoneNotFound,	" - Dock zone not found"
 	Consts_SDockZoneHasNoCtl,	" - Dock zone has no control"
 	Consts_SDockZoneVersionConflict,	"Error loading dock zone from the stream. Expecting version %d, but found %d."
 	Consts_SMultiSelectRequired,	"Multiselect mode must be on for this feature"
+	Consts_SErrorLoadingFile,	"Error loading previously saved settings file: %s\rWould you like to delete it?"
 	Consts_SSeparator,	"Separator"
 	Consts_SErrorSettingCount,	"Error setting %s.Count"
 	Consts_SListBoxMustBeVirtual,	"Listbox (%s) style must be virtual in order to set Count"
+	Consts_SUnableToSaveSettings,	"Unable to save settings"
 	Consts_SNoGetItemEventHandler,	"No OnGetItem event handler assigned"
 	Consts_SInvalidPath,	"\"%s\" is an invalid path"
 	Consts_SANSIEncoding,	"ANSI"
 	Consts_SASCIIEncoding,	"ASCII"
-	Consts_SUnicodeEncoding,	"Unicode"
-	Consts_SBigEndianEncoding,	"Big Endian Unicode"
-	Consts_SUTF8Encoding,	"UTF-8"
-	Consts_SUTF7Encoding,	"UTF-7"
-	Consts_SPageControlNotSet,	"PageControl must first be assigned"
+	Consts_SmkcRight,	"Right"
+	Consts_SmkcDown,	"Down"
+	Consts_SmkcIns,	"Ins"
 	Consts_SmkcDel,	"Del"
 	Consts_SmkcShift,	"Shift+"
 	Consts_SmkcCtrl,	"Ctrl+"
@@ -1329,9 +1374,9 @@ BEGIN
 	Consts_SInvalidMemoSize,	"Text exceeds memo capacity"
 	Consts_SInvalidPrinterOp,	"Operation not supported on selected printer"
 	Consts_SNoDefaultPrinter,	"There is no default printer currently selected"
-	Consts_SDuplicateMenus,	"Menu '%s' is already being used by another form"
-	Consts_SDockedCtlNeedsName,	"Docked control must have a name"
-	Consts_SDockTreeRemoveError,	"Error removing control from dock tree"
+	Consts_SMsgDlgIgnore,	"&Ignore"
+	Consts_SMsgDlgAll,	"&All"
+	Consts_SMsgDlgNoToAll,	"N&o to All"
 	Consts_SMsgDlgYesToAll,	"Yes to &All"
 	Consts_SMsgDlgClose,	"&Close"
 	Consts_SmkcBkSp,	"BkSp"
@@ -1345,9 +1390,9 @@ BEGIN
 	Consts_SmkcHome,	"Home"
 	Consts_SmkcLeft,	"Left"
 	Consts_SmkcUp,	"Up"
-	Consts_SmkcRight,	"Right"
-	Consts_SmkcDown,	"Down"
-	Consts_SmkcIns,	"Ins"
+	Consts_SFixedColTooBig,	"Fixed column count must be less than column count"
+	Consts_SFixedRowTooBig,	"Fixed row count must be less than row count"
+	Consts_SInvalidStringGridOp,	"Cannot insert or delete rows from grid"
 	Consts_SMaskErr,	"Invalid input value"
 	Consts_SMaskEditErr,	"Invalid input value.  Use escape key to abandon changes"
 	Consts_SMsgDlgWarning,	"Warning"
@@ -1361,9 +1406,9 @@ BEGIN
 	Consts_SMsgDlgHelp,	"&Help"
 	Consts_SMsgDlgAbort,	"&Abort"
 	Consts_SMsgDlgRetry,	"&Retry"
-	Consts_SMsgDlgIgnore,	"&Ignore"
-	Consts_SMsgDlgAll,	"&All"
-	Consts_SMsgDlgNoToAll,	"N&o to All"
+	Consts_SNoButton,	"&No"
+	Consts_SHelpButton,	"&Help"
+	Consts_SCloseButton,	"&Close"
 	Consts_SIgnoreButton,	"&Ignore"
 	Consts_SRetryButton,	"&Retry"
 	Consts_SAbortButton,	"Abort"
@@ -1377,9 +1422,9 @@ BEGIN
 	Consts_SGridTooLarge,	"Grid too large for operation"
 	Consts_STooManyDeleted,	"Too many rows or columns deleted"
 	Consts_SIndexOutOfRange,	"Grid index out of range"
-	Consts_SFixedColTooBig,	"Fixed column count must be less than column count"
-	Consts_SFixedRowTooBig,	"Fixed row count must be less than row count"
-	Consts_SInvalidStringGridOp,	"Cannot insert or delete rows from grid"
+	Consts_SMenuIndexError,	"Menu index out of range"
+	Consts_SMenuReinserted,	"Menu inserted twice"
+	Consts_SMenuNotFound,	"Sub-menu is not in menu"
 	Consts_SNoTimers,	"Not enough timers available"
 	Consts_SNotPrinting,	"Printer is not currently printing"
 	Consts_SPrinting,	"Printing in progress"
@@ -1393,9 +1438,9 @@ BEGIN
 	Consts_SOKButton,	"OK"
 	Consts_SCancelButton,	"Cancel"
 	Consts_SYesButton,	"&Yes"
-	Consts_SNoButton,	"&No"
-	Consts_SHelpButton,	"&Help"
-	Consts_SCloseButton,	"&Close"
+	Consts_SInvalidImageSize,	"Invalid image size"
+	Consts_SInvalidImageList,	"Invalid ImageList"
+	Consts_SReplaceImage,	"Unable to Replace Image"
 	Consts_SImageIndexError,	"Invalid ImageList Index"
 	Consts_SImageReadFail,	"Failed to read ImageList data from stream"
 	Consts_SImageWriteFail,	"Failed to write ImageList data to stream"
@@ -1409,9 +1454,9 @@ BEGIN
 	Consts_SCannotShowModal,	"Cannot make a visible window modal"
 	Consts_SScrollBarRange,	"Scrollbar property out of range"
 	Consts_SPropertyOutOfRange,	"%s property out of range"
-	Consts_SMenuIndexError,	"Menu index out of range"
-	Consts_SMenuReinserted,	"Menu inserted twice"
-	Consts_SMenuNotFound,	"Sub-menu is not in menu"
+	Consts_SInvalidTabIndex,	"Tab index out of bounds"
+	Consts_SInvalidTabPosition,	"Tab position incompatible with current tab style"
+	Consts_SInvalidTabStyle,	"Tab style incompatible with current tab position"
 	Consts_SInvalidBitmap,	"Bitmap image is not valid"
 	Consts_SInvalidIcon,	"Icon image is not valid"
 	Consts_SInvalidMetafile,	"Metafile is not valid"
@@ -1425,9 +1470,6 @@ BEGIN
 	Consts_SUnknownClipboardFormat,	"Unsupported clipboard format"
 	Consts_SOutOfResources,	"Out of system resources"
 	Consts_SNoCanvasHandle,	"Canvas does not allow drawing"
-	Consts_SInvalidImageSize,	"Invalid image size"
-	Consts_SInvalidImageList,	"Invalid ImageList"
-	Consts_SReplaceImage,	"Unable to Replace Image"
 	RTLConsts_hNoFilterViewer,	"No help viewer that supports filters"
 	RTLConsts_SInvalidDate,	"''%s'' is not a valid date"
 	RTLConsts_SInvalidDateTime,	"''%s'' is not a valid date and time"
@@ -1441,9 +1483,9 @@ BEGIN
 	RTLConsts_SNoTableOfContents,	"Unable to find a Table of Contents"
 	RTLConsts_SNoTopics,	"No topic-based help system installed"
 	RTLConsts_SNothingFound,	"No help found for %s"
-	Consts_SInvalidTabIndex,	"Tab index out of bounds"
-	Consts_SInvalidTabPosition,	"Tab position incompatible with current tab style"
-	Consts_SInvalidTabStyle,	"Tab style incompatible with current tab position"
+	RTLConsts_SArgumentOutOfRange,	"Argument out of range"
+	RTLConsts_SGenericItemNotFound,	"Item not found"
+	RTLConsts_SGenericDuplicateItem,	"Duplicates not allowed"
 	RTLConsts_SResNotFound,	"Resource %s not found"
 	RTLConsts_SSeekNotImplemented,	"%s.Seek not implemented"
 	RTLConsts_SSortedListError,	"Operation not allowed on sorted list"
@@ -1707,9 +1749,9 @@ END
 /* PayForm_Unit.dfm */
 /* SellParamForm_Unit.dfm */
 /* RKCardCodeForm_Unit.dfm */
-/* Modification_Unit.dfm */
-/* DeleteOrderLine_unit.dfm */
+/* D:\Front\Source\Modification_Unit.dfm */
 /* GuestForm_unit.dfm */
-/* MainForm.dfm */
+/* DeleteOrderLine_unit.dfm */
+/* D:\Front\Source\MainForm.dfm */
 /* D:\Front\Source\RestFront.res */
 /* D:\Front\Source\RestFront.drf */

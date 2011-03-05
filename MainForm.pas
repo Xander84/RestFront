@@ -13,7 +13,7 @@ uses
   SplitOrderForm_Unit, Report_Unit, FrontData_Unit, BaseFrontForm_Unit,
   AdvSmoothButton, AdvPanel, AdvPageControl, AdvSmoothTouchKeyBoard,
   TaskDialog, FrontLog_Unit, Grids, Menus, AddUserForm_unit, AdminForm_Unit,
-  Buttons, RestTable_Unit, dxfDesigner;
+  Buttons, RestTable_Unit, dxfDesigner, GestureMgr;
 
 const
   btnHeight = 65;
@@ -112,8 +112,8 @@ type
     actUsersDown: TAction;
     actDevide: TAction;
     pnlManagerBottom: TAdvPanel;
-    actUserLeft: TAction;
-    actUserRight: TAction;
+    actUsersLeft: TAction;
+    actUsersRight: TAction;
     actExitWindows: TAction;
     actRestartRest: TAction;
     pnlGood: TAdvPanel;
@@ -189,6 +189,7 @@ type
     btnAdminOptions: TAdvSmoothButton;
     AdvSmoothButton1: TAdvSmoothButton;
     AdvSmoothButton2: TAdvSmoothButton;
+    gmFront: TGestureManager;
 
     //Проверка введёного пароля
     procedure actPassEnterExecute(Sender: TObject);
@@ -219,8 +220,8 @@ type
     procedure DBGridEh2Columns0GetCellParams(Sender: TObject;
       EditMode: Boolean; Params: TColCellParamsEh);
     procedure btnPredCheckClick(Sender: TObject);
-    procedure actUserLeftExecute(Sender: TObject);
-    procedure actUserRightExecute(Sender: TObject);
+    procedure actUsersLeftExecute(Sender: TObject);
+    procedure actUsersRightExecute(Sender: TObject);
     procedure actExitWindowsExecute(Sender: TObject);
     procedure actRestartRestExecute(Sender: TObject);
     procedure actModificationUpdate(Sender: TObject);
@@ -2897,7 +2898,7 @@ begin
   end;
 end;
 
-procedure TRestMainForm.actUserLeftExecute(Sender: TObject);
+procedure TRestMainForm.actUsersLeftExecute(Sender: TObject);
 begin
   LockWindowUpdate(TForm(Self).Handle);
   try
@@ -2907,7 +2908,7 @@ begin
   end;
 end;
 
-procedure TRestMainForm.actUserRightExecute(Sender: TObject);
+procedure TRestMainForm.actUsersRightExecute(Sender: TObject);
 begin
   LockWindowUpdate(TForm(Self).Handle);
   try
