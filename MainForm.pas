@@ -267,22 +267,19 @@ type
     FFrontBase: TFrontBase;
     //Фискальный
     FFiscal: TFiscalRegister;
-    // FR4
+    //FR4
     FReport: TRestReport;
     //Наборы данных
     FOrderDataSet: TkbmMemTable;
     FMenuDataSet : TkbmMemTable;
     FGroupDataSet: TkbmMemTable;
     FGoodDataSet : TkbmMemTable;
-
     FHeaderTable : TkbmMemTable;
     FLineTable   : TkbmMemTable;
-
     FHeaderInfoTable : TkbmMemTable;
     FLineInfoTable   : TkbmMemTable;
-
-    FHallsTable     : TkbmMemTable;
-    FTablesInfoTable: TkbmMemTable;
+    FHallsTable      : TkbmMemTable;
+    FTablesInfoTable : TkbmMemTable;
     //для связи позиция - модификатор
     FMasterDataSource: TDataSource;
     FModificationDataSet: TkbmMemTable;
@@ -324,7 +321,7 @@ type
     FUserOrderLastTop        : Integer;
     FUserOrderButtonNumber   : Integer;
     FMaxUserOrderButtonLeft  : Integer;
-
+{ TODO : Переделать не через FPayed }
     FPayed: Boolean;
     //Список объектов для уничтожения компонентов
     FMenuButtonList   : TObjectList;
@@ -346,24 +343,20 @@ type
     FPrevFormState: TRestState;
     // Режим только просмотра (для кассира)
     FViewMode: Boolean;
-    FUpdateCount: Integer;
 
     FSplitForm: TSplitOrder;
   //  FFrontLog: TFrontLog;
 
     //Создание первичных наборов данных
     procedure CreateDataSets;
-    //нужно расчитывать сколько button-ов может поместится на закладке
-    //отрисовываем btn от датасета
+    //режим заказов
     procedure CreateOrderButtonList;
     procedure AddOrderButton;
     procedure RemoveOrderButton;
     procedure CreateNewOrder(const TableKey: Integer);
-    //нажатие на кнопку с заказом
     procedure OrderButtonOnClick(Sender: TObject);
-    //
     procedure SplitButtonOnClick(Sender: TObject);
-
+    //режим залов
     procedure CreateHallButtonList;
     procedure AddHallButton;
     procedure RemoveHallButton;
@@ -372,24 +365,21 @@ type
     procedure RemoveTableButton;
     procedure AddTableButton;
     procedure TableButtonOnClick(Sender: TObject);
-
+    //меню
     procedure CreateMenuButtonList;
     procedure AddMenuButton;
     procedure RemoveMenuButton;
-    //нажатие на кнопку Меню
     procedure MenuButtonOnClick(Sender: TObject);
-
+    //группы товаров
     procedure CreateGroupButtonList(const MenuKey: Integer);
     procedure AddGroupButton;
     procedure RemoveGroupButton;
     procedure AddPopularGoods;
-    //нажатие на кнопку Группы
     procedure GroupButtonOnClick(Sender: TObject);
-
+    //товары
     procedure CreateGoodButtonList(const MenuKey: Integer; const GroupKey: Integer);
     procedure AddGoodButton;
     procedure RemoveGoodButton;
-    //нажатие на кнопку Группы
     procedure GoodButtonOnClick(Sender: TObject);
 
     procedure CreateUserList;
@@ -405,23 +395,22 @@ type
     //Скроллирование
     procedure ScrollControl(const FControl: TWinControl; const Down: Boolean;
       var Top: Integer; var Bottom: Integer);
-
     procedure VertScrollControl(const FControl: TWinControl; const ToRight: Boolean;
       var Left: Integer; var Right: Integer);
-
+    //FormState
     procedure SetFormState(const Value: TRestState);
     property FormState: TRestState read FFormState write SetFormState;
-
+    procedure AfterLoadManagerInfo;
+    //Display
     procedure WritePos(DataSet: TDataSet);
     procedure ClearDisplay;
-
+    //DataSets
     procedure DeleteOrderLine(var Amount: Currency; const CauseKey: Integer);
     procedure OnFilterLine(DataSet: TDataSet; var Accept: Boolean);
     procedure OnBeforePostLine(DataSet: TDataSet);
     procedure OnAfterPostHeader(DataSet: TDataSet);
     procedure OnAfterPost(DataSet: TDataSet); ///!!!!
     procedure OnAfterDelete(DataSet: TDataSet);
-    procedure AfterLoadManagerInfo;
   public
     procedure AfterConstruction; override;
   end;
@@ -498,7 +487,6 @@ begin
   FUsersOrderButtonList := TObjectList.Create;
   FTablesList := TObjectList.Create;
   FHallButtonList := TObjectList.Create;
-  FUpdateCount := 0;
   FEditMode := False;
 
   CreateDataSets;
@@ -1097,7 +1085,7 @@ begin
     end;
   end;
 
-  if (FGuestCount >= FFrontBase.Options.MinGuestCount) and (FOrderNumber <> '') then
+  if (FGuestCount >= FFrontBase.Options.MinGuestCount) then
   begin
     if not Assigned(dsMain.DataSet) then
       dsMain.DataSet := FLineTable;
@@ -1161,20 +1149,23 @@ begin
 end;
 
 procedure TRestMainForm.GroupButtonOnClick(Sender: TObject);
+var
+  FButton: TAdvSmoothButton;
 begin
-  LockWindowUpdate(TForm(Self).Handle);
+  LockWindowUpdate(Handle);
   try
     if FSelectedButton <> nil then
       TAdvSmoothButton(FSelectedButton).Enabled := True;
     FSelectedButton := Sender;
-    TAdvSmoothButton(Sender).Enabled := False;
+    FButton := TAdvSmoothButton(Sender);
+    FButton.Enabled := False;
 
     RemoveGoodButton;
     FGoodLastTop := btnFirstTop;
     FGoodFirstTop := btnFirstTop;
     FGoodLastLeftButton := btnFirstTop;
     pnlMainGood.Visible := True;
-    CreateGoodButtonList(FMenuKey, TAdvSmoothButton(Sender).Tag);
+    CreateGoodButtonList(FMenuKey, FButton.Tag);
   finally
     LockWindowUpdate(0);
   end;
@@ -1182,7 +1173,7 @@ end;
 
 procedure TRestMainForm.HallButtonOnClick(Sender: TObject);
 begin
-  LockWindowUpdate(TForm(Self).Handle);
+  LockWindowUpdate(Handle);
   try
     RemoveTableButton;
     CreateTableButtonList(TButton(Sender).Tag);
@@ -1321,7 +1312,7 @@ end;
 
 procedure TRestMainForm.actScrollDownExecute(Sender: TObject);
 begin
-  LockWindowUpdate(TForm(Self).Handle);
+  LockWindowUpdate(Handle);
   try
     if pcMenu.ActivePage = tsMenu then
       if FMenuButtonCount > 6 then
@@ -1337,7 +1328,7 @@ end;
 
 procedure TRestMainForm.actScrollUpExecute(Sender: TObject);
 begin
-  LockWindowUpdate(TForm(Self).Handle);
+  LockWindowUpdate(Handle);
   try
     if pcMenu.ActivePage = tsMenu then
       if FMenuButtonCount > 6 then
@@ -1353,7 +1344,7 @@ end;
 
 procedure TRestMainForm.actGoodUpExecute(Sender: TObject);
 begin
-  LockWindowUpdate(TForm(Self).Handle);
+  LockWindowUpdate(Handle);
   try
     ScrollControl(pnlGood, False, FGoodFirstTop, FGoodLastTop);
   finally
@@ -1363,7 +1354,7 @@ end;
 
 procedure TRestMainForm.actGoodDownExecute(Sender: TObject);
 begin
-  LockWindowUpdate(TForm(Self).Handle);
+  LockWindowUpdate(Handle);
   try
     ScrollControl(pnlGood, True, FGoodFirstTop, FGoodLastTop);
   finally
@@ -1374,9 +1365,11 @@ end;
 procedure TRestMainForm.OrderButtonOnClick(Sender: TObject);
 var
   FUserInfo: TUserInfo;
+  FButton: TButton;
 begin
+  FButton := TButton(Sender);
   //сначала ставим флаг, что редактируем набор данных
-  if FOrderDataSet.Locate('ID', TButton(Sender).Tag, []) then
+  if FOrderDataSet.Locate('ID', FButton.Tag, []) then
   begin
     if FOrderDataSet.FieldByName('ISLOCKED').AsInteger = 1 then
       if AdvTaskMessageDlg('Внимание', 'Заказ редактируется. Продолжить?',
@@ -1395,8 +1388,8 @@ begin
       end else
         exit;
   end;     
-  FFrontBase.GetOrder(FHeaderTable, FLineTable, FModificationDataSet, TButton(Sender).Tag);
-  FFrontBase.LockUserOrder(TButton(Sender).Tag);
+  FFrontBase.GetOrder(FHeaderTable, FLineTable, FModificationDataSet, FButton.Tag);
+  FFrontBase.LockUserOrder(FButton.Tag);
   if not Assigned(dsMain.DataSet) then
     dsMain.DataSet := FLineTable
   else begin
@@ -1986,7 +1979,7 @@ begin
   case Value of
     Pass:
       begin
-        LockWindowUpdate(TForm(Self).Handle);
+        LockWindowUpdate(Handle);
         try
           FFormState := Value;
           //1.Скрываем заголовки
@@ -2079,7 +2072,7 @@ begin
 
     OrderMenu:
       begin
-        LockWindowUpdate(TForm(Self).Handle);
+        LockWindowUpdate(Handle);
         try
           FFormState := Value;
 
@@ -2143,7 +2136,7 @@ begin
 
     HallsPage:
       begin
-        LockWindowUpdate(TForm(Self).Handle);
+        LockWindowUpdate(Handle);
         try
           FFormState := Value;
 
@@ -2248,7 +2241,7 @@ begin
 
     ManagerPage:
       begin
-        LockWindowUpdate(TForm(Self).Handle);
+        LockWindowUpdate(Handle);
         try
           RemoveUserButton;
           RemoveUserOrderButton;
@@ -2293,7 +2286,7 @@ begin
 
     ManagerChooseOrder:
       begin
-        LockWindowUpdate(TForm(Self).Handle);
+        LockWindowUpdate(Handle);
         try
           RemoveUserButton;
           RemoveUserOrderButton;
@@ -2337,7 +2330,7 @@ begin
 
     KassirInfo:
       begin
-        LockWindowUpdate(TForm(Self).Handle);
+        LockWindowUpdate(Handle);
         try
           RemoveUserButton;
           RemoveUserOrderButton;
@@ -2417,7 +2410,7 @@ var
   UserTable: TkbmMemTable;
   OrderTable: TkbmMemTable;
 begin
-  LockWindowUpdate(TForm(Self).Handle);
+  LockWindowUpdate(Handle);
   try
     UserTable := TkbmMemTable.Create(nil);
     try
@@ -2621,7 +2614,7 @@ procedure TRestMainForm.actUsersUpExecute(Sender: TObject);
 var
   TempLastTop, TempFirstTop: Integer;
 begin
-  LockWindowUpdate(TForm(Self).Handle);
+  LockWindowUpdate(Handle);
   try
     TempLastTop := FUserLastTop;
     TempFirstTop := FUserFirstTop;
@@ -2636,7 +2629,7 @@ procedure TRestMainForm.actUsersDownExecute(Sender: TObject);
 var
   TempLastTop, TempFirstTop: Integer;
 begin
-  LockWindowUpdate(TForm(Self).Handle);
+  LockWindowUpdate(Handle);
   try
     TempLastTop := FUserLastTop;
     TempFirstTop := FUserFirstTop;
@@ -2834,15 +2827,17 @@ procedure TRestMainForm.TableButtonOnClick(Sender: TObject);
 var
   FTableKey, FOrderKey: Integer;
   FUserInfo: TUserInfo;
+  FRestTable: TRestTable;
 begin
   if dxfDesigner.Active then
     exit;
 
-  FOrderKey := TRestTable(Sender).OrderKey;
-  FTableKey := TRestTable(Sender).ID;
+  FRestTable := TRestTable(Sender);
+  FOrderKey := FRestTable.OrderKey;
+  FTableKey := FRestTable.ID;
   if FOrderKey > 0 then
   begin
-    if TRestTable(Sender).IsLocked then
+    if FRestTable.IsLocked then
       if AdvTaskMessageDlg('Внимание', 'Заказ редактируется. Продолжить?',
         mtInformation, [mbYes, mbNo], 0) = IDYES then
       begin
@@ -2859,7 +2854,7 @@ begin
       end else
         exit;
 
-    if TRestTable(Sender).RespKey <> FFrontBase.ContactKey then
+    if FRestTable.RespKey <> FFrontBase.ContactKey then
       if (FFrontBase.UserKey and FFrontBase.Options.ManagerGroupMask) = 0 then
       begin
         AdvTaskMessageDlg('Внимание', cn_dontManagerPermission, mtWarning, [mbOK], 0);
@@ -2900,7 +2895,7 @@ end;
 
 procedure TRestMainForm.actUsersLeftExecute(Sender: TObject);
 begin
-  LockWindowUpdate(TForm(Self).Handle);
+  LockWindowUpdate(Handle);
   try
     VertScrollControl(pnlUserOrders, False, FUserOrderLastLeftButton, FMaxUserOrderButtonLeft)
   finally
@@ -2910,7 +2905,7 @@ end;
 
 procedure TRestMainForm.actUsersRightExecute(Sender: TObject);
 begin
-  LockWindowUpdate(TForm(Self).Handle);
+  LockWindowUpdate(Handle);
   try
     VertScrollControl(pnlUserOrders, True, FUserOrderLastLeftButton, FMaxUserOrderButtonLeft);
   finally
@@ -3170,7 +3165,6 @@ begin
       FForm.Free;
     end;
   end;
-
   tmrClose.Enabled := (not FFrontBase.Options.NoPassword);
 end;
 
