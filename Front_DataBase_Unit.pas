@@ -357,7 +357,7 @@ type
       DocDate: TDateTime; PersDiscount: Currency): Currency;
     function GetDiscountList(var MemTable: TkbmMemTable): Boolean;
     function GetDiscountCardInfo(var MemTable: TkbmMemTable; const CardID: Integer; LDate: TDateTime; Pass: String): Boolean;
-    function CalcBonusSum(var DataSet: TDataSet; FLine: TkbmMemTable; var Bonus: Boolean; var PercDisc: Currency): Boolean;
+    function CalcBonusSum(const DataSet: TDataSet; FLine: TkbmMemTable; var Bonus: Boolean; var PercDisc: Currency): Boolean;
     function GetPersonalCardInfo(const MemTable: TkbmMemTable;
       const Pass: String; const PersonalCardID: Integer): Boolean;
     //список подразделений компании
@@ -3213,7 +3213,7 @@ begin
   end;
 end;
 
-function TFrontBase.CalcBonusSum(var DataSet: TDataSet;
+function TFrontBase.CalcBonusSum(const DataSet: TDataSet;
   FLine: TkbmMemTable; var Bonus: Boolean;
   var PercDisc: Currency): Boolean;
 var

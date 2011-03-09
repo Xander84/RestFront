@@ -16,6 +16,7 @@ type
     btnAddUser: TAdvSmoothButton;
     btnEditReport: TAdvSmoothButton;
     actEditReport: TAction;
+    btnHallsEdit: TAdvSmoothButton;
     procedure actAddUserExecute(Sender: TObject);
     procedure actEditReportExecute(Sender: TObject);
   private

@@ -11,6 +11,7 @@ uses
   Forms,
   AppEvnts,
   MidasLib,
+  Windows,
   MainForm in 'MainForm.pas' {RestMainForm},
   GuestForm_unit in 'GuestForm_unit.pas' {GuestForm},
   DeleteOrderLine_unit in 'DeleteOrderLine_unit.pas' {DeleteOrderLine},
@@ -49,15 +50,26 @@ uses
 
 {$R *.res}
 
+const
+  UniqString = 'RestFrontMutex';
+
 var
   ApplicationEventsHandler: TApplicationEventsHandler;
   FApplicationEvents: TApplicationEvents;
+  hMutex: THandle;
 
 begin
   ApplicationEventsHandler := TApplicationEventsHandler.Create;
   try
     FApplicationEvents := TApplicationEvents.Create(Application);
     FApplicationEvents.OnException := ApplicationEventsHandler.ApplicationEventsException;
+
+    hMutex := CreateMutex(nil, False, UniqString);
+    if GetLastError = ERROR_ALREADY_EXISTS then
+    begin
+      CloseHandle(hMutex);
+      exit;
+    end;
 
     Application.Initialize;
     Application.CreateForm(TFrontData, FrontData);

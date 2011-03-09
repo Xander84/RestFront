@@ -181,15 +181,14 @@ type
     btnShowKeyboard2: TAdvSmoothButton;
     btnCancel1: TAdvSmoothButton;
     btnCancel2: TAdvSmoothButton;
-    btnOK3: TAdvSmoothButton;
+    btnOK: TAdvSmoothButton;
     btnCancel3: TAdvSmoothButton;
     tsHalls: TAdvTabSheet;
     pnlHalls: TAdvPanel;
     dxfDesigner: TdxfDesigner;
     btnAdminOptions: TAdvSmoothButton;
-    AdvSmoothButton1: TAdvSmoothButton;
-    AdvSmoothButton2: TAdvSmoothButton;
     gmFront: TGestureManager;
+    btnOK2: TAdvSmoothButton;
 
     //Проверка введёного пароля
     procedure actPassEnterExecute(Sender: TObject);
@@ -260,8 +259,6 @@ type
     procedure btnPrintIncomeReportClick(Sender: TObject);
     procedure tmrCloseTimer(Sender: TObject);
     procedure btnCheckRegisterClick(Sender: TObject);
-    procedure AdvSmoothButton1Click(Sender: TObject);
-    procedure AdvSmoothButton2Click(Sender: TObject);
   private
     //Компонент обращения к БД
     FFrontBase: TFrontBase;
@@ -339,7 +336,7 @@ type
     //Указатель на нажатую кнопку
     FSelectedButton: TObject;
 
-    FFormState: TRestState;
+    FRestFormState: TRestState;
     FPrevFormState: TRestState;
     // Режим только просмотра (для кассира)
     FViewMode: Boolean;
@@ -365,6 +362,7 @@ type
     procedure RemoveTableButton;
     procedure AddTableButton;
     procedure TableButtonOnClick(Sender: TObject);
+    procedure SaveTablePositions;
     //меню
     procedure CreateMenuButtonList;
     procedure AddMenuButton;
@@ -399,7 +397,7 @@ type
       var Left: Integer; var Right: Integer);
     //FormState
     procedure SetFormState(const Value: TRestState);
-    property FormState: TRestState read FFormState write SetFormState;
+    property RestFormState: TRestState read FRestFormState write SetFormState;
     procedure AfterLoadManagerInfo;
     //Display
     procedure WritePos(DataSet: TDataSet);
@@ -442,11 +440,11 @@ begin
     begin
       FFrontBase.GetHallsInfo(FHallsTable);
       if FHallsTable.RecordCount > 1 then
-        FormState := HallsPage
+        RestFormState := HallsPage
       else
-        FormState := OrderMenu;
+        RestFormState := OrderMenu;
     end else
-      FormState := OrderMenu;
+      RestFormState := OrderMenu;
   end else
   begin
     AdvTaskMessageDlg('Внимание', 'Неверный пароль', mtWarning, [mbOK], 0);
@@ -490,7 +488,7 @@ begin
   FEditMode := False;
 
   CreateDataSets;
-  FormState := Pass;
+  RestFormState := Pass;
   try
     FFrontBase := TFrontBase.Create;
   except
@@ -523,6 +521,7 @@ begin
   btnUsersUp.Picture := FrontData.RestPictureContainer.FindPicture('Up');
   btnUserLeft.Picture := FrontData.RestPictureContainer.FindPicture('Left');
   btnUserRight.Picture := FrontData.RestPictureContainer.FindPicture('Right');
+  btnPay.Picture := FrontData.RestPictureContainer.FindPicture('Money');
 end;
 
 procedure TRestMainForm.FormDestroy(Sender: TObject);
@@ -750,13 +749,13 @@ begin
   FButton.IsEmpty := FTablesInfoTable.FieldByName('ORDERKEY').AsInteger = 0;
   FButton.PosX := FTablesInfoTable.FieldByName('USR$POSX').AsInteger;
   FButton.PosY := FTablesInfoTable.FieldByName('USR$POSY').AsInteger;
-//  FButton.Number := FTablesInfoTable.FieldByName('USR$NUMBER').AsString;
   FButton.TableTypeKey := FTablesInfoTable.FieldByName('USR$TYPE').AsInteger;
   FButton.OrderKey := FTablesInfoTable.FieldByName('ORDERKEY').AsInteger;
   FButton.RespKey := FTablesInfoTable.FieldByName('USR$RESPKEY').AsInteger;
   FButton.IsLocked := FTablesInfoTable.FieldByName('ISLOCKED').AsInteger = 1;
   FButton.Number := FTablesInfoTable.FieldByName('USR$NUMBER').AsString;
-  FButton.OnClick := TableButtonOnClick;
+  if FRestFormState = HallsPage then
+    FButton.OnClick := TableButtonOnClick;
 
   FTablesList.Add(FButton);
 end;
@@ -992,15 +991,15 @@ end;
 
 procedure TRestMainForm.CreateKassirPage;
 begin
-  FormState := OrderMenu;
-  FormState := KassirInfo;
+  RestFormState := OrderMenu;
+  RestFormState := KassirInfo;
   CreateUserList;
 end;
 
 procedure TRestMainForm.CreateManagerPage;
 begin
-  FormState := OrderMenu;
-  FormState := ManagerPage;
+  RestFormState := OrderMenu;
+  RestFormState := ManagerPage;
   CreateUserList;
 end;
 
@@ -1089,7 +1088,7 @@ begin
   begin
     if not Assigned(dsMain.DataSet) then
       dsMain.DataSet := FLineTable;
-    FormState := MenuInfo;
+    RestFormState := MenuInfo;
 
     FHeaderTable.Insert;
     FHeaderTable.FieldByName('NUMBER').AsString := FOrderNumber;
@@ -1281,6 +1280,17 @@ begin
   end;
 end;
 
+procedure TRestMainForm.SaveTablePositions;
+var
+  I: Integer;
+begin
+  dxfDesigner.EditControl := nil;
+  dxfDesigner.Active := False;
+  for I := 0 to sbTable.ControlCount - 1 do
+    if sbTable.Controls[I] is TRestTable then
+      TRestTable(sbTable.Controls[I]).SaveTablePositionToDB;
+end;
+
 procedure TRestMainForm.ScrollControl(const FControl: TWinControl; const Down: Boolean;
   var Top: Integer; var Bottom: Integer);
 var
@@ -1397,7 +1407,7 @@ begin
     dsMain.DataSet := nil;
     dsMain.DataSet := FLineTable;
   end;
-  FormState := MenuInfo;
+  RestFormState := MenuInfo;
   //если заказ закрыт, то оставляем отмену пречека, иначе просто пречек
   if FHeaderTable.FieldByName('usr$timecloseorder').IsNull then
     btnPreCheck.Action := actPreCheck
@@ -1421,14 +1431,37 @@ var
   PrinterName: String;
   PrnGrid: Integer;
 begin
-  case FFormState of
+  case FRestFormState of
     Pass: Assert(False, 'Что мы тут делаем?');
 
-    OrderMenu, ManagerPage, ManagerChooseOrder, KassirInfo, HallsPage:
+    OrderMenu, ManagerPage, ManagerChooseOrder, KassirInfo:
       begin
         //переходим на форму с паролем
-        FormState := Pass;
+        RestFormState := Pass;
 
+      end;
+
+    HallsPage:
+      begin
+        RemoveHallButton;
+        RemoveTableButton;
+        FFrontBase.ClearCache;
+
+        RestFormState := Pass;
+      end;
+
+    HallInfo:
+      begin
+        if AdvTaskMessageDlg('Внимание', 'Сохранить изменения?',
+          mtInformation, [mbYes, mbNo], 0) = IDYES then
+        begin
+          SaveTablePositions;
+          RemoveHallButton;
+          RemoveTableButton;
+          FFrontBase.ClearCache;
+
+          RestFormState := Pass;
+        end;
       end;
 
     ManagerInfo:
@@ -1438,7 +1471,7 @@ begin
         FHeaderInfoTable.Close;
         FLineInfoTable.Close;
 
-        FormState := OrderMenu;
+        RestFormState := OrderMenu;
       end;
 
     MenuInfo:
@@ -1465,9 +1498,9 @@ begin
               else if FPrevFormState = KassirInfo then
                 CreateKassirPage
               else if FPrevFormState = HallsPage then
-                FormState := HallsPage
+                RestFormState := HallsPage
               else
-                FormState := OrderMenu;
+                RestFormState := OrderMenu;
             end;
           finally
             DBGrMain.DataSource := dsMain;
@@ -1480,13 +1513,22 @@ end;
 procedure TRestMainForm.actCancelExecute(Sender: TObject);
 begin
   FSelectedButton := nil;
-  case FFormState of
+  case FRestFormState of
     Pass: Assert(False, 'Что мы тут делаем');
 
-    OrderMenu, ManagerPage, ManagerChooseOrder, KassirInfo, HallsPage:
+    OrderMenu, ManagerPage, ManagerChooseOrder, KassirInfo:
       begin
-        FormState := Pass;
+        RestFormState := Pass;
         FFrontBase.ClearCache;
+      end;
+
+    HallsPage, HallInfo:
+      begin
+        RemoveHallButton;
+        RemoveTableButton;
+        FFrontBase.ClearCache;
+
+        RestFormState := Pass;
       end;
 
     ManagerInfo:
@@ -1496,7 +1538,7 @@ begin
         FHeaderInfoTable.Close;
         FLineInfoTable.Close;
 
-        FormState := Pass;
+        RestFormState := Pass;
       end;
 
     MenuInfo:
@@ -1513,9 +1555,9 @@ begin
               else if FPrevFormState = KassirInfo then
                 CreateKassirPage
               else if FPrevFormState = HallsPage then
-                FormState := HallsPage
+                RestFormState := HallsPage
               else
-                FormState := OrderMenu;
+                RestFormState := OrderMenu;
             end;
           end else
           begin
@@ -1524,9 +1566,9 @@ begin
             else if FPrevFormState = KassirInfo then
               CreateKassirPage
             else if FPrevFormState = HallsPage then
-              FormState := HallsPage
+              RestFormState := HallsPage
             else
-              FormState := OrderMenu;
+              RestFormState := OrderMenu;
           end;
         end;
       end;
@@ -1535,7 +1577,7 @@ end;
 
 procedure TRestMainForm.actAddQuantityExecute(Sender: TObject);
 begin
-  if (not FLineTable.IsEmpty) and (FormState = MenuInfo) then
+  if (not FLineTable.IsEmpty) and (RestFormState = MenuInfo) then
   begin
     FLineTable.Edit;
     FLineTable.FieldByName('USR$QUANTITY').AsCurrency :=
@@ -1555,7 +1597,7 @@ var
   Amount: Currency;
   FUserInfo: TUserInfo;  
 begin
-  if (not FLineTable.IsEmpty) and (FormState = MenuInfo) then
+  if (not FLineTable.IsEmpty) and (RestFormState = MenuInfo) then
   begin
     Quantity := FLineTable.FieldByName('USR$QUANTITY').AsCurrency - 1;
     if (Quantity >= FLineTable.FieldByName('OLDQUANTITY').AsCurrency) and
@@ -1608,7 +1650,7 @@ var
   Amount: Currency;
   FUserInfo: TUserInfo;
 begin
-  if (not FLineTable.IsEmpty) and (FormState = MenuInfo) then
+  if (not FLineTable.IsEmpty) and (RestFormState = MenuInfo) then
   begin
     if (FLineTable.FieldByName('OLDQUANTITY').IsNull) and
       (FHeaderTable.FieldByName('USR$MN_PRINTDATE').IsNull)
@@ -1649,7 +1691,7 @@ end;
 
 procedure TRestMainForm.actManagerInfoExecute(Sender: TObject);
 begin
-  FormState := ManagerInfo;
+  RestFormState := ManagerInfo;
 end;
 
 procedure TRestMainForm.actManagerInfoUpdate(Sender: TObject);
@@ -1665,7 +1707,7 @@ var
 begin
   S := '';
   ES := FLineTable.FieldByName('EXTRAMODIFY').AsString;
-  if (not FLineTable.IsEmpty) and (FormState = MenuInfo) then
+  if (not FLineTable.IsEmpty) and (RestFormState = MenuInfo) then
   begin
     GoodKey := FLineTable.FieldByName('usr$goodkey').AsInteger;
     if not FGoodDataSet.Locate('ID', GoodKey, []) then
@@ -1747,7 +1789,7 @@ begin
     end;
 
     //3. переход на форму менеджера
-    FormState := ManagerChooseOrder;
+    RestFormState := ManagerChooseOrder;
     CreateUserList;
 
     if not Assigned(FSplitForm) then
@@ -1970,7 +2012,7 @@ end;
 
 procedure TRestMainForm.SetFormState(const Value: TRestState);
 begin
-  FPrevFormState := FFormState;
+  FPrevFormState := FRestFormState;
   if (Value = KassirInfo) or (FPrevFormState = KassirInfo) then
     FViewMode := True
   else
@@ -1981,7 +2023,7 @@ begin
       begin
         LockWindowUpdate(Handle);
         try
-          FFormState := Value;
+          FRestFormState := Value;
           //1.Скрываем заголовки
           tsMain.TabVisible     := False;
           tsPassWord.TabVisible := False;
@@ -2074,7 +2116,7 @@ begin
       begin
         LockWindowUpdate(Handle);
         try
-          FFormState := Value;
+          FRestFormState := Value;
 
           pcMain.ActivePage := tsMain;
           pcOrder.ActivePage := tsUserOrder;
@@ -2138,7 +2180,7 @@ begin
       begin
         LockWindowUpdate(Handle);
         try
-          FFormState := Value;
+          FRestFormState := Value;
 
           FHallButtonNumber := 1;
           FHallLastTop := -(btnHeight);
@@ -2200,9 +2242,77 @@ begin
         end;
       end;
 
+    HallInfo:
+      begin
+        LockWindowUpdate(Handle);
+        try
+          FRestFormState := Value;
+
+          FHallButtonNumber := 1;
+          FHallLastTop := -(btnHeight);
+
+          pcMain.ActivePage := tsMain;
+          pcOrder.ActivePage := tsTablePage;
+          pcExtraButton.ActivePage := tsEmpty;
+          pcMenu.ActivePage := tsHalls;
+          pnlChoose.Visible := True;
+          pnlMainGood.Visible := False;
+          tsManagerPage.Visible := False;
+          tsTablePage.Visible := True;
+          pnlRight.Visible := True;
+          btnOK2.Visible := True;
+          RemoveGoodButton;
+          RemoveGroupButton;
+          RemoveOrderButton;
+          RemoveMenuButton;
+          RemoveHallButton;
+          RemoveTableButton;
+          //
+          FTablesInfoTable.Close;
+          FTablesInfoTable.CreateTable;
+          FTablesInfoTable.Open;
+          //
+          btnCashForm.Visible := True;
+          btnAdminOptions.Visible := False;
+          btnAllChecks.Visible := True;
+          btnManagerInfo.Visible := True;
+
+          FLastLeftButton := 18 + btnWidth {$IFDEF NEW_TABCONTROL} + 4 {$ENDIF};;
+          FLastTopButton  := btnFirstTop;
+          FMenuLastTop    := -(btnHeight);
+          FMenuButtonCount := 0;
+          FGroupLastTop   := btnFirstTop;
+
+          FUserFirstTop       := btnFirstTop;
+          FUserLastLeftButton := btnFirstTop;
+          FUserLastTop        := btnFirstTop;
+          FUserButtonNumber   := 1;
+
+          FUserOrderFirstTop       := btnFirstTop;
+          FUserOrderLastLeftButton := btnFirstTop;
+          FUserOrderLastTop        := btnFirstTop;
+          FUserOrderButtonNumber   := 1;
+
+          FLineID := 1;
+          FWithPreCheck := False;
+
+          FFrontBase.GetHallsInfo(FHallsTable);
+          CreateHallButtonList;
+
+          dxfDesigner.EditControl := sbTable;
+          dxfDesigner.Active := True;
+
+          tmrClose.Tag := 1;
+
+          ClearDisplay;
+        finally
+          LockWindowUpdate(0);
+        end;
+      end;
+
     MenuInfo:
       begin
-        FFormState := Value;
+        FRestFormState := Value;
 
         RemoveHallButton;
         RemoveTableButton;
@@ -2218,7 +2328,7 @@ begin
 
     ManagerInfo:
       begin
-        FFormState := Value;
+        FRestFormState := Value;
         pcMain.ActivePage := tsManagerInfo;
         pcExtraButton.ActivePage := tsManagerInfoButton;
         pnlRight.Visible := False;
@@ -2254,13 +2364,14 @@ begin
           else
             btnPredCheck.Caption := 'С предчеком';
 
-          FFormState := Value;
+          FRestFormState := Value;
           pcOrder.ActivePage := tsManagerPage;
           pcExtraButton.ActivePage := tsEmpty;
 
           btnCashForm.Visible := True;
           btnAdminOptions.Visible := False;
           btnAllChecks.Visible := True;
+          btnOK2.Visible := False;
 
           FUserFirstTop       := btnFirstTop;
           FUserLastLeftButton := btnFirstTop;
@@ -2302,9 +2413,10 @@ begin
           else
             btnPredCheck.Caption := 'С предчеком';
 
-          FFormState := Value;
+          FRestFormState := Value;
           pcOrder.ActivePage := tsManagerPage;
-          pcExtraButton.ActivePage := tsEmpty;//tsOrderButton;
+          pcExtraButton.ActivePage := tsEmpty;
+          btnOK2.Visible := False;
 
           FUserFirstTop       := btnFirstTop;
           FUserLastLeftButton := btnFirstTop;
@@ -2346,9 +2458,10 @@ begin
           else
             btnPredCheck.Caption := 'С предчеком';
 
-          FFormState := Value;
+          FRestFormState := Value;
           pcOrder.ActivePage := tsManagerPage;
-          pcExtraButton.ActivePage := tsEmpty;//tsOrderButton;
+          pcExtraButton.ActivePage := tsEmpty;
+          btnOK2.Visible := False;
 
           FUserFirstTop       := btnFirstTop;
           FUserLastLeftButton := btnFirstTop;
@@ -2488,7 +2601,7 @@ begin
     FButton.Color := btnColor;
     FButton.Appearance.Font.Size := cn_ButtonFontSize;
     FButton.Parent := pnlUserOrders;
-    if (FormState = ManagerPage) or (FormState = KassirInfo) then
+    if (RestFormState = ManagerPage) or (RestFormState = KassirInfo) then
       FButton.OnClick := OrderButtonOnClick
     else
       FButton.OnClick := SplitButtonOnClick;
@@ -2517,23 +2630,6 @@ begin
 
   FUsersOrderButtonList.Add(FButton);
   Inc(FUserOrderButtonNumber);
-end;
-
-procedure TRestMainForm.AdvSmoothButton1Click(Sender: TObject);
-begin
-  dxfDesigner.EditControl := sbTable;
-  dxfDesigner.Active := True;
-end;
-
-procedure TRestMainForm.AdvSmoothButton2Click(Sender: TObject);
-var
-  I: Integer;
-begin
-  dxfDesigner.EditControl := nil;
-  dxfDesigner.Active := False;
-  for I := 0 to sbTable.ControlCount - 1 do
-    if sbTable.Controls[I] is TRestTable then
-      TRestTable(sbTable.Controls[I]).SaveTablePositionToDB;
 end;
 
 procedure TRestMainForm.btnAllChecClick(Sender: TObject);
@@ -2645,7 +2741,7 @@ var
   FForm: TDevideForm;
   GoodKey: Integer;
 begin
-  if (not FLineTable.IsEmpty) and (FormState = MenuInfo) then
+  if (not FLineTable.IsEmpty) and (RestFormState = MenuInfo) then
   begin
     GoodKey := FLineTable.FieldByName('usr$goodkey').AsInteger;
     if FGoodDataSet.Locate('ID', GoodKey, []) then
@@ -2797,9 +2893,9 @@ var
   WithPreCheck: Boolean;
 begin
   WithPreCheck := not FWithPreCheck;
-  FormState := OrderMenu;
+  RestFormState := OrderMenu;
   FWithPreCheck := WithPreCheck;
-  FormState := ManagerChooseOrder;
+  RestFormState := ManagerChooseOrder;
   CreateUserList;
 end;
 
@@ -2816,7 +2912,7 @@ begin
     FSplitForm.FrontBase := FFrontBase;
     try
       FSplitForm.ShowModal;
-      FormState := OrderMenu;
+      RestFormState := OrderMenu;
     finally
       FreeAndNil(FSplitForm);
     end;
@@ -2870,7 +2966,7 @@ begin
       dsMain.DataSet := nil;
       dsMain.DataSet := FLineTable;
     end;
-    FormState := MenuInfo;
+    RestFormState := MenuInfo;
     //если заказ закрыт, то оставляем отмену пречека, иначе просто пречек
     if FHeaderTable.FieldByName('usr$timecloseorder').IsNull then
       btnPreCheck.Action := actPreCheck
@@ -2885,7 +2981,7 @@ begin
   if not Assigned(FFrontBase) then
     exit;
 
-  if (not FFrontBase.Options.NoPassword) and (FFormState = OrderMenu) then
+  if (not FFrontBase.Options.NoPassword) and (FRestFormState = OrderMenu) then
   begin
     if tmrClose.Tag = 10 then
       actCancel.Execute;
@@ -3057,6 +3153,9 @@ begin
     try
       FForm.FrontBase := FFrontBase;
       FForm.ShowModal;
+      // Редактор залов
+      if FForm.ModalResult = mrOk then
+        RestFormState := HallInfo;
     finally
       FForm.Free;
     end;
