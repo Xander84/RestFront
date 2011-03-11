@@ -3,22 +3,34 @@ unit FrontLog_Unit;
 interface
 
 uses
-  Front_DataBase_Unit, Classes, SysUtils, Forms;
-
-{
-Что должен уметь лог:
-1. Лог ошибок, писать все ошибки и время, когда это случалось. Время брать локальное или сервера?
-2. Лог операций.
-3. Лог позиций чека.
-
-Работать с логом должен объект работы с БД TFrontBase
-При подлючении создаём класс, при отключении - убиваем.
-
- }
-{type
-  TFrontLogType = (LogIn, Exit, ErrorPass);     }
+  Front_DataBase_Unit, Classes, SysUtils, Forms, Generics.Collections, IBSQL,
+  IBDatabase;
 
 type
+  TLogManager = class(TObject)
+  private
+    FUserList: TList<Integer>; // TDictionary<Integer, Integer>
+    FGoodList: TList<Integer>;
+    FDataBase: TIBDataBase;
+    FFrontBase: TFrontBase;
+
+    FDataBaseName: String;
+    procedure SetDatabaseName(const Value: String);
+    // проверка пользователя в базе лога, если нет, то добавляем
+    procedure CheckUser(const UserID: Integer);
+    procedure CheckGood(const GoodID: Integer);
+    procedure SetFrontBase(const Value: TFrontBase);
+  public
+    constructor Create;
+    destructor Destroy; override;
+
+    property DatabaseName: String read FDataBaseName write SetDatabaseName;
+    property FrontBase: TFrontBase read FFrontBase write SetFrontBase;
+  end;
+
+
+
+
   TFrontLog = class(TObject)
   private
     FFrontBase: TFrontBase;
@@ -149,6 +161,92 @@ procedure TFrontLog.WriteLogToFile(const Str: String;
   const UserKey: Integer);
 begin
 //
+end;
+
+{ TLogManager }
+
+procedure TLogManager.CheckGood(const GoodID: Integer);
+var
+  FSQL: TIBSQL;
+  FTransaction: TIBTransaction;
+begin
+  if not (FGoodList.IndexOf(GoodID) > -1) then
+    if Assigned(FDataBase) then
+    begin
+      FSQL := TIBSQL.Create(nil);
+      FTransaction := TIBTransaction.Create(nil);
+      try
+        FTransaction.DefaultDatabase := FDataBase;
+        FTransaction.StartTransaction;
+        FSQL.Transaction := FTransaction;
+
+
+        FTransaction.Commit;
+        FGoodList.Add(GoodID);
+      finally
+        FSQL.Free;
+        FTransaction.Free;
+      end;
+    end else
+      FGoodList.Add(GoodID);
+end;
+
+procedure TLogManager.CheckUser(const UserID: Integer);
+var
+  FSQL: TIBSQL;
+  FTransaction: TIBTransaction;
+begin
+  if not (FUserList.IndexOf(UserID) > -1) then
+    if Assigned(FDataBase) then
+    begin
+      FSQL := TIBSQL.Create(nil);
+      FTransaction := TIBTransaction.Create(nil);
+      try
+        FTransaction.DefaultDatabase := FDataBase;
+        FTransaction.StartTransaction;
+        FSQL.Transaction := FTransaction;
+
+
+        FTransaction.Commit;
+        FUserList.Add(UserID);
+      finally
+        FSQL.Free;
+        FTransaction.Free;
+      end;
+    end else
+      FUserList.Add(UserID);
+end;
+
+constructor TLogManager.Create;
+begin
+  inherited;
+  FUserList := TList<Integer>.Create();
+  FGoodList := TList<Integer>.Create();
+end;
+
+destructor TLogManager.Destroy;
+begin
+  FUserList.Free;
+  FGoodList.Free;
+  if Assigned(FDataBase) then
+    FreeAndNil(FDataBase);
+
+  inherited;
+end;
+
+procedure TLogManager.SetDatabaseName(const Value: String);
+begin
+  FDataBaseName := Value;
+  if FDataBaseName <> '' then
+    //проверить наличие базы, если нет, тогда создаём её.
+
+  else if Assigned(FDataBase) then
+    FreeAndNil(FDataBase);
+end;
+
+procedure TLogManager.SetFrontBase(const Value: TFrontBase);
+begin
+  FFrontBase := Value;
 end;
 
 end.

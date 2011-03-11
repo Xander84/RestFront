@@ -1459,6 +1459,8 @@ begin
           RemoveHallButton;
           RemoveTableButton;
           FFrontBase.ClearCache;
+          dxfDesigner.EditControl := nil;
+          dxfDesigner.Active := False;          
 
           RestFormState := Pass;
         end;
@@ -1493,14 +1495,20 @@ begin
                     FFrontBase.CloseModifyTable(FModificationDataSet, Now);
                   end;
               end;
-              if FPrevFormState = ManagerPage then
-                CreateManagerPage
-              else if FPrevFormState = KassirInfo then
-                CreateKassirPage
-              else if FPrevFormState = HallsPage then
-                RestFormState := HallsPage
-              else
-                RestFormState := OrderMenu;
+
+              case FPrevFormState of
+                ManagerPage:
+                  CreateManagerPage;
+
+                KassirInfo:
+                  CreateKassirPage;
+
+                HallsPage:
+                  RestFormState := HallsPage;
+
+                else
+                  RestFormState := OrderMenu;
+              end;
             end;
           finally
             DBGrMain.DataSource := dsMain;
@@ -1527,6 +1535,8 @@ begin
         RemoveHallButton;
         RemoveTableButton;
         FFrontBase.ClearCache;
+        dxfDesigner.EditControl := nil;
+        dxfDesigner.Active := False;        
 
         RestFormState := Pass;
       end;
@@ -1550,25 +1560,35 @@ begin
           begin
             if FFrontBase.UnLockUserOrder(FHeaderTable.FieldByName('ID').AsInteger) then
             begin
-              if FPrevFormState = ManagerPage then
-                CreateManagerPage
-              else if FPrevFormState = KassirInfo then
-                CreateKassirPage
-              else if FPrevFormState = HallsPage then
-                RestFormState := HallsPage
-              else
-                RestFormState := OrderMenu;
+              case FPrevFormState of
+                ManagerPage:
+                  CreateManagerPage;
+
+                KassirInfo:
+                  CreateKassirPage;
+
+                HallsPage:
+                  RestFormState := HallsPage;
+
+                else
+                  RestFormState := OrderMenu;
+              end;
             end;
           end else
           begin
-            if FPrevFormState = ManagerPage then
-              CreateManagerPage
-            else if FPrevFormState = KassirInfo then
-              CreateKassirPage
-            else if FPrevFormState = HallsPage then
-              RestFormState := HallsPage
-            else
-              RestFormState := OrderMenu;
+            case FPrevFormState of
+              ManagerPage:
+                CreateManagerPage;
+
+              KassirInfo:
+                CreateKassirPage;
+
+              HallsPage:
+                RestFormState := HallsPage;
+
+              else
+                RestFormState := OrderMenu;
+            end;
           end;
         end;
       end;
@@ -2234,6 +2254,9 @@ begin
           CreateMenuButtonList;
           AddPopularGoods;
 
+          dxfDesigner.EditControl := nil;
+          dxfDesigner.Active := False;
+
           tmrClose.Tag := 1;
 
           ClearDisplay;
@@ -2359,10 +2382,7 @@ begin
           pnlRight.Visible := False;
           btnPredCheck.Visible := False;
           FWithPreCheck := False;
-          if FWithPreCheck then
-            btnPredCheck.Caption := 'Без предчека'
-          else
-            btnPredCheck.Caption := 'С предчеком';
+          btnPredCheck.Caption := 'С предчеком';
 
           FRestFormState := Value;
           pcOrder.ActivePage := tsManagerPage;

@@ -576,6 +576,9 @@ object RestMainForm: TRestMainForm
               ColorTo = 14986888
               TabColor = clBtnFace
               TabColorTo = clNone
+              ExplicitTop = 0
+              ExplicitWidth = 0
+              ExplicitHeight = 0
               object btnNewOrder: TAdvSmoothButton
                 Left = 16
                 Top = 8
@@ -1274,6 +1277,9 @@ object RestMainForm: TRestMainForm
               ColorTo = clNone
               TabColor = clBtnFace
               TabColorTo = clNone
+              ExplicitTop = 0
+              ExplicitWidth = 0
+              ExplicitHeight = 0
               object sbTable: TScrollBox
                 Left = 0
                 Top = 0
@@ -1293,6 +1299,9 @@ object RestMainForm: TRestMainForm
         ColorTo = clNone
         TabColor = clBtnFace
         TabColorTo = clNone
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object pnlManagerInfo: TPanel
           Left = 0
           Top = 0
@@ -1580,7 +1589,7 @@ object RestMainForm: TRestMainForm
         Top = 1
         Width = 80
         Height = 719
-        ActivePage = tsOrderButton
+        ActivePage = tsFunctionButton
         ActiveFont.Charset = DEFAULT_CHARSET
         ActiveFont.Color = clWindowText
         ActiveFont.Height = -11
@@ -1598,6 +1607,9 @@ object RestMainForm: TRestMainForm
           ColorTo = clNone
           TabColor = clBtnFace
           TabColorTo = clNone
+          ExplicitTop = 0
+          ExplicitWidth = 0
+          ExplicitHeight = 0
           object btnExitWindows: TAdvSmoothButton
             Left = 4
             Top = 1
@@ -2044,7 +2056,7 @@ object RestMainForm: TRestMainForm
             Anchors = [akLeft, akBottom]
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
-            Appearance.Font.Height = -12
+            Appearance.Font.Height = -11
             Appearance.Font.Name = 'Times New Roman'
             Appearance.Font.Style = [fsBold]
             Status.Caption = '0'
@@ -2834,11 +2846,11 @@ object RestMainForm: TRestMainForm
   end
   object dsHeaderInfo: TDataSource
     Left = 440
-    Top = 144
+    Top = 128
   end
   object dsLineInfo: TDataSource
-    Left = 512
-    Top = 144
+    Left = 504
+    Top = 128
   end
   object tmrClose: TTimer
     Tag = 1
@@ -2850,11 +2862,11 @@ object RestMainForm: TRestMainForm
     StepToGrid = 1
     Active = False
     Left = 368
-    Top = 144
+    Top = 128
   end
   object gmFront: TGestureManager
     Left = 568
-    Top = 144
+    Top = 128
     GestureData = <
       item
         Control = pnlMenu
