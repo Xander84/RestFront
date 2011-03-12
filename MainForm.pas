@@ -719,22 +719,34 @@ begin
 end;
 
 procedure TRestMainForm.AddPopularGoods;
+var
+  FButton: TComponent;
 begin
-  FFrontBase.GetPopularGoodList(FGoodDataSet);
-  if (FGoodDataSet.Active) and (not FGoodDataSet.Eof) then
+  if FFrontBase.GetPopularGoodList(FGoodDataSet) then
   begin
-    FGoodLastTop := btnFirstTop;
-    FGoodFirstTop := btnFirstTop;
-    FGoodLastLeftButton := btnFirstTop;
-    pnlMainGood.Visible := True;
-
-    FGoodDataSet.First;
-    while not FGoodDataSet.Eof do
+    if (FGoodDataSet.Active) and (not FGoodDataSet.Eof) then
     begin
-      AddGoodButton;
+      FGoodLastTop := btnFirstTop;
+      FGoodFirstTop := btnFirstTop;
+      FGoodLastLeftButton := btnFirstTop;
+      pnlMainGood.Visible := True;
 
-      FGoodDataSet.Next;
+      FGoodDataSet.First;
+      while not FGoodDataSet.Eof do
+      begin
+        AddGoodButton;
+
+        FGoodDataSet.Next;
+      end;
     end;
+  end else
+  begin
+    FButton := pnlGood.FindComponent(Format(btnMenuName, [1]));
+    if Assigned(FButton) then
+      TAdvSmoothButton(FButton).Click;
+    FButton := pnlGood.FindComponent(Format(btnGroupName, [1]));
+    if Assigned(FButton) then
+      TAdvSmoothButton(FButton).Click;          
   end;
 end;
 

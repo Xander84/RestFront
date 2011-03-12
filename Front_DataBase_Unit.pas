@@ -1211,6 +1211,9 @@ begin
     try
       FReadSQL.SQL.Text := cst_PopularGoodList;
       FReadSQL.ExecQuery;
+      if not FReadSQL.Eof then
+        Result := False;
+
       while not FReadSQL.EOF do
       begin
         MemTable.Append;
@@ -1224,7 +1227,6 @@ begin
         MemTable.Post;
         FReadSQL.Next;
       end;
-      Result := True;
     finally
       FSQL.Free;
     end;
@@ -1302,7 +1304,7 @@ end;
 function TFrontBase.GetNextID: Integer;
 begin
   if not FIDSQL.Transaction.InTransaction then
-   FIDSQL.Transaction.StartTransaction;
+    FIDSQL.Transaction.StartTransaction;
 
   FIDSQL.Close;
   FIDSQL.ExecQuery;
