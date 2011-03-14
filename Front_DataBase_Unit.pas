@@ -1926,7 +1926,7 @@ begin
         ' select    ' +
         '   distinct  ' +
         '   u.contactkey,    ' +
-        '   u.ingroup,   ' +
+        '   /* u.ingroup,  */ ' +
         '   con.name as fullname    ' +
         ' from    ' +
         '   gd_user u    ' +
@@ -1952,7 +1952,7 @@ begin
         MemTable.Append;
         MemTable.FieldByName('ID').AsInteger := FReadSQL.FieldByName('Contactkey').AsInteger;
         MemTable.FieldByName('NAME').AsString := FReadSQL.FieldByName('fullname').AsString;
-        MemTable.FieldByName('ingroup').ASInteger := FReadSQL.FieldByName('ingroup').AsInteger;
+//        MemTable.FieldByName('ingroup').ASInteger := FReadSQL.FieldByName('ingroup').AsInteger;
         MemTable.Post;
         FReadSQL.Next;
       end;

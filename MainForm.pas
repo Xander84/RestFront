@@ -2591,7 +2591,7 @@ begin
     try
       UserTable.FieldDefs.Add('ID', ftInteger, 0);
       UserTable.FieldDefs.Add('NAME', ftString, 60);
-      UserTable.FieldDefs.Add('ingroup', ftInteger, 0);
+//      UserTable.FieldDefs.Add('ingroup', ftInteger, 0);
       UserTable.CreateTable;
       UserTable.Open;
 
@@ -2612,8 +2612,8 @@ begin
         try
           while not UserTable.Eof do
           begin
-            if (UserTable.FieldByName('InGroup').AsInteger and FFrontBase.Options.WaiterGroupMask) <> 0 then
-            begin
+//            if (UserTable.FieldByName('InGroup').AsInteger and FFrontBase.Options.WaiterGroupMask) <> 0 then
+//            begin
               //1. Отрисовываем кнопку
               AddUserButton(UserTable);
               //2. Смотрим для контакта список заказов
@@ -2630,7 +2630,7 @@ begin
               end;
               if FMaxUserOrderButtonLeft < FUserOrderLastLeftButton then
                 FMaxUserOrderButtonLeft := FUserOrderLastLeftButton;
-            end;
+//            end;
             UserTable.Next;
           end;
           FUserOrderLastLeftButton := btnFirstTop;
