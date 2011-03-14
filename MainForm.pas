@@ -266,6 +266,7 @@ type
     FFiscal: TFiscalRegister;
     //FR4
     FReport: TRestReport;
+    FLogManager: TLogManager;
     //Наборы данных
     FOrderDataSet: TkbmMemTable;
     FMenuDataSet : TkbmMemTable;
@@ -342,8 +343,6 @@ type
     FViewMode: Boolean;
 
     FSplitForm: TSplitOrder;
-  //  FFrontLog: TFrontLog;
-
     //Создание первичных наборов данных
     procedure CreateDataSets;
     //режим заказов
@@ -390,6 +389,9 @@ type
 
     procedure SaveCheck;
     procedure SaveAllOrder;
+
+    function GetCurrentUserInfo: TLogUserInfo;
+    function GetCurrentOrderInfo: TLogOrderInfo;
     //Скроллирование
     procedure ScrollControl(const FControl: TWinControl; const Down: Boolean;
       var Top: Integer; var Bottom: Integer);
@@ -435,7 +437,7 @@ begin
   //Проверка введёного пароля
   if FFrontBase.LogIn(edPassword.Text) then
   begin
-    WriteLog(FFrontBase, cn_l_LogIn, '');
+    FLogManager.DoSimpleLog(GetCurrentUserInfo, ev_LogIn);
     if FFrontBase.Options.UseHalls then
     begin
       FFrontBase.GetHallsInfo(FHallsTable);
@@ -450,7 +452,7 @@ begin
     AdvTaskMessageDlg('Внимание', 'Неверный пароль', mtWarning, [mbOK], 0);
     if edPassword.CanFocus then
       edPassword.SetFocus;
-    WriteLog(FFrontBase, cn_l_ErrorPass, '');
+    FLogManager.DoSimpleEvent(ev_invalidPass);
   end;
 end;
 
@@ -508,8 +510,10 @@ begin
   FReport := TRestReport.Create(Self);
   FReport.FrontBase := FFrontBase;
 
-//  FFrontLog := TFrontLog.Create;
-//  FFrontLog.FrontBase := FFrontBase;
+  FLogManager := TLogManager.Create;
+  FLogManager.FrontBase := FFrontBase;
+  FLogManager.DatabaseName := cn_LodDataBasePath;
+  FLogManager.DoSimpleEvent(ev_StartProgram);
 
   btnAddQuantity.Picture := FrontData.RestPictureContainer.FindPicture('AddPicture');
   btnRemoveQuantity.Picture := FrontData.RestPictureContainer.FindPicture('RemovePicture');
@@ -526,16 +530,16 @@ end;
 
 procedure TRestMainForm.FormDestroy(Sender: TObject);
 begin
+  FLogManager.DoSimpleEvent(ev_TerminateProgram);
   if Assigned(FFrontBase) then
     FFrontBase.Free;
-
   if Assigned(FFiscal) then
     FFiscal.Free;
-
   if Assigned(FSplitForm) then
     FSplitForm.Free;
 
   FReport.Free;
+  FLogManager.Free;
   // инчае будет AV при уничтожения грида
   if Assigned(dsMain.DataSet) then
     dsMain.DataSet := nil;
@@ -571,8 +575,6 @@ begin
   FUsersOrderButtonList.Free;
   FTablesList.Free;
   FHallButtonList.Free;
-
-//  FFrontLog.Free;
 end;
 
 procedure TRestMainForm.edPasswordKeyPress(Sender: TObject; var Key: Char);
@@ -1110,6 +1112,7 @@ begin
       FHeaderTable.FieldByName('USR$TABLEKEY').AsInteger := TableKey;
     FHeaderTable.Post;
   end;
+  FLogManager.DoSimpleEvent(ev_CreateNewOrder);
 end;
 
 procedure TRestMainForm.RemoveGoodButton;
@@ -1201,6 +1204,18 @@ begin
   RemoveGoodButton;
   RemoveGroupButton;
   pcMenu.ActivePage := tsMenu;
+end;
+
+function TRestMainForm.GetCurrentOrderInfo: TLogOrderInfo;
+begin
+  Result.OrderID := FHeaderTable.FieldByName('ID').AsInteger;
+  Result.OrderNumber := FHeaderTable.FieldByName('NUMBER').AsString;
+end;
+
+function TRestMainForm.GetCurrentUserInfo: TLogUserInfo;
+begin
+  Result.UserID := FFrontBase.ContactKey;
+  Result.UserName := FFrontBase.UserName;
 end;
 
 procedure TRestMainForm.GoodButtonOnClick(Sender: TObject);
@@ -1425,6 +1440,7 @@ begin
     btnPreCheck.Action := actPreCheck
   else
     btnPreCheck.Action := actCancelPreCheck;
+  FLogManager.DoOrderLog(GetCurrentUserInfo, GetCurrentOrderInfo, ev_EnterOrder);
 end;
 
 procedure TRestMainForm.btnExitManagerInfoClick(Sender: TObject);
@@ -1450,7 +1466,7 @@ begin
       begin
         //переходим на форму с паролем
         RestFormState := Pass;
-
+        FLogManager.DoSimpleLog(GetCurrentUserInfo, ev_Exit);
       end;
 
     HallsPage:
@@ -1460,6 +1476,7 @@ begin
         FFrontBase.ClearCache;
 
         RestFormState := Pass;
+        FLogManager.DoSimpleLog(GetCurrentUserInfo, ev_Exit);
       end;
 
     HallInfo:
@@ -1475,6 +1492,7 @@ begin
           dxfDesigner.Active := False;          
 
           RestFormState := Pass;
+          FLogManager.DoSimpleLog(GetCurrentUserInfo, ev_Exit);
         end;
       end;
 
@@ -1507,7 +1525,7 @@ begin
                     FFrontBase.CloseModifyTable(FModificationDataSet, Now);
                   end;
               end;
-
+              FLogManager.DoOrderLog(GetCurrentUserInfo, GetCurrentOrderInfo, ev_SaveOrder);
               case FPrevFormState of
                 ManagerPage:
                   CreateManagerPage;
@@ -1540,6 +1558,7 @@ begin
       begin
         RestFormState := Pass;
         FFrontBase.ClearCache;
+        FLogManager.DoSimpleLog(GetCurrentUserInfo, ev_Exit);
       end;
 
     HallsPage, HallInfo:
@@ -1551,6 +1570,7 @@ begin
         dxfDesigner.Active := False;        
 
         RestFormState := Pass;
+        FLogManager.DoSimpleLog(GetCurrentUserInfo, ev_Exit);
       end;
 
     ManagerInfo:
@@ -1561,6 +1581,7 @@ begin
         FLineInfoTable.Close;
 
         RestFormState := Pass;
+        FLogManager.DoSimpleLog(GetCurrentUserInfo, ev_Exit);
       end;
 
     MenuInfo:
@@ -1572,6 +1593,7 @@ begin
           begin
             if FFrontBase.UnLockUserOrder(FHeaderTable.FieldByName('ID').AsInteger) then
             begin
+              FLogManager.DoOrderLog(GetCurrentUserInfo, GetCurrentOrderInfo, ev_ExitOrder);
               case FPrevFormState of
                 ManagerPage:
                   CreateManagerPage;
@@ -1588,6 +1610,7 @@ begin
             end;
           end else
           begin
+            FLogManager.DoOrderLog(GetCurrentUserInfo, GetCurrentOrderInfo, ev_ExitOrder);
             case FPrevFormState of
               ManagerPage:
                 CreateManagerPage;
@@ -1848,6 +1871,7 @@ begin
       SaveCheck;
       actCancel.Execute;
     end;
+    FLogManager.DoOrderLog(GetCurrentUserInfo, GetCurrentOrderInfo, ev_PrintPreCheck);
   end else
   begin
     AdvTaskMessageDlg('Внимание', 'Пречек уже был распечатан!',
@@ -1858,6 +1882,7 @@ end;
 procedure TRestMainForm.actCancelPreCheckExecute(Sender: TObject);
 var
   FUserInfo: TUserInfo;
+  FLogInfo: TLogUserInfo;
 begin
   FUserInfo := FFrontBase.CheckUserPasswordWithForm;
   if FUserInfo.CheckedUserPassword then
@@ -1877,6 +1902,10 @@ begin
       FFrontBase.SaveOrderLog(FFrontBase.ContactKey, FUserInfo.UserKey,
         FHeaderTable.FieldByName('ID').AsInteger, 0, 1);
       btnPreCheck.Action := actPreCheck;
+
+      FLogInfo.UserID := FUserInfo.UserKey;
+      FLogInfo.UserName := FUserInfo.UserName;
+      FLogManager.DoOrderLog(FLogInfo, GetCurrentOrderInfo, ev_CancelPreCheck);
     end else
       AdvTaskMessageDlg('Внимание', cn_dontManagerPermission, mtWarning, [mbOK], 0);
   end;
@@ -2017,6 +2046,7 @@ begin
       FLineTable.EnableControls;
     end;
 
+    FLogManager.DoOrderLog(GetCurrentUserInfo, GetCurrentOrderInfo, ev_PayOrder);
     if (FFrontBase.Options.NoPrintEmptyCheck) and (SumToPay = 0) then
       exit;
 
@@ -3004,6 +3034,7 @@ begin
       btnPreCheck.Action := actPreCheck
     else
       btnPreCheck.Action := actCancelPreCheck;
+      FLogManager.DoOrderLog(GetCurrentUserInfo, GetCurrentOrderInfo, ev_EnterOrder);
   end else
     CreateNewOrder(FTableKey);
 end;
@@ -3197,6 +3228,7 @@ end;
 
 procedure TRestMainForm.actAllChecksExecute(Sender: TObject);
 begin
+  FLogManager.DoSimpleLog(GetCurrentUserInfo, ev_EnterAllOrder);
   CreateManagerPage;
 end;
 
@@ -3207,6 +3239,7 @@ end;
 
 procedure TRestMainForm.actKassirInfoExecute(Sender: TObject);
 begin
+  FLogManager.DoSimpleLog(GetCurrentUserInfo, ev_EnterPays);
   CreateKassirPage;
 end;
 

@@ -61,6 +61,8 @@ const
   BTN_FONT_SIZE = 'BTN_FONT_SIZE';
   cn_defaultHeight = 768;
   cn_defaultWidth = 1024;
+  LOG_SECTION_NAME = 'LOG';
+  LOG_DB_PATH = 'LOG_DB_PATH';
 
 var
   FrontData: TFrontData;
@@ -74,6 +76,7 @@ var
   cn_GridFontSize: Integer;
   cn_ButtonFontSize: Integer;
   cn_ButtonSmallFontSize: Integer;
+  cn_LodDataBasePath: String;
 
 implementation
 
@@ -143,6 +146,7 @@ begin
   cn_Width := Screen.Width;
   cn_MainPercent := 100;
   cn_ShutDownOnExit := False;
+  cn_LodDataBasePath := '';
 
   ApStyler.Style := GetDefaultTheme;
   FrontPanelStyler.SetComponentStyle(GetDefaultTheme);
@@ -360,6 +364,12 @@ begin
       end;
     end else
       FunctionFile.WriteString(BTN_FONT_SECTION_NAME, BTN_FONT_SIZE, '12');
+
+    if FunctionFile.ValueExists(LOG_SECTION_NAME, LOG_DB_PATH) then
+    begin
+      cn_LodDataBasePath := FunctionFile.ReadString(LOG_SECTION_NAME, LOG_DB_PATH, '')
+    end else
+      FunctionFile.WriteString(LOG_SECTION_NAME, LOG_DB_PATH, '');
 
   finally
     FreeAndNil(FunctionFile);
