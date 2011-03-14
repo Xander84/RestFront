@@ -140,8 +140,7 @@ begin
         PayLine.Next;
       end;
     except
-      on E: Exception do
-        raise Exception.Create('Ошибка при сохранении оплаты' + E.Message);
+      raise;
     end;
   finally
     PayLine.EnableControls;
@@ -204,21 +203,29 @@ end;
 function TAbstractFiscalRegister.PrintCheck(const Doc, DocLine,
   PayLine: TkbmMemTable; const FSums: TSaleSums): Boolean;
 begin
-  if Doc.State <> dsEdit then
-    Doc.Edit;
-  Doc.FieldByName('USR$WHOPAYOFFKEY').AsInteger := FFrontBase.ContactKey;
-  Doc.FieldByName('USR$PAY').AsInteger := 1;
-  Doc.FieldByName('USR$LOGICDATE').AsDateTime := FFrontBase.GetLogicDate;
-  Doc.FieldByName('USR$SYSNUM').AsInteger := 0;
-  if Doc.FieldByName('usr$timecloseorder').IsNull then
-    Doc.FieldByName('usr$timecloseorder').AsDateTime := Now;
+  try
+    if Doc.State <> dsEdit then
+      Doc.Edit;
+    Doc.FieldByName('USR$WHOPAYOFFKEY').AsInteger := FFrontBase.ContactKey;
+    Doc.FieldByName('USR$PAY').AsInteger := 1;
+    Doc.FieldByName('USR$LOGICDATE').AsDateTime := FFrontBase.GetLogicDate;
+    Doc.FieldByName('USR$SYSNUM').AsInteger := 0;
+    if Doc.FieldByName('usr$timecloseorder').IsNull then
+      Doc.FieldByName('usr$timecloseorder').AsDateTime := Now;
 
-  SavePayment(FFrontBase.ContactKey, Doc.FieldByName('ID').AsInteger,
-    PayLine, FFrontBase, FSums);
+    SavePayment(FFrontBase.ContactKey, Doc.FieldByName('ID').AsInteger,
+      PayLine, FFrontBase, FSums);
 
-  Doc.Post;
+    Doc.Post;
 
-  Result := True;
+    Result := True;
+  except
+    on E: Exception do
+    begin
+      raise Exception.Create('Ошибка при сохранении чека ' + E.Message);
+      Result := False;
+    end;
+  end;
 end;
 
 function TAbstractFiscalRegister.PrintX1ReportWithOutCleaning: Boolean;

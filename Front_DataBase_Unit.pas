@@ -2026,15 +2026,12 @@ begin
     if not FReadSQL.Transaction.InTransaction then
       FReadSQL.Transaction.StartTransaction;
     try
-
       FReadSQL.SQL.Text :=
         ' SELECT u.ingroup,  u.id userkey, con.name, con.id contactkey ' +
-        '   FROM ' +
-        '   GD_user u ' +
-        '   Left Join gd_contact con on con.id = u.contactkey ' +
+        ' FROM GD_USER u ' +
+        ' LEFT JOIN gd_contact con on con.id = u.contactkey ' +
         ' WHERE ' +
         '    u.passw = :Password ';
-
       FReadSQL.ParamBYName('Password').AsString := UserPassword;
       FReadSQL.ExecQuery;
       if not FReadSQL.EOF then
@@ -2044,8 +2041,7 @@ begin
         FUserName := FReadSQL.FieldByName('Name').AsString;
         FContactKey := FReadSQL.FieldByName('contactkey').AsInteger;
         FUserGroup := FReadSQL.FieldByName('contactkey').AsInteger;
-      end
-      else
+      end else
       begin
         Result := False;
         FUserKey := -1;
@@ -2464,21 +2460,21 @@ end;
 
 function TFrontBase.GetCashCode: Integer;
 begin
-  if not FCashCode > 0 then
+  if not (FCashCode > 0) then
     GetCashInfo;
   Result := FCashCode;
 end;
 
 function TFrontBase.GetFiscalComPort: Integer;
 begin
-  if not FFiscalComPort > 0 then
+  if not (FFiscalComPort > 0) then
     GetCashInfo;
   Result := FFiscalComPort;
 end;
 
 function TFrontBase.GetCashNumber: Integer;
 begin
-  if not FCashNumber > 0 then
+  if not (FCashNumber > 0) then
     GetCashInfo;
   Result := FCashNumber;
 end;
@@ -2575,23 +2571,18 @@ begin
       FSQL.ParamByName('usr$paykindkey').AsInteger := PayKindKey;
       FSQL.ParamByName('usr$sumncu').AsCurrency := Sum;
       FSQL.ParamByName('usr$datetime').AsDateTime := Now;
-      if PersonalCardKey <> -1 then
+      if PersonalCardKey > 0 then
         FSQL.ParamByName('usr$perscardkey').AsInteger := PersonalCardKey
       else
         FSQL.ParamByName('usr$perscardkey').Clear;
       FSQL.ExecQuery;
     except
-      on E: Exception do
-      begin
-        AdvTaskMessageDlg('Внимание', 'Ошибка при сохранении чека ' + E.Message, mtError, [mbOK], 0);
-        FCheckTransaction.Rollback;
-      end;
+      FCheckTransaction.Rollback;
+      raise;
     end;
-
   finally
     if FCheckTransaction.InTransaction then
       FCheckTransaction.Commit;
-
     FSQL.Free;
   end;
 end;
