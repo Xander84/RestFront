@@ -501,10 +501,12 @@ begin
         Doc.FieldByName('USR$SYSNUM').AsInteger := GetDocumentNumber;
         if Doc.FieldByName('usr$timecloseorder').IsNull then
           Doc.FieldByName('usr$timecloseorder').AsDateTime := Now;
-
-        SavePayment(FFrontBase.ContactKey, Doc.FieldByName('ID').AsInteger,
-          PayLine, FFrontBase, FSums);
-
+        try
+          SavePayment(FFrontBase.ContactKey, Doc.FieldByName('ID').AsInteger,
+            PayLine, FFrontBase, FSums);
+        except
+          {TODO: Issue 50}
+        end;
         Doc.Post;
       end;
     end else
