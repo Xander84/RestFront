@@ -334,6 +334,7 @@ type
     FEditMode: Boolean;
     //Текущее выбраное меню
     FMenuKey: Integer;
+    FActiveHallButton: String;
     //Указатель на нажатую кнопку
     FSelectedButton: TObject;
 
@@ -488,6 +489,7 @@ begin
   FTablesList := TObjectList.Create;
   FHallButtonList := TObjectList.Create;
   FEditMode := False;
+  FActiveHallButton := '';
 
   CreateDataSets;
   RestFormState := Pass;
@@ -990,6 +992,8 @@ begin
 end;
 
 procedure TRestMainForm.CreateHallButtonList;
+var
+  FButton: TComponent;
 begin
   if FHallsTable.Active then
   begin
@@ -999,6 +1003,12 @@ begin
       AddHallButton;
 
       FHallsTable.Next;
+    end;
+    if FActiveHallButton <> '' then
+    begin
+      FButton := pnlHalls.FindComponent(FActiveHallButton);
+      if Assigned(FButton) then
+        TAdvSmoothButton(FButton).Click;
     end;
   end;
 end;
@@ -1186,11 +1196,15 @@ begin
 end;
 
 procedure TRestMainForm.HallButtonOnClick(Sender: TObject);
+var
+  FButton: TButton;
 begin
   LockWindowUpdate(Handle);
   try
     RemoveTableButton;
-    CreateTableButtonList(TButton(Sender).Tag);
+    FButton := TButton(Sender);
+    CreateTableButtonList(FButton.Tag);
+    FActiveHallButton := FButton.Name;
   finally
     LockWindowUpdate(0);
   end;
