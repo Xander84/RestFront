@@ -24,9 +24,16 @@ const
   ev_PrintPreCheck    = 12;
   ev_CancelPreCheck   = 13;
   ev_PayOrder         = 14;
+  ev_DiscountCard     = 15;
+  ev_DiscountPercent  = 16;
+  ev_DevideOrder      = 17;
   // event's with good
-  ev_AddGood          = 15;
-  ev_RemoveGood       = 16;
+  ev_AddGoodToOrder   = 18;
+  ev_AddQuantity      = 19;
+  ev_RemoveQuantity   = 20;
+  ev_RemoveGood       = 21;
+  ev_DevideQuantityGood  = 22;
+  ev_ModifyGood       = 23;
 
 type
   TLogUserInfo = packed record
@@ -75,6 +82,8 @@ type
     procedure DoSimpleLog(const UserInfo: TLogUserInfo; Event: Integer);
     procedure DoOrderLog(const UserInfo: TLogUserInfo;
       OrderInfo: TLogOrderInfo; Event: Integer);
+    procedure DoOrderGoodLog(const UserInfo: TLogUserInfo; OrderInfo: TLogOrderInfo;
+      GoodInfo: TLogGoodInfo; Event: Integer);
     procedure WriteLog(const UserInfo: TLogUserInfo; OrderInfo: TLogOrderInfo;
       Event: Integer);
 
@@ -123,7 +132,7 @@ begin
         end;
         FSQL.Close;
       except
-        raise ;
+        raise;
       end;
     finally
       FSQL.Free;
@@ -172,7 +181,7 @@ begin
         end;
         FSQL.Close;
       except
-        raise ;
+        raise;
       end;
     finally
       FSQL.Free;
@@ -217,7 +226,7 @@ begin
         end;
         FSQL.Close;
       except
-        raise ;
+        raise;
       end;
     finally
       FSQL.Free;
@@ -263,6 +272,56 @@ begin
   FIDSQL.Free;
 
   inherited;
+end;
+
+procedure TLogManager.DoOrderGoodLog(const UserInfo: TLogUserInfo;
+  OrderInfo: TLogOrderInfo; GoodInfo: TLogGoodInfo; Event: Integer);
+var
+  FSQL: TIBSQL;
+  FTransaction: TIBTransaction;
+  FID: Integer;
+begin
+  if not FInit then
+    exit;
+
+  try
+    CheckUser(UserInfo);
+    CheckOrder(OrderInfo);
+    CheckGood(GoodInfo);
+
+    FSQL := TIBSQL.Create(nil);
+    FTransaction := TIBTransaction.Create(nil);
+    try
+      FTransaction.DefaultDatabase := FDataBase;
+      FTransaction.StartTransaction;
+      FSQL.Transaction := FTransaction;
+      FSQL.SQL.Text := ' INSERT INTO GD_GOODLOG(ID, GOODKEY, SUMM, QUANTITY) ' +
+        ' VALUES(:ID, :GOODKEY, :SUMM, :QUANTITY) ';
+      FID := GetNextID;
+      FSQL.ParamByName('ID').AsInteger := FID;
+      FSQL.ParamByName('GOODKEY').AsInteger := FGoodList.Items[GoodInfo.GoodID];
+      FSQL.ParamByName('SUMM').AsCurrency := GoodInfo.Sum;
+      FSQL.ParamByName('QUANTITY').AsCurrency := GoodInfo.Quantity;
+      FSQL.ExecQuery;
+
+      FSQL.Close;
+      FSQL.SQL.Text := ' INSERT INTO GD_EVENTLOG(USERKEY, EVENTKEY, ORDERKEY, GOODLOGKEY, EDITIONDATE) ' +
+        ' VALUES(:USERKEY, :EVENTKEY, :ORDERKEY, :GOODLOGKEY, :ED) ';
+      FSQL.ParamByName('USERKEY').AsInteger := FUserList.Items[UserInfo.UserID];
+      FSQL.ParamByName('EVENTKEY').AsInteger := Event;
+      FSQL.ParamByName('GOODLOGKEY').AsInteger := FID;
+      FSQL.ParamByName('ORDERKEY').AsInteger := FOrderList.Items[OrderInfo.OrderID];
+      FSQL.ParamByName('ED').AsDateTime := Now;
+      FSQL.ExecQuery;
+      FTransaction.Commit;
+    finally
+      FSQL.Free;
+      FTransaction.Free;
+    end;
+  except
+    on E: Exception do
+      raise Exception.Create('Ошибка логирования ' + E.Message);
+  end;
 end;
 
 procedure TLogManager.DoOrderLog(const UserInfo: TLogUserInfo;
@@ -330,7 +389,6 @@ begin
   except
     on E: Exception do
       raise Exception.Create('Ошибка логирования ' + E.Message);
-
   end;
 end;
 

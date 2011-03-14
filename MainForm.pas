@@ -1837,6 +1837,7 @@ end;
 procedure TRestMainForm.actCutCheckExecute(Sender: TObject);
 var
   FUserInfo: TUserInfo;
+  FLogUserInfo: TLogUserInfo;
   MainOrderKey: Integer;
 begin
   //1. Проверяем пароль менеджера
@@ -1848,7 +1849,9 @@ begin
       AdvTaskMessageDlg('Внимание', cn_dontManagerPermission, mtWarning, [mbOK], 0);
       exit;
     end;
-
+    FLogUserInfo.UserID := FUserInfo.UserKey;
+    FLogUserInfo.UserName := FUserInfo.UserName;
+    FLogManager.DoOrderLog(FLogUserInfo, GetCurrentOrderInfo, ev_DevideOrder);
     //2. сохраняем заказ, получаем его ID
     DBGrMain.DataSource := nil;
     try
@@ -1931,6 +1934,7 @@ var
   FSelectForm: TPercOrCard;
   FDiscountTypeForm: TDiscountType;
   FUserInfo: TUserInfo;
+  FLogUserInfo: TLogUserInfo;
   DiscountKey: Integer;
   FChooseDiscountForm: TChooseDiscountCard;
 begin
@@ -1964,6 +1968,9 @@ begin
     begin
       if (FUserInfo.UserInGroup and FFrontBase.Options.ManagerGroupMask) <> 0 then
       begin
+        FLogUserInfo.UserID := FUserInfo.UserKey;
+        FLogUserInfo.UserName := FUserInfo.UserName;
+        FLogManager.DoOrderLog(FLogUserInfo, GetCurrentOrderInfo, ev_DiscountPercent);
         FDiscountTypeForm := TDiscountType.Create(nil);
         try
           FDiscountTypeForm.FrontBase := FFrontBase;
@@ -1998,6 +2005,7 @@ begin
   end
   else if DiscountType = 2 then
   begin
+    FLogManager.DoOrderLog(GetCurrentUserInfo, GetCurrentOrderInfo, ev_DiscountCard);
     FChooseDiscountForm := TChooseDiscountCard.Create(nil);
     try
       FChooseDiscountForm.UserID := FFrontBase.ContactKey;
