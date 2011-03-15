@@ -1306,6 +1306,7 @@ begin
     FLineTable.FieldByName('usr$costncu').AsCurrency := FGoodDataSet.FieldByName('COST').AsCurrency;
     FLineTable.FieldByName('MODIFYSTRING').AsString := S;
     FLineTable.FieldByName('EXTRAMODIFY').AsString := ES;
+    FLineTable.FieldByName('USR$COMPUTERNAME').AsString := FFrontBase.GetLocalComputerName;
     FLineTable.Post;
 
     FGoodInfo.GoodID := GoodKey;
