@@ -645,6 +645,7 @@ begin
   FTablesInfoTable.FieldDefs.Add('USR$RESPKEY', ftInteger , 0);
   FTablesInfoTable.FieldDefs.Add('ORDERKEY', ftInteger, 0);
   FTablesInfoTable.FieldDefs.Add('ISLOCKED', ftInteger, 0);
+  FTablesInfoTable.FieldDefs.Add('USR$COMPUTERNAME', ftString, 20);
   FTablesInfoTable.CreateTable;
   FTablesInfoTable.Open;
 
@@ -771,6 +772,7 @@ begin
   FButton.RespKey := FTablesInfoTable.FieldByName('USR$RESPKEY').AsInteger;
   FButton.IsLocked := FTablesInfoTable.FieldByName('ISLOCKED').AsInteger = 1;
   FButton.Number := FTablesInfoTable.FieldByName('USR$NUMBER').AsString;
+  FButton.ComputerName := FTablesInfoTable.FieldByName('USR$COMPUTERNAME').AsString;
   if FRestFormState = HallsPage then
     FButton.OnClick := TableButtonOnClick;
 
@@ -1121,6 +1123,7 @@ begin
     FHeaderTable.FieldByName('USR$TIMEORDER').Value := Time;
     if TableKey > 0 then
       FHeaderTable.FieldByName('USR$TABLEKEY').AsInteger := TableKey;
+    FHeaderTable.FieldByName('USR$COMPUTERNAME').AsString := FFrontBase.GetLocalComputerName;
     FHeaderTable.Post;
   end;
   FLogManager.DoSimpleEvent(ev_CreateNewOrder);
@@ -1447,7 +1450,9 @@ begin
           begin
             AdvTaskMessageDlg('Внимание', cn_dontManagerPermission, mtWarning, [mbOK], 0);
             exit;
-          end;
+          end else
+          if (FFrontBase.GetLocalComputerName <> FOrderDataSet.FieldByName('USR$COMPUTERNAME').AsString) then
+            exit;
         end else
           exit;
       end else
@@ -3073,7 +3078,10 @@ begin
           begin
             AdvTaskMessageDlg('Внимание', cn_dontManagerPermission, mtWarning, [mbOK], 0);
             exit;
-          end;
+          end else
+          if FFrontBase.GetLocalComputerName <> FRestTable.ComputerName then
+            exit;
+
         end else
           exit;
       end else

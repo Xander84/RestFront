@@ -455,6 +455,7 @@ begin
   DS.FieldDefs.Add('editorkey', ftInteger, 0);
   DS.FieldDefs.Add('editiondate', ftTimeStamp, 0);
   DS.FieldDefs.Add('USR$TABLEKEY', ftInteger, 0);
+  DS.FieldDefs.Add('USR$COMPUTERNAME', ftString, 20);
   DS.CreateTable;
 end;
 
@@ -484,6 +485,7 @@ begin
   DS.FieldDefs.Add('MODIFYSTRING', ftString, 1024);
   DS.FieldDefs.Add('PARENT', ftInteger, 0);
   DS.FieldDefs.Add('EXTRAMODIFY', ftString, 60);
+  DS.FieldDefs.Add('USR$COMPUTERNAME', ftString, 20);
   DS.CreateTable;
 end;
 
@@ -633,7 +635,8 @@ const
     '       usr$userdisckey,         ' +
     '       usr$discountkey,         ' +
     '       usr$bonussum,            ' +
-    '       usr$tablekey)            ' +
+    '       usr$tablekey,            ' +
+    '       usr$computername)        ' +
     '     values (                   ' +
     '       :documentkey,            ' +
     '       :usr$respkey,            ' +
@@ -646,7 +649,8 @@ const
     '       :usr$userdisckey,        ' +
     '       :usr$discountkey,        ' +
     '       :usr$bonussum,           ' +
-    '       :usr$tablekey)           ';
+    '       :usr$tablekey,           ' +
+    '       :usr$computername)       ';
 
   OrderLineInsert =
     '  insert into usr$mn_orderline (    ' +
@@ -668,7 +672,8 @@ const
     '      usr$logicdate,                ' +
     '      usr$depotkey,                 ' +
     '      usr$doublebonus,              ' +
-    '      usr$extramodify)              ' +
+    '      usr$extramodify,              ' +
+    '      usr$computername)             ' +
     '    values (                        ' +
     '      :documentkey,                 ' +
     '      :masterkey,                   ' +
@@ -688,7 +693,8 @@ const
     '      :usr$logicdate,               ' +
     '      :usr$depotkey,                ' +
     '      :usr$doublebonus,             ' +
-    '      :usr$extramodify)             ' ;
+    '      :usr$extramodify,             ' +
+    '      :usr$computername)            ' ;
 
   UpdateOrder =
     '      update usr$mn_order                      ' +
@@ -703,6 +709,7 @@ const
     '          usr$bonussum = :usr$bonussum,        ' +
     '          usr$timecloseorder = :usr$timecloseorder, ' +
     '          usr$pay = :usr$pay,                  ' +
+    '          usr$computername = :usr$computername,' +
     '          USR$ISLOCKED = 0                     ' +
     '      where (documentkey = :documentkey)       ';
 
@@ -817,6 +824,7 @@ begin
           updOrder.ParamByName('usr$timecloseorder').Value := HeaderTable.FieldByName('usr$timecloseorder').Value;
           updOrder.ParamByName('documentkey').AsInteger := HeaderTable.FieldByName('ID').AsInteger;
           updOrder.ParamByName('usr$pay').AsInteger := HeaderTable.FieldByName('usr$pay').AsInteger;
+          updOrder.ParamByName('usr$computername').AsString := HeaderTable.FieldByName('USR$COMPUTERNAME').AsString;
           updOrder.ExecQuery;
 
         end else
@@ -848,6 +856,7 @@ begin
           InsOrder.ParamByName('usr$timecloseorder').Value := HeaderTable.FieldByName('usr$timecloseorder').Value;
           InsOrder.ParamByName('documentkey').AsInteger := MasterID;
           InsOrder.ParamByName('usr$tablekey').AsInteger := HeaderTable.FieldByName('usr$tablekey').AsInteger;
+          InsOrder.ParamByName('usr$computername').AsString := HeaderTable.FieldByName('USR$COMPUTERNAME').AsString;
           InsOrder.ExecQuery;
         end;
       end;
@@ -905,6 +914,7 @@ begin
               InsOrderLine.ParamByName('usr$costeq').AsVariant := '';  //????
               InsOrderLine.ParamByName('usr$depotkey').AsVariant := ''; //????
               InsOrderLine.ParamByName('usr$extramodify').AsString := LineTable.FieldByName('extramodify').AsString;
+              InsOrderLine.ParamByName('usr$computername').AsString := LineTable.FieldByName('USR$COMPUTERNAME').AsString;
               InsOrderLine.ExecQuery;
 
               ModifyTable.First;
@@ -3340,7 +3350,7 @@ begin
   FReadSQL.Close;
   try
     FReadSQL.SQL.Text :=
-      'SELECT T.*, U.USR$RESPKEY, U.USR$ISLOCKED, U.DOCUMENTKEY ' +
+      'SELECT T.*, U.USR$RESPKEY, U.USR$ISLOCKED, U.DOCUMENTKEY, U.USR$COMPUTERNAME ' +
       'FROM USR$MN_TABLE T ' +
       'LEFT JOIN USR$MN_ORDER U ON (U.USR$TABLEKEY = T.ID AND U.USR$PAY <> 1) ' +
       'WHERE T.USR$HALLKEY = :ID ';
@@ -3358,6 +3368,7 @@ begin
       MemTable.FieldByName('USR$RESPKEY').AsInteger := FReadSQL.FieldByName('USR$RESPKEY').AsInteger;
       MemTable.FieldByName('ORDERKEY').AsInteger := FReadSQL.FieldByName('DOCUMENTKEY').AsInteger;
       MemTable.FieldByName('ISLOCKED').AsInteger := FReadSQL.FieldByName('USR$ISLOCKED').AsInteger;
+      MemTable.FieldByName('USR$COMPUTERNAME').AsString := FReadSQL.FieldByName('USR$COMPUTERNAME').AsString;
       MemTable.Post;
 
       FReadSQL.Next;

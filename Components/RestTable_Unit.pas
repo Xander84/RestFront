@@ -23,6 +23,7 @@ type
     FOrderKey: Integer;
     FRespKey: Integer;
     FIsLocked: Boolean;
+    FComputerName: String;
     procedure SetPosX(const Value: Integer);
     procedure SetPosY(const Value: Integer);
     procedure SetHallKey(const Value: Integer);
@@ -41,6 +42,7 @@ type
     procedure SetRespKey(const Value: Integer);
     procedure SetIsLocked(const Value: Boolean);
     procedure SetNumber(const Value: String);
+    procedure SetComputerName(const Value: String);
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -56,6 +58,7 @@ type
     // занят или нет
     property IsEmpty: Boolean read FIsEmpty write SetIsEmpty;
     property IsLocked: Boolean read FIsLocked write SetIsLocked;
+    property ComputerName: String read FComputerName write SetComputerName;
     property ID: Integer read FID write SetID;
     property OrderKey: Integer read FOrderKey write SetOrderKey;
     property RespKey: Integer read FRespKey write SetRespKey;
@@ -232,6 +235,11 @@ begin
     FSQL.Free;
     FTransaction.Free;
   end;
+end;
+
+procedure TRestTable.SetComputerName(const Value: String);
+begin
+  FComputerName := Value;
 end;
 
 procedure TRestTable.SetFrontBase(const Value: TFrontBase);
