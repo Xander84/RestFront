@@ -4,7 +4,7 @@ interface
 
 uses
   Front_DataBase_Unit, Classes, SysUtils, Forms, Generics.Collections, IBSQL,
-  IBDatabase;
+  IBDatabase, IB, IBScript;
 
 const
   // simple event's UserKey, DateTime, Event
@@ -34,6 +34,178 @@ const
   ev_RemoveGood       = 21;
   ev_DevideQuantityGood  = 22;
   ev_ModifyGood       = 23;
+
+const
+  DataSQL =
+    ' EXECUTE BLOCK '#13#10 +
+    ' AS BEGIN '#13#10 +
+    ' INSERT INTO GD_EVENT (ID, EVENTNAME) VALUES (1, ''Вход в программу пользователя''); '#13#10 +
+    ' INSERT INTO GD_EVENT (ID, EVENTNAME) VALUES (2, ''Выход из программы пользователя''); '#13#10 +
+    ' INSERT INTO GD_EVENT (ID, EVENTNAME) VALUES (3, ''Введен неверный пароль''); '#13#10 +
+    ' INSERT INTO GD_EVENT (ID, EVENTNAME) VALUES (4, ''Запуск программы''); '#13#10 +
+    ' INSERT INTO GD_EVENT (ID, EVENTNAME) VALUES (5, ''Закрытие программы''); '#13#10 +
+    ' INSERT INTO GD_EVENT (ID, EVENTNAME) VALUES (6, ''Создание нового заказа''); '#13#10 +
+    ' INSERT INTO GD_EVENT (ID, EVENTNAME) VALUES (7, ''Вход в просмотр заказов для оплаты''); '#13#10 +
+    ' INSERT INTO GD_EVENT (ID, EVENTNAME) VALUES (8, ''Вход в просмотр всех заказов (режим менеджера)''); '#13#10 +
+    ' INSERT INTO GD_EVENT (ID, EVENTNAME) VALUES (9, ''Вход в заказ''); '#13#10 +
+    ' INSERT INTO GD_EVENT (ID, EVENTNAME) VALUES (10, ''Сохранение заказа''); '#13#10 +
+    ' INSERT INTO GD_EVENT (ID, EVENTNAME) VALUES (11, ''Выход из заказа без сохранения''); '#13#10 +
+    ' INSERT INTO GD_EVENT (ID, EVENTNAME) VALUES (12, ''Печать пречека''); '#13#10 +
+    ' INSERT INTO GD_EVENT (ID, EVENTNAME) VALUES (13, ''Отмена пречека''); '#13#10 +
+    ' INSERT INTO GD_EVENT (ID, EVENTNAME) VALUES (14, ''Оплата заказа''); '#13#10 +
+    ' INSERT INTO GD_EVENT (ID, EVENTNAME) VALUES (15, ''Скидка карточкой''); '#13#10 +
+    ' INSERT INTO GD_EVENT (ID, EVENTNAME) VALUES (16, ''Скидка из справочника''); '#13#10 +
+    ' INSERT INTO GD_EVENT (ID, EVENTNAME) VALUES (17, ''Разделение заказа''); '#13#10 +
+    ' END; ';
+
+  DataBaseSQL =
+    ' CREATE DOMAIN DCURRENCY AS '#13#10 +
+    ' DECIMAL(15,4); '#13#10 +
+    ' CREATE DOMAIN DEDITIONDATE AS '#13#10 +
+    ' TIMESTAMP '#13#10 +
+    ' DEFAULT CURRENT_TIMESTAMP; '#13#10 +
+    ' '#13#10 +
+    ' CREATE DOMAIN DFOREIGNKEY AS '#13#10 +
+    ' INTEGER; '#13#10 +
+    ' '#13#10 +
+    ' CREATE DOMAIN DINTEGER_NOTNULL AS '#13#10 +
+    ' INTEGER '#13#10 +
+    ' NOT NULL; '#13#10 +
+    ' '#13#10 +
+    ' CREATE DOMAIN DINTKEY AS '#13#10 +
+    ' INTEGER '#13#10 +
+    ' NOT NULL '#13#10 +
+    ' CHECK (VALUE > 0); '#13#10 +
+    ' '#13#10 +
+    ' CREATE DOMAIN DNAME AS '#13#10 +
+    ' VARCHAR(60) '#13#10 +
+    ' NOT NULL '#13#10 +
+    ' COLLATE PXW_CYRL; '#13#10 +
+    ' '#13#10 +
+    ' CREATE DOMAIN DTEXT40 AS '#13#10 +
+    ' VARCHAR(40) '#13#10 +
+    ' COLLATE PXW_CYRL; '#13#10 +
+    ' '#13#10 +
+    ' CREATE GENERATOR GD_G_UNIQUE; '#13#10 +
+    ' SET GENERATOR GD_G_UNIQUE TO 100; '#13#10 +
+    ' '#13#10 +
+    ' CREATE TABLE GD_EVENT ( '#13#10 +
+    '     ID         DINTKEY NOT NULL, '#13#10 +
+    '     EVENTNAME  DNAME '#13#10 +
+    ' ); '#13#10 +
+    ' '#13#10 +
+    ' CREATE TABLE GD_EVENTLOG ( '#13#10 +
+    '     ID           DINTKEY NOT NULL, '#13#10 +
+    '     USERKEY      DFOREIGNKEY, '#13#10 +
+    '     EVENTKEY     DFOREIGNKEY, '#13#10 +
+    '     EDITIONDATE  DEDITIONDATE, '#13#10 +
+    '     ORDERKEY     DFOREIGNKEY, '#13#10 +
+    '     GOODLOGKEY   DFOREIGNKEY '#13#10 +
+    ' ); '#13#10 +
+    ' '#13#10 +
+    ' CREATE TABLE GD_GOOD ( '#13#10 +
+    '     ID        DINTKEY NOT NULL, '#13#10 +
+    '     GOODNAME  DNAME, '#13#10 +
+    '     GOODKEY   DINTEGER_NOTNULL '#13#10 +
+    ' ); '#13#10 +
+    ' '#13#10 +
+    ' CREATE TABLE GD_GOODLOG ( '#13#10 +
+    '     ID        DINTKEY NOT NULL, '#13#10 +
+    '     GOODKEY   DFOREIGNKEY, '#13#10 +
+    '     SUMM      DCURRENCY, '#13#10 +
+    '     QUANTITY  DCURRENCY '#13#10 +
+    ' ); '#13#10 +
+    ' '#13#10 +
+    ' CREATE TABLE GD_ORDER ( '#13#10 +
+    '     ID        DINTKEY NOT NULL, '#13#10 +
+    '     NUMBER    DNAME, '#13#10 +
+    '     ORDERKEY  DINTEGER_NOTNULL '#13#10 +
+    ' ); '#13#10 +
+    ' '#13#10 +
+    ' CREATE TABLE GD_USER ( '#13#10 +
+    '     ID        DINTKEY NOT NULL, '#13#10 +
+    '     USERNAME  DTEXT40, '#13#10 +
+    '     USERKEY   DINTEGER_NOTNULL '#13#10 +
+    ' ); '#13#10 +
+    ' '#13#10 +
+    ' ALTER TABLE GD_EVENT ADD CONSTRAINT GD_PK_EVENT PRIMARY KEY (ID); '#13#10 +
+    ' ALTER TABLE GD_EVENTLOG ADD CONSTRAINT GD_PK_EVENTLOG PRIMARY KEY (ID); '#13#10 +
+    ' ALTER TABLE GD_GOOD ADD CONSTRAINT GD_PK_GOOD PRIMARY KEY (ID); '#13#10 +
+    ' ALTER TABLE GD_GOODLOG ADD CONSTRAINT GD_PK_GOODLOG PRIMARY KEY (ID); '#13#10 +
+    ' ALTER TABLE GD_ORDER ADD CONSTRAINT GD_PK_ORDER PRIMARY KEY (ID); '#13#10 +
+    ' ALTER TABLE GD_USER ADD CONSTRAINT GD_PK_USER PRIMARY KEY (ID); '#13#10 +
+    ' '#13#10 +
+    ' ALTER TABLE GD_EVENTLOG ADD CONSTRAINT FK_GD_EVENTLOG_EVENTKEY FOREIGN KEY (EVENTKEY) REFERENCES GD_EVENT (ID) ON UPDATE CASCADE; '#13#10 +
+    ' ALTER TABLE GD_EVENTLOG ADD CONSTRAINT FK_GD_EVENTLOG_GOODLOGKEY FOREIGN KEY (GOODLOGKEY) REFERENCES GD_GOODLOG (ID) ON UPDATE CASCADE; '#13#10 +
+    ' ALTER TABLE GD_EVENTLOG ADD CONSTRAINT FK_GD_EVENTLOG_ORDERKEY FOREIGN KEY (ORDERKEY) REFERENCES GD_ORDER (ID) ON UPDATE CASCADE; '#13#10 +
+    ' ALTER TABLE GD_EVENTLOG ADD CONSTRAINT FK_GD_EVENTLOG_USERKEY FOREIGN KEY (USERKEY) REFERENCES GD_USER (ID) ON UPDATE CASCADE; '#13#10 +
+    ' ALTER TABLE GD_GOODLOG ADD CONSTRAINT FK_GD_GOODLOG_GOODKEY FOREIGN KEY (GOODKEY) REFERENCES GD_GOOD (ID) ON UPDATE CASCADE; '#13#10 +
+    ' '#13#10 +
+    ' CREATE INDEX GD_GOOD_IDX1 ON GD_GOOD (GOODKEY); '#13#10 +
+    ' CREATE INDEX GD_ORDER_IDX1 ON GD_ORDER (ORDERKEY); '#13#10 +
+    ' CREATE INDEX GD_USER_IDX1 ON GD_USER (USERKEY); '#13#10 +
+    ' '#13#10 +
+    ' SET TERM ^ ; '#13#10 +
+    ' '#13#10 +
+    ' /* Trigger: GD_BI_EVENTLOG */ '#13#10 +
+    ' CREATE TRIGGER GD_BI_EVENTLOG FOR GD_EVENTLOG '#13#10 +
+    ' ACTIVE BEFORE INSERT POSITION 0 '#13#10 +
+    ' AS '#13#10 +
+    ' BEGIN '#13#10 +
+    '   IF (NEW.ID IS NULL) THEN '#13#10 +
+    '     NEW.ID = GEN_ID(gd_g_unique, 1); '#13#10 +
+    ' END '#13#10 +
+    ' ^  '#13#10 +
+    ' '#13#10 +
+    ' /* Trigger: GD_BI_GOOD */ '#13#10 +
+    ' CREATE TRIGGER GD_BI_GOOD FOR GD_GOOD '#13#10 +
+    ' ACTIVE BEFORE INSERT POSITION 0 '#13#10 +
+    ' AS '#13#10 +
+    ' BEGIN '#13#10 +
+    '   IF (NEW.ID IS NULL) THEN '#13#10 +
+    '     NEW.ID = GEN_ID(gd_g_unique, 1); '#13#10 +
+    ' END '#13#10 +
+    ' ^ '#13#10 +
+    ' '#13#10 +
+    ' /* Trigger: GD_BI_GOODLOG */ '#13#10 +
+    ' CREATE TRIGGER GD_BI_GOODLOG FOR GD_GOODLOG '#13#10 +
+    ' ACTIVE BEFORE INSERT POSITION 0 '#13#10 +
+    ' AS '#13#10 +
+    ' BEGIN '#13#10 +
+    '   IF (NEW.ID IS NULL) THEN '#13#10 +
+    '     NEW.ID = GEN_ID(gd_g_unique, 1); '#13#10 +
+    ' END '#13#10 +
+    ' ^ '#13#10 +
+    ' '#13#10 +
+    ' /* Trigger: GD_BI_ORDER */ '#13#10 +
+    ' CREATE TRIGGER GD_BI_ORDER FOR GD_ORDER '#13#10 +
+    ' ACTIVE BEFORE INSERT POSITION 0 '#13#10 +
+    ' AS '#13#10 +
+    ' BEGIN '#13#10 +
+    '   IF (NEW.ID IS NULL) THEN '#13#10 +
+    '     NEW.ID = GEN_ID(gd_g_unique, 1); '#13#10 +
+    ' END '#13#10 +
+    ' ^ '#13#10 +
+    ' '#13#10 +
+    ' /* Trigger: GD_BI_USER */ '#13#10 +
+    ' CREATE TRIGGER GD_BI_USER FOR GD_USER '#13#10 +
+    ' ACTIVE BEFORE INSERT POSITION 0 '#13#10 +
+    ' AS '#13#10 +
+    ' BEGIN '#13#10 +
+    '   IF (NEW.ID IS NULL) THEN '#13#10 +
+    '     NEW.ID = GEN_ID(gd_g_unique, 1); '#13#10 +
+    ' END '#13#10 +
+    ' ^ '#13#10 +
+    ' '#13#10 +
+    ' SET TERM ; ^ '#13#10 +
+    ' '#13#10 +
+    ' GRANT ALL ON GD_EVENT TO ADMINISTRATOR; '#13#10 +
+    ' GRANT ALL ON GD_EVENTLOG TO ADMINISTRATOR; '#13#10 +
+    ' GRANT ALL ON GD_GOOD TO ADMINISTRATOR; '#13#10 +
+    ' GRANT ALL ON GD_GOODLOG TO ADMINISTRATOR; '#13#10 +
+    ' GRANT ALL ON GD_ORDER TO ADMINISTRATOR; '#13#10 +
+    ' GRANT ALL ON GD_USER TO ADMINISTRATOR; ';
+
 
 type
   TLogUserInfo = packed record
@@ -437,22 +609,83 @@ begin
 end;
 
 procedure TLogManager.SetDatabaseName(const Value: String);
+var
+  FScript: TIBScript;
+  FSQL: TIBSQL;
+  FTransaction: TIBTransaction;
 begin
   FDataBaseName := Value;
   if FDataBaseName <> '' then
   begin
     // проверить наличие базы, если нет, тогда создаём её.
+    FDataBase.DatabaseName := FDataBaseName;
+    FDatabase.Params.Add('user_name=SYSDBA');
+    FDatabase.Params.Add('password=masterkey');
+    FDatabase.Params.Add('lc_ctype=WIN1251');
+    FDatabase.SQLDialect := 3;
     try
-      FDataBase.DatabaseName := FDataBaseName;
-      FDatabase.Params.Add('user_name=SYSDBA');
-      FDatabase.Params.Add('password=masterkey');
-      FDatabase.Params.Add('lc_ctype=WIN1251');
-      FDatabase.SQLDialect := 3;
       FDataBase.Open;
 
       FInit := True;
     except
-      FInit := False;
+      on E: Exception do
+      begin
+        if (E is EIBInterBaseError) and ((EIBInterBaseError(E).SQLCode = - 902) and (EIBInterBaseError(E).IBErrorCode = 335544344)) then
+        begin
+          FDataBase.ForceClose;
+          try
+            //Create DB
+            FDataBase.Params.Clear;
+            FDataBase.DatabaseName := FDataBaseName;
+            FDataBase.Params.Add('user ''SYSDBA'' password ''masterkey'' ');
+            FDataBase.Params.Add('page_size 8192');
+            FDataBase.Params.Add('default character set win1251');
+            FDatabase.SQLDialect := 3;
+            FDataBase.CreateDatabase;
+            FDataBase.Connected := False;
+            //Connect to DB
+            FDataBase.DatabaseName := FDataBaseName;
+            FDatabase.Params.Add('user_name=SYSDBA');
+            FDatabase.Params.Add('password=masterkey');
+            FDatabase.Params.Add('lc_ctype=WIN1251');
+            FDatabase.SQLDialect := 3;
+            FDataBase.Open;
+            //Create structure
+            FScript := TIBScript.Create(nil);
+            FTransaction := TIBTransaction.Create(nil);
+            FSQL := TIBSQL.Create(nil);
+            try
+              FSQL.Transaction := FTransaction;
+              FScript.Database := FDataBase;
+              FScript.Transaction := FTransaction;
+              FTransaction.DefaultDatabase := FDataBase;
+              FTransaction.StartTransaction;
+
+              FScript.Script.Text := DataBaseSQL;
+              FScript.ExecuteScript;
+              if FTransaction.InTransaction then
+                FTransaction.Commit;
+
+              FTransaction.StartTransaction;
+              FSQL.ParamCheck := False;
+              FSQL.SQL.Text := DataSQL;
+              FSQL.ExecQuery;
+              FSQL.Close;
+
+              if FTransaction.InTransaction then
+                FTransaction.Commit;
+              FInit := True;
+            finally
+              FSQL.Free;
+              FScript.Free;
+              FTransaction.Free;
+            end;
+          except
+            FInit := False;
+          end;
+        end else
+          FInit := False;
+      end;
     end;
   end  else
   begin
