@@ -392,6 +392,7 @@ type
     procedure SaveAllOrder;
 
     function GetCurrentUserInfo: TLogUserInfo;
+    function GetUserInfo(const UserInfo: TUserInfo): TLogUserInfo;
     function GetCurrentOrderInfo: TLogOrderInfo;
     //Скроллирование
     procedure ScrollControl(const FControl: TWinControl; const Down: Boolean;
@@ -1232,11 +1233,18 @@ begin
   Result.UserName := FFrontBase.UserName;
 end;
 
+function TRestMainForm.GetUserInfo(const UserInfo: TUserInfo): TLogUserInfo;
+begin
+  Result.UserID := UserInfo.UserKey;
+  Result.UserName := UserInfo.UserName;
+end;
+
 procedure TRestMainForm.GoodButtonOnClick(Sender: TObject);
 var
   GoodKey: Integer;
   FForm: TModificationForm;
   S, ES: String;
+  FGoodInfo: TLogGoodInfo;
 begin
   if not FHeaderTable.FieldByName('usr$timecloseorder').IsNull then
   begin
@@ -1296,6 +1304,12 @@ begin
     FLineTable.FieldByName('MODIFYSTRING').AsString := S;
     FLineTable.FieldByName('EXTRAMODIFY').AsString := ES;
     FLineTable.Post;
+
+    FGoodInfo.GoodID := GoodKey;
+    FGoodInfo.GoodName := FLineTable.FieldByName('GOODNAME').AsString;
+    FGoodInfo.Quantity := 1;
+    FGoodInfo.Sum := FGoodDataSet.FieldByName('COST').AsCurrency;
+    FLogManager.DoOrderGoodLog(GetCurrentUserInfo, GetCurrentOrderInfo, FGoodInfo, ev_AddGoodToOrder);
     WritePos(FLineTable);
   end;
   SaveAllOrder;
@@ -1645,6 +1659,8 @@ begin
 end;
 
 procedure TRestMainForm.actAddQuantityExecute(Sender: TObject);
+var
+  FGoodInfo: TLogGoodInfo;
 begin
   if (not FLineTable.IsEmpty) and (RestFormState = MenuInfo) then
   begin
@@ -1654,6 +1670,12 @@ begin
     if FLineTable.FieldByName('STATEFIELD').AsInteger = cn_StateNothing then
       FLineTable.FieldByName('STATEFIELD').AsInteger := cn_StateUpdate;
     FLineTable.Post;
+
+    FGoodInfo.GoodID := FLineTable.FieldByName('usr$goodkey').AsInteger;
+    FGoodInfo.GoodName := FLineTable.FieldByName('GOODNAME').AsString;
+    FGoodInfo.Quantity := FLineTable.FieldByName('USR$QUANTITY').AsCurrency;
+    FLogManager.DoOrderGoodLog(GetCurrentUserInfo, GetCurrentOrderInfo, FGoodInfo, ev_AddQuantity);
+
     WritePos(FLineTable);
   end;
   SaveAllOrder;
@@ -1664,7 +1686,8 @@ var
   Quantity: Currency;
   FDeleteForm: TDeleteOrderLine;
   Amount: Currency;
-  FUserInfo: TUserInfo;  
+  FUserInfo: TUserInfo;
+  FGoodInfo: TLogGoodInfo;
 begin
   if (not FLineTable.IsEmpty) and (RestFormState = MenuInfo) then
   begin
@@ -1677,6 +1700,12 @@ begin
       if FLineTable.FieldByName('STATEFIELD').AsInteger = cn_StateNothing then
         FLineTable.FieldByName('STATEFIELD').AsInteger := cn_StateUpdate; 
       FLineTable.Post;
+
+      FGoodInfo.GoodID := FLineTable.FieldByName('usr$goodkey').AsInteger;
+      FGoodInfo.GoodName := FLineTable.FieldByName('GOODNAME').AsString;
+      FGoodInfo.Quantity := Quantity;
+      FLogManager.DoOrderGoodLog(GetCurrentUserInfo, GetCurrentOrderInfo, FGoodInfo, ev_RemoveQuantity);
+
       WritePos(FLineTable);
       //обновить футер грида
       DBGrMain.SumList.RecalcAll;
@@ -1701,6 +1730,12 @@ begin
             Amount := FDeleteForm.RemoveQuantity;
             FFrontBase.SaveOrderLog(FFrontBase.ContactKey, FUserInfo.UserKey,
               FHeaderTable.FieldByName('ID').AsInteger, FLineTable.FieldByName('ID').AsInteger, 3);
+
+            FGoodInfo.GoodID := FLineTable.FieldByName('usr$goodkey').AsInteger;
+            FGoodInfo.GoodName := FLineTable.FieldByName('GOODNAME').AsString;
+            FGoodInfo.Quantity := Amount;
+            FLogManager.DoOrderGoodLog(GetUserInfo(FUserInfo), GetCurrentOrderInfo, FGoodInfo, ev_RemoveGood);
+
             DeleteOrderLine(Amount, FDeleteForm.DeleteClauseID);
             WritePos(FLineTable);
           end;
@@ -1718,6 +1753,7 @@ var
   FDeleteForm: TDeleteOrderLine;
   Amount: Currency;
   FUserInfo: TUserInfo;
+  FGoodInfo: TLogGoodInfo;
 begin
   if (not FLineTable.IsEmpty) and (RestFormState = MenuInfo) then
   begin
@@ -1746,6 +1782,12 @@ begin
             Amount := FDeleteForm.RemoveQuantity;
             FFrontBase.SaveOrderLog(FFrontBase.ContactKey, FUserInfo.UserKey,
               FHeaderTable.FieldByName('ID').AsInteger, FLineTable.FieldByName('ID').AsInteger, 3);
+
+            FGoodInfo.GoodID := FLineTable.FieldByName('usr$goodkey').AsInteger;
+            FGoodInfo.GoodName := FLineTable.FieldByName('GOODNAME').AsString;
+            FGoodInfo.Quantity := Amount;
+            FLogManager.DoOrderGoodLog(GetUserInfo(FUserInfo), GetCurrentOrderInfo, FGoodInfo, ev_RemoveGood);
+
             DeleteOrderLine(Amount, FDeleteForm.DeleteClauseID);
             WritePos(FLineTable);
           end;
@@ -1773,6 +1815,7 @@ var
   GoodKey: Integer;
   FForm: TModificationForm;
   S, ES: String;
+  FGoodInfo: TLogGoodInfo;
 begin
   S := '';
   ES := FLineTable.FieldByName('EXTRAMODIFY').AsString;
@@ -1820,6 +1863,11 @@ begin
             if FLineTable.FieldByName('STATEFIELD').AsInteger = cn_StateNothing then
               FLineTable.FieldByName('STATEFIELD').AsInteger := cn_StateUpdate;
             FLineTable.Post;
+
+            FGoodInfo.GoodID := GoodKey;
+            FGoodInfo.GoodName := FLineTable.FieldByName('GOODNAME').AsString;
+            FLogManager.DoOrderGoodLog(GetCurrentUserInfo, GetCurrentOrderInfo,
+              FGoodInfo, ev_ModifyGood);
           end;
         finally
           FForm.Free;
@@ -1837,7 +1885,6 @@ end;
 procedure TRestMainForm.actCutCheckExecute(Sender: TObject);
 var
   FUserInfo: TUserInfo;
-  FLogUserInfo: TLogUserInfo;
   MainOrderKey: Integer;
 begin
   //1. Проверяем пароль менеджера
@@ -1849,9 +1896,7 @@ begin
       AdvTaskMessageDlg('Внимание', cn_dontManagerPermission, mtWarning, [mbOK], 0);
       exit;
     end;
-    FLogUserInfo.UserID := FUserInfo.UserKey;
-    FLogUserInfo.UserName := FUserInfo.UserName;
-    FLogManager.DoOrderLog(FLogUserInfo, GetCurrentOrderInfo, ev_DevideOrder);
+    FLogManager.DoOrderLog(GetUserInfo(FUserInfo), GetCurrentOrderInfo, ev_DevideOrder);
     //2. сохраняем заказ, получаем его ID
     DBGrMain.DataSource := nil;
     try
@@ -1899,7 +1944,6 @@ end;
 procedure TRestMainForm.actCancelPreCheckExecute(Sender: TObject);
 var
   FUserInfo: TUserInfo;
-  FLogInfo: TLogUserInfo;
 begin
   FUserInfo := FFrontBase.CheckUserPasswordWithForm;
   if FUserInfo.CheckedUserPassword then
@@ -1920,9 +1964,7 @@ begin
         FHeaderTable.FieldByName('ID').AsInteger, 0, 1);
       btnPreCheck.Action := actPreCheck;
 
-      FLogInfo.UserID := FUserInfo.UserKey;
-      FLogInfo.UserName := FUserInfo.UserName;
-      FLogManager.DoOrderLog(FLogInfo, GetCurrentOrderInfo, ev_CancelPreCheck);
+      FLogManager.DoOrderLog(GetUserInfo(FUserInfo), GetCurrentOrderInfo, ev_CancelPreCheck);
     end else
       AdvTaskMessageDlg('Внимание', cn_dontManagerPermission, mtWarning, [mbOK], 0);
   end;
@@ -1934,14 +1976,12 @@ var
   FSelectForm: TPercOrCard;
   FDiscountTypeForm: TDiscountType;
   FUserInfo: TUserInfo;
-  FLogUserInfo: TLogUserInfo;
   DiscountKey: Integer;
   FChooseDiscountForm: TChooseDiscountCard;
 begin
   DiscountType := FFrontBase.Options.DiscountType;
   if DiscountType = 0 then
     exit;
-
 {
   '0 'Нет скидок
   '1 'Процент
@@ -1968,9 +2008,7 @@ begin
     begin
       if (FUserInfo.UserInGroup and FFrontBase.Options.ManagerGroupMask) <> 0 then
       begin
-        FLogUserInfo.UserID := FUserInfo.UserKey;
-        FLogUserInfo.UserName := FUserInfo.UserName;
-        FLogManager.DoOrderLog(FLogUserInfo, GetCurrentOrderInfo, ev_DiscountPercent);
+        FLogManager.DoOrderLog(GetUserInfo(FUserInfo), GetCurrentOrderInfo, ev_DiscountPercent);
         FDiscountTypeForm := TDiscountType.Create(nil);
         try
           FDiscountTypeForm.FrontBase := FFrontBase;
@@ -2001,7 +2039,7 @@ begin
         AdvTaskMessageDlg('Внимание', cn_dontManagerPermission, mtWarning, [mbOK], 0);
         exit;
       end;
-    end;  
+    end;
   end
   else if DiscountType = 2 then
   begin
@@ -2824,6 +2862,7 @@ procedure TRestMainForm.actDevideExecute(Sender: TObject);
 var
   FForm: TDevideForm;
   GoodKey: Integer;
+  FGoodInfo: TLogGoodInfo;
 begin
   if (not FLineTable.IsEmpty) and (RestFormState = MenuInfo) then
   begin
@@ -2842,6 +2881,12 @@ begin
                 FLineTable.Edit;
                 FLineTable.FieldByName('usr$quantity').AsCurrency := StrToCurr(FForm.Number);
                 FLineTable.Post;
+
+                FGoodInfo.GoodID := GoodKey;
+                FGoodInfo.GoodName := FLineTable.FieldByName('GOODNAME').AsString;
+                FGoodInfo.Quantity := FLineTable.FieldByName('usr$quantity').AsCurrency;
+                FLogManager.DoOrderGoodLog(GetCurrentUserInfo, GetCurrentOrderInfo,
+                  FGoodInfo, ev_DevideQuantityGood);
               end;
             except
               on E: Exception do

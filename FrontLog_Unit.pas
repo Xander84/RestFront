@@ -56,6 +56,12 @@ const
     ' INSERT INTO GD_EVENT (ID, EVENTNAME) VALUES (15, ''Скидка карточкой''); '#13#10 +
     ' INSERT INTO GD_EVENT (ID, EVENTNAME) VALUES (16, ''Скидка из справочника''); '#13#10 +
     ' INSERT INTO GD_EVENT (ID, EVENTNAME) VALUES (17, ''Разделение заказа''); '#13#10 +
+    ' INSERT INTO GD_EVENT (ID, EVENTNAME) VALUES (18, ''Добавление товара в заказ''); '#13#10 +
+    ' INSERT INTO GD_EVENT (ID, EVENTNAME) VALUES (19, ''Увеличение количества товара в заказе''); '#13#10 +
+    ' INSERT INTO GD_EVENT (ID, EVENTNAME) VALUES (20, ''Уменьшение количества товара в заказе''); '#13#10 +
+    ' INSERT INTO GD_EVENT (ID, EVENTNAME) VALUES (21, ''Удаление товара из заказа''); '#13#10 +
+    ' INSERT INTO GD_EVENT (ID, EVENTNAME) VALUES (22, ''Ввод дробного количества товара''); '#13#10 +
+    ' INSERT INTO GD_EVENT (ID, EVENTNAME) VALUES (23, ''Ввод модификатора для товара''); '#13#10 +
     ' END; ';
 
   DataBaseSQL =

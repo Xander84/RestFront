@@ -1153,8 +1153,6 @@ object RestMainForm: TRestMainForm
                   StatusBar.GradientDirection = gdVertical
                   Styler = FrontData.FrontPanelStyler
                   Touch.GestureManager = gmFront
-                  ExplicitLeft = -47
-                  ExplicitTop = -86
                   FullHeight = 528
                 end
                 object pnlUserOrders: TAdvPanel
