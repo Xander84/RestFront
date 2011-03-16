@@ -93,7 +93,8 @@ const
      '   o.usr$whopayoffkey,       ' +
      '   o.usr$vip,                ' +
      '   o.usr$tablekey,           ' +
-     ' ( SELECT SUM(L.USR$SUMNCUWITHDISCOUNT) FROM USR$MN_ORDERLINE L WHERE L.MASTERKEY = doc.ID AND L.USR$CAUSEDELETEKEY IS NULL) AS USR$SUMNCUWITHDISCOUNT ' +
+     ' ( SELECT SUM(L.USR$SUMNCUWITHDISCOUNT) FROM USR$MN_ORDERLINE L WHERE L.MASTERKEY = doc.ID AND L.USR$CAUSEDELETEKEY IS NULL) AS USR$SUMNCUWITHDISCOUNT, ' +
+     '   o.usr$computername        ' +
      ' FROM gd_document doc        ' +
      '  join usr$mn_order o on o.documentkey = doc.id  ' +
      '  WHERE                                          ' +
@@ -176,6 +177,7 @@ const
     '  ol.usr$deleteamount,                                     '+
     '  ol.usr$doublebonus,                                      '+
     '  ol.usr$extramodify,                                      '+
+    '  ol.usr$computername,                                     '+
     '  g.name goodname                                          '+
     ' FROM gd_document doc                                      '+
     ' join usr$mn_orderline ol on ol.documentkey = doc.id       '+
@@ -1396,6 +1398,7 @@ begin
           HeaderTable.FieldByName('editorkey').Value := FReadSQL.FieldByName('editorkey').Value;
           HeaderTable.FieldByName('editiondate').Value := FReadSQL.FieldByName('editiondate').Value;
           HeaderTable.FieldByName('usr$tablekey').AsInteger := FReadSQL.FieldByName('usr$tablekey').AsInteger;
+          HeaderTable.FieldByName('usr$computername').AsString := FReadSQL.FieldByName('usr$computername').AsString;
           HeaderTable.Post;
           FReadSQL.Next;
         end;
@@ -1425,6 +1428,7 @@ begin
           LineTable.FieldByName('editorkey').Value := FReadSQL.FieldByName('editorkey').Value;
           LineTable.FieldByName('editiondate').Value := FReadSQL.FieldByName('editiondate').Value;
           LineTable.FieldByName('oldquantity').Value := FReadSQL.FieldByName('usr$quantity').Value;
+          LineTable.FieldByName('usr$computername').AsString := FReadSQL.FieldByName('usr$computername').AsString;
           LineTable.FieldByName('LINEKEY').AsInteger := FReadSQL.FieldByName('id').Value;
           LineTable.FieldByName('STATEFIELD').AsInteger := 0;
           LineTable.FieldByName('EXTRAMODIFY').AsString := FReadSQL.FieldByName('usr$extramodify').AsString;
