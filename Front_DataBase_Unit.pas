@@ -824,7 +824,7 @@ begin
           updOrder.ParamByName('usr$timecloseorder').Value := HeaderTable.FieldByName('usr$timecloseorder').Value;
           updOrder.ParamByName('documentkey').AsInteger := HeaderTable.FieldByName('ID').AsInteger;
           updOrder.ParamByName('usr$pay').AsInteger := HeaderTable.FieldByName('usr$pay').AsInteger;
-          updOrder.ParamByName('usr$computername').AsString := HeaderTable.FieldByName('USR$COMPUTERNAME').AsString;
+          updOrder.ParamByName('usr$computername').AsString := GetLocalComputerName;
           updOrder.ExecQuery;
 
         end else
