@@ -2903,9 +2903,11 @@ begin
   begin
     GoodKey := FLineTable.FieldByName('usr$goodkey').AsInteger;
     if FGoodDataSet.Locate('ID', GoodKey, []) then
-      if FGoodDataSet.FieldByName('BEDIVIDE').AsInteger = 1 then
-      begin
+    begin
+//      if FGoodDataSet.FieldByName('BEDIVIDE').AsInteger = 1 then
+//      begin
         FForm := TDevideForm.Create(nil);
+        FForm.CanDevided := (FGoodDataSet.FieldByName('BEDIVIDE').AsInteger = 1);
         try
           FForm.ShowModal;
           if FForm.ModalResult = mrOK then
@@ -2936,7 +2938,8 @@ begin
         finally
           FForm.Free;
         end;
-      end;
+//      end;
+    end;
   end;
   SaveAllOrder;
 end;
@@ -3437,7 +3440,7 @@ end;
 
 procedure TRestMainForm.actDevideUpdate(Sender: TObject);
 begin
-  actDevide.Enabled := FHeaderTable.FieldByName('usr$timecloseorder').IsNull
+  actDevide.Enabled := FLineTable.FieldByName('usr$mn_printdate').IsNull
     and not FViewMode;
 end;
 
