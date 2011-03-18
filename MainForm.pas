@@ -497,6 +497,7 @@ begin
   FTablesList := TObjectList.Create;
   FHallButtonList := TObjectList.Create;
   FEditMode := False;
+  FWithPreCheck := True;
   FActiveHallButton := '';
 
   CreateDataSets;
@@ -3108,7 +3109,7 @@ begin
   WithPreCheck := not FWithPreCheck;
   RestFormState := OrderMenu;
   FWithPreCheck := WithPreCheck;
-  RestFormState := ManagerChooseOrder;
+  RestFormState := KassirInfo;
   CreateUserList;
 end;
 
