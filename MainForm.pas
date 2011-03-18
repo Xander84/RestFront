@@ -540,9 +540,10 @@ begin
   SetupAdvGrid(DBAdvGrMain);
   with DBAdvGrMain do
   begin
-    Columns[1].HTMLTemplate := '<#GOODNAME><BR><FONT color="clRed"><#MODIFYSTRING></FONT>';
+    Columns[1].HTMLTemplate := '<#GOODNAME><BR><FONT size="9" color="clRed"><#MODIFYSTRING></FONT>';
     DefaultRowHeight := 3 * cn_FontSize;
     FloatingFooter.Visible := True;
+    SelectionColor := clGray;
     FloatingFooter.ColumnCalc[1] := acCUSTOM;
     FloatingFooter.ColumnCalc[2] := acCUSTOM;
     FloatingFooter.ColumnCalc[3] := acCUSTOM;
@@ -3052,15 +3053,15 @@ var
 begin
   inherited;
   // если меняем HTML не забудем поменять его и здесь
-  HtmlSize := Length('<BR><FONT color="clRed"></FONT>');
+  HtmlSize := Length('<BR><FONT size="9" color="clRed"></FONT>');
   if ACol = 1 then
   begin
     Size := Length(Value) - HtmlSize;
     Size := Size div StrInRow;
     if Size > 2 then
-    begin
-      DBAdvGrMain.RowHeights[ARow] := DBAdvGrMain.DefaultRowHeight + (Size - 2) * cn_FontSize;
-    end;
+      DBAdvGrMain.RowHeights[ARow] := DBAdvGrMain.DefaultRowHeight + (Size - 2) * 10
+    else
+      DBAdvGrMain.RowHeights[ARow] := DBAdvGrMain.DefaultRowHeight;
   end;
 end;
 
