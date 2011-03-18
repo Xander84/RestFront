@@ -13,8 +13,7 @@ uses
   SplitOrderForm_Unit, Report_Unit, FrontData_Unit, BaseFrontForm_Unit,
   AdvSmoothButton, AdvPanel, AdvPageControl, AdvSmoothTouchKeyBoard,
   TaskDialog, FrontLog_Unit, Grids, Menus, AddUserForm_unit, AdminForm_Unit,
-  Buttons, RestTable_Unit, dxfDesigner, GestureMgr, AdvObj, BaseGrid, AdvGrid,
-  DBAdvGrid;
+  Buttons, RestTable_Unit, dxfDesigner, GestureMgr;
 
 const
   btnHeight = 65;
@@ -103,6 +102,7 @@ type
     actPay: TAction;
     pnlMenu: TAdvPanel;
     pnlExtraGoodGroup: TAdvPanel;
+    DBGrMain: TDBGridEh;
     tsManagerPage: TAdvTabSheet;
     pnlManagerTop: TAdvPanel;
     pnlManagerMain: TAdvPanel;
@@ -189,7 +189,6 @@ type
     btnAdminOptions: TAdvSmoothButton;
     gmFront: TGestureManager;
     btnOK2: TAdvSmoothButton;
-    DBAdvGrMain: TDBAdvGrid;
 
     //Проверка введёного пароля
     procedure actPassEnterExecute(Sender: TObject);
@@ -260,10 +259,6 @@ type
     procedure btnPrintIncomeReportClick(Sender: TObject);
     procedure tmrCloseTimer(Sender: TObject);
     procedure btnCheckRegisterClick(Sender: TObject);
-    procedure DBAdvGrMainFooterCalc(Sender: TObject; ACol, ARow: Integer;
-      var Value: string);
-    procedure DBAdvGrMainGetDisplText(Sender: TObject; ACol, ARow: Integer;
-      var Value: string);
   private
     //Компонент обращения к БД
     FFrontBase: TFrontBase;
@@ -413,14 +408,11 @@ type
     procedure ClearDisplay;
     //DataSets
     procedure DeleteOrderLine(var Amount: Currency; const CauseKey: Integer);
-//    procedure OnFilterLine(DataSet: TDataSet; var Accept: Boolean);
+    procedure OnFilterLine(DataSet: TDataSet; var Accept: Boolean);
     procedure OnBeforePostLine(DataSet: TDataSet);
-    procedure OnAfterPostLine(DataSet: TDataSet);
     procedure OnAfterPostHeader(DataSet: TDataSet);
     procedure OnAfterPost(DataSet: TDataSet); ///!!!!
     procedure OnAfterDelete(DataSet: TDataSet);
-
-    procedure RefreshGridFooter;
   public
     procedure AfterConstruction; override;
   end;
@@ -468,6 +460,7 @@ end;
 
 procedure TRestMainForm.FormCreate(Sender: TObject);
 begin
+  SetupGrid(DBGrMain);
   SetupGrid(DBGrInfoHeader);
   SetupGrid(DBGrInfoLine);
 
@@ -536,18 +529,6 @@ begin
   btnUserLeft.Picture := FrontData.RestPictureContainer.FindPicture('Left');
   btnUserRight.Picture := FrontData.RestPictureContainer.FindPicture('Right');
   btnPay.Picture := FrontData.RestPictureContainer.FindPicture('Money');
-
-  SetupAdvGrid(DBAdvGrMain);
-  with DBAdvGrMain do
-  begin
-    Columns[1].HTMLTemplate := '<#GOODNAME><BR><FONT color="clRed"><#MODIFYSTRING></FONT>';
-    DefaultRowHeight := 3 * cn_FontSize;
-    FloatingFooter.Visible := True;
-    FloatingFooter.ColumnCalc[1] := acCUSTOM;
-    FloatingFooter.ColumnCalc[2] := acCUSTOM;
-    FloatingFooter.ColumnCalc[3] := acCUSTOM;
-    FloatingFooter.ColumnCalc[4] := acCUSTOM;
-  end;
 end;
 
 procedure TRestMainForm.FormDestroy(Sender: TObject);
@@ -674,9 +655,8 @@ begin
   FHeaderTable.Open;
 
   GetLineTable(FLineTable);
-//  FLineTable.OnFilterRecord := OnFilterLine;
+  FLineTable.OnFilterRecord := OnFilterLine;
   FLineTable.BeforePost := OnBeforePostLine;
-  FLineTable.AfterPost := OnAfterPostLine;
   FLineTable.AfterDelete := OnAfterDelete;
 //  FLineTable.Filter := '([usr$quantity] > 0) AND ([usr$causedeletekey] IS NULL) ';
 //  FLineTable.Filtered := True;
@@ -1149,14 +1129,6 @@ begin
   FLogManager.DoSimpleEvent(ev_CreateNewOrder);
 end;
 
-procedure TRestMainForm.RefreshGridFooter;
-var
-  I: Integer;
-begin
-  for I := 1 to DBAdvGrMain.Columns.Count - 1 do
-    DBAdvGrMain.CalcFooter(I);
-end;
-
 procedure TRestMainForm.RemoveGoodButton;
 begin
   FGoodButtonList.Clear;
@@ -1358,12 +1330,12 @@ var
   OrderKey: Integer;
 begin
   OrderKey := FHeaderTable.FieldByName('ID').AsInteger;
-  DBAdvGrMain.DataSource := nil;
+  DBGrMain.DataSource := nil;
   try
     FFrontBase.SaveAndReloadOrder(FHeaderTable, FLineTable,
       FModificationDataSet, OrderKey);
   finally
-    DBAdvGrMain.DataSource := dsMain;
+    DBGrMain.DataSource := dsMain;
   end;
 end;
 
@@ -1574,7 +1546,7 @@ begin
         if AdvTaskMessageDlg('Внимание', 'Закрыть заказ?',
           mtInformation, [mbYes, mbNo], 0) = IDYES then
         begin
-          DBAdvGrMain.DataSource := nil;
+          DBGrMain.DataSource := nil;
           try
             if FFrontBase.CreateNewOrder(FHeaderTable, FLineTable, FModificationDataSet, OrderKey) then
             begin
@@ -1603,7 +1575,7 @@ begin
               end;
             end;
           finally
-            DBAdvGrMain.DataSource := dsMain;
+            DBGrMain.DataSource := dsMain;
           end;
         end;
       end;
@@ -1742,7 +1714,7 @@ begin
 
       WritePos(FLineTable);
       //обновить футер грида
-      //DBGrMain.SumList.RecalcAll;
+      DBGrMain.SumList.RecalcAll;
     end else
     begin
       //удалять может только пользователь с правами менеджера
@@ -1932,11 +1904,11 @@ begin
     end;
     FLogManager.DoOrderLog(GetUserInfo(FUserInfo), GetCurrentOrderInfo, ev_DevideOrder);
     //2. сохраняем заказ, получаем его ID
-    DBAdvGrMain.DataSource := nil;
+    DBGrMain.DataSource := nil;
     try
       FFrontBase.CreateNewOrder(FHeaderTable, FLineTable, FModificationDataSet, MainOrderKey);
     finally
-      DBAdvGrMain.DataSource := dsMain;
+      DBGrMain.DataSource := dsMain;
     end;
 
     //3. переход на форму менеджера
@@ -3003,7 +2975,7 @@ begin
   SaveCheck;
 
   //обновить футер грида
-//  DBGrMain.SumList.RecalcAll;
+  DBGrMain.SumList.RecalcAll;
 
   if FFrontBase.GetDeleteServiceCheckOptions(OldDetailID, MasterKey,
     PrinterName, PrnGrid)
@@ -3012,59 +2984,13 @@ begin
       DocumentKey, PrinterName);
 end;
 
-{procedure TRestMainForm.OnFilterLine(DataSet: TDataSet;
+procedure TRestMainForm.OnFilterLine(DataSet: TDataSet;
   var Accept: Boolean);
 begin
   Accept := ((DataSet.FieldByName('usr$quantity').AsCurrency > 0)
     and (DataSet.FieldByName('usr$causedeletekey').AsInteger = 0));
-end;}
-
-procedure TRestMainForm.DBAdvGrMainFooterCalc(Sender: TObject; ACol,
-  ARow: Integer; var Value: string);
-var
-  I: Integer;
-  Curr: Currency;
-begin
-  if ACol = 1 then
-    Value := 'Итого'
-  else if (ACol = 2) or (ACol = 3) or (ACol = 4) then
-  begin
-    Curr := 0;
-    for I := DBAdvGrMain.FixedRows to ARow - 1 do
-    begin
-      try
-        Curr := Curr + DBAdvGrMain.Floats[ACol, I];
-      except
-        Curr := Curr + 0;
-      end;
-    end;
-    Value := Format(DBAdvGrMain.FloatFormat, [Curr]);
-  end;
 end;
 
-procedure TRestMainForm.DBAdvGrMainGetDisplText(Sender: TObject; ACol,
-  ARow: Integer; var Value: string);
-const
-  StrInRow = 22;
-var
-  Size: Integer;
-  HtmlSize: Integer;
-begin
-  inherited;
-  // если меняем HTML не забудем поменять его и здесь
-  HtmlSize := Length('<BR><FONT color="clRed"></FONT>');
-  if ACol = 1 then
-  begin
-    Size := Length(Value) - HtmlSize;
-    Size := Size div StrInRow;
-    if Size > 2 then
-    begin
-      DBAdvGrMain.RowHeights[ARow] := DBAdvGrMain.DefaultRowHeight + (Size - 2) * cn_FontSize;
-    end;
-  end;
-end;
-
-{TODO: убрать}
 procedure TRestMainForm.DBGridEh2Columns0GetCellParams(Sender: TObject;
   EditMode: Boolean; Params: TColCellParamsEh);
 var
@@ -3334,11 +3260,6 @@ begin
   end;
 end;
 
-procedure TRestMainForm.OnAfterPostLine(DataSet: TDataSet);
-begin
-  RefreshGridFooter;
-end;
-
 procedure TRestMainForm.actModificationUpdate(Sender: TObject);
 begin
   actModification.Enabled := FHeaderTable.FieldByName('usr$timecloseorder').IsNull
@@ -3454,7 +3375,7 @@ end;
 procedure TRestMainForm.OnAfterDelete(DataSet: TDataSet);
 begin
   //обновить футер грида
-//  DBGrMain.SumList.RecalcAll;
+  DBGrMain.SumList.RecalcAll;
 end;
 
 procedure TRestMainForm.actCashFormExecute(Sender: TObject);

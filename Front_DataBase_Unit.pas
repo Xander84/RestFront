@@ -800,7 +800,6 @@ begin
   UpdParent.Transaction := FCheckTransaction;
   UpdParent.ParamCheck := False;
 
-  LineTable.Filtered := False;
   try
     try
       if not FCheckTransaction.InTransaction then
@@ -1024,7 +1023,6 @@ begin
     InsModify.Free;
     DelModify.Free;
     UpdParent.Free;
-    LineTable.Filtered := True;
   end;
 end;
 

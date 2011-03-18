@@ -115,14 +115,16 @@ begin
   with AnGrid do
   begin
     DefaultRowHeight := 2 * cn_GridFontSize;
-    FixedFont.Size := cn_GridFontSize;
+    FixedFont.Size := 12;
+    FixedFont.Name := cn_FontType;
     Bands.PrimaryColor := cn_EvenRowColor;
     Bands.SecondaryColor := cn_OddRowColor;
     Bands.Active := True;
     for I := 0 to Columns.Count - 1 do
     begin
-      Columns[I].Font.Size := cn_GridFontSize;
-      Columns[I].HeaderFont.Size := cn_TitleFontSize;
+      Columns[I].Font.Size := 12;
+      Columns[I].Font.Name := cn_FontType;
+      Columns[I].HeaderFont.Size := 12;
       Columns[I].ShowBands := True;
     end;
   end;
