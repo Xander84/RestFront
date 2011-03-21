@@ -48,6 +48,9 @@ object RestMainForm: TRestMainForm
         ColorTo = 14986888
         TabColor = clBtnFace
         TabColorTo = clNone
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         DesignSize = (
           934
           701)
@@ -106,6 +109,9 @@ object RestMainForm: TRestMainForm
         ImageIndex = 1
         TabColor = clBtnFace
         TabColorTo = clNone
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object pnlRight: TAdvPanel
           Left = 692
           Top = 0
@@ -557,7 +563,7 @@ object RestMainForm: TRestMainForm
             Top = 1
             Width = 690
             Height = 699
-            ActivePage = tsOrderInfo
+            ActivePage = tsUserOrder
             ActiveFont.Charset = DEFAULT_CHARSET
             ActiveFont.Color = clWindowText
             ActiveFont.Height = -11
@@ -576,6 +582,9 @@ object RestMainForm: TRestMainForm
               ColorTo = 14986888
               TabColor = clBtnFace
               TabColorTo = clNone
+              ExplicitTop = 0
+              ExplicitWidth = 0
+              ExplicitHeight = 0
               object btnNewOrder: TAdvSmoothButton
                 Left = 16
                 Top = 8
@@ -788,6 +797,7 @@ object RestMainForm: TRestMainForm
                 Cursor = crDefault
                 Align = alClient
                 ColCount = 5
+                Ctl3D = False
                 RowCount = 2
                 FixedRows = 1
                 Font.Charset = DEFAULT_CHARSET
@@ -795,6 +805,8 @@ object RestMainForm: TRestMainForm
                 Font.Height = -11
                 Font.Name = 'Tahoma'
                 Font.Style = []
+                Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRowSelect]
+                ParentCtl3D = False
                 ParentFont = False
                 ScrollBars = ssBoth
                 TabOrder = 1
@@ -806,6 +818,7 @@ object RestMainForm: TRestMainForm
                 ActiveCellFont.Name = 'Tahoma'
                 ActiveCellFont.Style = [fsBold]
                 ColumnSize.Stretch = True
+                ColumnSize.StretchColumn = 1
                 ControlLook.FixedGradientHoverFrom = clGray
                 ControlLook.FixedGradientHoverTo = clWhite
                 ControlLook.FixedGradientDownFrom = clGray
@@ -838,7 +851,8 @@ object RestMainForm: TRestMainForm
                 FixedFont.Height = -11
                 FixedFont.Name = 'Tahoma'
                 FixedFont.Style = [fsBold]
-                FloatFormat = '%.2f'
+                Flat = True
+                FloatFormat = '%.0n'
                 PrintSettings.DateFormat = 'dd/mm/yyyy'
                 PrintSettings.Font.Charset = DEFAULT_CHARSET
                 PrintSettings.Font.Color = clWindowText
@@ -938,6 +952,7 @@ object RestMainForm: TRestMainForm
                     CheckTrue = 'Y'
                     Color = clWindow
                     FieldName = 'USR$QUANTITY'
+                    FloatFormat = '%.0n'
                     Font.Charset = DEFAULT_CHARSET
                     Font.Color = clWindowText
                     Font.Height = -11
@@ -950,6 +965,7 @@ object RestMainForm: TRestMainForm
                     HeaderFont.Name = 'Tahoma'
                     HeaderFont.Style = []
                     HeaderAlignment = taCenter
+                    MaxSize = 73
                     PrintBorders = [cbTop, cbLeft, cbRight, cbBottom]
                     PrintFont.Charset = DEFAULT_CHARSET
                     PrintFont.Color = clWindowText
@@ -966,6 +982,7 @@ object RestMainForm: TRestMainForm
                     CheckTrue = 'Y'
                     Color = clWindow
                     FieldName = 'usr$costncuwithdiscount'
+                    FloatFormat = '%.0n'
                     Font.Charset = DEFAULT_CHARSET
                     Font.Color = clWindowText
                     Font.Height = -11
@@ -978,6 +995,7 @@ object RestMainForm: TRestMainForm
                     HeaderFont.Name = 'Tahoma'
                     HeaderFont.Style = []
                     HeaderAlignment = taCenter
+                    MaxSize = 130
                     PrintBorders = [cbTop, cbLeft, cbRight, cbBottom]
                     PrintFont.Charset = DEFAULT_CHARSET
                     PrintFont.Color = clWindowText
@@ -994,6 +1012,7 @@ object RestMainForm: TRestMainForm
                     CheckTrue = 'Y'
                     Color = clWindow
                     FieldName = 'usr$sumncuwithdiscount'
+                    FloatFormat = '%.0n'
                     Font.Charset = DEFAULT_CHARSET
                     Font.Color = clWindowText
                     Font.Height = -11
@@ -1006,13 +1025,14 @@ object RestMainForm: TRestMainForm
                     HeaderFont.Name = 'Tahoma'
                     HeaderFont.Style = []
                     HeaderAlignment = taCenter
+                    MaxSize = 152
                     PrintBorders = [cbTop, cbLeft, cbRight, cbBottom]
                     PrintFont.Charset = DEFAULT_CHARSET
                     PrintFont.Color = clWindowText
                     PrintFont.Height = -11
                     PrintFont.Name = 'Tahoma'
                     PrintFont.Style = []
-                    Width = 150
+                    Width = 152
                   end>
                 DataSource = dsMain
                 DataSetType = dtNonSequenced
@@ -1043,14 +1063,12 @@ object RestMainForm: TRestMainForm
                   80000001C0000003C0000003E0000007F000000FF800001FFC00003FFF0000FF
                   FFC003FF}
                 ShowUnicode = False
-                ExplicitWidth = 674
-                ExplicitHeight = 356
                 ColWidths = (
                   20
                   312
                   73
                   130
-                  150)
+                  152)
               end
             end
             object tsManagerPage: TAdvTabSheet
@@ -1425,6 +1443,9 @@ object RestMainForm: TRestMainForm
               ColorTo = clNone
               TabColor = clBtnFace
               TabColorTo = clNone
+              ExplicitTop = 0
+              ExplicitWidth = 0
+              ExplicitHeight = 0
               object sbTable: TScrollBox
                 Left = 0
                 Top = 0
@@ -1444,6 +1465,9 @@ object RestMainForm: TRestMainForm
         ColorTo = clNone
         TabColor = clBtnFace
         TabColorTo = clNone
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object pnlManagerInfo: TPanel
           Left = 0
           Top = 0
@@ -1731,7 +1755,7 @@ object RestMainForm: TRestMainForm
         Top = 1
         Width = 80
         Height = 719
-        ActivePage = tsFunctionButton
+        ActivePage = tsMainButton
         ActiveFont.Charset = DEFAULT_CHARSET
         ActiveFont.Color = clWindowText
         ActiveFont.Height = -11
@@ -1749,6 +1773,9 @@ object RestMainForm: TRestMainForm
           ColorTo = clNone
           TabColor = clBtnFace
           TabColorTo = clNone
+          ExplicitTop = 0
+          ExplicitWidth = 0
+          ExplicitHeight = 0
           object btnExitWindows: TAdvSmoothButton
             Left = 4
             Top = 1
@@ -1878,6 +1905,9 @@ object RestMainForm: TRestMainForm
           ImageIndex = 1
           TabColor = clBtnFace
           TabColorTo = clNone
+          ExplicitTop = 0
+          ExplicitWidth = 0
+          ExplicitHeight = 0
           DesignSize = (
             80
             699)
@@ -2258,6 +2288,9 @@ object RestMainForm: TRestMainForm
           ImageIndex = 2
           TabColor = clBtnFace
           TabColorTo = clNone
+          ExplicitTop = 0
+          ExplicitWidth = 0
+          ExplicitHeight = 0
           DesignSize = (
             80
             699)
@@ -2420,6 +2453,9 @@ object RestMainForm: TRestMainForm
           ColorTo = clNone
           TabColor = clBtnFace
           TabColorTo = clNone
+          ExplicitTop = 0
+          ExplicitWidth = 0
+          ExplicitHeight = 0
           DesignSize = (
             80
             699)
@@ -2709,6 +2745,9 @@ object RestMainForm: TRestMainForm
           ColorTo = clNone
           TabColor = clBtnFace
           TabColorTo = clNone
+          ExplicitTop = 0
+          ExplicitWidth = 0
+          ExplicitHeight = 0
           DesignSize = (
             80
             699)
@@ -3087,5 +3126,101 @@ object RestMainForm: TRestMainForm
             GestureID = sgiDown
           end>
       end>
+  end
+  object tablePopupMenu: TAdvPopupMenu
+    OnPopup = tablePopupMenuPopup
+    MenuStyler = MenuOfficeStyler
+    Version = '2.5.3.1'
+    Left = 368
+    Top = 184
+  end
+  object MenuOfficeStyler: TAdvMenuOfficeStyler
+    AntiAlias = aaNone
+    AutoThemeAdapt = False
+    Style = osOffice2003Blue
+    Background.Position = bpCenter
+    Background.Color = 16185078
+    Background.ColorTo = 16185078
+    ButtonAppearance.DownColor = 5149182
+    ButtonAppearance.DownColorTo = 9556991
+    ButtonAppearance.HoverColor = 13432063
+    ButtonAppearance.HoverColorTo = 9556223
+    ButtonAppearance.DownBorderColor = clNavy
+    ButtonAppearance.HoverBorderColor = clNavy
+    ButtonAppearance.CaptionFont.Charset = DEFAULT_CHARSET
+    ButtonAppearance.CaptionFont.Color = clWindowText
+    ButtonAppearance.CaptionFont.Height = -11
+    ButtonAppearance.CaptionFont.Name = 'Segoe UI'
+    ButtonAppearance.CaptionFont.Style = []
+    IconBar.Color = 16773091
+    IconBar.ColorTo = 14986631
+    IconBar.CheckBorder = clNavy
+    IconBar.RadioBorder = clNavy
+    SelectedItem.BorderColor = clNavy
+    SelectedItem.Font.Charset = DEFAULT_CHARSET
+    SelectedItem.Font.Color = clWindowText
+    SelectedItem.Font.Height = -19
+    SelectedItem.Font.Name = 'Times New Roman'
+    SelectedItem.Font.Style = []
+    SelectedItem.NotesFont.Charset = DEFAULT_CHARSET
+    SelectedItem.NotesFont.Color = clWindowText
+    SelectedItem.NotesFont.Height = -8
+    SelectedItem.NotesFont.Name = 'Tahoma'
+    SelectedItem.NotesFont.Style = []
+    SelectedItem.UseSystemFont = False
+    SelectedItem.CheckBorder = clNavy
+    SelectedItem.RadioBorder = clNavy
+    RootItem.Color = 16105118
+    RootItem.ColorTo = 16240050
+    RootItem.Font.Charset = DEFAULT_CHARSET
+    RootItem.Font.Color = clMenuText
+    RootItem.Font.Height = -11
+    RootItem.Font.Name = 'Tahoma'
+    RootItem.Font.Style = []
+    RootItem.SelectedColor = 16773091
+    RootItem.SelectedColorTo = 15185299
+    RootItem.SelectedBorderColor = 9841920
+    RootItem.HoverColor = 13432063
+    RootItem.HoverColorTo = 10147583
+    Glyphs.SubMenu.Data = {
+      5A000000424D5A000000000000003E0000002800000004000000070000000100
+      0100000000001C0000000000000000000000020000000200000000000000FFFF
+      FF0070000000300000001000000000000000100000003000000070000000}
+    Glyphs.Check.Data = {
+      7E000000424D7E000000000000003E0000002800000010000000100000000100
+      010000000000400000000000000000000000020000000200000000000000FFFF
+      FF00FFFF0000FFFF0000FFFF0000FFFF0000FDFF0000F8FF0000F07F0000F23F
+      0000F71F0000FF8F0000FFCF0000FFEF0000FFFF0000FFFF0000FFFF0000FFFF
+      0000}
+    Glyphs.Radio.Data = {
+      7E000000424D7E000000000000003E0000002800000010000000100000000100
+      010000000000400000000000000000000000020000000200000000000000FFFF
+      FF00FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000FC3F0000F81F0000F81F
+      0000F81F0000F81F0000FC3F0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF
+      0000}
+    SideBar.Font.Charset = DEFAULT_CHARSET
+    SideBar.Font.Color = clWhite
+    SideBar.Font.Height = -19
+    SideBar.Font.Name = 'Times New Roman'
+    SideBar.Font.Style = [fsBold, fsItalic]
+    SideBar.Image.Position = bpCenter
+    SideBar.Background.Position = bpCenter
+    SideBar.SplitterColorTo = clBlack
+    Separator.Color = 13339754
+    Separator.GradientType = gtBoth
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clMenuText
+    Font.Height = -19
+    Font.Name = 'Times New Roman'
+    Font.Style = []
+    NotesFont.Charset = DEFAULT_CHARSET
+    NotesFont.Color = clGray
+    NotesFont.Height = -8
+    NotesFont.Name = 'Tahoma'
+    NotesFont.Style = []
+    UseSystemFont = False
+    MenuBorderColor = 9841920
+    Left = 464
+    Top = 192
   end
 end

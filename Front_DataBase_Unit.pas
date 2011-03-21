@@ -331,6 +331,7 @@ type
 
     procedure GetHallsInfo(const MemTable: TkbmMemTable);
     procedure GetTablesInfo(const MemTable: TkbmMemTable; const HallKey: Integer);
+    procedure GetTables(const MemTable: TkbmMemTable; const HallKey: Integer);
 
     function LockUserOrder(const OrderKey: Integer): Boolean;
     function UnLockUserOrder(const OrderKey: Integer): Boolean;
@@ -343,6 +344,7 @@ type
     function CloseModifyTable(var ModifyTable: TkbmMemTable; const CloseTime: TTime): Boolean;
     //оплачен или нет
     function OrderIsPayed(const ID: Integer): Boolean;
+    function OrderIsLocked(const ID: Integer): Boolean;
     //причины списания
     function GetCauseDeleteList(var MemTable: TkbmMemTable): Boolean;
     function GetActiveWaiterList(var MemTable: TkbmMemTable; WithPrecheck: Boolean): Boolean;
@@ -436,16 +438,16 @@ begin
   DS := TkbmMemTable.Create(nil);
   DS.FieldDefs.Add('ID', ftInteger, 0);
   DS.FieldDefs.Add('NUMBER', ftString, 20);
-  DS.FieldDefs.Add('SUMNCU', ftCurrency, 0);
+  DS.FieldDefs.Add('SUMNCU', ftFloat, 0);
   DS.FieldDefs.Add('usr$mn_printdate', ftDateTime, 0);
-  DS.FieldDefs.Add('usr$sumncuwithdiscount', ftCurrency, 0);
+  DS.FieldDefs.Add('usr$sumncuwithdiscount', ftFloat, 0);
   DS.FieldDefs.Add('usr$respkey', ftInteger, 0);
   DS.FieldDefs.Add('usr$guestcount', ftInteger, 0);
   DS.FieldDefs.Add('usr$pay', ftInteger, 0);
   DS.FieldDefs.Add('usr$timeorder', ftTime, 0);
   DS.FieldDefs.Add('usr$timecloseorder', ftTime, 0);
   DS.FieldDefs.Add('usr$logicdate', ftDate, 0);
-  DS.FieldDefs.Add('usr$discountncu', ftCurrency, 0);
+  DS.FieldDefs.Add('usr$discountncu', ftFloat, 0);
   DS.FieldDefs.Add('usr$sysnum', ftInteger, 0);
   DS.FieldDefs.Add('usr$register', ftString, 8);
   DS.FieldDefs.Add('usr$whopayoffkey', ftInteger, 0);
@@ -453,7 +455,7 @@ begin
   DS.FieldDefs.Add('usr$disccardkey', ftInteger, 0);
   DS.FieldDefs.Add('usr$userdisckey', ftInteger, 0);
   DS.FieldDefs.Add('usr$discountkey', ftInteger, 0);
-  DS.FieldDefs.Add('usr$bonussum', ftCurrency, 0);
+  DS.FieldDefs.Add('usr$bonussum', ftFloat, 0);
   DS.FieldDefs.Add('editorkey', ftInteger, 0);
   DS.FieldDefs.Add('editiondate', ftTimeStamp, 0);
   DS.FieldDefs.Add('USR$TABLEKEY', ftInteger, 0);
@@ -469,15 +471,15 @@ begin
   DS.FieldDefs.Add('GOODNAME', ftString, 40);
   DS.FieldDefs.Add('usr$mn_printdate', ftDateTime, 0);
   DS.FieldDefs.Add('usr$quantity', ftFloat, 0);
-  DS.FieldDefs.Add('usr$costncu', ftCurrency, 0);
+  DS.FieldDefs.Add('usr$costncu', ftFloat, 0);
   DS.FieldDefs.Add('usr$goodkey', ftInteger, 0);
-  DS.FieldDefs.Add('usr$sumncuwithdiscount', ftCurrency, 0);
-  DS.FieldDefs.Add('usr$sumncu', ftCurrency, 0);
-  DS.FieldDefs.Add('usr$costncuwithdiscount', ftCurrency, 0);
-  DS.FieldDefs.Add('usr$sumdiscount', ftCurrency, 0);
-  DS.FieldDefs.Add('usr$persdiscount', ftCurrency, 0);
+  DS.FieldDefs.Add('usr$sumncuwithdiscount', ftFloat, 0);
+  DS.FieldDefs.Add('usr$sumncu', ftFloat, 0);
+  DS.FieldDefs.Add('usr$costncuwithdiscount', ftFloat, 0);
+  DS.FieldDefs.Add('usr$sumdiscount', ftFloat, 0);
+  DS.FieldDefs.Add('usr$persdiscount', ftFloat, 0);
   DS.FieldDefs.Add('usr$causedeletekey', ftInteger, 0);
-  DS.FieldDefs.Add('usr$deleteamount', ftCurrency, 0);
+  DS.FieldDefs.Add('usr$deleteamount', ftFloat, 0);
   DS.FieldDefs.Add('usr$doublebonus', ftInteger, 0);
   DS.FieldDefs.Add('editorkey', ftInteger, 0);
   DS.FieldDefs.Add('editiondate', ftTimeStamp, 0);
@@ -1867,7 +1869,7 @@ begin
        '     L.MASTERKEY  =  Z.ID ' +
        '        AND ' +
        '      L.USR$CAUSEDELETEKEY + 0 IS NULL    ) AS USR$SUMNCUWITHDISCOUNT, ' +
-       '   Z.USR$MN_PRINTDATE ' +
+       '   Z.USR$MN_PRINTDATE, U.USR$COMPUTERNAME ' +
        '  FROM ' +
        '   GD_DOCUMENT Z ' +
        '     JOIN ' +
@@ -1910,6 +1912,7 @@ begin
         else
           MemTable.FieldByName('Status').AsInteger := Integer(osOrderOpen);
         MemTable.FieldByName('ISLOCKED').AsInteger := FReadSQL.FieldByName('USR$ISLOCKED').AsInteger;
+        MemTable.FieldByName('USR$COMPUTERNAME').AsString := FReadSQL.FieldByName('USR$COMPUTERNAME').AsString;
         MemTable.Post;
         FReadSQL.Next;
       end;
@@ -2951,6 +2954,31 @@ begin
   end;
 end;
 
+function TFrontBase.OrderIsLocked(const ID: Integer): Boolean;
+begin
+  Result := False;
+
+  FReadSQL.Close;
+  try
+    try
+      if not FReadSQL.Transaction.InTransaction then
+        FReadSQL.Transaction.StartTransaction;
+
+      FReadSQL.SQL.Text :=
+        'SELECT USR$ISLOCKED FROM USR$MN_ORDER ' +
+        'where documentkey = :id ';
+      FReadSQL.Params[0].AsInteger := ID;
+      FReadSQL.ExecQuery;
+      if FReadSQL.FieldByName('USR$ISLOCKED').AsInteger = 1 then
+        Result := True;
+    except
+      raise;
+    end;
+  finally
+    FReadSQL.Close;
+  end;
+end;
+
 function TFrontBase.OrderIsPayed(const ID: Integer): Boolean;
 begin
   Result := False;
@@ -3342,6 +3370,39 @@ begin
   end;
 end;
 
+procedure TFrontBase.GetTables(const MemTable: TkbmMemTable;
+  const HallKey: Integer);
+begin
+  MemTable.Close;
+  MemTable.CreateTable;
+  MemTable.Open;
+
+  FReadSQL.Close;
+  try
+    FReadSQL.SQL.Text :=
+      'SELECT T.* ' +
+      'FROM USR$MN_TABLE T ' +
+      'WHERE T.USR$HALLKEY = :ID ';
+    FReadSQL.Params[0].AsInteger := HallKey;
+    FReadSQL.ExecQuery;
+    while not FReadSQL.Eof do
+    begin
+      MemTable.Append;
+      MemTable.FieldByName('ID').AsInteger := FReadSQL.FieldByName('ID').AsInteger;
+      MemTable.FieldByName('USR$NUMBER').AsString := FReadSQL.FieldByName('USR$NUMBER').AsString;
+      MemTable.FieldByName('USR$POSY').AsInteger := FReadSQL.FieldByName('USR$POSY').AsInteger;
+      MemTable.FieldByName('USR$POSX').AsInteger := FReadSQL.FieldByName('USR$POSX').AsInteger;
+      MemTable.FieldByName('USR$TYPE').AsInteger := FReadSQL.FieldByName('USR$TYPE').AsInteger;
+      MemTable.FieldByName('USR$MAINTABLEKEY').AsInteger := FReadSQL.FieldByName('USR$MAINTABLEKEY').AsInteger;
+      MemTable.Post;
+
+      FReadSQL.Next;
+    end;
+  finally
+    FReadSQL.Close;
+  end;
+end;
+
 procedure TFrontBase.GetTablesInfo(const MemTable: TkbmMemTable;
   const HallKey: Integer);
 begin
@@ -3352,10 +3413,12 @@ begin
   FReadSQL.Close;
   try
     FReadSQL.SQL.Text :=
-      'SELECT T.*, U.USR$RESPKEY, U.USR$ISLOCKED, U.DOCUMENTKEY, U.USR$COMPUTERNAME ' +
+      'SELECT T.*, U.USR$RESPKEY, U.USR$ISLOCKED, U.DOCUMENTKEY, U.USR$COMPUTERNAME, DOC.NUMBER ' +
       'FROM USR$MN_TABLE T ' +
       'LEFT JOIN USR$MN_ORDER U ON (U.USR$TABLEKEY = T.ID AND U.USR$PAY <> 1) ' +
-      'WHERE T.USR$HALLKEY = :ID ';
+      'LEFT JOIN GD_DOCUMENT DOC ON DOC.ID = U.DOCUMENTKEY ' +
+      'WHERE T.USR$HALLKEY = :ID ' +
+      'ORDER BY U.DOCUMENTKEY, DOC.NUMBER ';
     FReadSQL.Params[0].AsInteger := HallKey;
     FReadSQL.ExecQuery;
     while not FReadSQL.Eof do
@@ -3371,6 +3434,7 @@ begin
       MemTable.FieldByName('ORDERKEY').AsInteger := FReadSQL.FieldByName('DOCUMENTKEY').AsInteger;
       MemTable.FieldByName('ISLOCKED').AsInteger := FReadSQL.FieldByName('USR$ISLOCKED').AsInteger;
       MemTable.FieldByName('USR$COMPUTERNAME').AsString := FReadSQL.FieldByName('USR$COMPUTERNAME').AsString;
+      MemTable.FieldByName('NUMBER').AsString := FReadSQL.FieldByName('NUMBER').AsString;
       MemTable.Post;
 
       FReadSQL.Next;
@@ -3378,7 +3442,6 @@ begin
   finally
     FReadSQL.Close;
   end;
-
 end;
 
 function TFrontBase.GetServerName: String;

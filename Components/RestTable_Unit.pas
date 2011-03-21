@@ -4,7 +4,7 @@ interface
 
 uses
   SysUtils, Classes, Controls, Front_DataBase_Unit, Graphics, IBSQL,
-  IBDatabase, PngSpeedButton, pngimage, Buttons;
+  IBDatabase, PngSpeedButton, pngimage, Buttons, Generics.Collections;
 
 type
   TRestTable = class(TPngSpeedButton)
@@ -24,6 +24,7 @@ type
     FRespKey: Integer;
     FIsLocked: Boolean;
     FComputerName: String;
+    FOrderList: TDictionary<Integer, String>;
     procedure SetPosX(const Value: Integer);
     procedure SetPosY(const Value: Integer);
     procedure SetHallKey(const Value: Integer);
@@ -43,6 +44,7 @@ type
     procedure SetIsLocked(const Value: Boolean);
     procedure SetNumber(const Value: String);
     procedure SetComputerName(const Value: String);
+    function GetOrderCount: Integer;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -63,6 +65,8 @@ type
     property OrderKey: Integer read FOrderKey write SetOrderKey;
     property RespKey: Integer read FRespKey write SetRespKey;
     property FrontBase: TFrontBase read FFrontBase write SetFrontBase;
+    property OrderCount: Integer read GetOrderCount;
+    property OrderList: TDictionary<Integer, String> read FOrderList;
   published
     // номер стола
     property Number: String read FNumber write SetNumber;
@@ -90,12 +94,18 @@ begin
   FIsEmpty := True;
   FID := -1;
   Flat := True;
-//  Layout := blGlyphTop;
+  FOrderList := TDictionary<Integer, String>.Create();
 end;
 
 destructor TRestTable.Destroy;
 begin
+  FOrderList.Free;
   inherited;
+end;
+
+function TRestTable.GetOrderCount: Integer;
+begin
+  Result := FOrderList.Count;
 end;
 
 function TRestTable.GetPosX: Integer;

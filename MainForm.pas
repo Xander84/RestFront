@@ -14,7 +14,7 @@ uses
   AdvSmoothButton, AdvPanel, AdvPageControl, AdvSmoothTouchKeyBoard,
   TaskDialog, FrontLog_Unit, Grids, Menus, AddUserForm_unit, AdminForm_Unit,
   Buttons, RestTable_Unit, dxfDesigner, GestureMgr, AdvObj, BaseGrid, AdvGrid,
-  DBAdvGrid;
+  DBAdvGrid, AdvMenus, AdvMenuStylers;
 
 const
   btnHeight = 65;
@@ -190,6 +190,8 @@ type
     gmFront: TGestureManager;
     btnOK2: TAdvSmoothButton;
     DBAdvGrMain: TDBAdvGrid;
+    tablePopupMenu: TAdvPopupMenu;
+    MenuOfficeStyler: TAdvMenuOfficeStyler;
 
     //Проверка введёного пароля
     procedure actPassEnterExecute(Sender: TObject);
@@ -264,6 +266,7 @@ type
       var Value: string);
     procedure DBAdvGrMainGetDisplText(Sender: TObject; ACol, ARow: Integer;
       var Value: string);
+    procedure tablePopupMenuPopup(Sender: TObject);
   private
     //Компонент обращения к БД
     FFrontBase: TFrontBase;
@@ -356,6 +359,7 @@ type
     procedure AddOrderButton;
     procedure RemoveOrderButton;
     procedure CreateNewOrder(const TableKey: Integer);
+    procedure CreateNewTableOrder(const Table: TRestTable);
     procedure OrderButtonOnClick(Sender: TObject);
     procedure SplitButtonOnClick(Sender: TObject);
     //режим залов
@@ -365,7 +369,7 @@ type
     procedure HallButtonOnClick(Sender: TObject);
     procedure CreateTableButtonList(const HallKey: Integer);
     procedure RemoveTableButton;
-    procedure AddTableButton;
+    procedure PopItemOnClick(Sender: TObject);
     procedure TableButtonOnClick(Sender: TObject);
     procedure SaveTablePositions;
     //меню
@@ -496,6 +500,7 @@ begin
   FUsersOrderButtonList := TObjectList.Create;
   FTablesList := TObjectList.Create;
   FHallButtonList := TObjectList.Create;
+
   FEditMode := False;
   FWithPreCheck := True;
   FActiveHallButton := '';
@@ -619,6 +624,7 @@ begin
   FOrderDataSet.FieldDefs.Add('Status', ftInteger, 0);
   FOrderDataSet.FieldDefs.Add('ID', ftInteger, 0);
   FOrderDataSet.FieldDefs.Add('ISLOCKED', ftInteger, 0);
+  FOrderDataSet.FieldDefs.Add('USR$COMPUTERNAME', ftString, 20);
   FOrderDataSet.CreateTable;
   FOrderDataSet.Open;
 
@@ -667,6 +673,7 @@ begin
   FTablesInfoTable.FieldDefs.Add('ORDERKEY', ftInteger, 0);
   FTablesInfoTable.FieldDefs.Add('ISLOCKED', ftInteger, 0);
   FTablesInfoTable.FieldDefs.Add('USR$COMPUTERNAME', ftString, 20);
+  FTablesInfoTable.FieldDefs.Add('NUMBER', ftString, 20);
   FTablesInfoTable.CreateTable;
   FTablesInfoTable.Open;
 
@@ -778,29 +785,6 @@ begin
   end;
 end;
 
-procedure TRestMainForm.AddTableButton;
-var
-  FButton: TRestTable;
-begin
-  FButton := TRestTable.Create(sbTable);
-  FButton.Parent := sbTable;
-  FButton.FrontBase := FFrontBase;
-  FButton.ID := FTablesInfoTable.FieldByName('ID').AsInteger;
-  FButton.IsEmpty := FTablesInfoTable.FieldByName('ORDERKEY').AsInteger = 0;
-  FButton.PosX := FTablesInfoTable.FieldByName('USR$POSX').AsInteger;
-  FButton.PosY := FTablesInfoTable.FieldByName('USR$POSY').AsInteger;
-  FButton.TableTypeKey := FTablesInfoTable.FieldByName('USR$TYPE').AsInteger;
-  FButton.OrderKey := FTablesInfoTable.FieldByName('ORDERKEY').AsInteger;
-  FButton.RespKey := FTablesInfoTable.FieldByName('USR$RESPKEY').AsInteger;
-  FButton.IsLocked := FTablesInfoTable.FieldByName('ISLOCKED').AsInteger = 1;
-  FButton.Number := FTablesInfoTable.FieldByName('USR$NUMBER').AsString;
-  FButton.ComputerName := FTablesInfoTable.FieldByName('USR$COMPUTERNAME').AsString;
-  if FRestFormState = HallsPage then
-    FButton.OnClick := TableButtonOnClick;
-
-  FTablesList.Add(FButton);
-end;
-
 procedure TRestMainForm.CreateOrderButtonList;
 begin
   if FOrderDataSet.Active then
@@ -816,15 +800,51 @@ begin
 end;
 
 procedure TRestMainForm.CreateTableButtonList(const HallKey: Integer);
+var
+  FButton: TRestTable;
+  FPrevTableID: Integer;
 begin
   FFrontBase.GetTablesInfo(FTablesInfoTable, HallKey);
   if FTablesInfoTable.Active then
   begin
     FTablesInfoTable.First;
+    FPrevTableID := 0;
     while not FTablesInfoTable.Eof do
     begin
-      AddTableButton;
+      // если пустой стол или новый заказ, то
+      if (FTablesInfoTable.FieldByName('ORDERKEY').AsInteger = 0) or
+        (FPrevTableID <> FTablesInfoTable.FieldByName('ID').AsInteger) then
+      begin
+        FButton := TRestTable.Create(sbTable);
+        FButton.Parent := sbTable;
+        FButton.FrontBase := FFrontBase;
+        FButton.ID := FTablesInfoTable.FieldByName('ID').AsInteger;
+        FButton.IsEmpty := FTablesInfoTable.FieldByName('ORDERKEY').AsInteger = 0;
+        FButton.PosX := FTablesInfoTable.FieldByName('USR$POSX').AsInteger;
+        FButton.PosY := FTablesInfoTable.FieldByName('USR$POSY').AsInteger;
+        FButton.TableTypeKey := FTablesInfoTable.FieldByName('USR$TYPE').AsInteger;
+        FButton.OrderKey := FTablesInfoTable.FieldByName('ORDERKEY').AsInteger;
+        FButton.RespKey := FTablesInfoTable.FieldByName('USR$RESPKEY').AsInteger;
+        FButton.IsLocked := FTablesInfoTable.FieldByName('ISLOCKED').AsInteger = 1;
+        FButton.Number := FTablesInfoTable.FieldByName('USR$NUMBER').AsString;
+        FButton.ComputerName := FTablesInfoTable.FieldByName('USR$COMPUTERNAME').AsString;
+        if FRestFormState = HallsPage then
+        begin
+          FButton.OnClick := TableButtonOnClick;
+          FButton.PopupMenu := tablePopupMenu;
+        end;
+        if FButton.OrderKey <> 0 then
+          FButton.OrderList.Add(FButton.OrderKey, FTablesInfoTable.FieldByName('NUMBER').AsString);
 
+        FTablesList.Add(FButton);
+        FPrevTableID := FTablesInfoTable.FieldByName('ID').AsInteger;
+      end else
+      if FPrevTableID = FTablesInfoTable.FieldByName('ID').AsInteger then
+      begin
+        if Assigned(FButton) then
+          FButton.OrderList.Add(FTablesInfoTable.FieldByName('ORDERKEY').AsInteger,
+            FTablesInfoTable.FieldByName('NUMBER').AsString);
+      end;
       FTablesInfoTable.Next;
     end;
   end;
@@ -1127,7 +1147,7 @@ begin
       if FGuestForm.ModalResult = mrOK then
         FGuestCount := FGuestForm.GuestCount
       else
-        FGuestCount := 1;
+        exit;
     finally
       FGuestForm.Free;
     end;
@@ -1145,6 +1165,63 @@ begin
     FHeaderTable.FieldByName('USR$TIMEORDER').Value := Time;
     if TableKey > 0 then
       FHeaderTable.FieldByName('USR$TABLEKEY').AsInteger := TableKey;
+    FHeaderTable.FieldByName('USR$COMPUTERNAME').AsString := FFrontBase.GetLocalComputerName;
+    FHeaderTable.Post;
+  end;
+  FLogManager.DoSimpleEvent(ev_CreateNewOrder);
+end;
+
+procedure TRestMainForm.CreateNewTableOrder(const Table: TRestTable);
+var
+  FGuestForm: TGuestForm;
+  FOrderNumber: String;
+  FGuestCount: Integer;
+begin
+  ClearDisplay;
+{ TODO : Проверка на Max кол-во гостей }
+  if (FFrontBase.UserKey and FFrontBase.Options.ManagerGroupMask) = 0 then
+  begin
+    if FFrontBase.CheckCountOrderByResp(FFrontBase.ContactKey) then
+    begin
+      AdvTaskMessageDlg('Внимание', 'Превышено максимально возможное число открытых заказов!', mtWarning, [mbOK], 0);
+      exit;
+    end;
+  end;
+
+  FOrderNumber := '';
+  FFrontBase.GetOrder(FHeaderTable, FLineTable, FModificationDataSet, -1);
+  FOrderNumber := Table.Number + '.' + IntToStr(Table.OrderCount + 1);
+
+  if FOrderNumber = '' then
+    exit;
+
+  if FFrontBase.Options.MinGuestCount < 0 then
+    FGuestCount := 1
+  else begin
+    FGuestForm := TGuestForm.Create(nil);
+    try
+      FGuestForm.ShowModal;
+      if FGuestForm.ModalResult = mrOK then
+        FGuestCount := FGuestForm.GuestCount
+      else
+        exit;
+    finally
+      FGuestForm.Free;
+    end;
+  end;
+
+  if (FGuestCount >= FFrontBase.Options.MinGuestCount) then
+  begin
+    if not Assigned(dsMain.DataSet) then
+      dsMain.DataSet := FLineTable;
+    RestFormState := MenuInfo;
+
+    FHeaderTable.Insert;
+    FHeaderTable.FieldByName('NUMBER').AsString := FOrderNumber;
+    FHeaderTable.FieldByName('USR$GUESTCOUNT').AsInteger := FGuestCount;
+    FHeaderTable.FieldByName('USR$TIMEORDER').Value := Time;
+    if Table.ID > 0 then
+      FHeaderTable.FieldByName('USR$TABLEKEY').AsInteger := Table.ID;
     FHeaderTable.FieldByName('USR$COMPUTERNAME').AsString := FFrontBase.GetLocalComputerName;
     FHeaderTable.Post;
   end;
@@ -1470,7 +1547,7 @@ begin
   //сначала ставим флаг, что редактируем набор данных
   if FOrderDataSet.Locate('ID', FButton.Tag, []) then
   begin
-    if FOrderDataSet.FieldByName('ISLOCKED').AsInteger = 1 then
+    if FFrontBase.OrderIsLocked(FButton.Tag) then
       if AdvTaskMessageDlg('Внимание', 'Заказ редактируется. Продолжить?',
         mtInformation, [mbYes, mbNo], 0) = IDYES then
       begin
@@ -1505,6 +1582,15 @@ begin
   else
     btnPreCheck.Action := actCancelPreCheck;
   FLogManager.DoOrderLog(GetCurrentUserInfo, GetCurrentOrderInfo, ev_EnterOrder);
+end;
+
+procedure TRestMainForm.PopItemOnClick(Sender: TObject);
+var
+  FButton: TRestTable;
+begin
+  FButton := TRestTable(TAdvPopupMenu(TMenuItem(Sender).Owner).PopupComponent);
+  if Assigned(FButton) then
+    CreateNewTableOrder(FButton);
 end;
 
 procedure TRestMainForm.btnExitManagerInfoClick(Sender: TObject);
@@ -2703,6 +2789,7 @@ begin
         OrderTable.FieldDefs.Add('Status', ftInteger, 0);
         OrderTable.FieldDefs.Add('ID', ftInteger, 0);
         OrderTable.FieldDefs.Add('ISLOCKED', ftInteger, 0);
+        OrderTable.FieldDefs.Add('USR$COMPUTERNAME', ftString, 20);
         OrderTable.CreateTable;
         OrderTable.Open;
         try
@@ -3135,19 +3222,28 @@ end;
 
 procedure TRestMainForm.TableButtonOnClick(Sender: TObject);
 var
-  FTableKey, FOrderKey: Integer;
+  FOrderKey: Integer;
   FUserInfo: TUserInfo;
   FRestTable: TRestTable;
+  Pt: TPoint;
 begin
   if dxfDesigner.Active then
     exit;
 
   FRestTable := TRestTable(Sender);
+
+  if FRestTable.OrderCount > 1 then
+  begin
+    Pt := FRestTable.ClientToScreen(Point(0, 0));
+    FRestTable.PopupMenu.PopupComponent := FRestTable;
+    FRestTable.PopupMenu.Popup(Pt.X, Pt.Y);
+    exit;
+  end;
+
   FOrderKey := FRestTable.OrderKey;
-  FTableKey := FRestTable.ID;
   if FOrderKey > 0 then
   begin
-    if FRestTable.IsLocked then
+    if FFrontBase.OrderIsLocked(FOrderKey) then
       if AdvTaskMessageDlg('Внимание', 'Заказ редактируется. Продолжить?',
         mtInformation, [mbYes, mbNo], 0) = IDYES then
       begin
@@ -3161,7 +3257,6 @@ begin
           end else
           if FFrontBase.GetLocalComputerName <> FRestTable.ComputerName then
             exit;
-
         end else
           exit;
       end else
@@ -3191,7 +3286,34 @@ begin
       btnPreCheck.Action := actCancelPreCheck;
       FLogManager.DoOrderLog(GetCurrentUserInfo, GetCurrentOrderInfo, ev_EnterOrder);
   end else
-    CreateNewOrder(FTableKey);
+    CreateNewTableOrder(FRestTable);
+end;
+
+procedure TRestMainForm.tablePopupMenuPopup(Sender: TObject);
+var
+  FButton: TRestTable;
+  Item: TMenuItem;
+  Key: Integer;
+begin
+  inherited;
+  tablePopupMenu.Items.Clear;
+
+  FButton := TRestTable(TAdvPopupMenu(Sender).PopupComponent);
+
+  Item := TMenuItem.Create(tablePopupMenu);
+  Item.Caption := 'Новый заказ';
+  Item.OnClick := PopItemOnClick;
+  Item.Tag := FButton.ID;
+  tablePopupMenu.Items.Add(Item);
+
+  for Key in FButton.OrderList.Keys do
+  begin
+    Item  := TMenuItem.Create(tablePopupMenu);
+    Item.Tag := Key;
+    Item.Caption := 'Заказ ' + FButton.OrderList.Items[Key];
+    Item.OnClick := OrderButtonOnClick;
+    tablePopupMenu.Items.Add(Item);
+  end;
 end;
 
 procedure TRestMainForm.tmrCloseTimer(Sender: TObject);
@@ -3259,27 +3381,50 @@ begin
 end;
 
 procedure TRestMainForm.actExitWindowsExecute(Sender: TObject);
+var
+  FUserInfo: TUserInfo;
 begin
-  if AdvTaskMessageDlg('Внимание', 'Выключить рабочую станцию?',
-    mtInformation, [mbYes, mbNo], 0) = IDYES then
+  FUserInfo := FFrontBase.CheckUserPasswordWithForm;
+  if FUserInfo.CheckedUserPassword then
   begin
-    if cn_ShutDownOnExit then
-      ShutDownOS(klNormal)
-    else
-      Application.Terminate;
+    if (FUserInfo.UserInGroup and FFrontBase.Options.ManagerGroupMask) = 0 then
+    begin
+      AdvTaskMessageDlg('Внимание', cn_dontManagerPermission, mtWarning, [mbOK], 0);
+      exit;
+    end;
+
+    if AdvTaskMessageDlg('Внимание', 'Выключить рабочую станцию?',
+      mtInformation, [mbYes, mbNo], 0) = IDYES then
+    begin
+      if cn_ShutDownOnExit then
+        ShutDownOS(klNormal)
+      else
+        Application.Terminate;
+    end;
   end;
 end;
 
 procedure TRestMainForm.actRestartRestExecute(Sender: TObject);
+var
+  FUserInfo: TUserInfo;
 begin
-  {$IFDEF MSWINDOWS}
-  if AdvTaskMessageDlg('Внимание', 'Перезапустить приложение?',
-    mtInformation, [mbYes, mbNo], 0) = IDYES then
+  FUserInfo := FFrontBase.CheckUserPasswordWithForm;
+  if FUserInfo.CheckedUserPassword then
   begin
-    Application.Terminate;
-    WinExec32(CmdLine, 1);
+    if (FUserInfo.UserInGroup and FFrontBase.Options.ManagerGroupMask) = 0 then
+    begin
+      AdvTaskMessageDlg('Внимание', cn_dontManagerPermission, mtWarning, [mbOK], 0);
+      exit;
+    end;
+    {$IFDEF MSWINDOWS}
+    if AdvTaskMessageDlg('Внимание', 'Перезапустить приложение?',
+      mtInformation, [mbYes, mbNo], 0) = IDYES then
+    begin
+      Application.Terminate;
+      WinExec32(CmdLine, 1);
+    end;
+    {$ENDIF MSWINDOWS}
   end;
-  {$ENDIF MSWINDOWS}
 end;
 
 procedure TRestMainForm.OnBeforePostLine(DataSet: TDataSet);
@@ -3361,8 +3506,8 @@ var
   FUserInfo: TUserInfo;
   FForm: TAdminForm;
 begin
-  if not FFrontBase.Options.NoPassword then
-    tmrClose.Enabled := False;
+//  if not FFrontBase.Options.NoPassword then
+//    tmrClose.Enabled := False;
 
   FUserInfo := FFrontBase.CheckUserPasswordWithForm;
   if FUserInfo.CheckedUserPassword then
@@ -3383,7 +3528,7 @@ begin
       FForm.Free;
     end;
   end;
-  tmrClose.Enabled := not FFrontBase.Options.NoPassword;
+//  tmrClose.Enabled := not FFrontBase.Options.NoPassword;
 end;
 
 procedure TRestMainForm.actAllChecksExecute(Sender: TObject);

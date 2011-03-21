@@ -319,6 +319,7 @@ function TSpark617Register.PrintCheck(const Doc, DocLine, PayLine: TkbmMemTable;
 var
   Res: Integer;
   DocNumber, WaiterName: String;
+  DocStr: Integer;
   WasDiscount: Boolean;
   TotalDiscount: Currency;
   GoodName, DiscName: String;
@@ -338,9 +339,13 @@ begin
       DocNumber := StringReplace(DocNumber, ',', '', [rfReplaceAll]);
       if Length(DocNumber) > 5 then
         Delete(DocNumber, 5, Length(DocNumber));
-
+      try
+        DocStr := StrToInt(DocNumber);
+      except
+        DocStr := 0;
+      end;
       WaiterName := FFrontBase.GetNameWaiterOnID(Doc.FieldByName('usr$respkey').AsInteger, False, False);
-      Res := SetExtraDocData(StrToInt(DocNumber), 0, 0, WaiterName);
+      Res := SetExtraDocData(DocStr, 0, 0, WaiterName);
       ErrMessage(Res);
 
       Res := StartDocument(1, 1, StrToInt(DocNumber), FFrontBase.UserName);
