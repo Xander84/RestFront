@@ -71,6 +71,8 @@ implementation
 procedure TCashForm.SetFiscalRegister(const Value: TFiscalRegister);
 begin
   FFiscalRegiter := Value;
+  if Assigned(FFiscalRegiter) then
+    FFiscalRegiter.InitFiscalRegister(FFrontBase.CashCode);
 end;
 
 procedure TCashForm.actStartDayExecute(Sender: TObject);

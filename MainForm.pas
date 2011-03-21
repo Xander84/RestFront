@@ -1362,6 +1362,8 @@ begin
       mtInformation, [mbOK], 0);
     exit;
   end;
+  if FViewMode then
+    exit;
 
   GoodKey := TButton(Sender).Tag;
   S := '';
@@ -3626,6 +3628,7 @@ begin
       exit;
     end;
     FForm := TCashForm.Create(Self);
+    FForm.FrontBase := FFrontBase;
     try
       FForm.FiscalRegistry := FFiscal;
       FForm.IsManager := ((FUserInfo.UserInGroup and FFrontBase.Options.ManagerGroupMask) <> 0);

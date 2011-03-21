@@ -53,9 +53,6 @@ object CashForm: TCashForm
     StatusBar.ColorTo = 16374724
     StatusBar.GradientDirection = gdVertical
     Styler = FrontData.FrontPanelStyler
-    ExplicitLeft = 14
-    ExplicitWidth = 421
-    ExplicitHeight = 587
     FullHeight = 0
     object btnStartDay: TAdvSmoothButton
       Left = 14
