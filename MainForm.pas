@@ -445,6 +445,8 @@ begin
   if FFrontBase.LogIn(edPassword.Text) then
   begin
     FLogManager.DoSimpleLog(GetCurrentUserInfo, ev_LogIn);
+    if Assigned(TouchKeyBoard) then
+      TouchKeyBoard.Hide;
     if FFrontBase.Options.UseHalls then
     begin
       FFrontBase.GetHallsInfo(FHallsTable);
