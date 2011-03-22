@@ -3903,7 +3903,6 @@ end;
 
 procedure TFrontBase.CanOpenDay;
 var
-  CanStart: Boolean;
   NewDate: TDateTime;
   FUserInfo: TUserInfo;
   FUpdateSQL: TIBSQL;
@@ -3935,56 +3934,53 @@ begin
           mtInformation, [mbOK], 0);
         exit;
       end;
-      CanStart := True;
       NewDate := NewDate + 1;
     end else
     begin
-      CanStart := True;
       NewDate := Date;
     end;
 
-    if CanStart then
-      if AdvTaskMessageDlg('Внимание', 'Хотите открыть день' + DateToStr(NewDate) + '?',
-        mtInformation, [mbYes, mbNo], 0) = IDYES then
+    if AdvTaskMessageDlg('Внимание', 'Хотите открыть день' + DateToStr(NewDate) + '?',
+      mtInformation, [mbYes, mbNo], 0) = IDYES then
+    begin
+      FUserInfo := CheckUserPasswordWithForm;
+      if FUserInfo.CheckedUserPassword then
       begin
-        FUserInfo := CheckUserPasswordWithForm;
-        if FUserInfo.CheckedUserPassword then
+        if (FUserInfo.UserInGroup and Options.KassaGroupMask) <> 0 then
         begin
-          if (FUserInfo.UserInGroup and Options.KassaGroupMask) <> 0 then
-          begin
-            FUpdateSQL := TIBSQL.Create(nil);
-            FUpdateSQL.Transaction := FCheckTransaction;
-            FUpdateSQL.SQL.Text :=
-              ' INSERT INTO usr$mn_options(usr$logicdate, usr$open, usr$openuser, usr$opendatetime) ' +
-              ' VALUES (:ldate, :open, :openuser, :opendate) ';
-            try
-              if not FCheckTransaction.InTransaction then
-                FCheckTransaction.StartTransaction;
+          FUpdateSQL := TIBSQL.Create(nil);
+          FUpdateSQL.Transaction := FCheckTransaction;
+          FUpdateSQL.SQL.Text :=
+            ' INSERT INTO usr$mn_options(usr$logicdate, usr$open, usr$openuser, usr$opendatetime) ' +
+            ' VALUES (:ldate, :open, :openuser, :opendate) ';
+          try
+            if not FCheckTransaction.InTransaction then
+              FCheckTransaction.StartTransaction;
 
-              FUpdateSQL.ParamByName('ldate').AsDateTime := NewDate;
-              FUpdateSQL.ParamByName('open').AsInteger := 1;
-              FUpdateSQL.ParamByName('openuser').AsInteger := FUserInfo.UserKey;
-              FUpdateSQL.ParamByName('opendate').AsDateTime := Now;
-              try
-                FUpdateSQL.ExecQuery;
-                FCheckTransaction.Commit;
-              except
-                on E: Exception do
-                begin
-                  AdvTaskMessageDlg('Внимание', 'Ошибка при закрытии дня ' + E.Message, mtError, [mbOK], 0);
-                  FCheckTransaction.Rollback;
-                end;
+            FUpdateSQL.ParamByName('ldate').AsDateTime := NewDate;
+            FUpdateSQL.ParamByName('open').AsInteger := 1;
+            FUpdateSQL.ParamByName('openuser').AsInteger := FUserInfo.UserKey;
+            FUpdateSQL.ParamByName('opendate').AsDateTime := Now;
+            try
+              FUpdateSQL.ExecQuery;
+              FCheckTransaction.Commit;
+            except
+              on E: Exception do
+              begin
+                AdvTaskMessageDlg('Внимание', 'Ошибка при закрытии дня ' + E.Message, mtError, [mbOK], 0);
+                FCheckTransaction.Rollback;
               end;
-            finally
-              if FCheckTransaction.InTransaction then
-                FCheckTransaction.Commit;
-              FUpdateSQL.Free;
             end;
-          end else
-            AdvTaskMessageDlg('Внимание', 'Данный пользователь не обладает правами для открытия дня!', mtWarning, [mbOK], 0);
+          finally
+            if FCheckTransaction.InTransaction then
+              FCheckTransaction.Commit;
+            FUpdateSQL.Free;
+          end;
         end else
-          exit;
-      end;
+          AdvTaskMessageDlg('Внимание', 'Данный пользователь не обладает правами для открытия дня!', mtWarning, [mbOK], 0);
+      end else
+        exit;
+    end;
   finally
     FReadSQL.Close;
   end;

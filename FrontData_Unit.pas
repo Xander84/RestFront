@@ -27,7 +27,6 @@ type
     function GetUserApplicationFileName(const AFile: TApplicationFile): String;
     function GetDefaultTheme: TTMSStyle;
   public
-
     property PanelColor: TColor read FPanelColor write FPanelColor;
     property PanelColorTo: TColor read FPanelColorTo write FPanelColorTo;
     property BaseQueryList: TgsQueryList read FQueryList write FQueryList;
