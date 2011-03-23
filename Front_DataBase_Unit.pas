@@ -3,9 +3,8 @@ unit Front_DataBase_Unit;
 interface
 
 uses
-  IBDatabase, Db, Classes, IBSQL, kbmMemTable, Base_Display_unit,
-  Pole_Display_Unit, IBQuery, IB, IBErrorCodes, JclStrHashMap, IBServices,
-  obj_QueryList;
+  IBDatabase, Db, Classes, IBSQL, kbmMemTable, Base_Display_unit, Generics.Collections,
+  Pole_Display_Unit, IBQuery, IB, IBErrorCodes, IBServices, obj_QueryList;
 
 const
   MN_OrderXID = 147014509;
@@ -254,12 +253,6 @@ type
     DBID: TID;
   end;
 
-{  TGoodItemCache = class
-
-  public
-
-  end;     }
-
   TFrontBase = class
   private
     FDataBase: TIBDataBase;
@@ -293,8 +286,7 @@ type
 
     FQueryList: TgsQueryList;
 
-//    FGoodHashList: TStringHashMap;
-    CacheList: TStringHashMap;
+    CacheList: TDictionary<String, Integer>;
 
     function GetDisplay: TDisplay;
     function GetCashCode: Integer;
@@ -426,12 +418,43 @@ type
   procedure GetHeaderTable(var DS: TkbmMemTable);
   procedure GetLineTable(var DS: TkbmMemTable);
   procedure GetModificationTable(var DS: TkbmMemTable);
+  function WinExec32(Cmd: string; const CmdShow: Integer): Boolean;
 
 implementation
 
 uses
   Windows, Sysutils, CardCodeForm_Unit, TaskDialog, Dialogs, FrontData_Unit;
 
+function WinExec32(Cmd: string; const CmdShow: Integer): Boolean;
+var
+  StartupInfo: TStartupInfo;
+  ProcessInfo: TProcessInformation;
+
+  procedure ResetMemory(out P; Size: Longint);
+  begin
+    if Size > 0 then
+    begin
+      Byte(P) := 0;
+      FillChar(P, Size, 0);
+    end;
+  end;
+
+begin
+  ResetMemory(StartupInfo, SizeOf(TStartupInfo));
+  ResetMemory(ProcessInfo, SizeOf(ProcessInfo));
+  StartupInfo.cb := SizeOf(TStartupInfo);
+  StartupInfo.dwFlags := STARTF_USESHOWWINDOW;
+  StartupInfo.wShowWindow := CmdShow;
+  UniqueString(Cmd);//in the Unicode version the parameter lpCommandLine needs to be writable
+  Result := CreateProcess(nil, PChar(Cmd), nil, nil, False,
+    NORMAL_PRIORITY_CLASS, nil, nil, StartupInfo, ProcessInfo);
+  if Result then
+  begin
+    WaitForInputIdle(ProcessInfo.hProcess, INFINITE);
+    CloseHandle(ProcessInfo.hThread);
+    CloseHandle(ProcessInfo.hProcess);
+  end;
+end;
 
 procedure GetHeaderTable(var DS: TkbmMemTable);
 begin
@@ -583,8 +606,8 @@ begin
   except
     raise;
   end;
-//  FGoodHashList := TStringHashMap.Create(CaseInSensitiveTraits, 512);
-  CacheList := TStringHashMap.Create(CaseSensitiveTraits, 1024);
+
+  CacheList := TDictionary<String, Integer>.Create();
 end;
 
 function TFrontBase.CreateNewOrder(var HeaderTable,
@@ -2416,7 +2439,7 @@ begin
   end else
   begin
     S := RUIDToStr(RUID(XID, DBID));
-    if not CacheList.Find(S, Result) then
+    if not CacheList.TryGetValue(S, Result) then
     begin
       RR := GetRUIDRecByXID(XID, DBID);
       if RR.ID = -1 then

@@ -433,7 +433,7 @@ uses
   SysUtils, GuestForm_unit, DeleteOrderLine_unit, OrderNumber_Unit,
   Modification_Unit, DevideForm_Unit,
   SellParamForm_Unit, PercOrCardForm_Unit, DiscountTypeForm_Unit,
-  ChooseDiscountCardForm_Unit, EditReportForm_Unit, JclMiscel,
+  ChooseDiscountCardForm_Unit, EditReportForm_Unit,
   GDIPPictureContainer, IB, GDIPFill, CashForm_Unit;
 
 
@@ -3362,7 +3362,7 @@ begin
       mtInformation, [mbYes, mbNo], 0) = IDYES then
     begin
       if cn_ShutDownOnExit then
-        ShutDownOS(klNormal)
+        Windows.ExitWindows(0, 0)
       else
         Application.Terminate;
     end;
