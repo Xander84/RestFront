@@ -436,7 +436,10 @@ begin
       FNoFiscal := FForm.HeaderTable.FieldByName('USR$NOFISCAL').AsInteger;
       edMain.Text := '';
       if dsPayLine.IsEmpty then
+      begin
         edMain.Text := CurrToStr(FSumToPay);
+        edMain.SelStart := Length(edMain.Text);
+      end;
     end else
       PrevSettings(FPayType);
   finally
@@ -496,7 +499,10 @@ begin
       FPayType := cn_paytype_credit;
       edMain.Text := '';
       if dsPayLine.IsEmpty then
+      begin
         edMain.Text := CurrToStr(FSumToPay);
+        edMain.SelStart := Length(edMain.Text);
+      end;
     end else
       PrevSettings(FPayType);
   finally
@@ -548,7 +554,10 @@ begin
       FPayType := cn_paytype_noncash;
       edMain.Text := '';
       if dsPayLine.IsEmpty then
+      begin
         edMain.Text := CurrToStr(FSumToPay);
+        edMain.SelStart := Length(edMain.Text);
+      end;
     end else
       PrevSettings(FPayType);
   finally
@@ -651,7 +660,7 @@ begin
     FInDeleteOrUpdate := True;
     try
       edMain.Text := dsPayLine.FieldByName('SUM').AsString;
-      edMain.SelStart := Length(edMain.Text) - 1;
+      edMain.SelStart := Length(edMain.Text);
       FCurrentPayType := dsPayLine.FieldByName('USR$PAYTYPEKEY').AsInteger;
       FCurrentPayName := dsPayLine.FieldByName('USR$NAME').AsString;
       FPayType := dsPayLine.FieldByName('PAYTYPE').AsInteger;
