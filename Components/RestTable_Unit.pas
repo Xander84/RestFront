@@ -3,8 +3,10 @@ unit RestTable_Unit;
 interface
 
 uses
-  SysUtils, Classes, Controls, Front_DataBase_Unit, Graphics, IBSQL,
-  IBDatabase, PngSpeedButton, pngimage, Buttons, Generics.Collections;
+  SysUtils, Classes, Controls, Front_DataBase_Unit, Graphics, IBSQL, Messages,
+  IBDatabase, PngSpeedButton, pngimage, Buttons, Generics.Collections, Types,
+  Windows, Menus;
+
 
 type
   TRestTable = class(TPngSpeedButton)
@@ -45,6 +47,8 @@ type
     procedure SetNumber(const Value: String);
     procedure SetComputerName(const Value: String);
     function GetOrderCount: Integer;
+
+    procedure WMContextMenu(var Message: TWMContextMenu); message WM_CONTEXTMENU;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -284,12 +288,12 @@ end;
 
 procedure TRestTable.SetNumber(const Value: String);
 var
-  bm: TBitmap;
+  bm: Graphics.TBitmap;
 begin
   FNumber := Value;
   if Assigned(PngImage) then
   begin
-    bm := TBitmap.Create;
+    bm := Graphics.TBitmap.Create;
     try
       bm.Width := PngImage.Width;
       bm.Height := PngImage.Height;
@@ -344,6 +348,45 @@ end;
 procedure TRestTable.SetTransparentColor(const Value: TColor);
 begin
   FTransparentColor := Value;
+end;
+
+procedure TRestTable.WMContextMenu(var Message: TWMContextMenu);
+var
+  Pt, Temp: TPoint;
+  Handled: Boolean;
+  PopupMenu: TPopupMenu;
+begin
+  Pt := SmallPointToPoint(Message.Pos);
+  Pt.X := Pt.X + 8;
+  Pt.Y := Pt.Y + 8;
+  Message.Pos := PointToSmallPoint(Pt);
+
+  if Message.Result <> 0 then Exit;
+  if csDesigning in ComponentState then
+  begin
+    inherited;
+    Exit;
+  end;
+  Temp := Pt;
+
+  Handled := False;
+  DoContextPopup(Temp, Handled);
+  Message.Result := Ord(Handled);
+  if Handled then Exit;
+
+  PopupMenu := GetPopupMenu;
+  if (PopupMenu <> nil) and PopupMenu.AutoPopup then
+  begin
+    SendCancelMode(Self);
+    PopupMenu.PopupComponent := Self;
+    if InvalidPoint(Pt) then
+      Pt := ClientToScreen(Point(0, 0));
+    PopupMenu.Popup(Pt.X, Pt.Y);
+    Message.Result := 1;
+  end;
+
+  if Message.Result = 0 then
+    inherited;
 end;
 
 end.

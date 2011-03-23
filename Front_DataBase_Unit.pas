@@ -1927,6 +1927,8 @@ begin
 end;
 
 function TFrontBase.GetActiveWaiterList(var MemTable: TkbmMemTable; WithPrecheck: Boolean): Boolean;
+var
+  LDate: TDateTime;
 begin
   FReadSQL.Close;
   MemTable.Close;
@@ -1936,6 +1938,9 @@ begin
     try
       if not FReadSQL.Transaction.InTransaction then
         FReadSQL.Transaction.StartTransaction;
+
+      if Options.OrderCurrentLDate then
+        LDate := GetLogicDate;
 
       FReadSQL.SQL.Text :=
         ' select    ' +
@@ -1959,7 +1964,7 @@ begin
         ' order by    ' +
         '   con.name asc  ';
       if Options.OrderCurrentLDate then
-        FReadSQL.ParamByName('LDate').AsDateTime := GetLogicDate;
+        FReadSQL.ParamByName('LDate').AsDateTime := LDate;
 
       FReadSQL.ExecQuery;
       while not FReadSQL.EOF do
@@ -3394,6 +3399,7 @@ begin
       MemTable.FieldByName('USR$POSX').AsInteger := FReadSQL.FieldByName('USR$POSX').AsInteger;
       MemTable.FieldByName('USR$TYPE').AsInteger := FReadSQL.FieldByName('USR$TYPE').AsInteger;
       MemTable.FieldByName('USR$MAINTABLEKEY').AsInteger := FReadSQL.FieldByName('USR$MAINTABLEKEY').AsInteger;
+      MemTable.FieldByName('ORDERKEY').AsInteger := 0;
       MemTable.Post;
 
       FReadSQL.Next;
@@ -4250,6 +4256,8 @@ begin
 end;
 
 function TFrontBase.CheckCountOrderByResp(const RespID: Integer): Boolean;
+var
+  LDate: TDateTime;
 begin
   Result := True;
 
@@ -4257,14 +4265,16 @@ begin
     if not FReadSQL.Transaction.InTransaction then
       FReadSQL.Transaction.StartTransaction;
 
+    LDate := GetLogicDate;
+
     FReadSQL.Close;
     FReadSQL.SQL.Text :=
       ' SELECT COUNT(*) AS countOrder ' +
       ' FROM usr$mn_order o  ' +
-      ' WHERE o.usr$logicdate = :ldate ' +
+      ' WHERE o.usr$logicdate = :logicdate ' +
       '   AND o.usr$respkey = :respkey ' +
       '   AND o.USR$TIMECLOSEORDER IS NULL ';
-    FReadSQL.ParamByName('ldate').AsDateTime := GetLogicDate;
+    FReadSQL.ParamByName('logicdate').AsDateTime := LDate;
     FReadSQL.ParamByName('respkey').AsInteger := RespID;
     FReadSQL.ExecQuery;
 

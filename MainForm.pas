@@ -788,7 +788,11 @@ var
   FButton: TRestTable;
   FPrevTableID: Integer;
 begin
-  FFrontBase.GetTablesInfo(FTablesInfoTable, HallKey);
+  if FRestFormState = HallsPage then
+    FFrontBase.GetTablesInfo(FTablesInfoTable, HallKey)
+  else
+    FFrontBase.GetTables(FTablesInfoTable, HallKey);
+
   if FTablesInfoTable.Active then
   begin
     FTablesInfoTable.First;
@@ -3095,17 +3099,20 @@ var
   S: String;
   Width: Integer;
 begin
-  Width := DBGrMain.Columns[0].Width div 10;
-  S := Params.Text;
-  if Length(S) > Width then
+  if FLineTable.FieldByName('MODIFYSTRING').AsString <> '' then
   begin
-    Delete(S, Width, Length(S));
-    Params.Text := S;
-  end;
+    Width := DBGrMain.Columns[0].Width div 10;
+    S := Params.Text;
+    if Length(S) > Width then
+    begin
+      Delete(S, Width, Length(S));
+      Params.Text := S;
+    end;
 
-  S := FLineTable.FieldByName('MODIFYSTRING').AsString;
-  if S > '' then
-    Params.Text := Params.Text + #13#10 + S
+    S := FLineTable.FieldByName('MODIFYSTRING').AsString;
+    if S > '' then
+      Params.Text := Params.Text + #13#10 + S
+  end;
 end;
 
 procedure TRestMainForm.DBGrInfoHeaderAdvDrawDataCell(Sender: TCustomDBGridEh;
@@ -3177,7 +3184,7 @@ begin
   begin
     Pt := FRestTable.ClientToScreen(Point(0, 0));
     FRestTable.PopupMenu.PopupComponent := FRestTable;
-    FRestTable.PopupMenu.Popup(Pt.X, Pt.Y);
+    FRestTable.PopupMenu.Popup(Pt.X + 16, Pt.Y + 16);
     exit;
   end;
 
