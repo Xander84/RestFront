@@ -621,9 +621,9 @@ const
     '     -1,                    ' +
     '     :companykey,           ' +
     '     :creatorkey,           ' +
-    '     :creationdate,         ' +
+    '     current_timestamp,     ' +
     '     :editorkey,            ' +
-    '     :editiondate,          ' +
+    '     current_timestamp,     ' +
     '     :usr$mn_printdate)     ' ;
 
   OrderInsert =
@@ -841,9 +841,7 @@ begin
           InsDoc.ParamByName('documentdate').AsDateTime := Date;
           InsDoc.ParamByName('companykey').AsInteger := FCompanyKey;
           InsDoc.ParamByName('creatorkey').AsInteger := FContactKey;
-          InsDoc.ParamByName('creationdate').AsDateTime := Date;
           InsDoc.ParamByName('editorkey').AsInteger := FContactKey;
-          InsDoc.ParamByName('editiondate').AsDateTime := Date;
           InsDoc.ParamByName('usr$mn_printdate').Value := HeaderTable.FieldByName('usr$mn_printdate').Value;
           InsDoc.ExecQuery;
 
@@ -892,9 +890,7 @@ begin
               InsDoc.ParamByName('documentdate').AsDateTime := Date;
               InsDoc.ParamByName('companykey').AsInteger := FCompanyKey;
               InsDoc.ParamByName('creatorkey').AsInteger := FContactKey;
-              InsDoc.ParamByName('creationdate').AsDateTime := Date;
               InsDoc.ParamByName('editorkey').AsInteger := FContactKey;
-              InsDoc.ParamByName('editiondate').AsDateTime := Date;
               InsDoc.ParamByName('usr$mn_printdate').Value := LineTable.FieldByName('usr$mn_printdate').Value;
               InsDoc.ExecQuery;
 

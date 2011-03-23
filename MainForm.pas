@@ -1984,6 +1984,7 @@ end;
 procedure TRestMainForm.actKeyBoardExecute(Sender: TObject);
 begin
   TouchKeyBoard.Show;
+  TouchKeyBoard.Keyboard.SetComponentStyle(GetFrontStyle);
 end;
 
 procedure TRestMainForm.actCutCheckExecute(Sender: TObject);
@@ -3391,9 +3392,9 @@ begin
   if DataSet.FieldByName('STATEFIELD').AsInteger = cn_StateNothing then
     DataSet.FieldByName('STATEFIELD').AsInteger := cn_StateUpdate;
 
-  DataSet.FieldByName('USR$SUMNCU').AsCurrency :=
-    DataSet.FieldBYName('USR$COSTNCU').AsCurrency *
-    DataSet.FieldBYName('USR$QUANTITY').AsCurrency;
+  DataSet.FieldByName('USR$SUMNCU').AsCurrency := FFrontBase.RoundCost
+    (DataSet.FieldBYName('USR$COSTNCU').AsCurrency *
+    DataSet.FieldBYName('USR$QUANTITY').AsCurrency);
 
   DataSet.FieldByName('USR$SUMNCUWITHDISCOUNT').AsCurrency :=
     FFrontBase.RoundCost(DataSet.FieldByName('USR$SUMNCU').AsCurrency *
