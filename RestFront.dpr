@@ -1,6 +1,7 @@
 program RestFront;
 
 uses
+
 {$IFDEF VER150}
   FastMM4,
   RtlVclOptimize,
@@ -17,6 +18,7 @@ uses
   DeleteOrderLine_unit in 'DeleteOrderLine_unit.pas' {DeleteOrderLine},
   OrderNumber_Unit in 'OrderNumber_Unit.pas' {OrderNumber},
   Report_Unit in 'Report\Report_Unit.pas',
+  Front_DataBase_Unit in 'Front_DataBase_Unit.pas',
   Base_Display_unit in 'Display\Base_Display_unit.pas',
   Modification_Unit in 'Modification_Unit.pas' {ModificationForm},
   DevideForm_Unit in 'DevideForm_Unit.pas' {DevideForm},
@@ -68,10 +70,11 @@ begin
     if GetLastError = ERROR_ALREADY_EXISTS then
     begin
       CloseHandle(hMutex);
-      exit;
+//      exit;
     end;
 
     Application.Initialize;
+    Application.Title := 'Ресторан';
     Application.CreateForm(TFrontData, FrontData);
     Application.CreateForm(TRestMainForm, RestMainForm);
     Application.Run;

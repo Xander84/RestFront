@@ -590,8 +590,8 @@ end;
 function TFrontBase.CreateNewOrder(var HeaderTable,
   LineTable, ModifyTable: TkbmMemTable; out OrderKey: Integer): Boolean;
 var
-  InsDoc, InsOrder, InsOrderLine, InsModify, DelModify, UpdParent :TIBSQL;
-  updOrder, UpdOrderLine: TIBSQL;
+  InsDoc, InsOrder, InsOrderLine, InsModify, DelModify, UpdParent:TIBSQL;
+  updOrder, updDoc, UpdOrderLine: TIBSQL;
   MasterID, LineState, LineID: Integer;
 const
   DocInsert =
@@ -625,6 +625,12 @@ const
     '     :editorkey,            ' +
     '     current_timestamp,     ' +
     '     :usr$mn_printdate)     ' ;
+
+  DocUpdate =
+    '  update gd_document          ' +
+    '  set editorkey = :editorkey, ' +
+    '    editiondate = current_timestamp ' +
+    '  where id = :id              ';
 
   OrderInsert =
     '   insert into usr$mn_order (   ' +
@@ -774,6 +780,10 @@ begin
   InsDoc.Transaction := FCheckTransaction;
   InsDoc.SQL.Text := DocInsert;
 
+  updDoc := TIBSQL.Create(nil);
+  updDoc.Transaction := FCheckTransaction;
+  updDoc.SQL.Text := DocUpdate;
+
   InsOrder := TIBSQL.Create(nil);
   InsOrder.Transaction := FCheckTransaction;
   InsOrder.SQL.Text := OrderInsert;
@@ -830,6 +840,10 @@ begin
           updOrder.ParamByName('usr$computername').AsString := GetLocalComputerName;
           updOrder.ExecQuery;
 
+          updDoc.Close;
+          updDoc.ParamByName('ID').AsInteger := HeaderTable.FieldByName('ID').AsInteger;
+          updDoc.ParamByName('editorkey').AsInteger := FContactKey;
+          updDoc.ExecQuery;
         end else
         begin
           MasterID := GetNextID;
@@ -948,6 +962,11 @@ begin
               UpdOrderLine.ParamByName('documentkey').AsInteger := LineTable.FieldByName('ID').AsInteger;
               UpdOrderLine.ExecQuery;
 
+              updDoc.Close;
+              updDoc.ParamByName('ID').AsInteger := LineTable.FieldByName('ID').AsInteger;
+              updDoc.ParamByName('editorkey').AsInteger := FContactKey;
+              updDoc.ExecQuery;
+
               DelModify.Close;
               DelModify.ParamByName('POSKEY').AsInteger := LineTable.FieldByName('ID').AsInteger;
               DelModify.ExecQuery;
@@ -1014,6 +1033,7 @@ begin
     end;
 
     InsDoc.Free;
+    updDoc.Free;
     InsOrder.Free;
     InsOrderLine.Free;
     updOrder.Free;
@@ -3664,6 +3684,8 @@ begin
 end;
 
 function TFrontBase.GetUserGroupList(var MemTable: TkbmMemTable): Boolean;
+var
+  ID: Integer;
 begin
   Result := False;
   try
@@ -3679,11 +3701,17 @@ begin
       FReadSQL.ExecQuery;
       while not FReadSQL.EOF do
       begin
-        MemTable.Append;
-        MemTable.FieldByName('ID').AsInteger := FReadSQL.FieldByName('ID').AsInteger;
-        MemTable.FieldByName('USR$NAME').AsString := FReadSQL.FieldByName('NAME').AsString;
-        MemTable.FieldByName('CHECKED').AsInteger := 0;
-        MemTable.Post;
+        ID := FReadSQL.FieldByName('ID').AsInteger;
+        if ((GetGroupMask(ID) and FOptions.ManagerGroupMask) <> 0) or
+          ((GetGroupMask(ID) and FOptions.KassaGroupMask) <> 0) or
+          ((GetGroupMask(ID) and FOptions.WaiterGroupMask) <> 0) then
+        begin
+          MemTable.Append;
+          MemTable.FieldByName('ID').AsInteger := FReadSQL.FieldByName('ID').AsInteger;
+          MemTable.FieldByName('USR$NAME').AsString := FReadSQL.FieldByName('NAME').AsString;
+          MemTable.FieldByName('CHECKED').AsInteger := 0;
+          MemTable.Post;
+        end;
         FReadSQL.Next;
       end;
       Result := True;

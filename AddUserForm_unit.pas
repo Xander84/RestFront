@@ -6,7 +6,7 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, BaseFrontForm_Unit, FrontData_Unit, StdCtrls, ExtCtrls, AdvPanel,
   Front_DataBase_Unit, kbmMemTable, DB, DBCtrls, AdvSmoothButton, Mask, ActnList,
-  Grids, AdvObj, BaseGrid, AdvGrid, DBAdvGrid;
+  Grids, AdvObj, BaseGrid, AdvGrid, DBAdvGrid, AdvSmoothTouchKeyBoard;
 
 type
   TAddUserForm = class(TBaseFrontForm)
@@ -36,6 +36,7 @@ type
     UserGroupTableID: TIntegerField;
     UserGroupTableUSRNAME: TStringField;
     UserGroupTableCHECKED: TIntegerField;
+    AdvTouchKeyBoard: TAdvSmoothTouchKeyBoard;
     procedure FormShow(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure actAddUserExecute(Sender: TObject);

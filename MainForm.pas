@@ -191,6 +191,7 @@ type
     tablePopupMenu: TAdvPopupMenu;
     MenuOfficeStyler: TAdvMenuOfficeStyler;
     DBGrMain: TDBGridEh;
+    grScrollBar: TScrollBar;
 
     //Проверка введёного пароля
     procedure actPassEnterExecute(Sender: TObject);
@@ -262,6 +263,7 @@ type
     procedure tmrCloseTimer(Sender: TObject);
     procedure btnCheckRegisterClick(Sender: TObject);
     procedure tablePopupMenuPopup(Sender: TObject);
+    procedure actCashFormUpdate(Sender: TObject);
   private
     //Компонент обращения к БД
     FFrontBase: TFrontBase;
@@ -1343,7 +1345,11 @@ begin
     exit;
   end;
   if FViewMode then
+  begin
+    AdvTaskMessageDlg('Внимание', 'Из формы оплаты нельзя добавлять товар!',
+      mtInformation, [mbOK], 0);
     exit;
+  end;
 
   GoodKey := TButton(Sender).Tag;
   S := '';
@@ -1530,6 +1536,12 @@ begin
   if FOrderDataSet.Locate('ID', FButton.Tag, []) then
   begin
     if FFrontBase.OrderIsLocked(FButton.Tag) then
+    begin
+      if (FFrontBase.GetLocalComputerName <> FOrderDataSet.FieldByName('USR$COMPUTERNAME').AsString) then
+      begin
+        AdvTaskMessageDlg('Внимание', 'Заказ редактируется на другом рабочем месте!', mtWarning, [mbOK], 0);
+        exit;
+      end else
       if AdvTaskMessageDlg('Внимание', 'Заказ редактируется. Продолжить?',
         mtInformation, [mbYes, mbNo], 0) = IDYES then
       begin
@@ -1540,14 +1552,13 @@ begin
           begin
             AdvTaskMessageDlg('Внимание', cn_dontManagerPermission, mtWarning, [mbOK], 0);
             exit;
-          end else
-          if (FFrontBase.GetLocalComputerName <> FOrderDataSet.FieldByName('USR$COMPUTERNAME').AsString) then
-            exit;
+          end;
         end else
           exit;
       end else
         exit;
-  end;     
+    end;
+  end;
   FFrontBase.GetOrder(FHeaderTable, FLineTable, FModificationDataSet, FButton.Tag);
   FFrontBase.LockUserOrder(FButton.Tag);
   if not Assigned(dsMain.DataSet) then
@@ -1811,7 +1822,7 @@ begin
       FLogManager.DoOrderGoodLog(GetCurrentUserInfo, GetCurrentOrderInfo, FGoodInfo, ev_RemoveQuantity);
 
       WritePos(FLineTable);
-      //обновить футер грида
+      //update grid footer
       DBGrMain.SumList.RecalcAll;
     end else
     begin
@@ -3077,7 +3088,7 @@ begin
   MasterKey := FHeaderTable.FieldByName('ID').AsInteger;
   SaveCheck;
 
-  //обновить футер грида
+  //update grid footer
   DBGrMain.SumList.RecalcAll;
 
   if FFrontBase.GetDeleteServiceCheckOptions(OldDetailID, MasterKey,
@@ -3193,6 +3204,12 @@ begin
   if FOrderKey > 0 then
   begin
     if FFrontBase.OrderIsLocked(FOrderKey) then
+    begin
+      if FFrontBase.GetLocalComputerName <> FRestTable.ComputerName then
+      begin
+        AdvTaskMessageDlg('Внимание', 'Заказ редактируется на другом рабочем месте!', mtWarning, [mbOK], 0);
+        exit;
+      end else
       if AdvTaskMessageDlg('Внимание', 'Заказ редактируется. Продолжить?',
         mtInformation, [mbYes, mbNo], 0) = IDYES then
       begin
@@ -3203,13 +3220,12 @@ begin
           begin
             AdvTaskMessageDlg('Внимание', cn_dontManagerPermission, mtWarning, [mbOK], 0);
             exit;
-          end else
-          if FFrontBase.GetLocalComputerName <> FRestTable.ComputerName then
-            exit;
+          end;
         end else
           exit;
       end else
         exit;
+    end;
 
     if FRestTable.RespKey <> FFrontBase.ContactKey then
       if (FFrontBase.UserKey and FFrontBase.Options.ManagerGroupMask) = 0 then
@@ -3547,39 +3563,29 @@ end;
 
 procedure TRestMainForm.OnAfterDelete(DataSet: TDataSet);
 begin
-  //обновить футер грида
+  //update grid footer
   DBGrMain.SumList.RecalcAll;
 end;
 
 procedure TRestMainForm.actCashFormExecute(Sender: TObject);
 var
-  FUserInfo: TUserInfo;
   FForm: TCashForm;
 begin
-  if not FFrontBase.Options.NoPassword then
-    tmrClose.Enabled := False;
-
-  FUserInfo := FFrontBase.CheckUserPasswordWithForm;
-  if FUserInfo.CheckedUserPassword then
-  begin
-    if ((FUserInfo.UserInGroup and FFrontBase.Options.ManagerGroupMask) <> 0) or
-      ((FUserInfo.UserInGroup and FFrontBase.Options.KassaGroupMask) <> 0) then
-    else begin
-      AdvTaskMessageDlg('Внимание', 'Данный пользователь не обладает правами менеджера или кассира!',
-        mtWarning, [mbOK], 0);
-      exit;
-    end;
-    FForm := TCashForm.Create(Self);
-    FForm.FrontBase := FFrontBase;
-    try
-      FForm.FiscalRegistry := FFiscal;
-      FForm.IsManager := ((FUserInfo.UserInGroup and FFrontBase.Options.ManagerGroupMask) <> 0);
-      FForm.ShowModal;
-    finally
-      FForm.Free;
-    end;
+  FForm := TCashForm.Create(Self);
+  FForm.FrontBase := FFrontBase;
+  try
+    FForm.FiscalRegistry := FFiscal;
+    FForm.IsManager := ((FFrontBase.UserKey and FFrontBase.Options.ManagerGroupMask) <> 0);
+    FForm.ShowModal;
+  finally
+    FForm.Free;
   end;
-  tmrClose.Enabled := (not FFrontBase.Options.NoPassword);
+end;
+
+procedure TRestMainForm.actCashFormUpdate(Sender: TObject);
+begin
+  actCashForm.Enabled := ((FFrontBase.UserKey and FFrontBase.Options.KassaGroupMask) <> 0) or
+    ((FFrontBase.UserKey and FFrontBase.Options.ManagerGroupMask) <> 0);
 end;
 
 procedure TRestMainForm.actGoodUpUpdate(Sender: TObject);
