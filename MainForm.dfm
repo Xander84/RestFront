@@ -48,9 +48,6 @@ object RestMainForm: TRestMainForm
         ColorTo = 14986888
         TabColor = clBtnFace
         TabColorTo = clNone
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 0
         DesignSize = (
           934
           701)
@@ -109,9 +106,6 @@ object RestMainForm: TRestMainForm
         ImageIndex = 1
         TabColor = clBtnFace
         TabColorTo = clNone
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 0
         object pnlRight: TAdvPanel
           Left = 692
           Top = 0
@@ -170,7 +164,7 @@ object RestMainForm: TRestMainForm
               Top = 0
               Width = 242
               Height = 660
-              ActivePage = tsMenu
+              ActivePage = tsTablesDesigner
               ActiveFont.Charset = DEFAULT_CHARSET
               ActiveFont.Color = clWindowText
               ActiveFont.Height = -11
@@ -445,6 +439,53 @@ object RestMainForm: TRestMainForm
                   FullHeight = 0
                 end
               end
+              object tsTablesDesigner: TAdvTabSheet
+                Caption = 'tsTablesDesigner'
+                Color = clBtnFace
+                ColorTo = clNone
+                TabColor = clBtnFace
+                TabColorTo = clNone
+                object pnlDesignerTables: TAdvPanel
+                  Left = 0
+                  Top = 0
+                  Width = 242
+                  Height = 640
+                  Align = alClient
+                  BevelOuter = bvNone
+                  Color = 16640730
+                  TabOrder = 0
+                  UseDockManager = True
+                  Version = '2.0.1.0'
+                  BorderColor = clGray
+                  Caption.Color = 14059353
+                  Caption.ColorTo = 9648131
+                  Caption.Font.Charset = DEFAULT_CHARSET
+                  Caption.Font.Color = clWhite
+                  Caption.Font.Height = -11
+                  Caption.Font.Name = 'MS Sans Serif'
+                  Caption.Font.Style = []
+                  Caption.GradientDirection = gdVertical
+                  Caption.Indent = 2
+                  Caption.ShadeLight = 255
+                  CollapsColor = clNone
+                  CollapsDelay = 0
+                  ColorTo = 14986888
+                  ShadowColor = clBlack
+                  ShadowOffset = 0
+                  StatusBar.BorderColor = clNone
+                  StatusBar.BorderStyle = bsSingle
+                  StatusBar.Font.Charset = DEFAULT_CHARSET
+                  StatusBar.Font.Color = clWhite
+                  StatusBar.Font.Height = -11
+                  StatusBar.Font.Name = 'Tahoma'
+                  StatusBar.Font.Style = []
+                  StatusBar.Color = 14716773
+                  StatusBar.ColorTo = 16374724
+                  StatusBar.GradientDirection = gdVertical
+                  Styler = FrontData.FrontPanelStyler
+                  FullHeight = 0
+                end
+              end
             end
             object Panel1: TAdvPanel
               Left = 0
@@ -582,9 +623,6 @@ object RestMainForm: TRestMainForm
               ColorTo = 14986888
               TabColor = clBtnFace
               TabColorTo = clNone
-              ExplicitTop = 0
-              ExplicitWidth = 0
-              ExplicitHeight = 0
               object btnNewOrder: TAdvSmoothButton
                 Left = 16
                 Top = 8
@@ -923,7 +961,6 @@ object RestMainForm: TRestMainForm
                 Max = 1
                 PageSize = 0
                 TabOrder = 2
-                ExplicitLeft = 347
               end
             end
             object tsManagerPage: TAdvTabSheet
@@ -1298,9 +1335,6 @@ object RestMainForm: TRestMainForm
               ColorTo = clNone
               TabColor = clBtnFace
               TabColorTo = clNone
-              ExplicitTop = 0
-              ExplicitWidth = 0
-              ExplicitHeight = 0
               object sbTable: TScrollBox
                 Left = 0
                 Top = 0
@@ -1309,7 +1343,8 @@ object RestMainForm: TRestMainForm
                 Align = alClient
                 BorderStyle = bsNone
                 TabOrder = 0
-                ExplicitTop = -5
+                Touch.GestureManager = gmFront
+                OnGesture = sbTableGesture
               end
             end
           end
@@ -1321,9 +1356,6 @@ object RestMainForm: TRestMainForm
         ColorTo = clNone
         TabColor = clBtnFace
         TabColorTo = clNone
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 0
         object pnlManagerInfo: TPanel
           Left = 0
           Top = 0
@@ -1611,7 +1643,7 @@ object RestMainForm: TRestMainForm
         Top = 1
         Width = 80
         Height = 719
-        ActivePage = tsOrderButton
+        ActivePage = tsManagerInfoButton
         ActiveFont.Charset = DEFAULT_CHARSET
         ActiveFont.Color = clWindowText
         ActiveFont.Height = -11
@@ -1629,9 +1661,6 @@ object RestMainForm: TRestMainForm
           ColorTo = clNone
           TabColor = clBtnFace
           TabColorTo = clNone
-          ExplicitTop = 0
-          ExplicitWidth = 0
-          ExplicitHeight = 0
           object btnExitWindows: TAdvSmoothButton
             Left = 4
             Top = 1
@@ -1761,9 +1790,6 @@ object RestMainForm: TRestMainForm
           ImageIndex = 1
           TabColor = clBtnFace
           TabColorTo = clNone
-          ExplicitTop = 0
-          ExplicitWidth = 0
-          ExplicitHeight = 0
           DesignSize = (
             80
             699)
@@ -2144,9 +2170,6 @@ object RestMainForm: TRestMainForm
           ImageIndex = 2
           TabColor = clBtnFace
           TabColorTo = clNone
-          ExplicitTop = 0
-          ExplicitWidth = 0
-          ExplicitHeight = 0
           DesignSize = (
             80
             699)
@@ -2309,40 +2332,25 @@ object RestMainForm: TRestMainForm
           ColorTo = clNone
           TabColor = clBtnFace
           TabColorTo = clNone
-          ExplicitTop = 0
-          ExplicitWidth = 0
-          ExplicitHeight = 0
           DesignSize = (
             80
             699)
           object xDateBegin: TDateTimePicker
             Left = 2
             Top = 8
-            Width = 73
-            Height = 22
+            Width = 74
+            Height = 33
             Date = 40569.698956435180000000
             Time = 40569.698956435180000000
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clWindowText
-            Font.Height = -11
-            Font.Name = 'Times New Roman'
-            Font.Style = []
-            ParentFont = False
             TabOrder = 0
           end
           object xDateEnd: TDateTimePicker
-            Left = 3
+            Left = 2
             Top = 47
-            Width = 73
-            Height = 22
+            Width = 74
+            Height = 33
             Date = 40569.698956435180000000
             Time = 40569.698956435180000000
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clWindowText
-            Font.Height = -11
-            Font.Name = 'Times New Roman'
-            Font.Style = []
-            ParentFont = False
             TabOrder = 1
           end
           object btnExitManagerInfo: TAdvSmoothButton
@@ -2601,9 +2609,6 @@ object RestMainForm: TRestMainForm
           ColorTo = clNone
           TabColor = clBtnFace
           TabColorTo = clNone
-          ExplicitTop = 0
-          ExplicitWidth = 0
-          ExplicitHeight = 0
           DesignSize = (
             80
             699)
@@ -2982,6 +2987,22 @@ object RestMainForm: TRestMainForm
             Action = actUsersDown
             GestureID = sgiDown
           end>
+      end
+      item
+        Control = sbTable
+        Collection = <
+          item
+            GestureID = sgiLeft
+          end
+          item
+            GestureID = sgiRight
+          end
+          item
+            GestureID = sgiUp
+          end
+          item
+            GestureID = sgiDown
+          end>
       end>
   end
   object tablePopupMenu: TAdvPopupMenu
@@ -3078,6 +3099,13 @@ object RestMainForm: TRestMainForm
     UseSystemFont = False
     MenuBorderColor = 9841920
     Left = 464
+    Top = 192
+  end
+  object tmrTables: TTimer
+    Enabled = False
+    Interval = 30000
+    OnTimer = tmrTablesTimer
+    Left = 560
     Top = 192
   end
 end

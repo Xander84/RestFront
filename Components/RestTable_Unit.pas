@@ -27,6 +27,7 @@ type
     FIsLocked: Boolean;
     FComputerName: String;
     FOrderList: TDictionary<Integer, String>;
+    FRespName: String;
     procedure SetPosX(const Value: Integer);
     procedure SetPosY(const Value: Integer);
     procedure SetHallKey(const Value: Integer);
@@ -49,6 +50,7 @@ type
     function GetOrderCount: Integer;
 
     procedure WMContextMenu(var Message: TWMContextMenu); message WM_CONTEXTMENU;
+    procedure SetRespName(const Value: String);
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -71,6 +73,7 @@ type
     property FrontBase: TFrontBase read FFrontBase write SetFrontBase;
     property OrderCount: Integer read GetOrderCount;
     property OrderList: TDictionary<Integer, String> read FOrderList;
+    property RespName: String read FRespName write SetRespName;
   published
     // номер стола
     property Number: String read FNumber write SetNumber;
@@ -99,6 +102,7 @@ begin
   FID := -1;
   Flat := True;
   FOrderList := TDictionary<Integer, String>.Create();
+  FRespName := '';
 end;
 
 destructor TRestTable.Destroy;
@@ -300,7 +304,10 @@ begin
       bm.Canvas.Draw(0, 0, PngImage);
       bm.Transparent := true;
       bm.Canvas.Brush.Style := bsClear;
-      bm.Canvas.TextOut(0, 0, FNumber);
+      if FRespName <> '' then
+        bm.Canvas.TextOut(0, 0, FNumber + '(' + FRespName + ')')
+      else
+        bm.Canvas.TextOut(0, 0, FNumber);
 
       PngImage.Assign(bm);
     finally
@@ -329,6 +336,13 @@ end;
 procedure TRestTable.SetRespKey(const Value: Integer);
 begin
   FRespKey := Value;
+end;
+
+procedure TRestTable.SetRespName(const Value: String);
+begin
+  FRespName := Value;
+  if FRespName <> '' then
+    SetNumber(FNumber);
 end;
 
 procedure TRestTable.SetTableType(const Value: Integer);

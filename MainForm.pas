@@ -192,6 +192,9 @@ type
     MenuOfficeStyler: TAdvMenuOfficeStyler;
     DBGrMain: TDBGridEh;
     grScrollBar: TScrollBar;
+    tsTablesDesigner: TAdvTabSheet;
+    pnlDesignerTables: TAdvPanel;
+    tmrTables: TTimer;
 
     //Проверка введёного пароля
     procedure actPassEnterExecute(Sender: TObject);
@@ -264,6 +267,9 @@ type
     procedure btnCheckRegisterClick(Sender: TObject);
     procedure tablePopupMenuPopup(Sender: TObject);
     procedure actCashFormUpdate(Sender: TObject);
+    procedure sbTableGesture(Sender: TObject;
+      const EventInfo: TGestureEventInfo; var Handled: Boolean);
+    procedure tmrTablesTimer(Sender: TObject);
   private
     //Компонент обращения к БД
     FFrontBase: TFrontBase;
@@ -283,6 +289,7 @@ type
     FLineInfoTable   : TkbmMemTable;
     FHallsTable      : TkbmMemTable;
     FTablesInfoTable : TkbmMemTable;
+    FTablesDesignerInfo: TkbmMemTable;
     //для связи позиция - модификатор
     FMasterDataSource: TDataSource;
     FModificationDataSet: TkbmMemTable;
@@ -351,6 +358,7 @@ type
     FSplitForm: TSplitOrder;
     //Создание первичных наборов данных
     procedure CreateDataSets;
+    procedure CreateTableInfoDataSet;
     //режим заказов
     procedure CreateOrderButtonList;
     procedure AddOrderButton;
@@ -582,6 +590,8 @@ begin
     FHallsTable.Free;
   if Assigned(FTablesInfoTable) then
     FTablesInfoTable.Free;
+  if Assigned(FTablesDesignerInfo) then
+    FTablesDesignerInfo.Free;
 
   FMenuButtonList.Free;
   FOrderButtonList.Free;
@@ -661,6 +671,7 @@ begin
   FTablesInfoTable.FieldDefs.Add('ISLOCKED', ftInteger, 0);
   FTablesInfoTable.FieldDefs.Add('USR$COMPUTERNAME', ftString, 20);
   FTablesInfoTable.FieldDefs.Add('NUMBER', ftString, 20);
+  FTablesInfoTable.FieldDefs.Add('RESPNAME', ftString, 60);
   FTablesInfoTable.CreateTable;
   FTablesInfoTable.Open;
 
@@ -818,6 +829,7 @@ begin
         FButton.IsLocked := FTablesInfoTable.FieldByName('ISLOCKED').AsInteger = 1;
         FButton.Number := FTablesInfoTable.FieldByName('USR$NUMBER').AsString;
         FButton.ComputerName := FTablesInfoTable.FieldByName('USR$COMPUTERNAME').AsString;
+//        FButton.RespName := FTablesInfoTable.FieldByName('RESPNAME').AsString;
         if FRestFormState = HallsPage then
         begin
           FButton.OnClick := TableButtonOnClick;
@@ -837,6 +849,18 @@ begin
       end;
       FTablesInfoTable.Next;
     end;
+  end;
+end;
+
+procedure TRestMainForm.CreateTableInfoDataSet;
+begin
+  if not Assigned(FTablesDesignerInfo) then
+  begin
+    FTablesDesignerInfo := TkbmMemTable.Create(nil);
+    FTablesDesignerInfo.FieldDefs.Add('ID', ftInteger, 0);
+    FTablesDesignerInfo.FieldDefs.Add('USR$NAME', ftString, 20);
+    FTablesDesignerInfo.CreateTable;
+    FTablesDesignerInfo.Open;
   end;
 end;
 
@@ -1039,7 +1063,7 @@ begin
 
       FHallsTable.Next;
     end;
-    if FActiveHallButton <> '' then
+    if (FActiveHallButton <> '') and (FRestFormState = HallsPage) then
     begin
       FButton := pnlHalls.FindComponent(FActiveHallButton);
       if Assigned(FButton) then
@@ -1049,16 +1073,24 @@ begin
 end;
 
 procedure TRestMainForm.CreateKassirPage;
+var
+  FTempFormState: TRestState;
 begin
   RestFormState := OrderMenu;
+  FTempFormState := FPrevFormState;
   RestFormState := KassirInfo;
+  FPrevFormState := FTempFormState;
   CreateUserList;
 end;
 
 procedure TRestMainForm.CreateManagerPage;
+var
+  FTempFormState: TRestState;
 begin
   RestFormState := OrderMenu;
+  FTempFormState := FPrevFormState;
   RestFormState := ManagerPage;
+  FPrevFormState := FTempFormState;
   CreateUserList;
 end;
 
@@ -1214,6 +1246,8 @@ begin
       FHeaderTable.FieldByName('USR$TABLEKEY').AsInteger := Table.ID;
     FHeaderTable.FieldByName('USR$COMPUTERNAME').AsString := FFrontBase.GetLocalComputerName;
     FHeaderTable.Post;
+
+    SaveCheck;
   end;
   FLogManager.DoSimpleEvent(ev_CreateNewOrder);
 end;
@@ -1298,6 +1332,14 @@ begin
     FButton := TButton(Sender);
     CreateTableButtonList(FButton.Tag);
     FActiveHallButton := FButton.Name;
+    if FRestFormState = HallInfo then
+    begin
+      CreateTableInfoDataSet;
+      FFrontBase.GetDesignerTables(FTablesDesignerInfo);
+      FTablesDesignerInfo.First;
+      pcMenu.ActivePage := tsTablesDesigner;
+    end else
+      tmrTables.Enabled := True;
   finally
     LockWindowUpdate(0);
   end;
@@ -1443,6 +1485,19 @@ begin
   for I := 0 to sbTable.ControlCount - 1 do
     if sbTable.Controls[I] is TRestTable then
       TRestTable(sbTable.Controls[I]).SaveTablePositionToDB;
+end;
+
+procedure TRestMainForm.sbTableGesture(Sender: TObject;
+  const EventInfo: TGestureEventInfo; var Handled: Boolean);
+begin
+  if EventInfo.GestureID = sgiLeft then
+    sbTable.ScrollBy(-20, 0)
+  else if  EventInfo.GestureID = sgiRight then
+    sbTable.ScrollBy(20, 0)
+  else if  EventInfo.GestureID = sgiUp then
+    sbTable.ScrollBy(0, 20)
+  else if EventInfo.GestureID = sgiDown then
+    sbTable.ScrollBy(0, -20);
 end;
 
 procedure TRestMainForm.ScrollControl(const FControl: TWinControl; const Down: Boolean;
@@ -1697,11 +1752,16 @@ begin
   case FRestFormState of
     Pass: Assert(False, 'Что мы тут делаем');
 
-    OrderMenu, ManagerPage, ManagerChooseOrder, KassirInfo:
+    OrderMenu, ManagerChooseOrder:
       begin
         RestFormState := Pass;
         FFrontBase.ClearCache;
         FLogManager.DoSimpleLog(GetCurrentUserInfo, ev_Exit);
+      end;
+
+    KassirInfo, ManagerPage:
+      begin
+        RestFormState := FPrevFormState;
       end;
 
     HallsPage, HallInfo:
@@ -2278,6 +2338,7 @@ begin
           tsManagerInfo.TabVisible := False;
           tsManagerInfoButton.TabVisible := False;
           tsHalls.TabVisible := False;
+          tsTablesDesigner.TabVisible := False;
           //2.Становимся на окно с пассом
           pcMain.ActivePage := tsPassWord;
           pcMenu.ActivePage := tsMenu;
@@ -2344,6 +2405,8 @@ begin
           RemoveUserButton;
           RemoveUserOrderButton;
           RemoveHallButton;
+
+          tmrTables.Enabled := False;
 //          ClearDisplay;
         finally
           LockWindowUpdate(0);
@@ -2407,6 +2470,7 @@ begin
           AddPopularGoods;
 
           tmrClose.Tag := 1;
+          tmrTables.Enabled := False;
 
           ClearDisplay;
         finally
@@ -2476,6 +2540,7 @@ begin
           dxfDesigner.Active := False;
 
           tmrClose.Tag := 1;
+          tmrTables.Enabled := False;
 
           ClearDisplay;
         finally
@@ -2544,6 +2609,7 @@ begin
           dxfDesigner.Active := True;
 
           tmrClose.Tag := 1;
+          tmrTables.Enabled := False;
 
           ClearDisplay;
         finally
@@ -2565,6 +2631,7 @@ begin
         pcOrder.ActivePage := tsOrderInfo;
         pnlChoose.Visible := True;
         FPayed := False;
+        tmrTables.Enabled := False;
       end;
 
     ManagerInfo:
@@ -2588,6 +2655,9 @@ begin
         AfterLoadManagerInfo;
         DBGrInfoHeader.DataSource := dsHeaderInfo;
         DBGrInfoLine.DataSource := dsLineInfo;
+        tmrTables.Enabled := False;
+
+        ClearDisplay;
       end;
 
     ManagerPage:
@@ -2627,6 +2697,7 @@ begin
           lblResp.Caption := FFrontBase.GetNameWaiterOnID(FFrontBase.ContactKey,
             True, False);
 
+          tmrTables.Enabled := False;
           ClearDisplay;
         finally
           LockWindowUpdate(0);
@@ -2672,6 +2743,7 @@ begin
           lblResp.Caption := FFrontBase.GetNameWaiterOnID(FFrontBase.ContactKey,
             True, False);
 
+          tmrTables.Enabled := False;
           ClearDisplay;
         finally
           LockWindowUpdate(0);
@@ -2717,6 +2789,7 @@ begin
           lblResp.Caption := FFrontBase.GetNameWaiterOnID(FFrontBase.ContactKey,
             True, False);
 
+          tmrTables.Enabled := False;
           ClearDisplay;
         finally
           LockWindowUpdate(0);
@@ -3291,6 +3364,18 @@ begin
     if tmrClose.Tag = 10 then
       actCancel.Execute;
     tmrClose.Tag := tmrClose.Tag + 1;
+  end;
+end;
+
+procedure TRestMainForm.tmrTablesTimer(Sender: TObject);
+var
+  FButton: TComponent;
+begin
+  if (FActiveHallButton <> '') and (FRestFormState = HallsPage) then
+  begin
+    FButton := pnlHalls.FindComponent(FActiveHallButton);
+    if Assigned(FButton) then
+      TAdvSmoothButton(FButton).Click;
   end;
 end;
 

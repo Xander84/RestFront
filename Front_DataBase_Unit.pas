@@ -324,6 +324,7 @@ type
     procedure GetHallsInfo(const MemTable: TkbmMemTable);
     procedure GetTablesInfo(const MemTable: TkbmMemTable; const HallKey: Integer);
     procedure GetTables(const MemTable: TkbmMemTable; const HallKey: Integer);
+    procedure GetDesignerTables(const MemTable: TkbmMemTable);
 
     function LockUserOrder(const OrderKey: Integer): Boolean;
     function UnLockUserOrder(const OrderKey: Integer): Boolean;
@@ -2045,7 +2046,18 @@ begin
     FDatabase.Params.Add('password=' + FIBPassword);
     FDatabase.Params.Add('lc_ctype=WIN1251');
     FDatabase.SQLDialect := 3;
-    FDataBase.Open;
+    for I := 0 to 3 do
+    begin
+      try
+        FDataBase.Open;
+        Break;
+      except
+        if I <> 3 then
+          Sleep(5000)
+        else
+          raise;
+      end;
+    end;
     FIDTransaction.StartTransaction;
     if not FReadSQL.Transaction.InTransaction then
       FReadSQL.Transaction.StartTransaction;
@@ -3458,10 +3470,11 @@ begin
   FReadSQL.Close;
   try
     FReadSQL.SQL.Text :=
-      'SELECT T.*, U.USR$RESPKEY, U.USR$ISLOCKED, U.DOCUMENTKEY, U.USR$COMPUTERNAME, DOC.NUMBER ' +
+      'SELECT T.*, U.USR$RESPKEY, U.USR$ISLOCKED, U.DOCUMENTKEY, U.USR$COMPUTERNAME, DOC.NUMBER, CON.NAME ' +
       'FROM USR$MN_TABLE T ' +
       'LEFT JOIN USR$MN_ORDER U ON (U.USR$TABLEKEY = T.ID AND U.USR$PAY <> 1) ' +
       'LEFT JOIN GD_DOCUMENT DOC ON DOC.ID = U.DOCUMENTKEY ' +
+      'LEFT JOIN GD_CONTACT CON ON CON.ID = U.USR$RESPKEY ' +
       'WHERE T.USR$HALLKEY = :ID ' +
       'ORDER BY U.DOCUMENTKEY, DOC.NUMBER ';
     FReadSQL.Params[0].AsInteger := HallKey;
@@ -3480,6 +3493,7 @@ begin
       MemTable.FieldByName('ISLOCKED').AsInteger := FReadSQL.FieldByName('USR$ISLOCKED').AsInteger;
       MemTable.FieldByName('USR$COMPUTERNAME').AsString := FReadSQL.FieldByName('USR$COMPUTERNAME').AsString;
       MemTable.FieldByName('NUMBER').AsString := FReadSQL.FieldByName('NUMBER').AsString;
+      MemTable.FieldByName('RESPNAME').AsString := FReadSQL.FieldByName('NAME').AsString;
       MemTable.Post;
 
       FReadSQL.Next;
@@ -3776,6 +3790,28 @@ begin
   except
     on E: Exception do
       AdvTaskMessageDlg('Внимание', 'Ошибка ' + E.Message, mtError, [mbOK], 0);
+  end;
+end;
+
+procedure TFrontBase.GetDesignerTables(const MemTable: TkbmMemTable);
+begin
+  FReadSQL.Close;
+  try
+    FReadSQL.SQL.Text :=
+      'SELECT T.ID, T.USR$NAME ' +
+      'FROM USR$MN_TABLETYPE T ';
+    FReadSQL.ExecQuery;
+    while not FReadSQL.Eof do
+    begin
+      MemTable.Append;
+      MemTable.FieldByName('ID').AsInteger := FReadSQL.FieldByName('ID').AsInteger;
+      MemTable.FieldByName('USR$NAME').AsString := FReadSQL.FieldByName('USR$NAME').AsString;
+      MemTable.Post;
+
+      FReadSQL.Next;
+    end;
+  finally
+    FReadSQL.Close;
   end;
 end;
 
