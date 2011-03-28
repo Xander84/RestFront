@@ -5,7 +5,7 @@ interface
 uses
   Classes, Front_DataBase_Unit, Printers, SysUtils, ComCtrls, ExtCtrls, frxOLE,
   frxDesgn, frxClass, frxDCtrl, frxChart, frxRich, frxBarcode, ImgList,
-  frxCross, frxDMPExport, frxExportRTF, TaskDialog, frxGZip, frxChBox,
+  frxCross, frxDMPExport, frxExportRTF, frxGZip, frxChBox,
   frxExportText, frxPrinter, Dialogs, frxDBSet, frxPreview, frxIBXComponents,
   IBQuery, kbmMemTable, DB, Variants, Base_FiscalRegister_unit;
 
@@ -84,7 +84,7 @@ const
 implementation
 
 uses
-  Windows, Forms, FrontData_Unit, obj_QueryList;
+  Windows, Forms, FrontData_Unit, obj_QueryList, TouchMessageBoxForm_Unit;
 
 { Tgs_fr4Report }
 
@@ -141,8 +141,7 @@ begin
     end;
     FReport.DesignReport;
 
-    if AdvTaskMessageDlg('Внимание', 'Сохранить шаблон?',
-      mtInformation, [mbYes, mbNo], 0) = IDYES then
+    if Touch_MessageBox('Внимание', 'Сохранить шаблон?', MB_YESNO) = IDYES then
     begin
       Str.Position := 0;
       Str.Size := 0;
@@ -196,7 +195,7 @@ begin
   PrinterName := FFrontBase.GetPrinterName;
   if PrinterName = '' then
   begin
-    AdvTaskMessageDlg('Внимание', 'Для данной рабочей станции не указан пречековый принтер!', mtWarning, [mbOK], 0);
+    Touch_MessageBox('Внимание', 'Для данной рабочей станции не указан пречековый принтер!', MB_OK);
     exit;
   end;
 
@@ -664,7 +663,7 @@ begin
   PrinterName := FFrontBase.GetPrinterName;
   if PrinterName = '' then
   begin
-    AdvTaskMessageDlg('Внимание', 'Для данной рабочей станции не указан пречековый принтер!', mtWarning, [mbOK], 0);
+    Touch_MessageBox('Внимание', 'Для данной рабочей станции не указан пречековый принтер!', MB_OK);
     exit;
   end;
 

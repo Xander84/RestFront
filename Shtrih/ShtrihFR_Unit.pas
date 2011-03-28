@@ -4,7 +4,7 @@ interface
 
 uses
   Classes, Windows, Forms, DrvFRLib_TLB, Front_DataBase_Unit, kbmMemTable, DB,
-  Base_FiscalRegister_unit;
+  Base_FiscalRegister_unit, TouchMessageBoxForm_Unit;
 
 type
   TShtrihFR = class(TDrvFR, IBaseFiscalRegister)
@@ -58,8 +58,7 @@ begin
   try
     inherited Create(AOwner);
   except
-    MessageBox(Application.Handle, PChar('Не установлен драйвер для ФР ''Штрих ФР''!'),
-     'Внимание', MB_OK or MB_ICONEXCLAMATION);
+    Touch_MessageBox('Внимание', 'Не установлен драйвер для ФР ''Штрих ФР''!', MB_OK);
     FDriverInit := False;
   end;
   IsInit := False;
@@ -82,9 +81,10 @@ var
   ErrStr: String;
 begin
   if Err <> 0 then
+  begin
     ErrStr := WideCharToString(PWideChar(ResultCodeDescription));
-    MessageBox(Application.Handle, PChar(ErrStr),
-      'Внимание', MB_OK or MB_ICONEXCLAMATION);
+    Touch_MessageBox('Внимание', ErrStr, MB_OK);
+  end;
 end;
 
 function TShtrihFR.Get_Self: Integer;
@@ -330,8 +330,7 @@ begin
   Result := False;
   if FDriverInit then
   begin
-    if MessageBox(Application.Handle, 'Вы действительно хотите снять отчет X1?',
-      'Внимание', MB_YESNO) = IDYES then
+    if Touch_MessageBox('Внимание', 'Вы действительно хотите снять отчет X1?', MB_YESNO) = IDYES then
     begin
       PrintReportWithoutCleaning;
       if ResultCode = 0 then
@@ -345,8 +344,7 @@ end;
 function TShtrihFR.PrintX2ReportWithOutCleaning: Boolean;
 begin
   Result := False;
-  MessageBox(Application.Handle, PChar('Данный вид отчёта не поддерживается'),
-    'Внимание', MB_OK or MB_ICONEXCLAMATION);
+  Touch_MessageBox('Внимание', 'Данный вид отчёта не поддерживается', MB_OK);
 end;
 
 function TShtrihFR.PrintZ1ReportWithCleaning: Boolean;
@@ -354,8 +352,8 @@ begin
   Result := False;
   if FDriverInit then
   begin
-    if MessageBox(Application.Handle, 'Вы действительно хотите снять отчет с гашением Z1??',
-      'Внимание', MB_YESNO) = IDYES then
+    if Touch_MessageBox('Внимание',
+      'Вы действительно хотите снять отчет с гашением Z1?', MB_YESNO) = IDYES then
     begin
       PrintReportWithCleaning;
       if ResultCode = 0 then
@@ -369,8 +367,7 @@ end;
 function TShtrihFR.PrintZ2ReportWithCleaning: Boolean;
 begin
   Result := False;
-  MessageBox(Application.Handle, PChar('Данный вид отчёта не поддерживается'),
-    'Внимание', MB_OK or MB_ICONEXCLAMATION);
+  Touch_MessageBox('Внимание', 'Данный вид отчёта не поддерживается', MB_OK);
 end;
 
 procedure TShtrihFR.SetFrontBase(const Value: TFrontBase);

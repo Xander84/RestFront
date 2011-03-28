@@ -140,6 +140,9 @@
 			<DCCReference Include="PersonalCardForm_Unit.pas">
 				<Form>PersonalCardForm</Form>
 			</DCCReference>
+			<DCCReference Include="TouchMessageBoxForm_Unit.pas">
+				<Form>TTouchMessageBox</Form>
+			</DCCReference>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>

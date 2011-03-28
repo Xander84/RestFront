@@ -43,7 +43,7 @@ type
 implementation
 
 uses
-  Spark617_Unit, MercFP_Unit, ShtrihFR_Unit, TaskDialog, Dialogs;
+  Spark617_Unit, MercFP_Unit, ShtrihFR_Unit, TouchMessageBoxForm_Unit, Dialogs;
 
 { TFiscalRegister }
 
@@ -75,11 +75,11 @@ begin
 
   if FFrontBase.IsMainCash then
   begin
-    if AdvTaskMessageDlg('Внимание', 'Закрыть день?', mtInformation, [mbOK, mbCancel], 0) = IDOK then
+    if Touch_MessageBox('Внимание',  'Закрыть день?', MB_YESNO) = IDYES then
       FFrontBase.CanCloseDay;
 
   end else
-    AdvTaskMessageDlg('Внимание', 'Закрыть день можно только на главной кассе', mtWarning, [mbOK], 0);
+    Touch_MessageBox('Внимание', 'Закрыть день можно только на главной кассе', MB_OK);
 end;
 
 procedure TFiscalRegister.EndSession;
@@ -187,11 +187,11 @@ begin
 
   if FFrontBase.IsMainCash then
   begin
-    if AdvTaskMessageDlg('Внимание', 'Открыть день?', mtInformation, [mbOK, mbCancel], 0) = IDOK then
+    if Touch_MessageBox('Внимание',  'Открыть день?', MB_YESNO) = IDYES then
       FFrontBase.CanOpenDay;
 
   end else
-    AdvTaskMessageDlg('Внимание', 'Открыть день можно только на главной кассе', mtWarning, [mbOK], 0);
+    Touch_MessageBox('Внимание', 'Открыть день можно только на главной кассе', MB_OK);
 end;
 
 procedure TFiscalRegister.StartSession;

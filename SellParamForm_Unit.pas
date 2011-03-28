@@ -120,7 +120,7 @@ var
 implementation
 
 uses
-  PayForm_Unit, TaskDialog, Report_Unit, PersonalCardForm_Unit;
+  PayForm_Unit, TouchMessageBoxForm_Unit, Report_Unit, PersonalCardForm_Unit;
 
 {$R *.dfm}
 
@@ -335,33 +335,33 @@ var
 begin
   if (lblChange.Caption = '') or (FChange < 0) then
   begin
-    AdvTaskMessageDlg('Внимание', 'Сумма оплаты меньше суммы чека!', mtWarning, [mbOK], 0);
+    Touch_MessageBox('Внимание', 'Сумма оплаты меньше суммы чека!', MB_OK);
     exit;
   end;
   if (FChange > 0) and (FSumToPay = 0) then
   begin
-    AdvTaskMessageDlg('Внимание', 'Сумма оплаты больше суммы чека!', mtWarning, [mbOK], 0);
+    Touch_MessageBox('Внимание', 'Сумма оплаты больше суммы чека!', MB_OK);
     exit;
   end;
   if (-FChange >= cn_maxpay) then
   begin
-    AdvTaskMessageDlg('Внимание', 'Неверная сумма оплаты!', mtWarning, [mbOK], 0);
+    Touch_MessageBox('Внимание', 'Неверная сумма оплаты!', MB_OK);
     exit;
   end;
   CalcSums;
   if ((FSums.FCardSum + FSums.FCreditSum) > FSumToPay) or (FSums.FPersonalCardSum > FSumToPay) then
   begin
-    AdvTaskMessageDlg('Внимание', 'Сумма оплаты по безналичному расчету превышает сумму чека!', mtWarning, [mbOK], 0);
+    Touch_MessageBox('Внимание', 'Сумма оплаты по безналичному расчету превышает сумму чека!', MB_OK);
     exit;
   end;
   if ((FSums.FPersonalCardSum > 0) and ((FSums.FCardSum + FSums.FCreditSum + FSums.FCreditSum) > 0)) then
   begin
-    AdvTaskMessageDlg('Внимание', 'Не может быть смешанной оплаты при оплате персональной карточкой!', mtWarning, [mbOK], 0);
+    Touch_MessageBox('Внимание', 'Не может быть смешанной оплаты при оплате персональной карточкой!', MB_OK);
     exit;
   end;
   if not FIsValidPayment then
   begin
-    AdvTaskMessageDlg('Внимание', 'Не может быть комбинации фискальной и не фискальной оплаты!', mtWarning, [mbOK], 0);
+    Touch_MessageBox('Внимание', 'Не может быть комбинации фискальной и не фискальной оплаты!', MB_OK);
     exit;
   end;
   FSums.FChangeSum := FChange;
@@ -400,8 +400,7 @@ begin
         FInBrowse := False;
       end;
     end else
-      MessageBox(Application.Handle, PChar('Для данной рабочей станции не указан кассовый терминал!'),
-        'Внимание', MB_OK or MB_ICONEXCLAMATION);
+      Touch_MessageBox('Внимание', 'Для данной рабочей станции не указан кассовый терминал!', MB_OK);
   finally
     FPrinting := False;
     TouchKeyBoard.OnKeyClick := Ev;

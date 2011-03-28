@@ -7,7 +7,6 @@ uses
   IBDatabase, PngSpeedButton, pngimage, Buttons, Generics.Collections, Types,
   Windows, Menus;
 
-
 type
   TRestTable = class(TPngSpeedButton)
   private
@@ -28,12 +27,13 @@ type
     FComputerName: String;
     FOrderList: TDictionary<Integer, String>;
     FRespName: String;
+    FNeedToInsert: Boolean;
     procedure SetPosX(const Value: Integer);
     procedure SetPosY(const Value: Integer);
     procedure SetHallKey(const Value: Integer);
     procedure SetTableType(const Value: Integer);
 
-    procedure ReadTableType;
+    procedure ReadTableType; virtual;
     procedure SetMainTableKey(const Value: Integer);
     procedure SetIsEmpty(const Value: Boolean);
     procedure SetFrontBase(const Value: TFrontBase);
@@ -74,6 +74,7 @@ type
     property OrderCount: Integer read GetOrderCount;
     property OrderList: TDictionary<Integer, String> read FOrderList;
     property RespName: String read FRespName write SetRespName;
+    property NeedToInsert: Boolean read FNeedToInsert write FNeedToInsert;
   published
     // номер стола
     property Number: String read FNumber write SetNumber;
@@ -81,6 +82,18 @@ type
     property PosY: Integer read GetPosY write SetPosY;
     property Transparent: Boolean read FTransparent write SetTransparent;
     property TransparentColor: TColor read FTransparentColor write SetTransparentColor;
+  end;
+
+  TChooseTable = class(TRestTable)
+  private
+    FTableName: String;
+    procedure ReadTableType; override;
+    procedure SetTableName(const Value: String);
+  public
+    property MainTableKey;
+    property ID;
+    property FrontBase;
+    property TableName: String read FTableName write SetTableName;
   end;
 
 procedure Register;
@@ -103,6 +116,8 @@ begin
   Flat := True;
   FOrderList := TDictionary<Integer, String>.Create();
   FRespName := '';
+  FNeedToInsert := False;
+  Tag := 1;
 end;
 
 destructor TRestTable.Destroy;
@@ -401,6 +416,82 @@ begin
 
   if Message.Result = 0 then
     inherited;
+end;
+
+{ TChooseTable }
+
+procedure TChooseTable.ReadTableType;
+var
+  FSQL: TIBSQL;
+  FPng: TPngImage;
+  Str: TStream;
+begin
+  Assert(Assigned(FFrontBase), 'FrontBase not Assigned');
+  if FTableTypeKey > -1 then
+  begin
+    FSQL := TIBSQL.Create(nil);
+    Str := TMemoryStream.Create;
+    try
+      FSQL.Transaction := FFrontBase.ReadTransaction;
+      if not FSQL.Transaction.InTransaction then
+        FSQL.Transaction.StartTransaction;
+
+      FSQL.SQL.Text :=
+        ' SELECT * FROM USR$MN_TABLETYPE T ' +
+        ' WHERE T.ID = :ID ';
+      FSQL.Params[0].AsInteger := FTableTypeKey;
+      FSQL.ExecQuery;
+      if not FSQL.Eof then
+      begin
+        Width := FSQL.FieldByName('USR$WIDTH').AsInteger;
+        Height := FSQL.FieldByName('USR$LENGTH').AsInteger;
+        FTransparent := FSQL.FieldByName('USR$TRANSPARENT').AsInteger = 1;
+        FTransparentColor := FSQL.FieldByName('USR$TRANSPARENTCOLOR').AsInteger;
+        if not FSQL.FieldByName('USR$PICTURE1').IsNull then
+        begin
+          FPng := TPngImage.Create;
+          try
+            FSQL.FieldByName('USR$PICTURE1').SaveToStream(Str);
+            Str.Position := 0;
+            FPng.LoadFromStream(Str);
+            PngImage := FPng;
+          finally
+            FPng.Free;
+          end;
+        end;
+      end;
+      FSQL.Close;
+    finally
+      FSQL.Free;
+      Str.Free;
+    end;
+  end;
+end;
+
+procedure TChooseTable.SetTableName(const Value: String);
+var
+  bm: Graphics.TBitmap;
+begin
+  FTableName := Value;
+  if Value <> '' then
+  begin
+    if Assigned(PngImage) then
+    begin
+      bm := Graphics.TBitmap.Create;
+      try
+        bm.Width := PngImage.Width;
+        bm.Height := PngImage.Height;
+        bm.Canvas.Draw(0, 0, PngImage);
+        bm.Transparent := true;
+        bm.Canvas.Brush.Style := bsClear;
+        bm.Canvas.TextOut(0, 0, FTableName);
+
+        PngImage.Assign(bm);
+      finally
+        bm.Free;
+      end;
+    end;
+  end;
 end;
 
 end.

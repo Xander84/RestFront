@@ -64,6 +64,9 @@ var
 
 implementation
 
+uses
+  TouchMessageBoxForm_Unit;
+
 {$R *.dfm}
 
 { TCashForm }
@@ -155,8 +158,7 @@ begin
       Assert(False, 'Операция не поддерживается');
     end;
   end else
-    MessageBox(Application.Handle, 'В системе не установлен фискальный регистратор!',
-     'Внимание', MB_OK or MB_ICONEXCLAMATION);
+    Touch_MessageBox('Внимание', 'В системе не установлен фискальный регистратор!', MB_OK);
 end;
 
 procedure TCashForm.actStartDayUpdate(Sender: TObject);

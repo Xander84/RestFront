@@ -1,14 +1,9 @@
 program RestFront;
 
-uses
+{$WEAKLINKRTTI ON}
+{$RTTI EXPLICIT METHODS([]) PROPERTIES([]) FIELDS([])}
 
-{$IFDEF VER150}
-  FastMM4,
-  RtlVclOptimize,
-{$ELSE}
-  {$WEAKLINKRTTI ON}
-  {$RTTI EXPLICIT METHODS([]) PROPERTIES([]) FIELDS([])}
-{$ENDIF}
+uses
   Forms,
   AppEvnts,
   MidasLib,
@@ -48,7 +43,8 @@ uses
   rp_dlgViewResult_unit in 'Report\rp_dlgViewResult_unit.pas' {dlgViewResult},
   rp_frmGrid_unit in 'Report\rp_frmGrid_unit.pas' {frmGrid: TFrame},
   fs_iQueryListRTTI in 'Report\fs_iQueryListRTTI.pas',
-  PersonalCardForm_Unit in 'PersonalCardForm_Unit.pas' {PersonalCardForm};
+  PersonalCardForm_Unit in 'PersonalCardForm_Unit.pas' {PersonalCardForm},
+  TouchMessageBoxForm_Unit in 'TouchMessageBoxForm_Unit.pas' {TTouchMessageBox};
 
 {$R *.res}
 

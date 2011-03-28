@@ -108,7 +108,7 @@ type
 
 implementation
 
-uses SysUtils, Pole_Display_Unit, TaskDialog, Dialogs;
+uses SysUtils, Pole_Display_Unit, TouchMessageBoxForm_Unit, Dialogs;
 
 { TBaseDisplay }
 
@@ -233,12 +233,12 @@ begin
           FBaseDisplay.Init;
         except
           on E: Exception do
-           AdvTaskMessageDlg('Внимание', 'Ошибка инициализации дисплея покупателя ' + E.Message, mtError, [mbOK], 0);
+           Touch_MessageBox('Внимание', 'Ошибка инициализации дисплея покупателя ' + E.Message, MB_OK);
         end;
       end;
 
     else
-      Assert(False, 'Данный тип дисплея не поддерживается');
+      Touch_MessageBox('Внимание', 'Данный тип дисплея не поддерживается', MB_OK);
     end;
   end;
 end;

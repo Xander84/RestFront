@@ -320,6 +320,7 @@ type
     function GetGoodList(var MemTable: TkbmMemTable; const MenuKey, GroupKey: Integer): Boolean;
     function GetGoodByID(var MemTable: TkbmMemTable; const GoodKey: Integer): Boolean;
     function GetPopularGoodList(var MemTable: TkbmMemTable): Boolean;
+    procedure DeleteOrder(const ID: Integer);
 
     procedure GetHallsInfo(const MemTable: TkbmMemTable);
     procedure GetTablesInfo(const MemTable: TkbmMemTable; const HallKey: Integer);
@@ -424,7 +425,7 @@ type
 implementation
 
 uses
-  Windows, Sysutils, CardCodeForm_Unit, TaskDialog, Dialogs, FrontData_Unit;
+  Windows, Sysutils, CardCodeForm_Unit, TouchMessageBoxForm_Unit, Dialogs, FrontData_Unit;
 
 function WinExec32(Cmd: string; const CmdShow: Integer): Boolean;
 var
@@ -546,7 +547,7 @@ begin
     FReadSQL.Close;
   except
     on E: Exception do
-      AdvTaskMessageDlg('Внимание', 'Ошибка ' + E.Message, mtError, [mbOK], 0);
+      Touch_MessageBox('Внимание', 'Ошибка ' + E.Message, MB_OK);
   end;
 end;
 
@@ -1031,13 +1032,13 @@ begin
           or (E.IBErrorCode = isc_net_read_err) or (E.IBErrorCode = isc_net_write_err) then
             DoOnDisconnect
         else begin
-          AdvTaskMessageDlg('Внимание', 'Ошибка при сохранении чека ' + E.Message, mtError, [mbOK], 0);
+          Touch_MessageBox('Внимание', 'Ошибка при сохранении чека ' + E.Message, MB_OK);
           FCheckTransaction.Rollback;
         end;
       end;
       on E: Exception do
       begin
-        AdvTaskMessageDlg('Внимание', 'Ошибка при сохранении чека ' + E.Message, mtError, [mbOK], 0);
+        Touch_MessageBox('Внимание', 'Ошибка при сохранении чека ' + E.Message, MB_OK);
         FCheckTransaction.Rollback;
       end;
     end;
@@ -1065,6 +1066,29 @@ begin
     InsModify.Free;
     DelModify.Free;
     UpdParent.Free;
+  end;
+end;
+
+procedure TFrontBase.DeleteOrder(const ID: Integer);
+begin
+  FCheckSQL.Close;
+  try
+    if not FCheckSQL.Transaction.InTransaction then
+      FCheckSQL.Transaction.StartTransaction;
+
+    FCheckSQL.SQL.Text := 'DELETE FROM GD_DOCUMENT DOC ' +
+      'WHERE DOC.ID = :ID ';
+    FCheckSQL.Params[0].AsInteger := ID;
+    FCheckSQL.ExecQuery;
+
+    FCheckSQL.Transaction.Commit;
+    FCheckSQL.Close;
+  except
+    on E: Exception do
+    begin
+      FCheckSQL.Transaction.Rollback;
+      Touch_MessageBox('Внимание', 'Ошибка ' + E.Message, MB_OK);
+    end;
   end;
 end;
 
@@ -1194,7 +1218,7 @@ begin
     FReadSQL.Close;
   except
     on E: Exception do
-      AdvTaskMessageDlg('Внимание', 'Ошибка ' + E.Message, mtError, [mbOK], 0);
+      Touch_MessageBox('Внимание', 'Ошибка ' + E.Message, MB_OK);
   end;
 end;
 
@@ -1240,7 +1264,7 @@ begin
     FReadSQL.Close;
   except
     on E: Exception do
-      AdvTaskMessageDlg('Внимание', 'Ошибка ' + E.Message, mtError, [mbOK], 0);
+      Touch_MessageBox('Внимание', 'Ошибка ' + E.Message, MB_OK);
   end;
 end;
 
@@ -1285,7 +1309,7 @@ begin
     FReadSQL.Close;
   except
     on E: Exception do
-      AdvTaskMessageDlg('Внимание', 'Ошибка ' + E.Message, mtError, [mbOK], 0);
+      Touch_MessageBox('Внимание', 'Ошибка ' + E.Message, MB_OK);
   end;
 end;
 
@@ -1317,7 +1341,7 @@ begin
     FReadSQL.Close;
   except
     on E: Exception do
-      AdvTaskMessageDlg('Внимание', 'Ошибка ' + E.Message, mtError, [mbOK], 0);
+      Touch_MessageBox('Внимание', 'Ошибка ' + E.Message, MB_OK);
   end;
 end;
 
@@ -2345,7 +2369,7 @@ begin
       begin
         if FReadSQL.FieldByName('USR$DISABLED').AsInteger = 1 then
         begin
-          AdvTaskMessageDlg('Внимание', 'Данная карта отключена!', mtError, [mbOK], 0);
+          Touch_MessageBox('Внимание', 'Данная карта отключена!', MB_OK);
           Result := False;
           exit;
         end;
@@ -2398,7 +2422,7 @@ begin
     until FReadSQL.EOF;
   except
     on E: Exception do
-      AdvTaskMessageDlg('Внимание', 'Ошибка ' + E.Message, mtError, [mbOK], 0);
+      Touch_MessageBox('Внимание', 'Ошибка ' + E.Message, MB_OK);
   end;
 end;
 
@@ -2721,7 +2745,7 @@ begin
     except
       on E: Exception do
       begin
-        AdvTaskMessageDlg('Внимание', 'Ошибка при сохранении лога ' + E.Message, mtError, [mbOK], 0);
+        Touch_MessageBox('Внимание', 'Ошибка при сохранении лога ' + E.Message, MB_OK);
         FCheckTransaction.Rollback;
       end;
     end;
@@ -2801,7 +2825,7 @@ begin
           Result.UserKey := FReadSQL.FieldByName('ID').AsInteger;
           Result.UserInGroup := FReadSQL.FieldByName('InGroup').AsInteger;
         end else
-          AdvTaskMessageDlg('Внимание', 'Введён неверный пароль!', mtError, [mbOK], 0);
+          Touch_MessageBox('Внимание', 'Введён неверный пароль!', MB_OK);
       finally
         FReadSQL.Close;
       end;
@@ -2853,7 +2877,7 @@ begin
     except
       on E: Exception do
       begin
-        AdvTaskMessageDlg('Внимание', 'Ошибка при сохранении заказа ' + E.Message, mtError, [mbOK], 0);
+        Touch_MessageBox('Внимание', 'Ошибка при сохранении заказа ' + E.Message, MB_OK);
         FCheckTransaction.Rollback;
       end;
     end;
@@ -2900,7 +2924,7 @@ begin
     except
       on E: Exception do
       begin
-        AdvTaskMessageDlg('Внимание', 'Ошибка при сохранении заказа ' + E.Message, mtError, [mbOK], 0);
+        Touch_MessageBox('Внимание', 'Ошибка при сохранении заказа ' + E.Message, MB_OK);
         FCheckTransaction.Rollback;
       end;
     end;
@@ -2936,7 +2960,7 @@ begin
     except
       on E: Exception do
       begin
-        AdvTaskMessageDlg('Внимание', 'Ошибка при сохранении заказа ' + E.Message, mtError, [mbOK], 0);
+        Touch_MessageBox('Внимание', 'Ошибка при сохранении заказа ' + E.Message, MB_OK);
         FCheckTransaction.Rollback;
       end;
     end;
@@ -3422,7 +3446,7 @@ begin
     Result := True;
   except
     on E: Exception do
-        AdvTaskMessageDlg('Внимание', 'Ошибка ' + E.Message, mtError, [mbOK], 0);
+      Touch_MessageBox('Внимание', 'Ошибка ' + E.Message, MB_OK);
   end;
 end;
 
@@ -3598,7 +3622,6 @@ begin
   try
     if not FCheckTransaction.InTransaction then
       FCheckTransaction.StartTransaction;
-    // фиксируем суммы, оплаченные различными формами оплаты
     try
       FSQL.ParamByName('id').AsInteger := ID;
       FSQL.ParamByName('data').LoadFromStream(Stream);
@@ -3606,7 +3629,7 @@ begin
     except
       on E: Exception do
       begin
-        AdvTaskMessageDlg('Внимание', 'Ошибка при сохранении шаблона ' + E.Message, mtError, [mbOK], 0);
+        Touch_MessageBox('Внимание', 'Ошибка при сохранении шаблона ' + E.Message, MB_OK);
         FCheckTransaction.Rollback;
       end;
     end;
@@ -3665,7 +3688,7 @@ begin
     except
       on E: Exception do
       begin
-        AdvTaskMessageDlg('Внимание', 'Ошибка при сохранении ' + E.Message, mtError, [mbOK], 0);
+        Touch_MessageBox('Внимание', 'Ошибка при сохранении ' + E.Message, MB_OK);
         FCheckTransaction.Rollback;
       end;
     end;
@@ -3716,7 +3739,7 @@ begin
     Result := True;
   except
     on E: Exception do
-      AdvTaskMessageDlg('Внимание', 'Ошибка ' + E.Message, mtError, [mbOK], 0);
+      Touch_MessageBox('Внимание', 'Ошибка ' + E.Message, MB_OK);
   end;
 end;
 
@@ -3757,7 +3780,7 @@ begin
     end;
   except
     on E: Exception do
-      AdvTaskMessageDlg('Внимание', 'Ошибка ' + E.Message, mtError, [mbOK], 0);
+      Touch_MessageBox('Внимание', 'Ошибка ' + E.Message, MB_OK);
   end;
 end;
 
@@ -3789,7 +3812,7 @@ begin
     end;
   except
     on E: Exception do
-      AdvTaskMessageDlg('Внимание', 'Ошибка ' + E.Message, mtError, [mbOK], 0);
+      Touch_MessageBox('Внимание', 'Ошибка ' + E.Message, MB_OK);
   end;
 end;
 
@@ -3931,8 +3954,7 @@ begin
       FReadSQL.ExecQuery;
       if FReadSQL.FieldByName('usr$off').AsInteger = 1 then
       begin
-        AdvTaskMessageDlg('Внимание', 'Кассовый день ' + DateToStr(NewDate) + ' уже закрыт ',
-          mtInformation, [mbOK], 0);
+        Touch_MessageBox('Внимание', 'Кассовый день ' + DateToStr(NewDate) + ' уже закрыт ', MB_OK);
         exit;
       end;
       CanClose := True;
@@ -3940,12 +3962,12 @@ begin
     begin
       CanClose := False;
       NewDate := Date;
-      AdvTaskMessageDlg('Внимание', 'Кассовый день не открыт', mtWarning, [mbOK], 0);
+      Touch_MessageBox('Внимание', 'Кассовый день не открыт', MB_OK);
     end;
 
     if CanClose then
-      if AdvTaskMessageDlg('Внимание', 'Хотите закрыть день' + DateToStr(NewDate) + '?',
-        mtInformation, [mbYes, mbNo], 0) = IDYES then
+      if Touch_MessageBox('Внимание', 'Хотите закрыть день' + DateToStr(NewDate) + '?',
+        MB_YESNO) = IDYES  then
       begin
         FUserInfo := CheckUserPasswordWithForm;
         if FUserInfo.CheckedUserPassword then
@@ -3971,7 +3993,7 @@ begin
               except
                 on E: Exception do
                 begin
-                  AdvTaskMessageDlg('Внимание', 'Ошибка при закрытии дня ' + E.Message, mtError, [mbOK], 0);
+                  Touch_MessageBox('Внимание', 'Ошибка при закрытии дня ' + E.Message, MB_OK);
                   FCheckTransaction.Rollback;
                 end;
               end;
@@ -3981,7 +4003,7 @@ begin
               FUpdateSQL.Free;
             end;
           end else
-            AdvTaskMessageDlg('Внимание', 'Данный пользователь не обладает правами для закрытия дня!', mtWarning, [mbOK], 0);
+            Touch_MessageBox('Внимание', 'Данный пользователь не обладает правами для закрытия дня!', MB_OK);
         end else
           exit;
       end;
@@ -4019,8 +4041,7 @@ begin
       FReadSQL.ExecQuery;
       if (FReadSQL.FieldByName('usr$off').AsInteger = 0) and (FReadSQL.FieldByName('usr$open').AsInteger = 1) then
       begin
-        AdvTaskMessageDlg('Внимание', 'Кассовый день ' + DateToStr(NewDate) + ' не закрыт!',
-          mtInformation, [mbOK], 0);
+        Touch_MessageBox('Внимание', 'Кассовый день ' + DateToStr(NewDate) + ' не закрыт!', MB_OK);
         exit;
       end;
       NewDate := NewDate + 1;
@@ -4029,8 +4050,8 @@ begin
       NewDate := Date;
     end;
 
-    if AdvTaskMessageDlg('Внимание', 'Хотите открыть день' + DateToStr(NewDate) + '?',
-      mtInformation, [mbYes, mbNo], 0) = IDYES then
+    if Touch_MessageBox('Внимание', 'Хотите открыть день' + DateToStr(NewDate) + '?',
+      MB_YESNO) = IDYES then
     begin
       FUserInfo := CheckUserPasswordWithForm;
       if FUserInfo.CheckedUserPassword then
@@ -4056,7 +4077,7 @@ begin
             except
               on E: Exception do
               begin
-                AdvTaskMessageDlg('Внимание', 'Ошибка при закрытии дня ' + E.Message, mtError, [mbOK], 0);
+                Touch_MessageBox('Внимание', 'Ошибка при закрытии дня ' + E.Message, MB_OK);
                 FCheckTransaction.Rollback;
               end;
             end;
@@ -4066,7 +4087,7 @@ begin
             FUpdateSQL.Free;
           end;
         end else
-          AdvTaskMessageDlg('Внимание', 'Данный пользователь не обладает правами для открытия дня!', mtWarning, [mbOK], 0);
+          Touch_MessageBox('Внимание', 'Данный пользователь не обладает правами для открытия дня!', MB_OK);
       end else
         exit;
     end;
@@ -4314,7 +4335,7 @@ begin
     FReadSQL.Close;
   except
     on E: Exception do
-      AdvTaskMessageDlg('Внимание', 'Ошибка при загрузке настроек ' + E.Message, mtError, [mbOK], 0);
+      Touch_MessageBox('Внимание', 'Ошибка при загрузке настроек ' + E.Message, MB_OK);
   end;
 end;
 
@@ -4334,7 +4355,7 @@ begin
     FReadSQL.Close;
   except
     on E: Exception do
-      AdvTaskMessageDlg('Внимание', 'Ошибка ' + E.Message, mtError, [mbOK], 0);
+      Touch_MessageBox('Внимание', 'Ошибка ' + E.Message, MB_OK);
   end;
 end;
 
@@ -4366,7 +4387,7 @@ begin
     FReadSQL.Close;
   except
     on E: Exception do
-      AdvTaskMessageDlg('Внимание', 'Ошибка ' + E.Message, mtError, [mbOK], 0);
+      Touch_MessageBox('Внимание', 'Ошибка ' + E.Message, MB_OK);
   end;
 end;
 
@@ -4453,9 +4474,8 @@ begin
           IBSS.Active := False;
         end;
       except
-        AdvTaskMessageDlg('Внимание',  'Невозможно получить доступ к учетной записи пользователя.'#13#10 +
-          'Возможно пароль администратора базы данных введен неверно.',
-          mtError, [mbOK], 0);
+        Touch_MessageBox('Внимание', 'Невозможно получить доступ к учетной записи пользователя.'#13#10 +
+          'Возможно пароль администратора базы данных введен неверно.', MB_OK);
       end;
     finally
       IBSS.Free;

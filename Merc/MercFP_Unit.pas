@@ -112,7 +112,8 @@ type
 
 implementation
 
-uses SysUtils, Math, DevideForm_Unit, Controls;
+uses
+  SysUtils, Math, DevideForm_Unit, Controls, TouchMessageBoxForm_Unit;
 
 { TMercuryRegister }
 
@@ -222,8 +223,7 @@ begin
         if not CheckDeviceInfo then
         begin
           if FLastWarning <> '' then
-            MessageBox(Application.Handle, PChar(FLastWarning),
-              'Внимание', MB_OK or MB_ICONEXCLAMATION);
+            Touch_MessageBox('Внимание', FLastWarning, MB_OK);
           exit;
         end;
 
@@ -317,8 +317,7 @@ begin
     end;
 
   end else
-    MessageBox(Application.Handle, PChar('Не установлен драйвер для ФР !'),
-     'Внимание', MB_OK or MB_ICONEXCLAMATION);
+    Touch_MessageBox('Внимание', 'Не установлен драйвер для ФР!', MB_OK);
 end;
 
 function TMercuryRegister.PrintX1ReportWithOutCleaning: Boolean;
@@ -341,8 +340,7 @@ end;
 function TMercuryRegister.PrintX2ReportWithOutCleaning: Boolean;
 begin
   Result := False;
-  MessageBox(Application.Handle, PChar('Данный вид отчёта не поддерживается'),
-    'Внимание', MB_OK or MB_ICONEXCLAMATION);
+  Touch_MessageBox('Внимание', 'Данный вид отчёта не поддерживается', MB_OK);
 end;
 
 function TMercuryRegister.PrintZ1ReportWithCleaning: Boolean;
@@ -365,8 +363,7 @@ end;
 function TMercuryRegister.PrintZ2ReportWithCleaning: Boolean;
 begin
   Result := False;
-  MessageBox(Application.Handle, PChar('Данный вид отчёта не поддерживается'),
-    'Внимание', MB_OK or MB_ICONEXCLAMATION);
+  Touch_MessageBox('Внимание', 'Данный вид отчёта не поддерживается', MB_OK);
 end;
 
 procedure TMercuryRegister.SetFrontBase(const Value: TFrontBase);
@@ -386,8 +383,7 @@ begin
     FLastWarning := '';
     FIV := 1;
   except
-    MessageBox(Application.Handle, PChar('Не установлен драйвер для ФР!'),
-      'Внимание', MB_OK or MB_ICONEXCLAMATION);
+    Touch_MessageBox('Внимание', 'Не установлен драйвер для ФР!', MB_OK);
     FDriverInit := False;
     FLastErrorNumber := -1;
     FLastErrorDescription := 'Не удалось создать СОМ-объект для работы с ФР';
@@ -465,8 +461,7 @@ end;
 procedure TMercuryRegister.ShowLastError;
 begin
   if FLastErrorNumber <> 0 then
-    MessageBox(Application.Handle, PChar(FLastErrorDescription),
-      'Внимание', MB_OK or MB_ICONEXCLAMATION);
+    Touch_MessageBox('Внимание', FLastErrorDescription, MB_OK);
 end;
 
 function TMercuryRegister.OpenCheck(const CheckType: Integer): Boolean;

@@ -12,7 +12,7 @@ uses
   Contnrs, kbmMemTable, DBGridEh, GridsEh, FiscalRegister_Unit,
   SplitOrderForm_Unit, Report_Unit, FrontData_Unit, BaseFrontForm_Unit,
   AdvSmoothButton, AdvPanel, AdvPageControl, AdvSmoothTouchKeyBoard,
-  TaskDialog, FrontLog_Unit, Grids, Menus, AddUserForm_unit, AdminForm_Unit,
+  FrontLog_Unit, Grids, Menus, AddUserForm_unit, AdminForm_Unit,
   Buttons, RestTable_Unit, dxfDesigner, GestureMgr, AdvObj, AdvMenus, AdvMenuStylers;
 
 const
@@ -44,6 +44,12 @@ const
 }
 
 type
+{  TCrackScrollingWinControl = class helper for TScrollingWinControl
+  protected
+    procedure CreateWnd;
+  end;  }
+
+
   //окно с паролем
   //окно с со заказами
   //редактирование заказа
@@ -439,10 +445,11 @@ implementation
 
 uses
   SysUtils, GuestForm_unit, DeleteOrderLine_unit, OrderNumber_Unit,
-  Modification_Unit, DevideForm_Unit,
+  Modification_Unit, DevideForm_Unit, CommCtrl,
   SellParamForm_Unit, PercOrCardForm_Unit, DiscountTypeForm_Unit,
   ChooseDiscountCardForm_Unit, EditReportForm_Unit,
-  GDIPPictureContainer, IB, GDIPFill, CashForm_Unit;
+  GDIPPictureContainer, IB, GDIPFill, CashForm_Unit, IBSQL,
+  TouchMessageBoxForm_Unit;
 
 
 {$R *.dfm}
@@ -468,7 +475,7 @@ begin
       RestFormState := OrderMenu;
   end else
   begin
-    AdvTaskMessageDlg('Внимание', 'Неверный пароль', mtWarning, [mbOK], 0);
+    Touch_MessageBox('Внимание', 'Неверный пароль', MB_OK);
     if edPassword.CanFocus then
       edPassword.SetFocus;
     FLogManager.DoSimpleEvent(ev_invalidPass);
@@ -519,9 +526,9 @@ begin
     on E: Exception do
     begin
       if (E is EIBClientError) and (EIBClientError(E).SQLCode = Ord(ibxeDatabaseNameMissing)) then
-        AdvTaskMessageDlg('Внимание', 'Путь к базе данных указан неверно', mtError, [mbOK], 0)
+        Touch_MessageBox('Внимание', 'Путь к базе данных указан неверно', MB_OK)
       else
-        AdvTaskMessageDlg('Внимание', 'Ошибка при подключении ' + E.Message, mtError, [mbOK], 0);
+        Touch_MessageBox('Внимание', 'Ошибка при подключении ' + E.Message, MB_OK);
       FFrontBase.Free;
       Application.Terminate;
     end;
@@ -1137,7 +1144,7 @@ begin
   begin
     if FFrontBase.CheckCountOrderByResp(FFrontBase.ContactKey) then
     begin
-      AdvTaskMessageDlg('Внимание', 'Превышено максимально возможное число открытых заказов!', mtWarning, [mbOK], 0);
+      Touch_MessageBox('Внимание', 'Превышено максимально возможное число открытых заказов!', MB_OK);
       exit;
     end;
   end;
@@ -1205,7 +1212,7 @@ begin
   begin
     if FFrontBase.CheckCountOrderByResp(FFrontBase.ContactKey) then
     begin
-      AdvTaskMessageDlg('Внимание', 'Превышено максимально возможное число открытых заказов!', mtWarning, [mbOK], 0);
+      Touch_MessageBox('Внимание', 'Превышено максимально возможное число открытых заказов!', MB_OK);
       exit;
     end;
   end;
@@ -1382,14 +1389,12 @@ var
 begin
   if not FHeaderTable.FieldByName('usr$timecloseorder').IsNull then
   begin
-    AdvTaskMessageDlg('Внимание', 'По данному заказу пречек уже был распечатан!',
-      mtInformation, [mbOK], 0);
+    Touch_MessageBox('Внимание', 'По данному заказу пречек уже был распечатан!', MB_OK);
     exit;
   end;
   if FViewMode then
   begin
-    AdvTaskMessageDlg('Внимание', 'Из формы оплаты нельзя добавлять товар!',
-      mtInformation, [mbOK], 0);
+    Touch_MessageBox('Внимание', 'Из формы оплаты нельзя добавлять товар!', MB_OK);
     exit;
   end;
 
@@ -1594,18 +1599,17 @@ begin
     begin
       if (FFrontBase.GetLocalComputerName <> FOrderDataSet.FieldByName('USR$COMPUTERNAME').AsString) then
       begin
-        AdvTaskMessageDlg('Внимание', 'Заказ редактируется на другом рабочем месте!', mtWarning, [mbOK], 0);
+        Touch_MessageBox('Внимание', 'Заказ редактируется на другом рабочем месте!', MB_OK);
         exit;
       end else
-      if AdvTaskMessageDlg('Внимание', 'Заказ редактируется. Продолжить?',
-        mtInformation, [mbYes, mbNo], 0) = IDYES then
+      if Touch_MessageBox('Внимание', 'Заказ редактируется. Продолжить?', MB_YESNO) = IDYES then
       begin
         FUserInfo := FFrontBase.CheckUserPasswordWithForm;
         if FUserInfo.CheckedUserPassword then
         begin
           if (FUserInfo.UserInGroup and FFrontBase.Options.ManagerGroupMask) = 0 then
           begin
-            AdvTaskMessageDlg('Внимание', cn_dontManagerPermission, mtWarning, [mbOK], 0);
+            Touch_MessageBox('Внимание', cn_dontManagerPermission, MB_OK);
             exit;
           end;
         end else
@@ -1679,8 +1683,7 @@ begin
 
     HallInfo:
       begin
-        if AdvTaskMessageDlg('Внимание', 'Сохранить изменения?',
-          mtInformation, [mbYes, mbNo], 0) = IDYES then
+        if Touch_MessageBox('Внимание', 'Сохранить изменения?', MB_YESNO) = IDYES then
         begin
           SaveTablePositions;
           RemoveHallButton;
@@ -1707,8 +1710,7 @@ begin
     MenuInfo:
       begin
         //сохраняем чек
-        if AdvTaskMessageDlg('Внимание', 'Закрыть заказ?',
-          mtInformation, [mbYes, mbNo], 0) = IDYES then
+        if Touch_MessageBox('Внимание', 'Закрыть заказ?', MB_YESNO) = IDYES then
         begin
           DBGrMain.DataSource := nil;
           try
@@ -1789,8 +1791,7 @@ begin
 
     MenuInfo:
       begin
-        if FPayed or (AdvTaskMessageDlg('Внимание', 'Выйти из заказа?',
-          mtInformation, [mbYes, mbNo], 0) = IDYES) then
+        if FPayed or (Touch_MessageBox('Внимание', 'Выйти из заказа?', MB_YESNO) = IDYES) then
         begin
           if not FHeaderTable.IsEmpty then
           begin
@@ -1805,7 +1806,11 @@ begin
                   CreateKassirPage;
 
                 HallsPage:
-                  RestFormState := HallsPage;
+                  begin
+                    if FLineTable.IsEmpty then
+                      FFrontBase.DeleteOrder(FHeaderTable.FieldByName('ID').AsInteger);
+                    RestFormState := HallsPage;
+                  end;
 
                 else
                   RestFormState := OrderMenu;
@@ -1892,7 +1897,7 @@ begin
       begin
         if (FUserInfo.UserInGroup and FFrontBase.Options.ManagerGroupMask) = 0 then
         begin
-          AdvTaskMessageDlg('Внимание', cn_dontManagerPermission, mtWarning, [mbOK], 0);
+          Touch_MessageBox('Внимание', cn_dontManagerPermission, MB_OK);
           exit;
         end;
 
@@ -1945,7 +1950,7 @@ begin
       begin
         if (FUserInfo.UserInGroup and FFrontBase.Options.ManagerGroupMask) = 0 then
         begin
-          AdvTaskMessageDlg('Внимание', cn_dontManagerPermission, mtWarning, [mbOK], 0);
+          Touch_MessageBox('Внимание', cn_dontManagerPermission, MB_OK);
           exit;
         end;
         FDeleteForm := TDeleteOrderLine.CreateWithFrontBase(nil, FFrontBase);
@@ -2069,7 +2074,7 @@ begin
   begin
     if (FUserInfo.UserInGroup and FFrontBase.Options.ManagerGroupMask) = 0 then
     begin
-      AdvTaskMessageDlg('Внимание', cn_dontManagerPermission, mtWarning, [mbOK], 0);
+      Touch_MessageBox('Внимание', cn_dontManagerPermission, MB_OK);
       exit;
     end;
     FLogManager.DoOrderLog(GetUserInfo(FUserInfo), GetCurrentOrderInfo, ev_DevideOrder);
@@ -2111,10 +2116,7 @@ begin
     end;
     FLogManager.DoOrderLog(GetCurrentUserInfo, GetCurrentOrderInfo, ev_PrintPreCheck);
   end else
-  begin
-    AdvTaskMessageDlg('Внимание', 'Пречек уже был распечатан!',
-      mtInformation, [mbOK], 0);
-  end;
+    Touch_MessageBox('Внимание', 'Пречек уже был распечатан!', MB_OK);
 end;
 
 procedure TRestMainForm.actCancelPreCheckExecute(Sender: TObject);
@@ -2127,8 +2129,7 @@ begin
     if (FUserInfo.UserInGroup and FFrontBase.Options.ManagerGroupMask) <> 0 then
     begin
       if FFrontBase.OrderIsPayed(FHeaderTable.FieldByName('ID').AsInteger) then
-        AdvTaskMessageDlg('Внимание', 'Этот заказ уже был оплачен',
-          mtInformation, [mbOK], 0)
+        Touch_MessageBox('Внимание', 'Этот заказ уже был оплачен', MB_OK)
       else begin
         FHeaderTable.Edit;
         FHeaderTable.FieldByName('usr$timecloseorder').Clear;
@@ -2142,7 +2143,7 @@ begin
 
       FLogManager.DoOrderLog(GetUserInfo(FUserInfo), GetCurrentOrderInfo, ev_CancelPreCheck);
     end else
-      AdvTaskMessageDlg('Внимание', cn_dontManagerPermission, mtWarning, [mbOK], 0);
+      Touch_MessageBox('Внимание', cn_dontManagerPermission, MB_OK);
   end;
 end;
 
@@ -2212,7 +2213,7 @@ begin
         end;
       end
       else begin
-        AdvTaskMessageDlg('Внимание', cn_dontManagerPermission, mtWarning, [mbOK], 0);
+        Touch_MessageBox('Внимание', cn_dontManagerPermission, MB_OK);
         exit;
       end;
     end;
@@ -2304,8 +2305,7 @@ begin
       FForm.Free;
     end;
   end else
-    AdvTaskMessageDlg('Внимание', 'Для данной рабочей станции не указан кассовый терминал!',
-      mtWarning, [mbOK], 0)
+    Touch_MessageBox('Внимание', 'Для данной рабочей станции не указан кассовый терминал!', MB_OK);
 end;
 
 procedure TRestMainForm.SetFormState(const Value: TRestState);
@@ -2840,7 +2840,6 @@ begin
     try
       UserTable.FieldDefs.Add('ID', ftInteger, 0);
       UserTable.FieldDefs.Add('NAME', ftString, 60);
-//      UserTable.FieldDefs.Add('ingroup', ftInteger, 0);
       UserTable.CreateTable;
       UserTable.Open;
 
@@ -3084,9 +3083,9 @@ begin
               on E: Exception do
               begin
                 if E is EConvertError then
-                  AdvTaskMessageDlg('Внимание', 'Введено неверное число', mtError, [mbOK], 0)
+                  Touch_MessageBox('Внимание', 'Введено неверное число', MB_OK)
                 else
-                  AdvTaskMessageDlg('Внимание', 'Ошибка ' + E.Message, mtError, [mbOK], 0)
+                  Touch_MessageBox('Внимание', 'Ошибка ' + E.Message, MB_OK);
               end;
             end;
           end;
@@ -3259,39 +3258,88 @@ var
   FUserInfo: TUserInfo;
   FRestTable: TRestTable;
   Pt: TPoint;
+  RespKey: Integer;
+  FSQL: TIBSQL;
+  Item: TMenuItem;
 begin
   if dxfDesigner.Active then
     exit;
 
   FRestTable := TRestTable(Sender);
+  FOrderKey := FRestTable.OrderKey;
+  //Проверить на кол-во заказов и сразу построить pop-up список
+  FSQL := TIBSQL.Create(nil);
+  FSQL.Transaction := FFrontBase.ReadTransaction;
+  try
+    tablePopupMenu.Items.Clear;
+    FRestTable.OrderList.Clear;
+    if not FSQL.Transaction.InTransaction then
+      FSQL.Transaction.StartTransaction;
+
+    FSQL.SQL.Text := 'SELECT T.*, U.USR$RESPKEY, U.DOCUMENTKEY, U.USR$COMPUTERNAME, DOC.NUMBER, CON.NAME ' +
+      'FROM USR$MN_TABLE T ' +
+      'JOIN USR$MN_ORDER U ON (U.USR$TABLEKEY = T.ID AND U.USR$PAY <> 1) ' +
+      'LEFT JOIN GD_DOCUMENT DOC ON DOC.ID = U.DOCUMENTKEY ' +
+      'LEFT JOIN GD_CONTACT CON ON CON.ID = U.USR$RESPKEY ' +
+      'WHERE T.ID = :ID ' +
+      'ORDER BY U.DOCUMENTKEY, DOC.NUMBER ';
+    FSQL.ParamByName('ID').AsInteger := FRestTable.ID;
+    FSQL.ExecQuery;
+    while not FSQL.Eof do
+    begin
+      FOrderKey := FSQL.FieldByName('DOCUMENTKEY').AsInteger;
+      if FRestTable.OrderKey <> FOrderKey then
+        FRestTable.OrderKey := FOrderKey;
+
+      RespKey := FSQL.FieldByName('USR$RESPKEY').AsInteger;
+      if FRestTable.RespKey <> RespKey then
+        FRestTable.RespKey := RespKey;
+
+      FRestTable.OrderList.Add(FSQL.FieldByName('DOCUMENTKEY').AsInteger,
+        FSQL.FieldByName('NUMBER').AsString);
+      //если заказ не свой или не менеджер, то не добавляем меню
+      if (FFrontBase.ContactKey = RespKey) or
+        ((FFrontBase.UserKey and FFrontBase.Options.ManagerGroupMask) <> 0) then
+      begin
+        Item  := TMenuItem.Create(tablePopupMenu);
+        Item.Tag := FSQL.FieldByName('DOCUMENTKEY').AsInteger;
+        Item.Caption := 'Заказ ' + FSQL.FieldByName('NUMBER').AsString;
+        Item.OnClick := OrderButtonOnClick;
+        tablePopupMenu.Items.Add(Item);
+      end;
+      FSQL.Next;
+    end;
+    FSQL.Close;
+  finally
+    FSQL.Free;
+  end;
 
   if FRestTable.OrderCount > 1 then
   begin
+    FRestTable.Tag := 0;
     Pt := FRestTable.ClientToScreen(Point(0, 0));
     FRestTable.PopupMenu.PopupComponent := FRestTable;
     FRestTable.PopupMenu.Popup(Pt.X + 16, Pt.Y + 16);
     exit;
   end;
 
-  FOrderKey := FRestTable.OrderKey;
   if FOrderKey > 0 then
   begin
     if FFrontBase.OrderIsLocked(FOrderKey) then
     begin
       if FFrontBase.GetLocalComputerName <> FRestTable.ComputerName then
       begin
-        AdvTaskMessageDlg('Внимание', 'Заказ редактируется на другом рабочем месте!', mtWarning, [mbOK], 0);
+        Touch_MessageBox('Внимание', 'Заказ редактируется на другом рабочем месте!', MB_OK);
         exit;
       end else
-      if AdvTaskMessageDlg('Внимание', 'Заказ редактируется. Продолжить?',
-        mtInformation, [mbYes, mbNo], 0) = IDYES then
+      if Touch_MessageBox('Внимание', 'Заказ редактируется. Продолжить?', MB_YESNO) = IDYES then
       begin
         FUserInfo := FFrontBase.CheckUserPasswordWithForm;
         if FUserInfo.CheckedUserPassword then
         begin
           if (FUserInfo.UserInGroup and FFrontBase.Options.ManagerGroupMask) = 0 then
           begin
-            AdvTaskMessageDlg('Внимание', cn_dontManagerPermission, mtWarning, [mbOK], 0);
+            Touch_MessageBox('Внимание', cn_dontManagerPermission, MB_OK);
             exit;
           end;
         end else
@@ -3303,7 +3351,7 @@ begin
     if FRestTable.RespKey <> FFrontBase.ContactKey then
       if (FFrontBase.UserKey and FFrontBase.Options.ManagerGroupMask) = 0 then
       begin
-        AdvTaskMessageDlg('Внимание', cn_dontManagerPermission, mtWarning, [mbOK], 0);
+        Touch_MessageBox('Внимание', cn_dontManagerPermission, MB_OK);
         exit;
       end;
 
@@ -3331,27 +3379,94 @@ procedure TRestMainForm.tablePopupMenuPopup(Sender: TObject);
 var
   FButton: TRestTable;
   Item: TMenuItem;
-  Key: Integer;
+  FSQL: TIBSQL;
+  RespKey: Integer;
+  FOrderKey: Integer;
+  FFirst: Boolean;
 begin
   inherited;
-  tablePopupMenu.Items.Clear;
-
   FButton := TRestTable(TAdvPopupMenu(Sender).PopupComponent);
 
-  Item := TMenuItem.Create(tablePopupMenu);
-  Item.Caption := 'Новый заказ';
-  Item.OnClick := PopItemOnClick;
-  Item.Tag := FButton.ID;
-  tablePopupMenu.Items.Add(Item);
-
-  for Key in FButton.OrderList.Keys do
+  if FButton.Tag = 0 then
   begin
-    Item  := TMenuItem.Create(tablePopupMenu);
-    Item.Tag := Key;
-    Item.Caption := 'Заказ ' + FButton.OrderList.Items[Key];
-    Item.OnClick := OrderButtonOnClick;
-    tablePopupMenu.Items.Add(Item);
+    FButton.Tag := 1;
+    if (tablePopupMenu.Items.Count = 0) and (FButton.OrderList.Count > 0) then
+      Touch_MessageBox('Внимание', 'Стол занят ' +
+        FFrontBase.GetNameWaiterOnID(FButton.RespKey, True, False), MB_OK);
+    exit;
   end;
+
+  FFirst := True;
+  FSQL := TIBSQL.Create(nil);
+  FSQL.Transaction := FFrontBase.ReadTransaction;
+  try
+    tablePopupMenu.Items.Clear;
+    FButton.OrderList.Clear;
+    if not FSQL.Transaction.InTransaction then
+      FSQL.Transaction.StartTransaction;
+
+    FSQL.SQL.Text := 'SELECT T.*, U.USR$RESPKEY, U.DOCUMENTKEY, U.USR$COMPUTERNAME, DOC.NUMBER, CON.NAME ' +
+      'FROM USR$MN_TABLE T ' +
+      'JOIN USR$MN_ORDER U ON (U.USR$TABLEKEY = T.ID AND U.USR$PAY <> 1) ' +
+      'LEFT JOIN GD_DOCUMENT DOC ON DOC.ID = U.DOCUMENTKEY ' +
+      'LEFT JOIN GD_CONTACT CON ON CON.ID = U.USR$RESPKEY ' +
+      'WHERE T.ID = :ID ' +
+      'ORDER BY U.DOCUMENTKEY, DOC.NUMBER ';
+    FSQL.ParamByName('ID').AsInteger := FButton.ID;
+    FSQL.ExecQuery;
+    if FSQL.Eof then
+    begin
+      Item := TMenuItem.Create(tablePopupMenu);
+      Item.Caption := 'Новый заказ';
+      Item.OnClick := PopItemOnClick;
+      Item.Tag := FButton.ID;
+      tablePopupMenu.Items.Add(Item);
+    end else
+    begin
+      while not FSQL.Eof do
+      begin
+        FOrderKey := FSQL.FieldByName('DOCUMENTKEY').AsInteger;
+        if FButton.OrderKey <> FOrderKey then
+          FButton.OrderKey := FOrderKey;
+
+        RespKey := FSQL.FieldByName('USR$RESPKEY').AsInteger;
+        if FButton.RespKey <> RespKey then
+          FButton.RespKey := RespKey;
+
+        if FFirst and ((FFrontBase.ContactKey = RespKey) or
+          ((FFrontBase.UserKey and FFrontBase.Options.ManagerGroupMask) <> 0)) then
+        begin
+          Item := TMenuItem.Create(tablePopupMenu);
+          Item.Caption := 'Новый заказ';
+          Item.OnClick := PopItemOnClick;
+          Item.Tag := FButton.ID;
+          tablePopupMenu.Items.Add(Item);
+        end;
+
+        FButton.OrderList.Add(FSQL.FieldByName('DOCUMENTKEY').AsInteger,
+          FSQL.FieldByName('NUMBER').AsString);
+        //если заказ не свой или не менеджер, то не добавляем меню
+        if (FFrontBase.ContactKey = RespKey) or
+          ((FFrontBase.UserKey and FFrontBase.Options.ManagerGroupMask) <> 0) then
+        begin
+          Item  := TMenuItem.Create(tablePopupMenu);
+          Item.Tag := FSQL.FieldByName('DOCUMENTKEY').AsInteger;
+          Item.Caption := 'Заказ ' + FSQL.FieldByName('NUMBER').AsString;
+          Item.OnClick := OrderButtonOnClick;
+          tablePopupMenu.Items.Add(Item);
+        end;
+        FFirst := False;
+        FSQL.Next;
+      end;
+    end;
+    FSQL.Close;
+  finally
+    FSQL.Free;
+  end;
+
+  if (tablePopupMenu.Items.Count = 0) and (FButton.OrderList.Count > 0) then
+    Touch_MessageBox('Внимание', 'Стол занят ' +
+      FFrontBase.GetNameWaiterOnID(FButton.RespKey, True, False), MB_OK);
 end;
 
 procedure TRestMainForm.tmrCloseTimer(Sender: TObject);
@@ -3439,12 +3554,11 @@ begin
   begin
     if (FUserInfo.UserInGroup and FFrontBase.Options.ManagerGroupMask) = 0 then
     begin
-      AdvTaskMessageDlg('Внимание', cn_dontManagerPermission, mtWarning, [mbOK], 0);
+      Touch_MessageBox('Внимание', cn_dontManagerPermission, MB_OK);
       exit;
     end;
 
-    if AdvTaskMessageDlg('Внимание', 'Выключить рабочую станцию?',
-      mtInformation, [mbYes, mbNo], 0) = IDYES then
+    if Touch_MessageBox('Внимание', 'Выключить рабочую станцию?', MB_YESNO) = IDYES then
     begin
       if cn_ShutDownOnExit then
         Windows.ExitWindows(0, 0)
@@ -3463,12 +3577,11 @@ begin
   begin
     if (FUserInfo.UserInGroup and FFrontBase.Options.ManagerGroupMask) = 0 then
     begin
-      AdvTaskMessageDlg('Внимание', cn_dontManagerPermission, mtWarning, [mbOK], 0);
+      Touch_MessageBox('Внимание', cn_dontManagerPermission, MB_OK);
       exit;
     end;
     {$IFDEF MSWINDOWS}
-    if AdvTaskMessageDlg('Внимание', 'Перезапустить приложение?',
-      mtInformation, [mbYes, mbNo], 0) = IDYES then
+    if Touch_MessageBox('Внимание', 'Перезапустить приложение?', MB_YESNO) = IDYES then
     begin
       Application.Terminate;
       WinExec32(CmdLine, 1);
@@ -3551,15 +3664,12 @@ var
   FUserInfo: TUserInfo;
   FForm: TAdminForm;
 begin
-//  if not FFrontBase.Options.NoPassword then
-//    tmrClose.Enabled := False;
-
   FUserInfo := FFrontBase.CheckUserPasswordWithForm;
   if FUserInfo.CheckedUserPassword then
   begin
     if (FUserInfo.UserInGroup and FFrontBase.Options.ManagerGroupMask) = 0 then
     begin
-      AdvTaskMessageDlg('Внимание', cn_dontManagerPermission, mtWarning, [mbOK], 0);
+      Touch_MessageBox('Внимание', cn_dontManagerPermission, MB_OK);
       exit;
     end;
     FForm := TAdminForm.Create(Self);
@@ -3573,7 +3683,6 @@ begin
       FForm.Free;
     end;
   end;
-//  tmrClose.Enabled := not FFrontBase.Options.NoPassword;
 end;
 
 procedure TRestMainForm.actAllChecksExecute(Sender: TObject);
