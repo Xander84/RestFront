@@ -1,4 +1,4 @@
-object TTouchMessageBox: TTTouchMessageBox
+object TouchMessageBox: TTouchMessageBox
   Left = 0
   Top = 0
   Caption = #1042#1085#1080#1084#1072#1085#1080#1077
