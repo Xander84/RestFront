@@ -358,6 +358,7 @@ type
 
     FRestFormState: TRestState;
     FPrevFormState: TRestState;
+    FBaseFromState: TRestState;
     // Режим только просмотра (для кассира)
     FViewMode: Boolean;
 
@@ -473,6 +474,7 @@ begin
         RestFormState := OrderMenu;
     end else
       RestFormState := OrderMenu;
+    FBaseFromState := FRestFormState;
   end else
   begin
     Touch_MessageBox('Внимание', 'Неверный пароль', MB_OK, mtWarning);
@@ -1763,7 +1765,7 @@ begin
 
     KassirInfo, ManagerPage:
       begin
-        RestFormState := FPrevFormState;
+        RestFormState := FBaseFromState;
       end;
 
     HallsPage, HallInfo:

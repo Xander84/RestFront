@@ -48,7 +48,7 @@ implementation
 procedure TTouchMessageBox.FormCreate(Sender: TObject);
 begin
   MessageType := MB_OK;
-  pngImage.Picture.Assign(ImgList.PngImages[2].PngImage);
+  pngImage.Picture.Assign(ImgList.PngImages[Integer(mtInformation)].PngImage);
 end;
 
 procedure TTouchMessageBox.SetDlgType(const Value: TMsgDlgType);
