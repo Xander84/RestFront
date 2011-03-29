@@ -72,7 +72,7 @@ object TouchMessageBox: TTouchMessageBox
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clBlack
       Font.Height = -32
-      Font.Name = 'MS Sans Serif'
+      Font.Name = 'Times New Roman'
       Font.Style = [fsBold]
       ParentFont = False
       Transparent = True
