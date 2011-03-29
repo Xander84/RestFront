@@ -158,7 +158,7 @@ begin
       Assert(False, 'Операция не поддерживается');
     end;
   end else
-    Touch_MessageBox('Внимание', 'В системе не установлен фискальный регистратор!', MB_OK);
+    Touch_MessageBox('Внимание', 'В системе не установлен фискальный регистратор!', MB_OK, mtWarning);
 end;
 
 procedure TCashForm.actStartDayUpdate(Sender: TObject);

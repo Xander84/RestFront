@@ -141,7 +141,7 @@ begin
     end;
     FReport.DesignReport;
 
-    if Touch_MessageBox('Внимание', 'Сохранить шаблон?', MB_YESNO) = IDYES then
+    if Touch_MessageBox('Внимание', 'Сохранить шаблон?', MB_YESNO, mtConfirmation) = IDYES then
     begin
       Str.Position := 0;
       Str.Size := 0;
@@ -195,7 +195,7 @@ begin
   PrinterName := FFrontBase.GetPrinterName;
   if PrinterName = '' then
   begin
-    Touch_MessageBox('Внимание', 'Для данной рабочей станции не указан пречековый принтер!', MB_OK);
+    Touch_MessageBox('Внимание', 'Для данной рабочей станции не указан пречековый принтер!', MB_OK, mtWarning);
     exit;
   end;
 
@@ -663,7 +663,7 @@ begin
   PrinterName := FFrontBase.GetPrinterName;
   if PrinterName = '' then
   begin
-    Touch_MessageBox('Внимание', 'Для данной рабочей станции не указан пречековый принтер!', MB_OK);
+    Touch_MessageBox('Внимание', 'Для данной рабочей станции не указан пречековый принтер!', MB_OK, mtWarning);
     exit;
   end;
 

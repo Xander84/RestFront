@@ -540,14 +540,14 @@ begin
       FReadSQL.Transaction.StartTransaction;
 
     FReadSQL.SQL.Text := cst_UserPassword;
-    FReadSQL.ParamBYName('Password').AsString := UserPassword;
+    FReadSQL.ParamByName('Password').AsString := UserPassword;
     FReadSQL.ExecQuery;
     if not FReadSQL.EOF then
       Result := FReadSQL.FieldByName('usr$groupKey').ASInteger;
     FReadSQL.Close;
   except
     on E: Exception do
-      Touch_MessageBox('Внимание', 'Ошибка ' + E.Message, MB_OK);
+      Touch_MessageBox('Внимание', 'Ошибка ' + E.Message, MB_OK, mtError);
   end;
 end;
 
@@ -1032,13 +1032,13 @@ begin
           or (E.IBErrorCode = isc_net_read_err) or (E.IBErrorCode = isc_net_write_err) then
             DoOnDisconnect
         else begin
-          Touch_MessageBox('Внимание', 'Ошибка при сохранении чека ' + E.Message, MB_OK);
+          Touch_MessageBox('Внимание', 'Ошибка при сохранении чека ' + E.Message, MB_OK, mtError);
           FCheckTransaction.Rollback;
         end;
       end;
       on E: Exception do
       begin
-        Touch_MessageBox('Внимание', 'Ошибка при сохранении чека ' + E.Message, MB_OK);
+        Touch_MessageBox('Внимание', 'Ошибка при сохранении чека ' + E.Message, MB_OK, mtError);
         FCheckTransaction.Rollback;
       end;
     end;
@@ -1087,7 +1087,7 @@ begin
     on E: Exception do
     begin
       FCheckSQL.Transaction.Rollback;
-      Touch_MessageBox('Внимание', 'Ошибка ' + E.Message, MB_OK);
+      Touch_MessageBox('Внимание', 'Ошибка ' + E.Message, MB_OK, mtError);
     end;
   end;
 end;
@@ -1218,7 +1218,7 @@ begin
     FReadSQL.Close;
   except
     on E: Exception do
-      Touch_MessageBox('Внимание', 'Ошибка ' + E.Message, MB_OK);
+      Touch_MessageBox('Внимание', 'Ошибка ' + E.Message, MB_OK, mtError);
   end;
 end;
 
@@ -1264,7 +1264,7 @@ begin
     FReadSQL.Close;
   except
     on E: Exception do
-      Touch_MessageBox('Внимание', 'Ошибка ' + E.Message, MB_OK);
+      Touch_MessageBox('Внимание', 'Ошибка ' + E.Message, MB_OK, mtError);
   end;
 end;
 
@@ -1309,7 +1309,7 @@ begin
     FReadSQL.Close;
   except
     on E: Exception do
-      Touch_MessageBox('Внимание', 'Ошибка ' + E.Message, MB_OK);
+      Touch_MessageBox('Внимание', 'Ошибка ' + E.Message, MB_OK, mtError);
   end;
 end;
 
@@ -1341,7 +1341,7 @@ begin
     FReadSQL.Close;
   except
     on E: Exception do
-      Touch_MessageBox('Внимание', 'Ошибка ' + E.Message, MB_OK);
+      Touch_MessageBox('Внимание', 'Ошибка ' + E.Message, MB_OK, mtError);
   end;
 end;
 
@@ -2369,7 +2369,7 @@ begin
       begin
         if FReadSQL.FieldByName('USR$DISABLED').AsInteger = 1 then
         begin
-          Touch_MessageBox('Внимание', 'Данная карта отключена!', MB_OK);
+          Touch_MessageBox('Внимание', 'Данная карта отключена!', MB_OK, mtWarning);
           Result := False;
           exit;
         end;
@@ -2422,7 +2422,7 @@ begin
     until FReadSQL.EOF;
   except
     on E: Exception do
-      Touch_MessageBox('Внимание', 'Ошибка ' + E.Message, MB_OK);
+      Touch_MessageBox('Внимание', 'Ошибка ' + E.Message, MB_OK, mtError);
   end;
 end;
 
@@ -2745,7 +2745,7 @@ begin
     except
       on E: Exception do
       begin
-        Touch_MessageBox('Внимание', 'Ошибка при сохранении лога ' + E.Message, MB_OK);
+        Touch_MessageBox('Внимание', 'Ошибка при сохранении лога ' + E.Message, MB_OK, mtError);
         FCheckTransaction.Rollback;
       end;
     end;
@@ -2825,7 +2825,7 @@ begin
           Result.UserKey := FReadSQL.FieldByName('ID').AsInteger;
           Result.UserInGroup := FReadSQL.FieldByName('InGroup').AsInteger;
         end else
-          Touch_MessageBox('Внимание', 'Введён неверный пароль!', MB_OK);
+          Touch_MessageBox('Внимание', 'Введён неверный пароль!', MB_OK, mtWarning);
       finally
         FReadSQL.Close;
       end;
@@ -2877,7 +2877,7 @@ begin
     except
       on E: Exception do
       begin
-        Touch_MessageBox('Внимание', 'Ошибка при сохранении заказа ' + E.Message, MB_OK);
+        Touch_MessageBox('Внимание', 'Ошибка при сохранении заказа ' + E.Message, MB_OK, mtError);
         FCheckTransaction.Rollback;
       end;
     end;
@@ -2924,7 +2924,7 @@ begin
     except
       on E: Exception do
       begin
-        Touch_MessageBox('Внимание', 'Ошибка при сохранении заказа ' + E.Message, MB_OK);
+        Touch_MessageBox('Внимание', 'Ошибка при сохранении заказа ' + E.Message, MB_OK, mtError);
         FCheckTransaction.Rollback;
       end;
     end;
@@ -2960,7 +2960,7 @@ begin
     except
       on E: Exception do
       begin
-        Touch_MessageBox('Внимание', 'Ошибка при сохранении заказа ' + E.Message, MB_OK);
+        Touch_MessageBox('Внимание', 'Ошибка при сохранении заказа ' + E.Message, MB_OK, mtError);
         FCheckTransaction.Rollback;
       end;
     end;
@@ -3446,7 +3446,7 @@ begin
     Result := True;
   except
     on E: Exception do
-      Touch_MessageBox('Внимание', 'Ошибка ' + E.Message, MB_OK);
+      Touch_MessageBox('Внимание', 'Ошибка ' + E.Message, MB_OK, mtError);
   end;
 end;
 
@@ -3629,7 +3629,7 @@ begin
     except
       on E: Exception do
       begin
-        Touch_MessageBox('Внимание', 'Ошибка при сохранении шаблона ' + E.Message, MB_OK);
+        Touch_MessageBox('Внимание', 'Ошибка при сохранении шаблона ' + E.Message, MB_OK, mtError);
         FCheckTransaction.Rollback;
       end;
     end;
@@ -3688,7 +3688,7 @@ begin
     except
       on E: Exception do
       begin
-        Touch_MessageBox('Внимание', 'Ошибка при сохранении ' + E.Message, MB_OK);
+        Touch_MessageBox('Внимание', 'Ошибка при сохранении ' + E.Message, MB_OK, mtError);
         FCheckTransaction.Rollback;
       end;
     end;
@@ -3739,7 +3739,7 @@ begin
     Result := True;
   except
     on E: Exception do
-      Touch_MessageBox('Внимание', 'Ошибка ' + E.Message, MB_OK);
+      Touch_MessageBox('Внимание', 'Ошибка ' + E.Message, MB_OK, mtError);
   end;
 end;
 
@@ -3780,7 +3780,7 @@ begin
     end;
   except
     on E: Exception do
-      Touch_MessageBox('Внимание', 'Ошибка ' + E.Message, MB_OK);
+      Touch_MessageBox('Внимание', 'Ошибка ' + E.Message, MB_OK, mtError);
   end;
 end;
 
@@ -3812,7 +3812,7 @@ begin
     end;
   except
     on E: Exception do
-      Touch_MessageBox('Внимание', 'Ошибка ' + E.Message, MB_OK);
+      Touch_MessageBox('Внимание', 'Ошибка ' + E.Message, MB_OK, mtError);
   end;
 end;
 
@@ -3954,7 +3954,7 @@ begin
       FReadSQL.ExecQuery;
       if FReadSQL.FieldByName('usr$off').AsInteger = 1 then
       begin
-        Touch_MessageBox('Внимание', 'Кассовый день ' + DateToStr(NewDate) + ' уже закрыт ', MB_OK);
+        Touch_MessageBox('Внимание', 'Кассовый день ' + DateToStr(NewDate) + ' уже закрыт ', MB_OK, mtWarning);
         exit;
       end;
       CanClose := True;
@@ -3962,12 +3962,12 @@ begin
     begin
       CanClose := False;
       NewDate := Date;
-      Touch_MessageBox('Внимание', 'Кассовый день не открыт', MB_OK);
+      Touch_MessageBox('Внимание', 'Кассовый день не открыт', MB_OK, mtWarning);
     end;
 
     if CanClose then
       if Touch_MessageBox('Внимание', 'Хотите закрыть день' + DateToStr(NewDate) + '?',
-        MB_YESNO) = IDYES  then
+        MB_YESNO, mtConfirmation) = IDYES  then
       begin
         FUserInfo := CheckUserPasswordWithForm;
         if FUserInfo.CheckedUserPassword then
@@ -3993,7 +3993,7 @@ begin
               except
                 on E: Exception do
                 begin
-                  Touch_MessageBox('Внимание', 'Ошибка при закрытии дня ' + E.Message, MB_OK);
+                  Touch_MessageBox('Внимание', 'Ошибка при закрытии дня ' + E.Message, MB_OK, mtError);
                   FCheckTransaction.Rollback;
                 end;
               end;
@@ -4003,7 +4003,7 @@ begin
               FUpdateSQL.Free;
             end;
           end else
-            Touch_MessageBox('Внимание', 'Данный пользователь не обладает правами для закрытия дня!', MB_OK);
+            Touch_MessageBox('Внимание', 'Данный пользователь не обладает правами для закрытия дня!', MB_OK, mtWarning);
         end else
           exit;
       end;
@@ -4041,7 +4041,7 @@ begin
       FReadSQL.ExecQuery;
       if (FReadSQL.FieldByName('usr$off').AsInteger = 0) and (FReadSQL.FieldByName('usr$open').AsInteger = 1) then
       begin
-        Touch_MessageBox('Внимание', 'Кассовый день ' + DateToStr(NewDate) + ' не закрыт!', MB_OK);
+        Touch_MessageBox('Внимание', 'Кассовый день ' + DateToStr(NewDate) + ' не закрыт!', MB_OK, mtWarning);
         exit;
       end;
       NewDate := NewDate + 1;
@@ -4051,7 +4051,7 @@ begin
     end;
 
     if Touch_MessageBox('Внимание', 'Хотите открыть день' + DateToStr(NewDate) + '?',
-      MB_YESNO) = IDYES then
+      MB_YESNO, mtConfirmation) = IDYES then
     begin
       FUserInfo := CheckUserPasswordWithForm;
       if FUserInfo.CheckedUserPassword then
@@ -4077,7 +4077,7 @@ begin
             except
               on E: Exception do
               begin
-                Touch_MessageBox('Внимание', 'Ошибка при закрытии дня ' + E.Message, MB_OK);
+                Touch_MessageBox('Внимание', 'Ошибка при закрытии дня ' + E.Message, MB_OK, mtError);
                 FCheckTransaction.Rollback;
               end;
             end;
@@ -4087,7 +4087,7 @@ begin
             FUpdateSQL.Free;
           end;
         end else
-          Touch_MessageBox('Внимание', 'Данный пользователь не обладает правами для открытия дня!', MB_OK);
+          Touch_MessageBox('Внимание', 'Данный пользователь не обладает правами для открытия дня!', MB_OK, mtWarning);
       end else
         exit;
     end;
@@ -4335,7 +4335,7 @@ begin
     FReadSQL.Close;
   except
     on E: Exception do
-      Touch_MessageBox('Внимание', 'Ошибка при загрузке настроек ' + E.Message, MB_OK);
+      Touch_MessageBox('Внимание', 'Ошибка при загрузке настроек ' + E.Message, MB_OK, mtError);
   end;
 end;
 
@@ -4355,7 +4355,7 @@ begin
     FReadSQL.Close;
   except
     on E: Exception do
-      Touch_MessageBox('Внимание', 'Ошибка ' + E.Message, MB_OK);
+      Touch_MessageBox('Внимание', 'Ошибка ' + E.Message, MB_OK, mtError);
   end;
 end;
 
@@ -4387,7 +4387,7 @@ begin
     FReadSQL.Close;
   except
     on E: Exception do
-      Touch_MessageBox('Внимание', 'Ошибка ' + E.Message, MB_OK);
+      Touch_MessageBox('Внимание', 'Ошибка ' + E.Message, MB_OK, mtError);
   end;
 end;
 
@@ -4475,7 +4475,7 @@ begin
         end;
       except
         Touch_MessageBox('Внимание', 'Невозможно получить доступ к учетной записи пользователя.'#13#10 +
-          'Возможно пароль администратора базы данных введен неверно.', MB_OK);
+          'Возможно пароль администратора базы данных введен неверно.', MB_OK, mtError);
       end;
     finally
       IBSS.Free;

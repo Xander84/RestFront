@@ -233,12 +233,12 @@ begin
           FBaseDisplay.Init;
         except
           on E: Exception do
-           Touch_MessageBox('Внимание', 'Ошибка инициализации дисплея покупателя ' + E.Message, MB_OK);
+           Touch_MessageBox('Внимание', 'Ошибка инициализации дисплея покупателя ' + E.Message, MB_OK, mtError);
         end;
       end;
 
     else
-      Touch_MessageBox('Внимание', 'Данный тип дисплея не поддерживается', MB_OK);
+      Touch_MessageBox('Внимание', 'Данный тип дисплея не поддерживается', MB_OK, mtError);
     end;
   end;
 end;

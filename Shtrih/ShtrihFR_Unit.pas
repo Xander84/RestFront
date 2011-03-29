@@ -43,7 +43,8 @@ type
 
 implementation
 
-uses SysUtils, Math, DevideForm_Unit, Controls;
+uses
+  SysUtils, Math, DevideForm_Unit, Controls, Dialogs;
 
 { TShtrihFR }
 
@@ -58,7 +59,7 @@ begin
   try
     inherited Create(AOwner);
   except
-    Touch_MessageBox('Внимание', 'Не установлен драйвер для ФР ''Штрих ФР''!', MB_OK);
+    Touch_MessageBox('Внимание', 'Не установлен драйвер для ФР ''Штрих ФР''!', MB_OK, mtError);
     FDriverInit := False;
   end;
   IsInit := False;
@@ -83,7 +84,7 @@ begin
   if Err <> 0 then
   begin
     ErrStr := WideCharToString(PWideChar(ResultCodeDescription));
-    Touch_MessageBox('Внимание', ErrStr, MB_OK);
+    Touch_MessageBox('Внимание', ErrStr, MB_OK, mtWarning);
   end;
 end;
 
@@ -330,7 +331,7 @@ begin
   Result := False;
   if FDriverInit then
   begin
-    if Touch_MessageBox('Внимание', 'Вы действительно хотите снять отчет X1?', MB_YESNO) = IDYES then
+    if Touch_MessageBox('Внимание', 'Вы действительно хотите снять отчет X1?', MB_YESNO, mtConfirmation) = IDYES then
     begin
       PrintReportWithoutCleaning;
       if ResultCode = 0 then
@@ -344,7 +345,7 @@ end;
 function TShtrihFR.PrintX2ReportWithOutCleaning: Boolean;
 begin
   Result := False;
-  Touch_MessageBox('Внимание', 'Данный вид отчёта не поддерживается', MB_OK);
+  Touch_MessageBox('Внимание', 'Данный вид отчёта не поддерживается', MB_OK, mtError);
 end;
 
 function TShtrihFR.PrintZ1ReportWithCleaning: Boolean;
@@ -353,7 +354,7 @@ begin
   if FDriverInit then
   begin
     if Touch_MessageBox('Внимание',
-      'Вы действительно хотите снять отчет с гашением Z1?', MB_YESNO) = IDYES then
+      'Вы действительно хотите снять отчет с гашением Z1?', MB_YESNO, mtConfirmation) = IDYES then
     begin
       PrintReportWithCleaning;
       if ResultCode = 0 then
@@ -367,7 +368,7 @@ end;
 function TShtrihFR.PrintZ2ReportWithCleaning: Boolean;
 begin
   Result := False;
-  Touch_MessageBox('Внимание', 'Данный вид отчёта не поддерживается', MB_OK);
+  Touch_MessageBox('Внимание', 'Данный вид отчёта не поддерживается', MB_OK, mtError);
 end;
 
 procedure TShtrihFR.SetFrontBase(const Value: TFrontBase);

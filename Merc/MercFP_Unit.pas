@@ -113,7 +113,7 @@ type
 implementation
 
 uses
-  SysUtils, Math, DevideForm_Unit, Controls, TouchMessageBoxForm_Unit;
+  SysUtils, Math, DevideForm_Unit, Controls, TouchMessageBoxForm_Unit, Dialogs;
 
 { TMercuryRegister }
 
@@ -223,7 +223,7 @@ begin
         if not CheckDeviceInfo then
         begin
           if FLastWarning <> '' then
-            Touch_MessageBox('Внимание', FLastWarning, MB_OK);
+            Touch_MessageBox('Внимание', FLastWarning, MB_OK, mtWarning);
           exit;
         end;
 
@@ -317,7 +317,7 @@ begin
     end;
 
   end else
-    Touch_MessageBox('Внимание', 'Не установлен драйвер для ФР!', MB_OK);
+    Touch_MessageBox('Внимание', 'Не установлен драйвер для ФР!', MB_OK, mtError);
 end;
 
 function TMercuryRegister.PrintX1ReportWithOutCleaning: Boolean;
@@ -340,7 +340,7 @@ end;
 function TMercuryRegister.PrintX2ReportWithOutCleaning: Boolean;
 begin
   Result := False;
-  Touch_MessageBox('Внимание', 'Данный вид отчёта не поддерживается', MB_OK);
+  Touch_MessageBox('Внимание', 'Данный вид отчёта не поддерживается', MB_OK, mtError);
 end;
 
 function TMercuryRegister.PrintZ1ReportWithCleaning: Boolean;
@@ -363,7 +363,7 @@ end;
 function TMercuryRegister.PrintZ2ReportWithCleaning: Boolean;
 begin
   Result := False;
-  Touch_MessageBox('Внимание', 'Данный вид отчёта не поддерживается', MB_OK);
+  Touch_MessageBox('Внимание', 'Данный вид отчёта не поддерживается', MB_OK, mtError);
 end;
 
 procedure TMercuryRegister.SetFrontBase(const Value: TFrontBase);
@@ -383,7 +383,7 @@ begin
     FLastWarning := '';
     FIV := 1;
   except
-    Touch_MessageBox('Внимание', 'Не установлен драйвер для ФР!', MB_OK);
+    Touch_MessageBox('Внимание', 'Не установлен драйвер для ФР!', MB_OK, mtError);
     FDriverInit := False;
     FLastErrorNumber := -1;
     FLastErrorDescription := 'Не удалось создать СОМ-объект для работы с ФР';
@@ -461,7 +461,7 @@ end;
 procedure TMercuryRegister.ShowLastError;
 begin
   if FLastErrorNumber <> 0 then
-    Touch_MessageBox('Внимание', FLastErrorDescription, MB_OK);
+    Touch_MessageBox('Внимание', FLastErrorDescription, MB_OK, mtWarning);
 end;
 
 function TMercuryRegister.OpenCheck(const CheckType: Integer): Boolean;

@@ -335,33 +335,33 @@ var
 begin
   if (lblChange.Caption = '') or (FChange < 0) then
   begin
-    Touch_MessageBox('Внимание', 'Сумма оплаты меньше суммы чека!', MB_OK);
+    Touch_MessageBox('Внимание', 'Сумма оплаты меньше суммы чека!', MB_OK, mtWarning);
     exit;
   end;
   if (FChange > 0) and (FSumToPay = 0) then
   begin
-    Touch_MessageBox('Внимание', 'Сумма оплаты больше суммы чека!', MB_OK);
+    Touch_MessageBox('Внимание', 'Сумма оплаты больше суммы чека!', MB_OK, mtWarning);
     exit;
   end;
   if (-FChange >= cn_maxpay) then
   begin
-    Touch_MessageBox('Внимание', 'Неверная сумма оплаты!', MB_OK);
+    Touch_MessageBox('Внимание', 'Неверная сумма оплаты!', MB_OK, mtWarning);
     exit;
   end;
   CalcSums;
   if ((FSums.FCardSum + FSums.FCreditSum) > FSumToPay) or (FSums.FPersonalCardSum > FSumToPay) then
   begin
-    Touch_MessageBox('Внимание', 'Сумма оплаты по безналичному расчету превышает сумму чека!', MB_OK);
+    Touch_MessageBox('Внимание', 'Сумма оплаты по безналичному расчету превышает сумму чека!', MB_OK, mtWarning);
     exit;
   end;
   if ((FSums.FPersonalCardSum > 0) and ((FSums.FCardSum + FSums.FCreditSum + FSums.FCreditSum) > 0)) then
   begin
-    Touch_MessageBox('Внимание', 'Не может быть смешанной оплаты при оплате персональной карточкой!', MB_OK);
+    Touch_MessageBox('Внимание', 'Не может быть смешанной оплаты при оплате персональной карточкой!', MB_OK, mtWarning);
     exit;
   end;
   if not FIsValidPayment then
   begin
-    Touch_MessageBox('Внимание', 'Не может быть комбинации фискальной и не фискальной оплаты!', MB_OK);
+    Touch_MessageBox('Внимание', 'Не может быть комбинации фискальной и не фискальной оплаты!', MB_OK, mtWarning);
     exit;
   end;
   FSums.FChangeSum := FChange;
@@ -400,7 +400,7 @@ begin
         FInBrowse := False;
       end;
     end else
-      Touch_MessageBox('Внимание', 'Для данной рабочей станции не указан кассовый терминал!', MB_OK);
+      Touch_MessageBox('Внимание', 'Для данной рабочей станции не указан кассовый терминал!', MB_OK, mtWarning);
   finally
     FPrinting := False;
     TouchKeyBoard.OnKeyClick := Ev;

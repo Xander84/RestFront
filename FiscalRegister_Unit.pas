@@ -75,11 +75,11 @@ begin
 
   if FFrontBase.IsMainCash then
   begin
-    if Touch_MessageBox('Внимание',  'Закрыть день?', MB_YESNO) = IDYES then
+    if Touch_MessageBox('Внимание',  'Закрыть день?', MB_YESNO, mtConfirmation) = IDYES then
       FFrontBase.CanCloseDay;
 
   end else
-    Touch_MessageBox('Внимание', 'Закрыть день можно только на главной кассе', MB_OK);
+    Touch_MessageBox('Внимание', 'Закрыть день можно только на главной кассе', MB_OK, mtWarning);
 end;
 
 procedure TFiscalRegister.EndSession;
@@ -187,11 +187,11 @@ begin
 
   if FFrontBase.IsMainCash then
   begin
-    if Touch_MessageBox('Внимание',  'Открыть день?', MB_YESNO) = IDYES then
+    if Touch_MessageBox('Внимание',  'Открыть день?', MB_YESNO, mtConfirmation) = IDYES then
       FFrontBase.CanOpenDay;
 
   end else
-    Touch_MessageBox('Внимание', 'Открыть день можно только на главной кассе', MB_OK);
+    Touch_MessageBox('Внимание', 'Открыть день можно только на главной кассе', MB_OK, mtWarning);
 end;
 
 procedure TFiscalRegister.StartSession;

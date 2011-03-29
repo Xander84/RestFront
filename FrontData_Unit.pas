@@ -27,6 +27,7 @@ type
     function GetUserApplicationFileName(const AFile: TApplicationFile): String;
     function GetDefaultTheme: TTMSStyle;
   public
+
     property PanelColor: TColor read FPanelColor write FPanelColor;
     property PanelColorTo: TColor read FPanelColorTo write FPanelColorTo;
     property BaseQueryList: TgsQueryList read FQueryList write FQueryList;
@@ -123,6 +124,7 @@ begin
     begin
       Columns[I].Font.Size := 12;
       Columns[I].Font.Name := cn_FontType;
+      Columns[I].Font.Style := [fsBold];
       Columns[I].HeaderFont.Size := 12;
       Columns[I].ShowBands := True;
     end;
@@ -139,9 +141,9 @@ var
     IDI_ASTERISK, IDI_QUESTION, nil);
 
 procedure TFrontData.DataModuleCreate(Sender: TObject);
-var
+{var
   IconID: PChar;
-  FPicture: TPicture;
+  FPicture: TPicture;     }
 begin
   cn_Height := Screen.Height;
   cn_Width := Screen.Width;
@@ -155,7 +157,7 @@ begin
   FPanelColorTo := FrontPanelStyler.Settings.ColorTo;
 
   //загрузим стандартные иконки
-  FPicture := TPicture.Create;
+{  FPicture := TPicture.Create;
   try
     IconID := IconIDs[mtWarning];
     if IconID <> nil then
@@ -194,7 +196,7 @@ begin
       end;
   finally
     FPicture.Free;
-  end;
+  end;    }
 end;
 
 function TFrontData.CheckUserDataDirectory: Boolean;

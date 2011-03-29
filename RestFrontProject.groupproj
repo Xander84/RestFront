@@ -30,6 +30,12 @@
 			<Projects Include="Components\Designer\Designer.dproj">
 				<Dependencies/>
 			</Projects>
+			<Projects Include="Components\PNGcomp_D2009_D2010\Packages\D2010\PngComponents.dproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="Components\PNGcomp_D2009_D2010\Packages\D2010\PngComponentsDesign.dproj">
+				<Dependencies/>
+			</Projects>
 		</ItemGroup>
 		<ProjectExtensions>
 			<Borland.Personality>Default.Personality.12</Borland.Personality>
@@ -119,14 +125,32 @@
 		<Target Name="Designer:Make">
 			<MSBuild Targets="Make" Projects="Components\Designer\Designer.dproj"/>
 		</Target>
+		<Target Name="PngComponents">
+			<MSBuild Projects="Components\PNGcomp_D2009_D2010\Packages\D2010\PngComponents.dproj"/>
+		</Target>
+		<Target Name="PngComponents:Clean">
+			<MSBuild Targets="Clean" Projects="Components\PNGcomp_D2009_D2010\Packages\D2010\PngComponents.dproj"/>
+		</Target>
+		<Target Name="PngComponents:Make">
+			<MSBuild Targets="Make" Projects="Components\PNGcomp_D2009_D2010\Packages\D2010\PngComponents.dproj"/>
+		</Target>
+		<Target Name="PngComponentsDesign">
+			<MSBuild Projects="Components\PNGcomp_D2009_D2010\Packages\D2010\PngComponentsDesign.dproj"/>
+		</Target>
+		<Target Name="PngComponentsDesign:Clean">
+			<MSBuild Targets="Clean" Projects="Components\PNGcomp_D2009_D2010\Packages\D2010\PngComponentsDesign.dproj"/>
+		</Target>
+		<Target Name="PngComponentsDesign:Make">
+			<MSBuild Targets="Make" Projects="Components\PNGcomp_D2009_D2010\Packages\D2010\PngComponentsDesign.dproj"/>
+		</Target>
 		<Target Name="Build">
-			<CallTarget Targets="RestFront;tmsd2010;tmsded2010;tmsexd2010;kbmMemRunD2010Std;kbmMemDesD2010Std;EhLib120;DclEhLib120;Designer"/>
+			<CallTarget Targets="RestFront;tmsd2010;tmsded2010;tmsexd2010;kbmMemRunD2010Std;kbmMemDesD2010Std;EhLib120;DclEhLib120;Designer;PngComponents;PngComponentsDesign"/>
 		</Target>
 		<Target Name="Clean">
-			<CallTarget Targets="RestFront:Clean;tmsd2010:Clean;tmsded2010:Clean;tmsexd2010:Clean;kbmMemRunD2010Std:Clean;kbmMemDesD2010Std:Clean;EhLib120:Clean;DclEhLib120:Clean;Designer:Clean"/>
+			<CallTarget Targets="RestFront:Clean;tmsd2010:Clean;tmsded2010:Clean;tmsexd2010:Clean;kbmMemRunD2010Std:Clean;kbmMemDesD2010Std:Clean;EhLib120:Clean;DclEhLib120:Clean;Designer:Clean;PngComponents:Clean;PngComponentsDesign:Clean"/>
 		</Target>
 		<Target Name="Make">
-			<CallTarget Targets="RestFront:Make;tmsd2010:Make;tmsded2010:Make;tmsexd2010:Make;kbmMemRunD2010Std:Make;kbmMemDesD2010Std:Make;EhLib120:Make;DclEhLib120:Make;Designer:Make"/>
+			<CallTarget Targets="RestFront:Make;tmsd2010:Make;tmsded2010:Make;tmsexd2010:Make;kbmMemRunD2010Std:Make;kbmMemDesD2010Std:Make;EhLib120:Make;DclEhLib120:Make;Designer:Make;PngComponents:Make;PngComponentsDesign:Make"/>
 		</Target>
 		<Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 	</Project>

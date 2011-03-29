@@ -475,7 +475,7 @@ begin
       RestFormState := OrderMenu;
   end else
   begin
-    Touch_MessageBox('Внимание', 'Неверный пароль', MB_OK);
+    Touch_MessageBox('Внимание', 'Неверный пароль', MB_OK, mtWarning);
     if edPassword.CanFocus then
       edPassword.SetFocus;
     FLogManager.DoSimpleEvent(ev_invalidPass);
@@ -526,9 +526,9 @@ begin
     on E: Exception do
     begin
       if (E is EIBClientError) and (EIBClientError(E).SQLCode = Ord(ibxeDatabaseNameMissing)) then
-        Touch_MessageBox('Внимание', 'Путь к базе данных указан неверно', MB_OK)
+        Touch_MessageBox('Внимание', 'Путь к базе данных указан неверно', MB_OK, mtError)
       else
-        Touch_MessageBox('Внимание', 'Ошибка при подключении ' + E.Message, MB_OK);
+        Touch_MessageBox('Внимание', 'Ошибка при подключении ' + E.Message, MB_OK, mtError);
       FFrontBase.Free;
       Application.Terminate;
     end;
@@ -1144,7 +1144,7 @@ begin
   begin
     if FFrontBase.CheckCountOrderByResp(FFrontBase.ContactKey) then
     begin
-      Touch_MessageBox('Внимание', 'Превышено максимально возможное число открытых заказов!', MB_OK);
+      Touch_MessageBox('Внимание', 'Превышено максимально возможное число открытых заказов!', MB_OK, mtWarning);
       exit;
     end;
   end;
@@ -1212,7 +1212,7 @@ begin
   begin
     if FFrontBase.CheckCountOrderByResp(FFrontBase.ContactKey) then
     begin
-      Touch_MessageBox('Внимание', 'Превышено максимально возможное число открытых заказов!', MB_OK);
+      Touch_MessageBox('Внимание', 'Превышено максимально возможное число открытых заказов!', MB_OK, mtWarning);
       exit;
     end;
   end;
@@ -1389,12 +1389,12 @@ var
 begin
   if not FHeaderTable.FieldByName('usr$timecloseorder').IsNull then
   begin
-    Touch_MessageBox('Внимание', 'По данному заказу пречек уже был распечатан!', MB_OK);
+    Touch_MessageBox('Внимание', 'По данному заказу пречек уже был распечатан!', MB_OK, mtWarning);
     exit;
   end;
   if FViewMode then
   begin
-    Touch_MessageBox('Внимание', 'Из формы оплаты нельзя добавлять товар!', MB_OK);
+    Touch_MessageBox('Внимание', 'Из формы оплаты нельзя добавлять товар!', MB_OK, mtWarning);
     exit;
   end;
 
@@ -1599,17 +1599,17 @@ begin
     begin
       if (FFrontBase.GetLocalComputerName <> FOrderDataSet.FieldByName('USR$COMPUTERNAME').AsString) then
       begin
-        Touch_MessageBox('Внимание', 'Заказ редактируется на другом рабочем месте!', MB_OK);
+        Touch_MessageBox('Внимание', 'Заказ редактируется на другом рабочем месте!', MB_OK, mtWarning);
         exit;
       end else
-      if Touch_MessageBox('Внимание', 'Заказ редактируется. Продолжить?', MB_YESNO) = IDYES then
+      if Touch_MessageBox('Внимание', 'Заказ редактируется. Продолжить?', MB_YESNO, mtConfirmation) = IDYES then
       begin
         FUserInfo := FFrontBase.CheckUserPasswordWithForm;
         if FUserInfo.CheckedUserPassword then
         begin
           if (FUserInfo.UserInGroup and FFrontBase.Options.ManagerGroupMask) = 0 then
           begin
-            Touch_MessageBox('Внимание', cn_dontManagerPermission, MB_OK);
+            Touch_MessageBox('Внимание', cn_dontManagerPermission, MB_OK, mtWarning);
             exit;
           end;
         end else
@@ -1683,7 +1683,7 @@ begin
 
     HallInfo:
       begin
-        if Touch_MessageBox('Внимание', 'Сохранить изменения?', MB_YESNO) = IDYES then
+        if Touch_MessageBox('Внимание', 'Сохранить изменения?', MB_YESNO, mtConfirmation) = IDYES then
         begin
           SaveTablePositions;
           RemoveHallButton;
@@ -1710,7 +1710,7 @@ begin
     MenuInfo:
       begin
         //сохраняем чек
-        if Touch_MessageBox('Внимание', 'Закрыть заказ?', MB_YESNO) = IDYES then
+        if Touch_MessageBox('Внимание', 'Закрыть заказ?', MB_YESNO, mtConfirmation) = IDYES then
         begin
           DBGrMain.DataSource := nil;
           try
@@ -1791,7 +1791,7 @@ begin
 
     MenuInfo:
       begin
-        if FPayed or (Touch_MessageBox('Внимание', 'Выйти из заказа?', MB_YESNO) = IDYES) then
+        if FPayed or (Touch_MessageBox('Внимание', 'Выйти из заказа?', MB_YESNO, mtConfirmation) = IDYES) then
         begin
           if not FHeaderTable.IsEmpty then
           begin
@@ -1897,7 +1897,7 @@ begin
       begin
         if (FUserInfo.UserInGroup and FFrontBase.Options.ManagerGroupMask) = 0 then
         begin
-          Touch_MessageBox('Внимание', cn_dontManagerPermission, MB_OK);
+          Touch_MessageBox('Внимание', cn_dontManagerPermission, MB_OK, mtWarning);
           exit;
         end;
 
@@ -1950,7 +1950,7 @@ begin
       begin
         if (FUserInfo.UserInGroup and FFrontBase.Options.ManagerGroupMask) = 0 then
         begin
-          Touch_MessageBox('Внимание', cn_dontManagerPermission, MB_OK);
+          Touch_MessageBox('Внимание', cn_dontManagerPermission, MB_OK, mtWarning);
           exit;
         end;
         FDeleteForm := TDeleteOrderLine.CreateWithFrontBase(nil, FFrontBase);
@@ -2074,7 +2074,7 @@ begin
   begin
     if (FUserInfo.UserInGroup and FFrontBase.Options.ManagerGroupMask) = 0 then
     begin
-      Touch_MessageBox('Внимание', cn_dontManagerPermission, MB_OK);
+      Touch_MessageBox('Внимание', cn_dontManagerPermission, MB_OK, mtWarning);
       exit;
     end;
     FLogManager.DoOrderLog(GetUserInfo(FUserInfo), GetCurrentOrderInfo, ev_DevideOrder);
@@ -2116,7 +2116,7 @@ begin
     end;
     FLogManager.DoOrderLog(GetCurrentUserInfo, GetCurrentOrderInfo, ev_PrintPreCheck);
   end else
-    Touch_MessageBox('Внимание', 'Пречек уже был распечатан!', MB_OK);
+    Touch_MessageBox('Внимание', 'Пречек уже был распечатан!', MB_OK, mtWarning);
 end;
 
 procedure TRestMainForm.actCancelPreCheckExecute(Sender: TObject);
@@ -2129,7 +2129,7 @@ begin
     if (FUserInfo.UserInGroup and FFrontBase.Options.ManagerGroupMask) <> 0 then
     begin
       if FFrontBase.OrderIsPayed(FHeaderTable.FieldByName('ID').AsInteger) then
-        Touch_MessageBox('Внимание', 'Этот заказ уже был оплачен', MB_OK)
+        Touch_MessageBox('Внимание', 'Этот заказ уже был оплачен', MB_OK, mtWarning)
       else begin
         FHeaderTable.Edit;
         FHeaderTable.FieldByName('usr$timecloseorder').Clear;
@@ -2143,7 +2143,7 @@ begin
 
       FLogManager.DoOrderLog(GetUserInfo(FUserInfo), GetCurrentOrderInfo, ev_CancelPreCheck);
     end else
-      Touch_MessageBox('Внимание', cn_dontManagerPermission, MB_OK);
+      Touch_MessageBox('Внимание', cn_dontManagerPermission, MB_OK, mtWarning);
   end;
 end;
 
@@ -2213,7 +2213,7 @@ begin
         end;
       end
       else begin
-        Touch_MessageBox('Внимание', cn_dontManagerPermission, MB_OK);
+        Touch_MessageBox('Внимание', cn_dontManagerPermission, MB_OK, mtWarning);
         exit;
       end;
     end;
@@ -2305,7 +2305,7 @@ begin
       FForm.Free;
     end;
   end else
-    Touch_MessageBox('Внимание', 'Для данной рабочей станции не указан кассовый терминал!', MB_OK);
+    Touch_MessageBox('Внимание', 'Для данной рабочей станции не указан кассовый терминал!', MB_OK, mtWarning);
 end;
 
 procedure TRestMainForm.SetFormState(const Value: TRestState);
@@ -3083,9 +3083,9 @@ begin
               on E: Exception do
               begin
                 if E is EConvertError then
-                  Touch_MessageBox('Внимание', 'Введено неверное число', MB_OK)
+                  Touch_MessageBox('Внимание', 'Введено неверное число', MB_OK, mtWarning)
                 else
-                  Touch_MessageBox('Внимание', 'Ошибка ' + E.Message, MB_OK);
+                  Touch_MessageBox('Внимание', 'Ошибка ' + E.Message, MB_OK, mtError);
               end;
             end;
           end;
@@ -3329,17 +3329,17 @@ begin
     begin
       if FFrontBase.GetLocalComputerName <> FRestTable.ComputerName then
       begin
-        Touch_MessageBox('Внимание', 'Заказ редактируется на другом рабочем месте!', MB_OK);
+        Touch_MessageBox('Внимание', 'Заказ редактируется на другом рабочем месте!', MB_OK, mtWarning);
         exit;
       end else
-      if Touch_MessageBox('Внимание', 'Заказ редактируется. Продолжить?', MB_YESNO) = IDYES then
+      if Touch_MessageBox('Внимание', 'Заказ редактируется. Продолжить?', MB_YESNO, mtConfirmation) = IDYES then
       begin
         FUserInfo := FFrontBase.CheckUserPasswordWithForm;
         if FUserInfo.CheckedUserPassword then
         begin
           if (FUserInfo.UserInGroup and FFrontBase.Options.ManagerGroupMask) = 0 then
           begin
-            Touch_MessageBox('Внимание', cn_dontManagerPermission, MB_OK);
+            Touch_MessageBox('Внимание', cn_dontManagerPermission, MB_OK, mtWarning);
             exit;
           end;
         end else
@@ -3351,7 +3351,7 @@ begin
     if FRestTable.RespKey <> FFrontBase.ContactKey then
       if (FFrontBase.UserKey and FFrontBase.Options.ManagerGroupMask) = 0 then
       begin
-        Touch_MessageBox('Внимание', cn_dontManagerPermission, MB_OK);
+        Touch_MessageBox('Внимание', cn_dontManagerPermission, MB_OK, mtWarning);
         exit;
       end;
 
@@ -3392,7 +3392,7 @@ begin
     FButton.Tag := 1;
     if (tablePopupMenu.Items.Count = 0) and (FButton.OrderList.Count > 0) then
       Touch_MessageBox('Внимание', 'Стол занят ' +
-        FFrontBase.GetNameWaiterOnID(FButton.RespKey, True, False), MB_OK);
+        FFrontBase.GetNameWaiterOnID(FButton.RespKey, True, False), MB_OK, mtWarning);
     exit;
   end;
 
@@ -3466,7 +3466,7 @@ begin
 
   if (tablePopupMenu.Items.Count = 0) and (FButton.OrderList.Count > 0) then
     Touch_MessageBox('Внимание', 'Стол занят ' +
-      FFrontBase.GetNameWaiterOnID(FButton.RespKey, True, False), MB_OK);
+      FFrontBase.GetNameWaiterOnID(FButton.RespKey, True, False), MB_OK, mtWarning);
 end;
 
 procedure TRestMainForm.tmrCloseTimer(Sender: TObject);
@@ -3554,11 +3554,11 @@ begin
   begin
     if (FUserInfo.UserInGroup and FFrontBase.Options.ManagerGroupMask) = 0 then
     begin
-      Touch_MessageBox('Внимание', cn_dontManagerPermission, MB_OK);
+      Touch_MessageBox('Внимание', cn_dontManagerPermission, MB_OK, mtWarning);
       exit;
     end;
 
-    if Touch_MessageBox('Внимание', 'Выключить рабочую станцию?', MB_YESNO) = IDYES then
+    if Touch_MessageBox('Внимание', 'Выключить рабочую станцию?', MB_YESNO, mtConfirmation) = IDYES then
     begin
       if cn_ShutDownOnExit then
         Windows.ExitWindows(0, 0)
@@ -3577,11 +3577,11 @@ begin
   begin
     if (FUserInfo.UserInGroup and FFrontBase.Options.ManagerGroupMask) = 0 then
     begin
-      Touch_MessageBox('Внимание', cn_dontManagerPermission, MB_OK);
+      Touch_MessageBox('Внимание', cn_dontManagerPermission, MB_OK, mtWarning);
       exit;
     end;
     {$IFDEF MSWINDOWS}
-    if Touch_MessageBox('Внимание', 'Перезапустить приложение?', MB_YESNO) = IDYES then
+    if Touch_MessageBox('Внимание', 'Перезапустить приложение?', MB_YESNO, mtConfirmation) = IDYES then
     begin
       Application.Terminate;
       WinExec32(CmdLine, 1);
@@ -3669,7 +3669,7 @@ begin
   begin
     if (FUserInfo.UserInGroup and FFrontBase.Options.ManagerGroupMask) = 0 then
     begin
-      Touch_MessageBox('Внимание', cn_dontManagerPermission, MB_OK);
+      Touch_MessageBox('Внимание', cn_dontManagerPermission, MB_OK, mtWarning);
       exit;
     end;
     FForm := TAdminForm.Create(Self);

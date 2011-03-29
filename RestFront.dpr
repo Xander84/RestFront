@@ -72,7 +72,7 @@ begin
     Application.Initialize;
     Application.Title := 'Ресторан';
     Application.CreateForm(TFrontData, FrontData);
-    Application.CreateForm(TRestMainForm, RestMainForm);
+    Application.CreateForm(TRestMainForm, RestMainForm);;
     Application.Run;
   finally
     ApplicationEventsHandler.Free;

@@ -1,41 +1,60 @@
 ﻿[Closed Files]
-File_0=TSourceModule,'D:\Front\FrontSVN\FiscalRegister_Unit.pas',0,1,168,96,190,0,0,,
-File_1=TSourceModule,'c:\program files (x86)\embarcadero\rad studio\7.0\source\Win32\rtl\win\Windows.pas',0,1,23690,11,23711,0,0,,
-File_2=TSourceModule,'D:\Front\FrontSVN\Shtrih\ShtrihFR_Unit.pas',0,1,1,123,356,0,0,,
-File_3=TSourceModule,'D:\Front\Source\TMS\TaskDialog.pas',0,1,1,1,19,0,0,,
-File_4=TSourceModule,'c:\program files (x86)\embarcadero\rad studio\7.0\SOURCE\WIN32\VCL\Buttons.pas',0,1,1,1,9,0,0,,
-File_5=TSourceModule,'c:\program files (x86)\embarcadero\rad studio\7.0\SOURCE\WIN32\VCL\Dialogs.pas',0,1,1033,24,1055,0,0,,
-File_6=TSourceModule,'c:\program files (x86)\embarcadero\rad studio\7.0\SOURCE\WIN32\IBX\IBSQL.pas',0,1,2497,1,2513,0,0,,
-File_7=TSourceModule,'c:\program files (x86)\embarcadero\rad studio\7.0\SOURCE\WIN32\RTL\SYS\System.pas',0,1,1,1,11,0,0,,
-File_8=TSourceModule,'c:\program files (x86)\embarcadero\rad studio\7.0\source\Win32\rtl\common\Generics.Collections.pas',0,1,1447,1,1463,0,0,,
-File_9=TSourceModule,'c:\program files (x86)\embarcadero\rad studio\7.0\source\Win32\rtl\win\CommCtrl.pas',0,1,1,14,18,0,0,,
-File_10=TSourceModule,'c:\program files (x86)\embarcadero\rad studio\7.0\SOURCE\WIN32\IBX\IB.pas',0,1,389,1,405,0,0,,
-File_11=TSourceModule,'D:\Front\Source\TMS\DBAdvCardList.pas',0,1,868,1,884,0,0,,{0
-File_12=TSourceModule,'D:\Front\Source\Components\kbmMemTable\Source\kbmMemTable.pas',0,1,14320,1,14336,0,0,,
-File_13=TSourceModule,'c:\program files (x86)\embarcadero\rad studio\7.0\source\Win32\db\DB.pas',0,1,12766,1,12782,0,0,,
-File_14=TSourceModule,'D:\Front\Source\TMS\XlsAdapter\tmsUXlsPictures.pas',0,1,306,21,313,0,0,,
+File_0=TSourceModule,'D:\Front\Source\BaseFrontForm_Unit.pas',0,1,1,28,20,0,0,,
+File_1=TSourceModule,'c:\program files (x86)\embarcadero\rad studio\7.0\source\Win32\rtl\common\Classes.pas',0,1,4215,52,4234,0,0,,
+File_2=TSourceModule,'D:\Front\Source\TMS\advpanel.pas',0,1,2793,1,2809,0,0,,
+File_3=TSourceModule,'D:\Front\Source\TMS\GDIPPictureContainer.pas',0,1,262,65,278,0,0,,
+File_4=TSourceModule,'c:\program files (x86)\embarcadero\rad studio\7.0\SOURCE\WIN32\VCL\ImgList.pas',0,1,537,1,566,0,0,,
+File_5=TSourceModule,'D:\Front\Source\Components\RestTable_Unit.pas',0,1,151,12,120,0,0,,
+File_6=TSourceModule,'D:\Front\Source\TMS\AdvSmoothButton.pas',0,1,184,48,198,0,0,,
+File_7=TSourceModule,'c:\program files (x86)\embarcadero\rad studio\7.0\SOURCE\WIN32\VCL\Graphics.pas',0,1,840,1,862,0,0,,
+File_8=TSourceModule,'D:\Front\Source\TMS\HTMLENGO.PAS',0,1,2104,1,2134,0,0,,
+File_9=TSourceModule,'D:\Front\Source\TouchMessageBoxForm_Unit.dfm',0,1,1,1,1,0,0,,
+File_10=TSourceModule,'c:\program files (x86)\embarcadero\rad studio\7.0\SOURCE\WIN32\VCL\Forms.pas',0,1,3188,1,3209,0,0,,
+File_11=TSourceModule,'D:\Front\Source\CashForm_Unit.pas',0,1,1,141,161,0,0,,
+File_12=TSourceModule,'D:\Front\Source\Front_DataBase_Unit.pas',0,1,4453,131,4478,0,0,,
+File_13=TSourceModule,'D:\Front\Source\AddUserForm_unit.pas',0,1,1,1,1,0,0,,
+File_14=TSourceModule,'D:\Front\Source\Merc\MercFP_Unit.pas',0,1,83,22,115,0,0,,
 
 [Modules]
-Module0=D:\Front\FrontSVN\MainForm.pas
-Module1=D:\Front\FrontSVN\Display\Base_Display_unit.pas
-Module2=D:\Front\Source\MainForm.pas
-Module3=D:\Front\Source\TouchMessageBoxForm_Unit.pas
-Module4=D:\Front\Source\AddUserForm_unit.pas
-Module5=D:\Front\Source\RestFront.dproj
-Module6=D:\Front\Source\Front_DataBase_Unit.pas
-Module7=D:\Front\Source\Components\RestTable_Unit.pas
-Module8=D:\Front\Source\BaseFrontForm_Unit.pas
-Module9=c:\program files (x86)\embarcadero\rad studio\7.0\SOURCE\WIN32\VCL\Forms.pas
-Module10=default.htm
-Count=11
+Module0=D:\Front\Source\TouchMessageBoxForm_Unit.pas
+Module1=c:\program files (x86)\embarcadero\rad studio\7.0\SOURCE\WIN32\VCL\pngimage.pas
+Module2=c:\program files (x86)\embarcadero\rad studio\7.0\SOURCE\WIN32\VCL\Dialogs.pas
+Module3=c:\program files (x86)\embarcadero\rad studio\7.0\SOURCE\WIN32\VCL\Controls.pas
+Module4=c:\program files (x86)\embarcadero\rad studio\7.0\SOURCE\WIN32\VCL\ExtCtrls.pas
+Module5=D:\Front\Source\Components\PNGcomp_D2009_D2010\Source\PngImageList.pas
+Module6=D:\Front\Source\MainForm.pas
+Module7=D:\Front\Source\RestFront.dproj
+Module8=default.htm
+Module9=D:\Front\Source\Spark617\Spark617_Unit.pas
+Count=10
 EditWindowCount=1
 
-[D:\Front\FrontSVN\MainForm.pas]
+[D:\Front\Source\TouchMessageBoxForm_Unit.pas]
 ModuleType=TSourceModule
 FormState=1
 FormOnTop=0
 
-[D:\Front\FrontSVN\Display\Base_Display_unit.pas]
+[c:\program files (x86)\embarcadero\rad studio\7.0\SOURCE\WIN32\VCL\pngimage.pas]
+ModuleType=TSourceModule
+FormState=0
+FormOnTop=0
+
+[c:\program files (x86)\embarcadero\rad studio\7.0\SOURCE\WIN32\VCL\Dialogs.pas]
+ModuleType=TSourceModule
+FormState=0
+FormOnTop=0
+
+[c:\program files (x86)\embarcadero\rad studio\7.0\SOURCE\WIN32\VCL\Controls.pas]
+ModuleType=TSourceModule
+FormState=0
+FormOnTop=0
+
+[c:\program files (x86)\embarcadero\rad studio\7.0\SOURCE\WIN32\VCL\ExtCtrls.pas]
+ModuleType=TSourceModule
+FormState=0
+FormOnTop=0
+
+[D:\Front\Source\Components\PNGcomp_D2009_D2010\Source\PngImageList.pas]
 ModuleType=TSourceModule
 FormState=0
 FormOnTop=0
@@ -43,51 +62,26 @@ FormOnTop=0
 [D:\Front\Source\MainForm.pas]
 ModuleType=TSourceModule
 FormState=1
-FormOnTop=0
-
-[D:\Front\Source\TouchMessageBoxForm_Unit.pas]
-ModuleType=TSourceModule
-FormState=1
-FormOnTop=0
-
-[D:\Front\Source\AddUserForm_unit.pas]
-ModuleType=TSourceModule
-FormState=1
 FormOnTop=1
 
 [D:\Front\Source\RestFront.dproj]
 ModuleType=TBaseProject
 
-[D:\Front\Source\Front_DataBase_Unit.pas]
-ModuleType=TSourceModule
-FormState=0
-FormOnTop=0
-
-[D:\Front\Source\Components\RestTable_Unit.pas]
-ModuleType=TSourceModule
-FormState=0
-FormOnTop=0
-
-[D:\Front\Source\BaseFrontForm_Unit.pas]
-ModuleType=TSourceModule
-FormState=1
-FormOnTop=0
-
-[c:\program files (x86)\embarcadero\rad studio\7.0\SOURCE\WIN32\VCL\Forms.pas]
-ModuleType=TSourceModule
-FormState=0
-FormOnTop=0
-
 [default.htm]
 ModuleType=TURLModule
+
+[D:\Front\Source\Spark617\Spark617_Unit.pas]
+ModuleType=TSourceModule
+FormState=0
+FormOnTop=0
 
 [D:\Front\Source\FrontData_Unit.pas]
 FormState=1
 FormOnTop=0
 
 [EditWindow0]
-ViewCount=11
-CurrentEditView=D:\Front\FrontSVN\MainForm.pas
+ViewCount=10
+CurrentEditView=D:\Front\Source\TouchMessageBoxForm_Unit.pas
 View0=0
 View1=1
 View2=2
@@ -98,7 +92,6 @@ View6=6
 View7=7
 View8=8
 View9=9
-View10=10
 PercentageSizes=1
 Create=1
 Visible=1
@@ -115,15 +108,15 @@ ClientHeight=9186
 DockedToMainForm=1
 BorlandEditorCodeExplorer=BorlandEditorCodeExplorer@EditWindow0
 TopPanelSize=0
-LeftPanelSize=1894
+LeftPanelSize=1856
 LeftPanelClients=PropertyInspector,DockSite3
-LeftPanelData=000008000101000000008E1300000000000001660700000000000001000000005E0E000009000000446F636B53697465330100000000C42200001100000050726F7065727479496E73706563746F72FFFFFFFF
+LeftPanelData=000008000101000000005C1000000000000001400700000000000001000000005E0E000009000000446F636B53697465330100000000141D00001100000050726F7065727479496E73706563746F72FFFFFFFF
 RightPanelSize=2000
 RightPanelClients=DockSite2,DockSite4
-RightPanelData=000008000101000000008E1300000000000001D00700000000000001000000004612000009000000446F636B53697465320100000000C422000009000000446F636B5369746534FFFFFFFF
-BottomPanelSize=0
+RightPanelData=000008000101000000005C1000000000000001D00700000000000001000000004612000009000000446F636B53697465320100000000141D000009000000446F636B5369746534FFFFFFFF
+BottomPanelSize=1422
 BottomPanelClients=DockSite1,MessageView
-BottomPanelData=0000080001020200000009000000446F636B53697465310F0000004D65737361676556696577466F726D72450000000000000282070000000000000100000000724500000F0000004D65737361676556696577466F726DFFFFFFFF
+BottomPanelData=0000080001020100000009000000446F636B53697465317245000000000000028E050000000000000100000000724500000F0000004D65737361676556696577466F726DFFFFFFFF
 BottomMiddlePanelSize=0
 BottomMiddlePanelClients=DockSite0
 BottomMiddelPanelData=0000080001000100000009000000446F636B53697465302C1900000000000000791B000000000000FFFFFFFF
@@ -134,113 +127,102 @@ WelcomePageURL=bds:/default.htm
 
 [View1]
 CustomEditViewType=TEditView
-Module=c:\program files (x86)\embarcadero\rad studio\7.0\SOURCE\WIN32\VCL\Forms.pas
-CursorX=3
-CursorY=2797
-TopLine=2786
-LeftCol=1
-Elisions=
-Bookmarks=
-EditViewName=c:\program files (x86)\embarcadero\rad studio\7.0\SOURCE\WIN32\VCL\Forms.pas
-
-[View2]
-CustomEditViewType=TEditView
 Module=D:\Front\Source\MainForm.pas
-CursorX=21
-CursorY=8
-TopLine=1
+CursorX=3
+CursorY=442
+TopLine=403
 LeftCol=1
 Elisions=
 Bookmarks={0,3267,1}{4,3385,19}
-EditViewName=D:\Front\Source\MainForm.pas
-
-[View3]
-CustomEditViewType=TEditView
-Module=D:\Front\FrontSVN\Display\Base_Display_unit.pas
-CursorX=59
-CursorY=111
-TopLine=97
-LeftCol=1
-Elisions=
-Bookmarks=
-EditViewName=D:\Front\FrontSVN\Display\Base_Display_unit.pas
-
-[View4]
-CustomEditViewType=TEditView
-Module=D:\Front\FrontSVN\MainForm.pas
-CursorX=86
-CursorY=454
-TopLine=424
-LeftCol=1
-Elisions=
-Bookmarks=
-EditViewName=D:\Front\FrontSVN\MainForm.pas
-
-[View5]
-CustomEditViewType=TEditView
-Module=D:\Front\Source\TouchMessageBoxForm_Unit.pas
-CursorX=26
-CursorY=30
-TopLine=19
-LeftCol=1
-Elisions=
-Bookmarks=
-EditViewName=D:\Front\Source\TouchMessageBoxForm_Unit.pas
-
-[View6]
-CustomEditViewType=TEditView
-Module=D:\Front\Source\AddUserForm_unit.pas
-CursorX=1
-CursorY=1
-TopLine=1
-LeftCol=1
-Elisions=
-Bookmarks=
 EditViewName=Borland.FormDesignerView
 
-[View7]
+[View2]
 CustomEditViewType=TEditView
 Module=D:\Front\Source\RestFront.dpr
-CursorX=32
-CursorY=7
-TopLine=1
+CursorX=40
+CursorY=72
+TopLine=52
 LeftCol=1
 Elisions=
 Bookmarks=
 EditViewName=D:\Front\Source\RestFront.dpr
 
-[View8]
+[View3]
 CustomEditViewType=TEditView
-Module=D:\Front\Source\Front_DataBase_Unit.pas
-CursorX=9
-CursorY=1063
-TopLine=1063
+Module=c:\program files (x86)\embarcadero\rad studio\7.0\SOURCE\WIN32\VCL\Controls.pas
+CursorX=3
+CursorY=2505
+TopLine=2492
 LeftCol=1
 Elisions=
 Bookmarks=
-EditViewName=D:\Front\Source\Front_DataBase_Unit.pas
+EditViewName=c:\program files (x86)\embarcadero\rad studio\7.0\SOURCE\WIN32\VCL\Controls.pas
+
+[View4]
+CustomEditViewType=TEditView
+Module=c:\program files (x86)\embarcadero\rad studio\7.0\SOURCE\WIN32\VCL\ExtCtrls.pas
+CursorX=3
+CursorY=2741
+TopLine=2719
+LeftCol=1
+Elisions=
+Bookmarks=
+EditViewName=c:\program files (x86)\embarcadero\rad studio\7.0\SOURCE\WIN32\VCL\ExtCtrls.pas
+
+[View5]
+CustomEditViewType=TEditView
+Module=c:\program files (x86)\embarcadero\rad studio\7.0\SOURCE\WIN32\VCL\pngimage.pas
+CursorX=1
+CursorY=272
+TopLine=5628
+LeftCol=1
+Elisions=
+Bookmarks=
+EditViewName=c:\program files (x86)\embarcadero\rad studio\7.0\SOURCE\WIN32\VCL\pngimage.pas
+
+[View6]
+CustomEditViewType=TEditView
+Module=D:\Front\Source\TouchMessageBoxForm_Unit.pas
+CursorX=51
+CursorY=47
+TopLine=28
+LeftCol=1
+Elisions=
+Bookmarks=
+EditViewName=D:\Front\Source\TouchMessageBoxForm_Unit.pas
+
+[View7]
+CustomEditViewType=TEditView
+Module=c:\program files (x86)\embarcadero\rad studio\7.0\SOURCE\WIN32\VCL\Dialogs.pas
+CursorX=34
+CursorY=1054
+TopLine=1033
+LeftCol=1
+Elisions=
+Bookmarks=
+EditViewName=c:\program files (x86)\embarcadero\rad studio\7.0\SOURCE\WIN32\VCL\Dialogs.pas
+
+[View8]
+CustomEditViewType=TEditView
+Module=D:\Front\Source\Components\PNGcomp_D2009_D2010\Source\PngImageList.pas
+CursorX=23
+CursorY=62
+TopLine=41
+LeftCol=1
+Elisions=
+Bookmarks=
+EditViewName=D:\Front\Source\Components\PNGcomp_D2009_D2010\Source\PngImageList.pas
 
 [View9]
 CustomEditViewType=TEditView
-Module=D:\Front\Source\Components\RestTable_Unit.pas
-CursorX=12
-CursorY=120
-TopLine=94
-LeftCol=1
-Elisions=
-Bookmarks=
-EditViewName=D:\Front\Source\Components\RestTable_Unit.pas
-
-[View10]
-CustomEditViewType=TEditView
-Module=D:\Front\Source\BaseFrontForm_Unit.pas
-CursorX=24
-CursorY=1
+Module=D:\Front\Source\Spark617\Spark617_Unit.pas
+CursorX=56
+CursorY=6
 TopLine=1
 LeftCol=1
 Elisions=
 Bookmarks=
-EditViewName=D:\Front\Source\BaseFrontForm_Unit.pas
+EditViewName=D:\Front\Source\Spark617\Spark617_Unit.pas
 
 [Watches]
 Count=23
@@ -279,21 +261,22 @@ State=0
 Left=0
 Top=0
 Width=3825
-Height=722
+Height=929
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=3825
-ClientHeight=722
+ClientHeight=929
 TBDockHeight=218
 LRDockWidth=13600
 Dockable=1
 StayOnTop=0
 
 [Breakpoints]
-Count=3
+Count=4
 Breakpoint0='c:\program files (x86)\embarcadero\rad studio\7.0\SOURCE\WIN32\IBX\IBScript.pas',1091,'',0,1,'',1,0,0,'',1,'','','',0,''
 Breakpoint1='D:\Front\Source\TMS\AdvMenus.pas',4169,'',0,1,'',1,0,0,'',1,'','','',0,''
 Breakpoint2='D:\Front\Source\TMS\AdvMenus.pas',4164,'',0,1,'',1,0,0,'',1,'','','',0,''
+Breakpoint3='D:\Front\Source\TMS\advpanel.pas',2726,'',0,1,'',1,0,0,'',1,'','','',0,''
 
 [EmbarcaderoWin32Debugger_AddressBreakpoints]
 Count=0
@@ -304,8 +287,8 @@ Create=1
 Visible=1
 Docked=0
 State=2
-Left=1069
-Top=849
+Left=144
+Top=275
 Width=8931
 Height=8521
 MaxLeft=-6
@@ -340,18 +323,18 @@ StayOnTop=0
 [MessageView]
 PercentageSizes=1
 Create=1
-Visible=0
+Visible=1
 Docked=1
 State=0
 Left=0
 Top=22
 Width=10000
-Height=1732
+Height=1216
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=10000
-ClientHeight=1732
-TBDockHeight=1732
+ClientHeight=1216
+TBDockHeight=1216
 LRDockWidth=2769
 Dockable=1
 StayOnTop=0
@@ -365,11 +348,11 @@ State=0
 Left=0
 Top=0
 Width=2000
-Height=4106
+Height=2603
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=2000
-ClientHeight=4106
+ClientHeight=2603
 TBDockHeight=7156
 LRDockWidth=2000
 Dockable=1
@@ -406,11 +389,11 @@ State=0
 Left=0
 Top=0
 Width=3825
-Height=722
+Height=929
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=3825
-ClientHeight=722
+ClientHeight=929
 TBDockHeight=413
 LRDockWidth=4950
 Dockable=1
@@ -425,11 +408,11 @@ State=0
 Left=0
 Top=0
 Width=3825
-Height=722
+Height=929
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=3825
-ClientHeight=722
+ClientHeight=929
 TBDockHeight=218
 LRDockWidth=7406
 Dockable=1
@@ -449,11 +432,11 @@ State=0
 Left=0
 Top=0
 Width=3825
-Height=722
+Height=929
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=3825
-ClientHeight=722
+ClientHeight=929
 TBDockHeight=1537
 LRDockWidth=3481
 Dockable=1
@@ -468,11 +451,11 @@ State=0
 Left=0
 Top=0
 Width=3825
-Height=722
+Height=929
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=3825
-ClientHeight=722
+ClientHeight=929
 TBDockHeight=2064
 LRDockWidth=3481
 Dockable=1
@@ -589,22 +572,22 @@ Docked=1
 State=0
 Left=0
 Top=353
-Width=1894
-Height=5138
+Width=1856
+Height=3635
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=1894
-ClientHeight=5138
+ClientWidth=1856
+ClientHeight=3635
 TBDockHeight=6915
-LRDockWidth=1894
+LRDockWidth=1856
 Dockable=1
 StayOnTop=0
-SplitPos=111
+SplitPos=109
 
 [PropInspDesignerSelection]
 ArrangeBy=Name
-SelectedItem=Margins,OnCreate
-ExpandedItems=Anchors=0,BorderIcons=0,Constraints=0,Action=0,Appearance=1,Margins=0,Status=0,Font=1,GlassFrame=0,HorzScrollBar=0,Padding=0,AutoSize=0,Caption=0,Position=0,StatusBar=0,Touch=0,Styler=0,Appearance.Font=1,Appearance.Font.Style=0,VertScrollBar=0,Font.Style=0
+SelectedItem=Name,OnChange
+ExpandedItems=Anchors=0,Constraints=0,Font=0,Margins=0,Touch=0,PngOptions=0,BorderIcons=0
 
 [ModelViewTool]
 PercentageSizes=1
@@ -631,7 +614,7 @@ Create=1
 Visible=0
 Docked=1
 State=0
-Left=-151
+Left=-148
 Top=-93
 Width=1844
 Height=3142
@@ -653,11 +636,11 @@ State=0
 Left=0
 Top=0
 Width=3825
-Height=722
+Height=929
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=3825
-ClientHeight=722
+ClientHeight=929
 TBDockHeight=1548
 LRDockWidth=8744
 Dockable=1
@@ -678,11 +661,11 @@ Docked=1
 State=0
 Left=0
 Top=0
-Width=1894
+Width=1856
 Height=3498
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=1894
+ClientWidth=1856
 ClientHeight=3498
 TBDockHeight=3670
 LRDockWidth=1894
@@ -746,12 +729,12 @@ State=0
 Left=0
 Top=22
 Width=3825
-Height=1009
+Height=1216
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=3825
-ClientHeight=1009
-TBDockHeight=1009
+ClientHeight=1216
+TBDockHeight=1216
 LRDockWidth=3825
 Dockable=1
 StayOnTop=0
@@ -793,14 +776,14 @@ Docked=1
 State=0
 Left=0
 Top=22
-Width=1894
+Width=1856
 Height=3498
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=1894
+ClientWidth=1856
 ClientHeight=3498
 TBDockHeight=6915
-LRDockWidth=1894
+LRDockWidth=1856
 Dockable=1
 StayOnTop=0
 TabPosition=1
@@ -818,11 +801,11 @@ State=0
 Left=0
 Top=443
 Width=2000
-Height=4106
+Height=2603
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=2000
-ClientHeight=4106
+ClientHeight=2603
 TBDockHeight=6915
 LRDockWidth=2000
 Dockable=1
