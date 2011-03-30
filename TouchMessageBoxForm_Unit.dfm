@@ -78,8 +78,8 @@ object TouchMessageBox: TTouchMessageBox
       Transparent = True
       Layout = tlCenter
       WordWrap = True
-      ExplicitLeft = 136
-      ExplicitWidth = 341
+      ExplicitLeft = 130
+      ExplicitTop = 3
     end
     object pngImage: TImage
       Left = 0
@@ -141,7 +141,7 @@ object TouchMessageBox: TTouchMessageBox
       Left = 197
       Top = 9
       Width = 107
-      Height = 37
+      Height = 39
       Appearance.Font.Charset = DEFAULT_CHARSET
       Appearance.Font.Color = clWindowText
       Appearance.Font.Height = -16
@@ -172,7 +172,7 @@ object TouchMessageBox: TTouchMessageBox
       Left = 84
       Top = 9
       Width = 107
-      Height = 37
+      Height = 39
       Appearance.Font.Charset = DEFAULT_CHARSET
       Appearance.Font.Color = clWindowText
       Appearance.Font.Height = -16
@@ -203,7 +203,7 @@ object TouchMessageBox: TTouchMessageBox
       Left = 310
       Top = 9
       Width = 107
-      Height = 37
+      Height = 39
       Appearance.Font.Charset = DEFAULT_CHARSET
       Appearance.Font.Color = clWindowText
       Appearance.Font.Height = -16

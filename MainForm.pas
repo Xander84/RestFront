@@ -13,7 +13,8 @@ uses
   SplitOrderForm_Unit, Report_Unit, FrontData_Unit, BaseFrontForm_Unit,
   AdvSmoothButton, AdvPanel, AdvPageControl, AdvSmoothTouchKeyBoard,
   FrontLog_Unit, Grids, Menus, AddUserForm_unit, AdminForm_Unit,
-  Buttons, RestTable_Unit, dxfDesigner, GestureMgr, AdvObj, AdvMenus, AdvMenuStylers;
+  Buttons, RestTable_Unit, dxfDesigner, GestureMgr, AdvObj, AdvMenus, AdvMenuStylers,
+  AdvSmoothToggleButton;
 
 const
   btnHeight = 65;
@@ -143,7 +144,6 @@ type
     btnGoodUp: TAdvSmoothButton;
     btnGoodDown: TAdvSmoothButton;
     actCashForm: TAction;
-    btnPredCheck: TAdvSmoothButton;
     btnUsersDown: TAdvSmoothButton;
     btnUsersUp: TAdvSmoothButton;
     btnUserLeft: TAdvSmoothButton;
@@ -201,6 +201,8 @@ type
     tsTablesDesigner: TAdvTabSheet;
     pnlDesignerTables: TAdvPanel;
     tmrTables: TTimer;
+    btnPrecheckOrders: TAdvSmoothToggleButton;
+    btnWithOutPrecheckOrders: TAdvSmoothToggleButton;
 
     //Проверка введёного пароля
     procedure actPassEnterExecute(Sender: TObject);
@@ -276,6 +278,8 @@ type
     procedure sbTableGesture(Sender: TObject;
       const EventInfo: TGestureEventInfo; var Handled: Boolean);
     procedure tmrTablesTimer(Sender: TObject);
+    procedure btnPrecheckOrdersClick(Sender: TObject);
+    procedure btnWithOutPrecheckOrdersClick(Sender: TObject);
   private
     //Компонент обращения к БД
     FFrontBase: TFrontBase;
@@ -2392,7 +2396,7 @@ begin
 
           FMenuKey := -1;
           FLineID := 1;
-          FWithPreCheck := False;
+          FWithPreCheck := True;
 
           FHeaderTable.Close;
           FHeaderTable.CreateTable;
@@ -2463,7 +2467,7 @@ begin
           FUserOrderButtonNumber   := 1;
 
           FLineID := 1;
-          FWithPreCheck := False;
+          FWithPreCheck := True;
 
           FFrontBase.GetUserOrders(-1, FOrderDataSet);
 
@@ -2531,7 +2535,7 @@ begin
           FUserOrderButtonNumber   := 1;
 
           FLineID := 1;
-          FWithPreCheck := False;
+          FWithPreCheck := True;
 
           FFrontBase.GetHallsInfo(FHallsTable);
           CreateHallButtonList;
@@ -2602,7 +2606,7 @@ begin
           FUserOrderButtonNumber   := 1;
 
           FLineID := 1;
-          FWithPreCheck := False;
+          FWithPreCheck := True;
 
           FFrontBase.GetHallsInfo(FHallsTable);
           CreateHallButtonList;
@@ -2670,9 +2674,9 @@ begin
           RemoveUserOrderButton;
 
           pnlRight.Visible := False;
-          btnPredCheck.Visible := False;
-          FWithPreCheck := False;
-          btnPredCheck.Caption := 'С предчеком';
+          btnPrecheckOrders.Visible := False;
+          btnWithOutPrecheckOrders.Visible := False;
+          FWithPreCheck := True;
 
           FRestFormState := Value;
           pcOrder.ActivePage := tsManagerPage;
@@ -2718,11 +2722,17 @@ begin
           pnlMainGood.Visible := False;
           pnlRight.Visible := False;
 
-          btnPredCheck.Visible := True;
+          btnPrecheckOrders.Visible := True;
+          btnWithOutPrecheckOrders.Visible := True;
           if FWithPreCheck then
-            btnPredCheck.Caption := 'Без предчека'
-          else
-            btnPredCheck.Caption := 'С предчеком';
+          begin
+            btnPrecheckOrders.Down := True;
+            btnWithOutPrecheckOrders.Down := False;
+          end else
+          begin
+            btnWithOutPrecheckOrders.Down := True;
+            btnPrecheckOrders.Down := False;
+          end;
 
           FRestFormState := Value;
           pcOrder.ActivePage := tsManagerPage;
@@ -2764,11 +2774,17 @@ begin
           pnlMainGood.Visible := False;
           pnlRight.Visible := False;
 
-          btnPredCheck.Visible := True;
+          btnPrecheckOrders.Visible := True;
+          btnWithOutPrecheckOrders.Visible := True;
           if FWithPreCheck then
-            btnPredCheck.Caption := 'Без предчека'
-          else
-            btnPredCheck.Caption := 'С предчеком';
+          begin
+            btnPrecheckOrders.Down := True;
+            btnWithOutPrecheckOrders.Down := False;
+          end else
+          begin
+            btnWithOutPrecheckOrders.Down := True;
+            btnPrecheckOrders.Down := False;
+          end;
 
           FRestFormState := Value;
           pcOrder.ActivePage := tsManagerPage;
@@ -2969,6 +2985,17 @@ begin
   FFrontBase.GetOrdersInfo(FHeaderInfoTable, FLineInfoTable, xDateBegin.Date,
     xDateEnd.Date, False, True, False, False);
   AfterLoadManagerInfo;
+end;
+
+procedure TRestMainForm.btnWithOutPrecheckOrdersClick(Sender: TObject);
+begin
+  if btnWithOutPrecheckOrders.Down then
+  begin
+    RestFormState := OrderMenu;
+    FWithPreCheck := False;
+    RestFormState := KassirInfo;
+    CreateUserList;
+  end;
 end;
 
 procedure TRestMainForm.btnPayedClick(Sender: TObject);
@@ -3221,6 +3248,17 @@ begin
   inherited;
   if Sender.DataSource.DataSet.FieldByName('U_USR$CAUSEDELETEKEY_USR$NAME').AsString > '' then
     Params.Font.Color := clRed;
+end;
+
+procedure TRestMainForm.btnPrecheckOrdersClick(Sender: TObject);
+begin
+  if btnPrecheckOrders.Down then
+  begin
+    RestFormState := OrderMenu;
+    FWithPreCheck := True;
+    RestFormState := KassirInfo;
+    CreateUserList;
+  end;
 end;
 
 procedure TRestMainForm.btnPredCheckClick(Sender: TObject);

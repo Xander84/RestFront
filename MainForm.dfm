@@ -604,7 +604,7 @@ object RestMainForm: TRestMainForm
             Top = 1
             Width = 690
             Height = 699
-            ActivePage = tsTablePage
+            ActivePage = tsManagerPage
             ActiveFont.Charset = DEFAULT_CHARSET
             ActiveFont.Color = clWindowText
             ActiveFont.Height = -11
@@ -1296,9 +1296,9 @@ object RestMainForm: TRestMainForm
                   StatusBar.GradientDirection = gdVertical
                   Styler = FrontData.FrontPanelStyler
                   FullHeight = 67
-                  object btnPredCheck: TAdvSmoothButton
-                    Left = 200
-                    Top = 8
+                  object btnPrecheckOrders: TAdvSmoothToggleButton
+                    Left = 192
+                    Top = 10
                     Width = 145
                     Height = 50
                     Appearance.Font.Charset = DEFAULT_CHARSET
@@ -1306,6 +1306,8 @@ object RestMainForm: TRestMainForm
                     Appearance.Font.Height = -21
                     Appearance.Font.Name = 'Times New Roman'
                     Appearance.Font.Style = []
+                    Caption = #1057' '#1087#1088#1077#1076#1095#1077#1082#1086#1084
+                    Version = '1.1.8.0'
                     Status.Caption = '0'
                     Status.Appearance.Fill.Color = clRed
                     Status.Appearance.Fill.ColorMirror = clNone
@@ -1319,12 +1321,39 @@ object RestMainForm: TRestMainForm
                     Status.Appearance.Font.Height = -11
                     Status.Appearance.Font.Name = 'Tahoma'
                     Status.Appearance.Font.Style = []
-                    Caption = #1055#1088#1077#1076#1095#1077#1082
-                    Color = 15195349
                     ParentFont = False
                     TabOrder = 0
-                    Version = '1.6.9.0'
-                    OnClick = btnPredCheckClick
+                    OnClick = btnPrecheckOrdersClick
+                  end
+                  object btnWithOutPrecheckOrders: TAdvSmoothToggleButton
+                    Left = 358
+                    Top = 10
+                    Width = 145
+                    Height = 50
+                    Appearance.Font.Charset = DEFAULT_CHARSET
+                    Appearance.Font.Color = clWindowText
+                    Appearance.Font.Height = -21
+                    Appearance.Font.Name = 'Times New Roman'
+                    Appearance.Font.Style = []
+                    Caption = #1041#1077#1079' '#1087#1088#1077#1076#1095#1077#1082#1072
+                    Version = '1.1.8.0'
+                    Status.Caption = '0'
+                    Status.Appearance.Fill.Color = clRed
+                    Status.Appearance.Fill.ColorMirror = clNone
+                    Status.Appearance.Fill.ColorMirrorTo = clNone
+                    Status.Appearance.Fill.GradientType = gtSolid
+                    Status.Appearance.Fill.BorderColor = clGray
+                    Status.Appearance.Fill.Rounding = 0
+                    Status.Appearance.Fill.ShadowOffset = 0
+                    Status.Appearance.Font.Charset = DEFAULT_CHARSET
+                    Status.Appearance.Font.Color = clWhite
+                    Status.Appearance.Font.Height = -11
+                    Status.Appearance.Font.Name = 'Tahoma'
+                    Status.Appearance.Font.Style = []
+                    GroupIndex = 1
+                    ParentFont = False
+                    TabOrder = 1
+                    OnClick = btnWithOutPrecheckOrdersClick
                   end
                 end
               end
