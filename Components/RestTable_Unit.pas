@@ -252,14 +252,14 @@ begin
     FSQL.SQL.Text :=
       'INSERT INTO USR$MN_TABLE(ID, USR$NUMBER, USR$POSY, USR$POSX, USR$HALLKEY, ' +
       '  USR$TYPE, USR$MAINTABLEKEY) ' +
-      'VALUES (:ID, :NUMBER, :POSY, :POSX, :HALLKEY, :TYPEKEY, :MAINTABLEKEY) ';
+      'VALUES (:ID, :NUMBER, :POSY, :POSX, :HALLKEY, :TYPEKEY, null) ';
     FSQL.ParamByName('ID').AsInteger := FID;
-    FSQL.ParamByName('USR$NUMBER').AsString := Number;
+    FSQL.ParamByName('NUMBER').AsString := Number;
     FSQL.ParamByName('POSY').AsInteger := PosY;
     FSQL.ParamByName('POSX').AsInteger := PosX;
     FSQL.ParamByName('HALLKEY').AsInteger := HallKey;
     FSQL.ParamByName('TYPEKEY').AsInteger := TableTypeKey;
-    FSQL.ParamByName('MAINTABLEKEY').AsInteger := MainTableKey;
+//    FSQL.ParamByName('MAINTABLEKEY').AsInteger := MainTableKey;
     FSQL.ExecQuery;
     FSQL.Close;
 

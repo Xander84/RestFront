@@ -299,7 +299,6 @@ type
     FLineInfoTable   : TkbmMemTable;
     FHallsTable      : TkbmMemTable;
     FTablesInfoTable : TkbmMemTable;
-    FTablesDesignerInfo: TkbmMemTable;
     //для связи позиция - модификатор
     FMasterDataSource: TDataSource;
     FModificationDataSet: TkbmMemTable;
@@ -315,6 +314,9 @@ type
     FHallFisrtTop     : Integer;
     FHallLastTop      : Integer;
     FHallButtonNumber : Integer;
+    //
+    FTableChooseTop   : Integer;
+    FTableChooseLastTop: Integer;
     //
     FMenuFirstTop     : Integer;
     FMenuLastTop      : Integer;
@@ -352,6 +354,7 @@ type
     FUsersOrderButtonList: TObjectList;
     FTablesList       : TObjectList;
     FHallButtonList   : TObjectList;
+    FChooseTableButtonList: TObjectList;
     // режим редактирования столов
     FEditMode: Boolean;
     //Текущее выбраное меню
@@ -369,7 +372,6 @@ type
     FSplitForm: TSplitOrder;
     //Создание первичных наборов данных
     procedure CreateDataSets;
-    procedure CreateTableInfoDataSet;
     //режим заказов
     procedure CreateOrderButtonList;
     procedure AddOrderButton;
@@ -383,11 +385,14 @@ type
     procedure AddHallButton;
     procedure RemoveHallButton;
     procedure HallButtonOnClick(Sender: TObject);
+    procedure ChooseTableOnClick(Sender: TObject);
     procedure CreateTableButtonList(const HallKey: Integer);
     procedure RemoveTableButton;
+    procedure RemoveChooseTable;
     procedure PopItemOnClick(Sender: TObject);
     procedure TableButtonOnClick(Sender: TObject);
     procedure SaveTablePositions;
+    procedure AddChooseTables(const HallKey: Integer);
     //меню
     procedure CreateMenuButtonList;
     procedure AddMenuButton;
@@ -519,6 +524,7 @@ begin
   FUsersOrderButtonList := TObjectList.Create;
   FTablesList := TObjectList.Create;
   FHallButtonList := TObjectList.Create;
+  FChooseTableButtonList := TObjectList.Create;
 
   FEditMode := False;
   FWithPreCheck := True;
@@ -603,8 +609,6 @@ begin
     FHallsTable.Free;
   if Assigned(FTablesInfoTable) then
     FTablesInfoTable.Free;
-  if Assigned(FTablesDesignerInfo) then
-    FTablesDesignerInfo.Free;
 
   FMenuButtonList.Free;
   FOrderButtonList.Free;
@@ -614,6 +618,7 @@ begin
   FUsersOrderButtonList.Free;
   FTablesList.Free;
   FHallButtonList.Free;
+  FChooseTableButtonList.Free;
 end;
 
 procedure TRestMainForm.edPasswordKeyPress(Sender: TObject; var Key: Char);
@@ -865,15 +870,41 @@ begin
   end;
 end;
 
-procedure TRestMainForm.CreateTableInfoDataSet;
+procedure TRestMainForm.AddChooseTables(const HallKey: Integer);
+var
+  IBSQL: TIBSQL;
+  FButton: TChooseTable;
 begin
-  if not Assigned(FTablesDesignerInfo) then
-  begin
-    FTablesDesignerInfo := TkbmMemTable.Create(nil);
-    FTablesDesignerInfo.FieldDefs.Add('ID', ftInteger, 0);
-    FTablesDesignerInfo.FieldDefs.Add('USR$NAME', ftString, 20);
-    FTablesDesignerInfo.CreateTable;
-    FTablesDesignerInfo.Open;
+  IBSQL := TIBSQL.Create(nil);
+  try
+    IBSQL.Transaction := FFrontBase.ReadTransaction;
+    IBSQL.SQL.Text := ' SELECT ID, USR$NAME FROM USR$MN_TABLETYPE ';
+    IBSQL.ExecQuery;
+    while not IBSQL.Eof do
+    begin
+      FButton := TChooseTable.Create(pnlDesignerTables);
+      FButton.Parent := pnlDesignerTables;
+      FButton.OnClick := ChooseTableOnClick;
+      FButton.FrontBase := FFrontBase;
+      FButton.TableTypeKey := IBSQL.FieldByName('ID').AsInteger;
+//      FButton.TableName := IBSQL.FieldByName('USR$NAME').AsString;
+      FButton.HallKey := HallKey;
+      FButton.Height := btnHeight;
+      FButton.Width  := AdjustWidth(btnLongWidth);
+
+      FTableChooseLastTop := FTableChooseLastTop + btnHeight + 2;
+
+      FButton.Left := btnFirstTop {$IFDEF NEW_TABCONTROL} + 4 {$ENDIF};
+      FButton.Top  := FTableChooseLastTop;
+      FButton.Tag := IBSQL.FieldByName('ID').AsInteger;
+
+      FChooseTableButtonList.Add(FButton);
+
+      IBSQL.Next;
+    end;
+    IBSQL.Close;
+  finally
+    IBSQL.Free;
   end;
 end;
 
@@ -1265,6 +1296,11 @@ begin
   FLogManager.DoSimpleEvent(ev_CreateNewOrder);
 end;
 
+procedure TRestMainForm.RemoveChooseTable;
+begin
+  FChooseTableButtonList.Clear;
+end;
+
 procedure TRestMainForm.RemoveGoodButton;
 begin
   FGoodButtonList.Clear;
@@ -1342,15 +1378,14 @@ begin
   LockWindowUpdate(Handle);
   try
     RemoveTableButton;
+    RemoveChooseTable;
     FButton := TButton(Sender);
     CreateTableButtonList(FButton.Tag);
     FActiveHallButton := FButton.Name;
     if FRestFormState = HallInfo then
     begin
-      CreateTableInfoDataSet;
-      FFrontBase.GetDesignerTables(FTablesDesignerInfo);
-      FTablesDesignerInfo.First;
       pcMenu.ActivePage := tsTablesDesigner;
+      AddChooseTables(FButton.Tag);
     end else
       tmrTables.Enabled := True;
   finally
@@ -1495,7 +1530,12 @@ begin
   dxfDesigner.Active := False;
   for I := 0 to sbTable.ControlCount - 1 do
     if sbTable.Controls[I] is TRestTable then
-      TRestTable(sbTable.Controls[I]).SaveTablePositionToDB;
+    begin
+      if TRestTable(sbTable.Controls[I]).NeedToInsert then
+        TRestTable(sbTable.Controls[I]).SaveTableToDB
+      else
+        TRestTable(sbTable.Controls[I]).SaveTablePositionToDB;
+    end;
 end;
 
 procedure TRestMainForm.sbTableGesture(Sender: TObject;
@@ -1681,6 +1721,7 @@ begin
       begin
         RemoveHallButton;
         RemoveTableButton;
+        RemoveChooseTable;
         FFrontBase.ClearCache;
 
         RestFormState := Pass;
@@ -1694,6 +1735,7 @@ begin
           SaveTablePositions;
           RemoveHallButton;
           RemoveTableButton;
+          RemoveChooseTable;
           FFrontBase.ClearCache;
           dxfDesigner.EditControl := nil;
           dxfDesigner.Active := False;          
@@ -1776,6 +1818,7 @@ begin
       begin
         RemoveHallButton;
         RemoveTableButton;
+        RemoveChooseTable;
         FFrontBase.ClearCache;
         dxfDesigner.EditControl := nil;
         dxfDesigner.Active := False;        
@@ -2373,6 +2416,7 @@ begin
           FGoodLastLeftButton := btnFirstTop;
           FMenuLastTop    := -(btnHeight);
           FHallLastTop    := -(btnHeight);
+          FTableChooseLastTop := -(btnHeight);
 
           FOrderButtonNumber := 1;
           FMenuButtonNumber  := 1;
@@ -2384,6 +2428,7 @@ begin
           FGoodFirstTop := btnFirstTop;
           FGroupFirstTop := btnFirstTop;
           FHallFisrtTop := btnFirstTop;
+          FTableChooseTop := btnFirstTop;
 
           FUserFirstTop       := btnFirstTop;
           FUserLastLeftButton := btnFirstTop;
@@ -2440,6 +2485,7 @@ begin
           RemoveMenuButton;
           RemoveHallButton;
           RemoveTableButton;
+          RemoveChooseTable;
           //
           FTablesInfoTable.Close;
           FTablesInfoTable.CreateTable;
@@ -2492,6 +2538,7 @@ begin
 
           FHallButtonNumber := 1;
           FHallLastTop := -(btnHeight);
+          FTableChooseLastTop := -(btnHeight);
 
           pcMain.ActivePage := tsMain;
           pcOrder.ActivePage := tsTablePage;
@@ -2508,6 +2555,7 @@ begin
           RemoveMenuButton;
           RemoveHallButton;
           RemoveTableButton;
+          RemoveChooseTable;
           //
           FTablesInfoTable.Close;
           FTablesInfoTable.CreateTable;
@@ -2562,6 +2610,7 @@ begin
 
           FHallButtonNumber := 1;
           FHallLastTop := -(btnHeight);
+          FTableChooseLastTop := -(btnHeight);
 
           pcMain.ActivePage := tsMain;
           pcOrder.ActivePage := tsTablePage;
@@ -2579,6 +2628,7 @@ begin
           RemoveMenuButton;
           RemoveHallButton;
           RemoveTableButton;
+          RemoveChooseTable;
           //
           FTablesInfoTable.Close;
           FTablesInfoTable.CreateTable;
@@ -2629,6 +2679,7 @@ begin
 
         RemoveHallButton;
         RemoveTableButton;
+        RemoveChooseTable;
 
         pcMenu.ActivePage := tsMenu;
 
@@ -3090,6 +3141,7 @@ begin
 //      if FGoodDataSet.FieldByName('BEDIVIDE').AsInteger = 1 then
 //      begin
         FForm := TDevideForm.Create(nil);
+        FForm.LabelCaption := 'Количество';
         FForm.CanDevided := (FGoodDataSet.FieldByName('BEDIVIDE').AsInteger = 1);
         try
           FForm.ShowModal;
@@ -3131,6 +3183,43 @@ procedure TRestMainForm.WritePos(DataSet: TDataSet);
 begin
   FFrontBase.Display.WritePos(DataSet.FieldByName('GOODNAME').AsString,
     DataSet.FieldByName('usr$quantity').AsCurrency, DataSet.FieldByName('usr$costncu').AsCurrency);
+end;
+
+procedure TRestMainForm.ChooseTableOnClick(Sender: TObject);
+var
+  FForm: TDevideForm;
+  FButton: TRestTable;
+  FChooseButton: TChooseTable;
+begin
+  FForm := TDevideForm.Create(nil);
+  try
+    FForm.Caption := 'Номер стола';
+    FForm.CanDevided := False;
+    FForm.LabelCaption := 'Введите номер стола';
+    FForm.ShowModal;
+    if FForm.ModalResult = mrOk then
+    begin
+      FChooseButton := TChooseTable(Sender);
+      FButton := TRestTable.Create(sbTable);
+      FButton.Parent := sbTable;
+      FButton.FrontBase := FFrontBase;
+      FButton.OrderKey := 0;
+      FButton.IsEmpty := True;
+      FButton.PosX := sbTable.Height div 2;
+      FButton.PosY := sbTable.Width div 2;
+      FButton.TableTypeKey := FChooseButton.TableTypeKey;
+      FButton.HallKey := FChooseButton.HallKey;
+      FButton.OrderKey := 0;
+      FButton.RespKey := 0;
+      FButton.IsLocked := False;
+      FButton.Number := FForm.Number;
+      FButton.NeedToInsert := True;
+
+      FTablesList.Add(FButton);
+    end;
+  finally
+    FForm.Free;
+  end;
 end;
 
 procedure TRestMainForm.ClearDisplay;

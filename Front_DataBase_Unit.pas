@@ -325,7 +325,6 @@ type
     procedure GetHallsInfo(const MemTable: TkbmMemTable);
     procedure GetTablesInfo(const MemTable: TkbmMemTable; const HallKey: Integer);
     procedure GetTables(const MemTable: TkbmMemTable; const HallKey: Integer);
-    procedure GetDesignerTables(const MemTable: TkbmMemTable);
 
     function LockUserOrder(const OrderKey: Integer): Boolean;
     function UnLockUserOrder(const OrderKey: Integer): Boolean;
@@ -3554,7 +3553,6 @@ begin
 
     if B = -1 then
     begin
-{      if (A = 2) and (A < Length(FIBPath)) and (FIBPath[A + 1] in ['\', '/']) then }
       if (A = 2) and (A < Length(FIBPath)) and (CharInSet(FIBPath[A + 1], ['\', '/'])) then
         Result := '';
     end;
@@ -3813,28 +3811,6 @@ begin
   except
     on E: Exception do
       Touch_MessageBox('Внимание', 'Ошибка ' + E.Message, MB_OK, mtError);
-  end;
-end;
-
-procedure TFrontBase.GetDesignerTables(const MemTable: TkbmMemTable);
-begin
-  FReadSQL.Close;
-  try
-    FReadSQL.SQL.Text :=
-      'SELECT T.ID, T.USR$NAME ' +
-      'FROM USR$MN_TABLETYPE T ';
-    FReadSQL.ExecQuery;
-    while not FReadSQL.Eof do
-    begin
-      MemTable.Append;
-      MemTable.FieldByName('ID').AsInteger := FReadSQL.FieldByName('ID').AsInteger;
-      MemTable.FieldByName('USR$NAME').AsString := FReadSQL.FieldByName('USR$NAME').AsString;
-      MemTable.Post;
-
-      FReadSQL.Next;
-    end;
-  finally
-    FReadSQL.Close;
   end;
 end;
 
