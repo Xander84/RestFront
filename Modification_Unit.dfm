@@ -328,7 +328,6 @@ object ModificationForm: TModificationForm
     StatusBar.GradientDirection = gdVertical
     Styler = FrontData.FrontPanelStyler
     Touch.GestureManager = gmModficator
-    ExplicitLeft = -6
     FullHeight = 432
   end
   object aclModify: TActionList
