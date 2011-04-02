@@ -331,7 +331,7 @@ end;
 
 procedure TModificationForm.actGoodDownExecute(Sender: TObject);
 begin
-  LockWindowUpdate(TForm(Self).Handle);
+  LockWindowUpdate(Self.Handle);
   try
     ScrollControl(pnlMain, True, FFirstTopButton, FLastTopButton);
   finally
@@ -346,7 +346,7 @@ end;
 
 procedure TModificationForm.actGoodUpExecute(Sender: TObject);
 begin
-  LockWindowUpdate(TForm(Self).Handle);
+  LockWindowUpdate(Self.Handle);
   try
     ScrollControl(pnlMain, False, FFirstTopButton, FLastTopButton);
   finally

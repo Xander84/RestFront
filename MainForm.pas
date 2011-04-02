@@ -1924,15 +1924,19 @@ begin
     if (Quantity >= FLineTable.FieldByName('OLDQUANTITY').AsCurrency) and
       (FHeaderTable.FieldByName('USR$MN_PRINTDATE').IsNull) then
     begin
-      FLineTable.Edit;
-      FLineTable.FieldByName('USR$QUANTITY').AsCurrency := Quantity;
-      if FLineTable.FieldByName('STATEFIELD').AsInteger = cn_StateNothing then
-        FLineTable.FieldByName('STATEFIELD').AsInteger := cn_StateUpdate; 
-      FLineTable.Post;
-
       FGoodInfo.GoodID := FLineTable.FieldByName('usr$goodkey').AsInteger;
       FGoodInfo.GoodName := FLineTable.FieldByName('GOODNAME').AsString;
       FGoodInfo.Quantity := Quantity;
+      if Quantity > 0 then
+      begin
+        FLineTable.Edit;
+        FLineTable.FieldByName('USR$QUANTITY').AsCurrency := Quantity;
+        if FLineTable.FieldByName('STATEFIELD').AsInteger = cn_StateNothing then
+          FLineTable.FieldByName('STATEFIELD').AsInteger := cn_StateUpdate;
+        FLineTable.Post;
+      end else
+        FLineTable.Delete;
+
       FLogManager.DoOrderGoodLog(GetCurrentUserInfo, GetCurrentOrderInfo, FGoodInfo, ev_RemoveQuantity);
 
       WritePos(FLineTable);
