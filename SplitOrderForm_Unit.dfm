@@ -78,7 +78,6 @@ object SplitOrder: TSplitOrder
       StatusBar.ColorTo = 16374724
       StatusBar.GradientDirection = gdVertical
       Styler = FrontData.FrontPanelStyler
-      TextVAlign = tvaCenter
       FullHeight = 41
     end
     object DBGrLeft: TDBAdvGrid
@@ -348,7 +347,6 @@ object SplitOrder: TSplitOrder
       StatusBar.ColorTo = 16374724
       StatusBar.GradientDirection = gdVertical
       Styler = FrontData.FrontPanelStyler
-      TextVAlign = tvaCenter
       FullHeight = 41
     end
     object DBGrRight: TDBAdvGrid
@@ -522,7 +520,7 @@ object SplitOrder: TSplitOrder
           PrintFont.Height = -11
           PrintFont.Name = 'MS Sans Serif'
           PrintFont.Style = []
-          Width = 223
+          Width = 192
         end>
       DataSource = dsRight
       InvalidPicture.Data = {
@@ -555,7 +553,7 @@ object SplitOrder: TSplitOrder
       ColWidths = (
         20
         74
-        223)
+        192)
     end
   end
   object pnlBottom: TAdvPanel

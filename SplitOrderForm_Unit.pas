@@ -88,6 +88,7 @@ begin
     begin
       Form := TDevideForm.Create(nil);
       try
+        Form.LabelCaption := 'Количество';
         Form.ShowModal;
         if Form.ModalResult = mrOK then
         begin
@@ -344,9 +345,9 @@ begin
   if DataSet.FieldByName('STATEFIELD').AsInteger = 0 then
     DataSet.FieldByName('STATEFIELD').AsInteger := 2; //обновление
 
-  DataSet.FieldByName('USR$SUMNCU').AsCurrency :=
-    DataSet.FieldBYName('USR$COSTNCU').AsCurrency *
-    DataSet.FieldBYName('USR$QUANTITY').AsCurrency;
+  DataSet.FieldByName('USR$SUMNCU').AsCurrency := FFrontBase.RoundCost
+    (DataSet.FieldBYName('USR$COSTNCU').AsCurrency *
+    DataSet.FieldBYName('USR$QUANTITY').AsCurrency);
 
   DataSet.FieldByName('USR$SUMNCUWITHDISCOUNT').AsCurrency :=
     FFrontBase.RoundCost(DataSet.FieldByName('USR$SUMNCU').AsCurrency *
@@ -381,9 +382,9 @@ begin
   if DataSet.FieldByName('STATEFIELD').AsInteger = 0 then
     DataSet.FieldByName('STATEFIELD').AsInteger := 2; //обновление
 
-  DataSet.FieldByName('USR$SUMNCU').AsCurrency :=
-    DataSet.FieldBYName('USR$COSTNCU').AsCurrency *
-    DataSet.FieldBYName('USR$QUANTITY').AsCurrency;
+  DataSet.FieldByName('USR$SUMNCU').AsCurrency := FFrontBase.RoundCost
+    (DataSet.FieldBYName('USR$COSTNCU').AsCurrency *
+    DataSet.FieldBYName('USR$QUANTITY').AsCurrency);
 
   DataSet.FieldByName('USR$SUMNCUWITHDISCOUNT').AsCurrency :=
     FFrontBase.RoundCost(DataSet.FieldByName('USR$SUMNCU').AsCurrency *
