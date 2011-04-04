@@ -365,7 +365,7 @@ type
 
     FRestFormState: TRestState;
     FPrevFormState: TRestState;
-    FBaseFromState: TRestState;
+    FBaseFormState: TRestState;
     // Режим только просмотра (для кассира)
     FViewMode: Boolean;
 
@@ -483,7 +483,7 @@ begin
         RestFormState := OrderMenu;
     end else
       RestFormState := OrderMenu;
-    FBaseFromState := FRestFormState;
+    FBaseFormState := FRestFormState;
   end else
   begin
     Touch_MessageBox('Внимание', 'Неверный пароль', MB_OK, mtWarning);
@@ -1698,7 +1698,12 @@ end;
 
 procedure TRestMainForm.btnNewOrderClick(Sender: TObject);
 begin
+  if not FFrontBase.Options.NoPassword then
+    tmrClose.Enabled := False;
+
   CreateNewOrder(-1);
+
+  tmrClose.Enabled := not FFrontBase.Options.NoPassword;
 end;
 
 procedure TRestMainForm.actOKExecute(Sender: TObject);
@@ -1811,7 +1816,7 @@ begin
 
     KassirInfo, ManagerPage:
       begin
-        RestFormState := FBaseFromState;
+        RestFormState := FBaseFormState;
       end;
 
     HallsPage, HallInfo:
@@ -1935,7 +1940,10 @@ begin
           FLineTable.FieldByName('STATEFIELD').AsInteger := cn_StateUpdate;
         FLineTable.Post;
       end else
-        FLineTable.Delete;
+      begin
+        if Touch_MessageBox('Внимание', 'Удалить позицию?', MB_YESNO, mtConfirmation) = IDYES then
+          FLineTable.Delete;
+      end;
 
       FLogManager.DoOrderGoodLog(GetCurrentUserInfo, GetCurrentOrderInfo, FGoodInfo, ev_RemoveQuantity);
 
@@ -3043,12 +3051,15 @@ begin
 end;
 
 procedure TRestMainForm.btnWithOutPrecheckOrdersClick(Sender: TObject);
+var
+  FState: TRestState;
 begin
   if btnWithOutPrecheckOrders.Down then
   begin
+    FState := RestFormState;
     RestFormState := OrderMenu;
     FWithPreCheck := False;
-    RestFormState := KassirInfo;
+    RestFormState := FState;//KassirInfo;
     CreateUserList;
   end;
 end;
@@ -3344,12 +3355,15 @@ begin
 end;
 
 procedure TRestMainForm.btnPrecheckOrdersClick(Sender: TObject);
+var
+  FState: TRestState;
 begin
   if btnPrecheckOrders.Down then
   begin
+    FState := RestFormState;
     RestFormState := OrderMenu;
     FWithPreCheck := True;
-    RestFormState := KassirInfo;
+    RestFormState := FState;//KassirInfo;
     CreateUserList;
   end;
 end;
@@ -3378,7 +3392,7 @@ begin
     FSplitForm.FrontBase := FFrontBase;
     try
       FSplitForm.ShowModal;
-      RestFormState := OrderMenu;
+      RestFormState := FBaseFormState;
     finally
       FreeAndNil(FSplitForm);
     end;
