@@ -5,7 +5,7 @@ unit FrontData_Unit;
 interface
 
 uses
-  SysUtils, Windows, Classes, AdvPanel, AdvSmoothMessageDialog, AdvStyleIF,
+  SysUtils, Windows, Classes, AdvPanel, AdvStyleIF, AdvSmoothButton,
   SysConst, Graphics, ImgList, Controls, AdvAppStyler, GDIPPictureContainer,
   DBGridEh, AdvGrid, DBAdvGrid, Forms, obj_QueryList;
 
@@ -14,7 +14,6 @@ type
 
   TFrontData = class(TDataModule)
     FrontPanelStyler: TAdvPanelStyler;
-    AdvSmoothMessageDialog1: TAdvSmoothMessageDialog;
     RestPictureContainer: TGDIPPictureContainer;
     ApStyler: TAdvAppStyler;
     procedure DataModuleCreate(Sender: TObject);
@@ -38,6 +37,7 @@ type
   function GetFrontStyle: TTMSStyle;
   procedure AdjustResolution(const FForm: TWinControl);
   function AdjustWidth(const FWidth: Integer): Integer;
+  procedure SetButtonStyle(const FButton: TAdvSmoothButton);
 
 // настройки для гридов
 const
@@ -86,6 +86,14 @@ uses
 {$R *.dfm}
 
 { TFrontData }
+
+procedure SetButtonStyle(const FButton: TAdvSmoothButton);
+begin
+  FButton.SetComponentStyle(tsTerminal);
+  FButton.BevelColor := clSilver;
+  FButton.Appearance.Font.Style := [fsBold];
+  FButton.DisabledColor := clGray;
+end;
 
 procedure SetupGrid(const Grid: TDBGridEh);
 var

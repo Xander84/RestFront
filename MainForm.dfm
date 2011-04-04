@@ -164,7 +164,7 @@ object RestMainForm: TRestMainForm
               Top = 0
               Width = 242
               Height = 660
-              ActivePage = tsTablesDesigner
+              ActivePage = tsMenu
               ActiveFont.Charset = DEFAULT_CHARSET
               ActiveFont.Color = clWindowText
               ActiveFont.Height = -11
@@ -604,7 +604,7 @@ object RestMainForm: TRestMainForm
             Top = 1
             Width = 690
             Height = 699
-            ActivePage = tsManagerPage
+            ActivePage = tsOrderInfo
             ActiveFont.Charset = DEFAULT_CHARSET
             ActiveFont.Color = clWindowText
             ActiveFont.Height = -11

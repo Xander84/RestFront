@@ -318,10 +318,11 @@ type
     FTableChooseTop   : Integer;
     FTableChooseLastTop: Integer;
     //
-    FMenuFirstTop     : Integer;
-    FMenuLastTop      : Integer;
-    FMenuButtonNumber : Integer;
-    FMenuButtonCount  : Integer;
+    FMenuFirstTop       : Integer;
+    FMenuLastTop        : Integer;
+    FMenuLastLeftButton : Integer;
+    FMenuButtonNumber   : Integer;
+    FMenuButtonCount    : Integer;
     //
     FGroupFirstTop      : Integer;
     FGroupLastLeftButton: Integer;
@@ -362,6 +363,7 @@ type
     FActiveHallButton: String;
     //Указатель на нажатую кнопку
     FSelectedButton: TObject;
+    FMenuSelectedButton: TObject;
 
     FRestFormState: TRestState;
     FPrevFormState: TRestState;
@@ -569,6 +571,21 @@ begin
   btnPay.Picture := FrontData.RestPictureContainer.FindPicture('Money');
 
   MenuOfficeStyler.SetComponentStyle(GetFrontStyle);
+
+  {$IFNDEF DEBUG}
+  if Screen.Width > 1024 then
+  begin
+    pnlRight.Width := pnlRight.Width * 2;
+
+    btnScrollDown.Width := btnScrollDown.Width * 2;
+    btnScrollUp.Left := btnScrollUp.Left * 2;
+    btnScrollUp.Width := btnScrollUp.Width * 2;
+    if Screen.Height > 768 then
+    begin
+      pnlMainGood.Height := pnlMainGood.Height + btnHeight;
+    end;
+  end;
+  {$ENDIF}
 end;
 
 procedure TRestMainForm.FormDestroy(Sender: TObject);
@@ -725,6 +742,7 @@ var
 begin
   //Создание кнопки
   FButton := TAdvSmoothButton.Create(tsUserOrder);
+  SetButtonStyle(FButton);
   FButton.Appearance.Font.Name := cn_FontType;
   FButton.Appearance.BeginUpdate;
   try
@@ -890,9 +908,14 @@ begin
 //      FButton.TableName := IBSQL.FieldByName('USR$NAME').AsString;
       FButton.HallKey := HallKey;
       FButton.Height := btnHeight;
-      FButton.Width  := AdjustWidth(btnLongWidth);
+      {$IFNDEF DEBUG}
+      if Screen.Width > 1024 then
+        FButton.Width := 2 * AdjustWidth(btnLongWidth) + 4
+      else
+      {$ENDIF}
+        FButton.Width := AdjustWidth(btnLongWidth);
 
-      FTableChooseLastTop := FTableChooseLastTop + btnHeight + 2;
+      FTableChooseLastTop := FTableChooseLastTop + btnHeight + btnFirstTop;
 
       FButton.Left := btnFirstTop {$IFDEF NEW_TABCONTROL} + 4 {$ENDIF};
       FButton.Top  := FTableChooseLastTop;
@@ -911,9 +934,12 @@ end;
 procedure TRestMainForm.AddGoodButton;
 var
   FButton: TAdvSmoothButton;
+  S: String;
 begin
   //Создание кнопки
   FButton := TAdvSmoothButton.Create(pnlGood);
+  SetButtonStyle(FButton);
+  FButton.BevelColor := clWhite;
   FButton.Appearance.Font.Name := cn_FontType;
   FButton.Appearance.BeginUpdate;
   try
@@ -921,13 +947,13 @@ begin
     FButton.Parent := pnlGood;
     FButton.OnClick := GoodButtonOnClick;
     FButton.Name := Format(btnGoodName, [FGoodButtonNumber]);
-    FButton.Height := btnHeight;
-    FButton.Width  := btnHalfWidth;
+    FButton.Height := 80;//btnHeight;
+    FButton.Width  := 110; //btnHalfWidth;
 
     //проверяем, есть ли ещё место в ряду
     if (FGoodLastLeftButton + btnHalfWidth) > pnlGood.Width then
     begin
-      FGoodLastTop := FGoodLastTop + btnHeight + 2;
+      FGoodLastTop := FGoodLastTop + btnHeight + 8;
       FGoodLastLeftButton := btnFirstTop;
 
       FButton.Left := FGoodLastLeftButton;
@@ -939,15 +965,19 @@ begin
     end;
 
     FButton.Tag := FGoodDataSet.FieldByName('ID').AsInteger;
-    FButton.Caption := FGoodDataSet.FieldByName('NAME').AsString;
-    FButton.Status.Caption :=  FormatFloat('#,##0', FGoodDataSet.FieldByName('COST').AsFloat);
-    FButton.Status.OffsetTop := -2;
+
+    S := FGoodDataSet.FieldByName('NAME').AsString;
+    if Length(S) > 60 then
+      Delete(S, 60, Length(S));
+    FButton.Caption := S;
+    FButton.Status.Caption := FormatFloat('#,##0', FGoodDataSet.FieldByName('COST').AsFloat);
+    FButton.Status.OffsetTop := -3;
     FButton.VerticalSpacing := 10;
     FButton.Status.Visible := True;
   finally
     FButton.Appearance.EndUpdate;
   end;
-  FGoodLastLeftButton := FGoodLastLeftButton + btnHalfWidth + 2;
+  FGoodLastLeftButton := FGoodLastLeftButton + btnHalfWidth + 8;
   FGoodButtonList.Add(FButton);
   Inc(FGoodButtonNumber);
 end;
@@ -964,6 +994,7 @@ begin
 
   //Создание кнопки
   FButton := TAdvSmoothButton.Create(pnlGood);
+  SetButtonStyle(FButton);
   FButton.Appearance.Font.Name := cn_FontType;
   FButton.Appearance.BeginUpdate;
   try
@@ -1008,6 +1039,7 @@ var
 begin
   //Создание кнопки
   FButton := TAdvSmoothButton.Create(pnlHalls);
+  SetButtonStyle(FButton);
   FButton.Appearance.BeginUpdate;
   try
     FButton.Appearance.Font.Name := cn_FontType;
@@ -1017,9 +1049,14 @@ begin
     FButton.OnClick := HallButtonOnClick;
     FButton.Name := Format(btnHallsName, [FHallButtonNumber]);
     FButton.Height := btnHeight;
-    FButton.Width  := AdjustWidth(btnLongWidth); //btnLongWidth;
+    {$IFNDEF DEBUG}
+    if Screen.Width > 1024 then
+      FButton.Width := 2 * AdjustWidth(btnLongWidth) + 4
+    else
+    {$ENDIF}
+      FButton.Width := AdjustWidth(btnLongWidth); //btnLongWidth;
 
-    FHallLastTop := FHallLastTop + btnHeight + 2;
+    FHallLastTop := FHallLastTop + btnHeight + btnFirstTop;
 
     FButton.Left := btnFirstTop {$IFDEF NEW_TABCONTROL} + 4 {$ENDIF};
     FButton.Top  := FHallLastTop;
@@ -1039,6 +1076,7 @@ var
 begin
   //Создание кнопки
   FButton := TAdvSmoothButton.Create(pnlGood);
+  SetButtonStyle(FButton);
   FButton.Appearance.BeginUpdate;
   try
     FButton.Appearance.Font.Name := cn_FontType;
@@ -1050,16 +1088,26 @@ begin
     FButton.Height := btnHeight;
     FButton.Width  := AdjustWidth(btnLongWidth); //btnLongWidth;
 
-    FMenuLastTop := FMenuLastTop + btnHeight + 2;
+    //проверяем, есть ли ещё место в ряду
+    if (FMenuLastLeftButton + AdjustWidth(btnLongWidth)) > pnlRight.Width then
+    begin
+      FMenuLastTop := FMenuLastTop + btnHeight + btnFirstTop;
+      FMenuLastLeftButton := btnFirstTop {$IFDEF NEW_TABCONTROL} + 4 {$ENDIF};
 
-    FButton.Left := btnFirstTop {$IFDEF NEW_TABCONTROL} + 4 {$ENDIF};
-    FButton.Top  := FMenuLastTop;
+      FButton.Left := FMenuLastLeftButton;
+      FButton.Top  := FMenuLastTop;
+    end else
+    begin
+      FButton.Left := FMenuLastLeftButton;
+      FButton.Top  := FMenuLastTop {+ btnHeight + 2};
+    end;
 
     FButton.Tag := FMenuDataSet.FieldByName('ID').AsInteger;
     FButton.Caption := FMenuDataSet.FieldByName('NAME').AsString;
   finally
     FButton.Appearance.EndUpdate;
   end;
+  FMenuLastLeftButton := FMenuLastLeftButton + AdjustWidth(btnLongWidth) + AdjustWidth(10);
   FMenuButtonList.Add(FButton);
   Inc(FMenuButtonNumber);
 end;
@@ -1153,8 +1201,11 @@ begin
     end;
   end;
   if FMenuButtonCount <= 6 then
-    pnlExtraGoodGroup.Visible := True
-  else
+  begin
+    pnlExtraGoodGroup.Visible := True;
+    if Screen.Width > 1024 then
+      pnlExtraGoodGroup.Height := tsMenu.Height - (FMenuLastTop + 2 * btnHeight);
+  end else
     pnlExtraGoodGroup.Visible := False;
   //если только одно меню, то:
   //1.делаем панель с ним невидимым
@@ -1337,12 +1388,24 @@ begin
 end;
 
 procedure TRestMainForm.MenuButtonOnClick(Sender: TObject);
+var
+  FButton: TAdvSmoothButton;
 begin
+  if FMenuSelectedButton <> nil then
+  begin
+    TAdvSmoothButton(FMenuSelectedButton).Enabled := True;
+    TAdvSmoothButton(FMenuSelectedButton).Appearance.Font.Color := clBlack;
+  end;
+  FMenuSelectedButton := Sender;
+  FButton := TAdvSmoothButton(Sender);
+  FButton.Enabled := False;
+//  FButton.Appearance.Font.Color := clLime;
+
   FGroupLastTop := btnFirstTop;
   FGroupFirstTop := btnFirstTop;
   FGroupLastLeftButton := btnFirstTop {$IFDEF NEW_TABCONTROL} + 4 {$ENDIF};
   RemoveGroupButton;
-  FMenuKey := TButton(Sender).Tag;
+  FMenuKey := FButton.Tag;
   CreateGroupButtonList(FMenuKey);
   if FMenuButtonCount > 6 then
     pcMenu.ActivePage := tsGroup;
@@ -1355,10 +1418,14 @@ begin
   LockWindowUpdate(Handle);
   try
     if FSelectedButton <> nil then
+    begin
       TAdvSmoothButton(FSelectedButton).Enabled := True;
+      TAdvSmoothButton(FSelectedButton).Appearance.Font.Color := clBlack;
+    end;
     FSelectedButton := Sender;
     FButton := TAdvSmoothButton(Sender);
     FButton.Enabled := False;
+//    FButton.Appearance.Font.Color := clLime;
 
     RemoveGoodButton;
     FGoodLastTop := btnFirstTop;
@@ -1712,6 +1779,8 @@ var
   PrinterName: String;
   PrnGrid: Integer;
 begin
+  FSelectedButton := nil;
+  FMenuSelectedButton := nil;
   case FRestFormState of
     Pass: Assert(False, 'Что мы тут делаем?');
 
@@ -1804,6 +1873,7 @@ end;
 procedure TRestMainForm.actCancelExecute(Sender: TObject);
 begin
   FSelectedButton := nil;
+  FMenuSelectedButton := nil;
   case FRestFormState of
     Pass: Assert(False, 'Что мы тут делаем');
 
@@ -2422,11 +2492,12 @@ begin
 
           FLastLeftButton := 18 + btnWidth {$IFDEF NEW_TABCONTROL} + 4 {$ENDIF};;
           FGroupLastLeftButton := btnFirstTop;
+          FMenuLastLeftButton := btnFirstTop {$IFDEF NEW_TABCONTROL} + 4 {$ENDIF};
           FLastTopButton  := btnFirstTop;
           FGroupLastTop   := btnFirstTop;
           FGoodLastTop    := btnFirstTop;
           FGoodLastLeftButton := btnFirstTop;
-          FMenuLastTop    := -(btnHeight);
+          FMenuLastTop    := btnFirstTop; //-(btnHeight);
           FHallLastTop    := -(btnHeight);
           FTableChooseLastTop := -(btnHeight);
 
@@ -2508,11 +2579,13 @@ begin
           btnAllChecks.Visible := True;
           btnManagerInfo.Visible := True;
 
-          FLastLeftButton := 18 + btnWidth {$IFDEF NEW_TABCONTROL} + 4 {$ENDIF};;
+          FLastLeftButton := 18 + btnWidth {$IFDEF NEW_TABCONTROL} + 4 {$ENDIF};
+          FMenuLastLeftButton := btnFirstTop {$IFDEF NEW_TABCONTROL} + 4 {$ENDIF};
           FLastTopButton  := btnFirstTop;
-          FMenuLastTop    := -(btnHeight);
+          //FMenuLastTop    := -(btnHeight);
           FMenuButtonCount := 0;
           FGroupLastTop   := btnFirstTop;
+          FMenuLastTop    := btnFirstTop;
 
           FUserFirstTop       := btnFirstTop;
           FUserLastLeftButton := btnFirstTop;
@@ -2578,11 +2651,13 @@ begin
           btnAllChecks.Visible := True;
           btnManagerInfo.Visible := True;
 
-          FLastLeftButton := 18 + btnWidth {$IFDEF NEW_TABCONTROL} + 4 {$ENDIF};;
+          FLastLeftButton := 18 + btnWidth {$IFDEF NEW_TABCONTROL} + 4 {$ENDIF};
+          FMenuLastLeftButton := btnFirstTop {$IFDEF NEW_TABCONTROL} + 4 {$ENDIF};
           FLastTopButton  := btnFirstTop;
-          FMenuLastTop    := -(btnHeight);
+          //FMenuLastTop    := -(btnHeight);
           FMenuButtonCount := 0;
           FGroupLastTop   := btnFirstTop;
+          FMenuLastTop    := btnFirstTop;
 
           FUserFirstTop       := btnFirstTop;
           FUserLastLeftButton := btnFirstTop;
@@ -2651,11 +2726,13 @@ begin
           btnAllChecks.Visible := True;
           btnManagerInfo.Visible := True;
 
-          FLastLeftButton := 18 + btnWidth {$IFDEF NEW_TABCONTROL} + 4 {$ENDIF};;
+          FLastLeftButton := 18 + btnWidth {$IFDEF NEW_TABCONTROL} + 4 {$ENDIF};
+          FMenuLastLeftButton := btnFirstTop {$IFDEF NEW_TABCONTROL} + 4 {$ENDIF};
           FLastTopButton  := btnFirstTop;
-          FMenuLastTop    := -(btnHeight);
+          //FMenuLastTop    := -(btnHeight);
           FMenuButtonCount := 0;
           FGroupLastTop   := btnFirstTop;
+          FMenuLastTop    := btnFirstTop;
 
           FUserFirstTop       := btnFirstTop;
           FUserLastLeftButton := btnFirstTop;
@@ -2886,6 +2963,7 @@ var
 begin
   //Создание кнопки
   FButton := TAdvSmoothButton.Create(pnlUsers);
+  SetButtonStyle(FButton);
   FButton.Appearance.Font.Name := cn_FontType;
   FButton.Appearance.BeginUpdate;
   try
@@ -2987,6 +3065,7 @@ var
 begin
   //Создание кнопки
   FButton := TAdvSmoothButton.Create(pnlUserOrders);
+  SetButtonStyle(FButton);
   FButton.Appearance.Font.Name := cn_FontType;
   FButton.Appearance.BeginUpdate;
   try

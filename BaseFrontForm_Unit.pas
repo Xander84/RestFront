@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, FrontData_Unit, AdvAppStyler, AdvPanel, AdvPageControl, ExtCtrls,
-  Front_DataBase_Unit;
+  Front_DataBase_Unit, AdvSmoothButton;
 
 type
   TBaseFrontForm = class(TForm)
@@ -45,7 +45,9 @@ begin
     begin
       TAdvTabSheet(Components[I]).Color := FrontData.PanelColor;
       TAdvTabSheet(Components[I]).ColorTo := FrontData.PanelColorTo;
-    end;
+    end else
+    if (Components[I] is TAdvSmoothButton) then
+      SetButtonStyle(TAdvSmoothButton(Components[I]));
   end;
   BorderIcons := [];
   BorderStyle := bsSingle;
