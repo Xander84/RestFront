@@ -203,6 +203,7 @@ type
     tmrTables: TTimer;
     btnPrecheckOrders: TAdvSmoothToggleButton;
     btnWithOutPrecheckOrders: TAdvSmoothToggleButton;
+    mainTouchKeyBoard: TAdvSmoothTouchKeyBoard;
 
     //Проверка введёного пароля
     procedure actPassEnterExecute(Sender: TObject);
@@ -280,6 +281,12 @@ type
     procedure tmrTablesTimer(Sender: TObject);
     procedure btnPrecheckOrdersClick(Sender: TObject);
     procedure btnWithOutPrecheckOrdersClick(Sender: TObject);
+    procedure DBGrMainColumns1GetCellParams(Sender: TObject; EditMode: Boolean;
+      Params: TColCellParamsEh);
+    procedure DBGrMainColumns2GetCellParams(Sender: TObject; EditMode: Boolean;
+      Params: TColCellParamsEh);
+    procedure DBGrMainColumns3GetCellParams(Sender: TObject; EditMode: Boolean;
+      Params: TColCellParamsEh);
   private
     //Компонент обращения к БД
     FFrontBase: TFrontBase;
@@ -571,7 +578,7 @@ begin
   btnPay.Picture := FrontData.RestPictureContainer.FindPicture('Money');
 
   MenuOfficeStyler.SetComponentStyle(GetFrontStyle);
-
+  mainTouchKeyBoard.SetComponentStyle(GetFrontStyle);
   {$IFNDEF DEBUG}
   if Screen.Width > 1024 then
   begin
@@ -580,12 +587,12 @@ begin
     btnScrollDown.Width := btnScrollDown.Width * 2;
     btnScrollUp.Left := btnScrollUp.Left * 2;
     btnScrollUp.Width := btnScrollUp.Width * 2;
-    if Screen.Height > 768 then
-    begin
-      pnlMainGood.Height := pnlMainGood.Height + btnHeight;
-    end;
   end;
   {$ENDIF}
+  if Screen.Height > 768 then
+  begin
+    pnlMainGood.Height := pnlMainGood.Height + btnHeight;
+  end;
 end;
 
 procedure TRestMainForm.FormDestroy(Sender: TObject);
@@ -743,7 +750,7 @@ begin
   //Создание кнопки
   FButton := TAdvSmoothButton.Create(tsUserOrder);
   SetButtonStyle(FButton);
-  FButton.Appearance.Font.Name := cn_FontType;
+  FButton.Appearance.Font.Name := 'Tahoma';
   FButton.Appearance.BeginUpdate;
   try
     FButton.Color := btnColor;
@@ -910,10 +917,10 @@ begin
       FButton.Height := btnHeight;
       {$IFNDEF DEBUG}
       if Screen.Width > 1024 then
-        FButton.Width := 2 * AdjustWidth(btnLongWidth) + 4
+        FButton.Width := 4 * 155 + 4
       else
       {$ENDIF}
-        FButton.Width := AdjustWidth(btnLongWidth);
+        FButton.Width := 2 * 155;
 
       FTableChooseLastTop := FTableChooseLastTop + btnHeight + btnFirstTop;
 
@@ -939,8 +946,9 @@ begin
   //Создание кнопки
   FButton := TAdvSmoothButton.Create(pnlGood);
   SetButtonStyle(FButton);
-  FButton.BevelColor := clWhite;
-  FButton.Appearance.Font.Name := cn_FontType;
+//  FButton.BevelColor := clWhite;
+  FButton.Appearance.Font.Name := 'Tahoma';
+  FButton.Appearance.Font.Size := 7;
   FButton.Appearance.BeginUpdate;
   try
     FButton.Color := btnColor;
@@ -957,7 +965,7 @@ begin
       FGoodLastLeftButton := btnFirstTop;
 
       FButton.Left := FGoodLastLeftButton;
-      FButton.Top  := FGoodLastTop;
+      FButton.Top := FGoodLastTop;
     end else
     begin
       FButton.Left := FGoodLastLeftButton;
@@ -972,7 +980,8 @@ begin
     FButton.Caption := S;
     FButton.Status.Caption := FormatFloat('#,##0', FGoodDataSet.FieldByName('COST').AsFloat);
     FButton.Status.OffsetTop := -3;
-    FButton.VerticalSpacing := 10;
+    FButton.VerticalSpacing := 4;
+    FButton.HorizontalSpacing := 1;
     FButton.Status.Visible := True;
   finally
     FButton.Appearance.EndUpdate;
@@ -995,7 +1004,7 @@ begin
   //Создание кнопки
   FButton := TAdvSmoothButton.Create(pnlGood);
   SetButtonStyle(FButton);
-  FButton.Appearance.Font.Name := cn_FontType;
+  FButton.Appearance.Font.Name := 'Tahoma';
   FButton.Appearance.BeginUpdate;
   try
     FButton.Color := btnColor;
@@ -1003,13 +1012,13 @@ begin
     FButton.OnClick := GroupButtonOnClick;
     FButton.Name := Format(btnGroupName, [FGroupButtonNumber]);
     FButton.Height := btnHeight;
-    FButton.Width  := AdjustWidth(btnHalfWidth); //btnHalfWidth;
+    FButton.Width  := btnHalfWidth; //btnHalfWidth;
 
     //проверяем, есть ли ещё место в ряду
-    if (FGroupLastLeftButton + AdjustWidth(btnHalfWidth)) > FPanel.Width then
+    if (FGroupLastLeftButton + btnHalfWidth) > FPanel.Width then
     begin
-      FGroupLastTop := FGroupLastTop + btnHeight + btnFirstTop;
-      FGroupLastLeftButton := btnFirstTop {$IFDEF NEW_TABCONTROL} + 4 {$ENDIF};
+      FGroupLastTop := FGroupLastTop + btnHeight + 2{btnFirstTop};
+      FGroupLastLeftButton := {btnFirstTop} 2 {$IFDEF NEW_TABCONTROL} + 4 {$ENDIF};
 
       FButton.Left := FGroupLastLeftButton;
       FButton.Top  := FGroupLastTop;
@@ -1023,12 +1032,12 @@ begin
     if Length(FGroupDataSet.FieldByName('NAME').AsString) > 16 then
       FButton.Appearance.Font.Size := cn_ButtonSmallFontSize
     else
-      FButton.Appearance.Font.Size := cn_ButtonFontSize;
+      FButton.Appearance.Font.Size := cn_ButtonSmallFontSize;//cn_ButtonFontSize;
     FButton.Caption := FGroupDataSet.FieldByName('NAME').AsString;
   finally
     FButton.Appearance.EndUpdate;
   end;
-  FGroupLastLeftButton := FGroupLastLeftButton + AdjustWidth(btnHalfWidth) + AdjustWidth(10);
+  FGroupLastLeftButton := FGroupLastLeftButton + btnHalfWidth + 2{AdjustWidth(10)};
   FGroupButtonList.Add(FButton);
   Inc(FGroupButtonNumber);
 end;
@@ -1042,7 +1051,7 @@ begin
   SetButtonStyle(FButton);
   FButton.Appearance.BeginUpdate;
   try
-    FButton.Appearance.Font.Name := cn_FontType;
+    FButton.Appearance.Font.Name := 'Tahoma';
     FButton.Appearance.Font.Size := cn_ButtonFontSize;
     FButton.Color := btnColor;
     FButton.Parent := pnlHalls;
@@ -1051,10 +1060,10 @@ begin
     FButton.Height := btnHeight;
     {$IFNDEF DEBUG}
     if Screen.Width > 1024 then
-      FButton.Width := 2 * AdjustWidth(btnLongWidth) + 4
+      FButton.Width := 4 * 155 + 4
     else
     {$ENDIF}
-      FButton.Width := AdjustWidth(btnLongWidth); //btnLongWidth;
+      FButton.Width := 2 * 155; //btnLongWidth;
 
     FHallLastTop := FHallLastTop + btnHeight + btnFirstTop;
 
@@ -1079,20 +1088,20 @@ begin
   SetButtonStyle(FButton);
   FButton.Appearance.BeginUpdate;
   try
-    FButton.Appearance.Font.Name := cn_FontType;
+    FButton.Appearance.Font.Name := 'Tahoma';
     FButton.Appearance.Font.Size := cn_ButtonFontSize;
     FButton.Color := btnColor;
     FButton.Parent := pnlMenu;
     FButton.OnClick := MenuButtonOnClick;
     FButton.Name := Format(btnMenuName, [FMenuButtonNumber]);
     FButton.Height := btnHeight;
-    FButton.Width  := AdjustWidth(btnLongWidth); //btnLongWidth;
+    FButton.Width  := 155 {btnLongWidth};
 
     //проверяем, есть ли ещё место в ряду
-    if (FMenuLastLeftButton + AdjustWidth(btnLongWidth)) > pnlRight.Width then
+    if (FMenuLastLeftButton + 155) > pnlRight.Width then
     begin
-      FMenuLastTop := FMenuLastTop + btnHeight + btnFirstTop;
-      FMenuLastLeftButton := btnFirstTop {$IFDEF NEW_TABCONTROL} + 4 {$ENDIF};
+      FMenuLastTop := FMenuLastTop + btnHeight + 2{btnFirstTop};
+      FMenuLastLeftButton := {btnFirstTop} 2 {$IFDEF NEW_TABCONTROL} + 4 {$ENDIF};
 
       FButton.Left := FMenuLastLeftButton;
       FButton.Top  := FMenuLastTop;
@@ -1107,7 +1116,7 @@ begin
   finally
     FButton.Appearance.EndUpdate;
   end;
-  FMenuLastLeftButton := FMenuLastLeftButton + AdjustWidth(btnLongWidth) + AdjustWidth(10);
+  FMenuLastLeftButton := FMenuLastLeftButton + 155 + 2{AdjustWidth(10)};
   FMenuButtonList.Add(FButton);
   Inc(FMenuButtonNumber);
 end;
@@ -1203,8 +1212,8 @@ begin
   if FMenuButtonCount <= 6 then
   begin
     pnlExtraGoodGroup.Visible := True;
-    if Screen.Width > 1024 then
-      pnlExtraGoodGroup.Height := tsMenu.Height - (FMenuLastTop + 2 * btnHeight);
+    if Screen.Width >= 1024 then
+      pnlExtraGoodGroup.Height := tsMenu.Height - (FMenuLastTop +  btnHeight + btnFirstTop);
   end else
     pnlExtraGoodGroup.Visible := False;
   //если только одно меню, то:
@@ -1394,7 +1403,6 @@ begin
   if FMenuSelectedButton <> nil then
   begin
     TAdvSmoothButton(FMenuSelectedButton).Enabled := True;
-    TAdvSmoothButton(FMenuSelectedButton).Appearance.Font.Color := clBlack;
   end;
   FMenuSelectedButton := Sender;
   FButton := TAdvSmoothButton(Sender);
@@ -1403,7 +1411,7 @@ begin
 
   FGroupLastTop := btnFirstTop;
   FGroupFirstTop := btnFirstTop;
-  FGroupLastLeftButton := btnFirstTop {$IFDEF NEW_TABCONTROL} + 4 {$ENDIF};
+  FGroupLastLeftButton := {btnFirstTop} 2 {$IFDEF NEW_TABCONTROL} + 4 {$ENDIF};
   RemoveGroupButton;
   FMenuKey := FButton.Tag;
   CreateGroupButtonList(FMenuKey);
@@ -1420,12 +1428,10 @@ begin
     if FSelectedButton <> nil then
     begin
       TAdvSmoothButton(FSelectedButton).Enabled := True;
-      TAdvSmoothButton(FSelectedButton).Appearance.Font.Color := clBlack;
     end;
     FSelectedButton := Sender;
     FButton := TAdvSmoothButton(Sender);
     FButton.Enabled := False;
-//    FButton.Appearance.Font.Color := clLime;
 
     RemoveGoodButton;
     FGoodLastTop := btnFirstTop;
@@ -1965,22 +1971,92 @@ end;
 procedure TRestMainForm.actAddQuantityExecute(Sender: TObject);
 var
   FGoodInfo: TLogGoodInfo;
+  Goodkey: Integer;
+  FForm: TModificationForm;
+  S: String;
+  ES: String;
 begin
   if (not FLineTable.IsEmpty) and (RestFormState = MenuInfo) then
   begin
-    FLineTable.Edit;
-    FLineTable.FieldByName('USR$QUANTITY').AsCurrency :=
-      FLineTable.FieldByName('USR$QUANTITY').AsCurrency + 1;
-    if FLineTable.FieldByName('STATEFIELD').AsInteger = cn_StateNothing then
-      FLineTable.FieldByName('STATEFIELD').AsInteger := cn_StateUpdate;
-    FLineTable.Post;
+    if not FLineTable.FieldByName('usr$mn_printdate').IsNull then
+    begin
+      GoodKey := FLineTable.FieldByName('usr$goodkey').AsInteger;
+      if not FGoodDataSet.Locate('ID', GoodKey, []) then
+        FFrontBase.GetGoodByID(FGoodDataSet, GoodKey);
 
-    FGoodInfo.GoodID := FLineTable.FieldByName('usr$goodkey').AsInteger;
-    FGoodInfo.GoodName := FLineTable.FieldByName('GOODNAME').AsString;
-    FGoodInfo.Quantity := FLineTable.FieldByName('USR$QUANTITY').AsCurrency;
-    FLogManager.DoOrderGoodLog(GetCurrentUserInfo, GetCurrentOrderInfo, FGoodInfo, ev_AddQuantity);
+      if FGoodDataSet.Locate('ID', GoodKey, []) then
+      begin
+        FLineTable.Append;
+        FLineTable.FieldByName('LINEKEY').AsInteger := FLineID;
+        FLineTable.FieldByName('STATEFIELD').AsInteger := cn_StateInsert;
+        FLineTable.FieldByName('usr$quantity').AsInteger := 1;
+        FLineTable.Post;
 
-    WritePos(FLineTable);
+        Inc(FLineID);
+        //проверяем сначала на модификаторы
+        if FGoodDataSet.FieldByName('ISNEEDMODIFY').AsInteger = 1 then
+        begin
+          FForm := TModificationForm.CreateWithFrontBase(nil, FFrontBase);
+          try
+            FForm.GoodKey := GoodKey;
+            FForm.LineModifyTable := FModificationDataSet;
+            FForm.ShowModal;
+            if FForm.ModalResult = mrOK then
+            begin
+              FModificationDataSet.First;
+              while not FModificationDataSet.Eof do
+              begin
+                if S > '' then
+                  S := S + ', ';
+                S := S + FModificationDataSet.FieldByName('NAME').AsString;
+                FModificationDataSet.Next;
+              end;
+              ES := FForm.ExtraModifyString;
+              if ES <> '' then
+              begin
+                if S = '' then
+                  S := ES
+                else
+                  S := S + ', ' + ES;
+              end;
+            end;
+          finally
+            FForm.Free;
+          end;
+        end;
+        FLineTable.Edit;
+        FLineTable.FieldByName('usr$goodkey').AsInteger := GoodKey;
+        FLineTable.FieldByName('GOODNAME').AsString := FGoodDataSet.FieldByName('NAME').AsString;
+        FLineTable.FieldByName('usr$quantity').AsInteger := 1;
+        FLineTable.FieldByName('usr$costncu').AsCurrency := FGoodDataSet.FieldByName('COST').AsCurrency;
+        FLineTable.FieldByName('MODIFYSTRING').AsString := S;
+        FLineTable.FieldByName('EXTRAMODIFY').AsString := ES;
+        FLineTable.FieldByName('USR$COMPUTERNAME').AsString := FFrontBase.GetLocalComputerName;
+        FLineTable.Post;
+
+        FGoodInfo.GoodID := GoodKey;
+        FGoodInfo.GoodName := FLineTable.FieldByName('GOODNAME').AsString;
+        FGoodInfo.Quantity := 1;
+        FGoodInfo.Sum := FGoodDataSet.FieldByName('COST').AsCurrency;
+        FLogManager.DoOrderGoodLog(GetCurrentUserInfo, GetCurrentOrderInfo, FGoodInfo, ev_AddGoodToOrder);
+        WritePos(FLineTable);
+      end;
+    end else
+    begin
+      FLineTable.Edit;
+      FLineTable.FieldByName('USR$QUANTITY').AsCurrency :=
+        FLineTable.FieldByName('USR$QUANTITY').AsCurrency + 1;
+      if FLineTable.FieldByName('STATEFIELD').AsInteger = cn_StateNothing then
+        FLineTable.FieldByName('STATEFIELD').AsInteger := cn_StateUpdate;
+      FLineTable.Post;
+
+      FGoodInfo.GoodID := FLineTable.FieldByName('usr$goodkey').AsInteger;
+      FGoodInfo.GoodName := FLineTable.FieldByName('GOODNAME').AsString;
+      FGoodInfo.Quantity := FLineTable.FieldByName('USR$QUANTITY').AsCurrency;
+      FLogManager.DoOrderGoodLog(GetCurrentUserInfo, GetCurrentOrderInfo, FGoodInfo, ev_AddQuantity);
+
+      WritePos(FLineTable);
+    end;
   end;
   SaveAllOrder;
 end;
@@ -2492,7 +2568,7 @@ begin
 
           FLastLeftButton := 18 + btnWidth {$IFDEF NEW_TABCONTROL} + 4 {$ENDIF};;
           FGroupLastLeftButton := btnFirstTop;
-          FMenuLastLeftButton := btnFirstTop {$IFDEF NEW_TABCONTROL} + 4 {$ENDIF};
+          FMenuLastLeftButton := {btnFirstTop} 2 {$IFDEF NEW_TABCONTROL} + 4 {$ENDIF};
           FLastTopButton  := btnFirstTop;
           FGroupLastTop   := btnFirstTop;
           FGoodLastTop    := btnFirstTop;
@@ -2580,7 +2656,7 @@ begin
           btnManagerInfo.Visible := True;
 
           FLastLeftButton := 18 + btnWidth {$IFDEF NEW_TABCONTROL} + 4 {$ENDIF};
-          FMenuLastLeftButton := btnFirstTop {$IFDEF NEW_TABCONTROL} + 4 {$ENDIF};
+          FMenuLastLeftButton := {btnFirstTop} 2 {$IFDEF NEW_TABCONTROL} + 4 {$ENDIF};
           FLastTopButton  := btnFirstTop;
           //FMenuLastTop    := -(btnHeight);
           FMenuButtonCount := 0;
@@ -2652,7 +2728,7 @@ begin
           btnManagerInfo.Visible := True;
 
           FLastLeftButton := 18 + btnWidth {$IFDEF NEW_TABCONTROL} + 4 {$ENDIF};
-          FMenuLastLeftButton := btnFirstTop {$IFDEF NEW_TABCONTROL} + 4 {$ENDIF};
+          FMenuLastLeftButton := {btnFirstTop} 2 {$IFDEF NEW_TABCONTROL} + 4 {$ENDIF};
           FLastTopButton  := btnFirstTop;
           //FMenuLastTop    := -(btnHeight);
           FMenuButtonCount := 0;
@@ -2727,7 +2803,7 @@ begin
           btnManagerInfo.Visible := True;
 
           FLastLeftButton := 18 + btnWidth {$IFDEF NEW_TABCONTROL} + 4 {$ENDIF};
-          FMenuLastLeftButton := btnFirstTop {$IFDEF NEW_TABCONTROL} + 4 {$ENDIF};
+          FMenuLastLeftButton := {btnFirstTop} 2 {$IFDEF NEW_TABCONTROL} + 4 {$ENDIF};
           FLastTopButton  := btnFirstTop;
           //FMenuLastTop    := -(btnHeight);
           FMenuButtonCount := 0;
@@ -2816,7 +2892,7 @@ begin
           pnlRight.Visible := False;
           btnPrecheckOrders.Visible := False;
           btnWithOutPrecheckOrders.Visible := False;
-          FWithPreCheck := True;
+          FWithPreCheck := False;
 
           FRestFormState := Value;
           pcOrder.ActivePage := tsManagerPage;
@@ -2964,7 +3040,7 @@ begin
   //Создание кнопки
   FButton := TAdvSmoothButton.Create(pnlUsers);
   SetButtonStyle(FButton);
-  FButton.Appearance.Font.Name := cn_FontType;
+  FButton.Appearance.Font.Name := 'Tahoma';
   FButton.Appearance.BeginUpdate;
   try
     FButton.Color := btnColor;
@@ -3066,7 +3142,7 @@ begin
   //Создание кнопки
   FButton := TAdvSmoothButton.Create(pnlUserOrders);
   SetButtonStyle(FButton);
-  FButton.Appearance.Font.Name := cn_FontType;
+  FButton.Appearance.Font.Name := 'Tahoma';
   FButton.Appearance.BeginUpdate;
   try
     FButton.Color := btnColor;
@@ -3409,6 +3485,11 @@ begin
     if S > '' then
       Params.Text := Params.Text + #13#10 + S
   end;
+  if FLineTable.FieldByName('usr$mn_printdate').AsString = '' then
+  begin
+    Params.Font.Color := clGreen;
+    Params.Font.Style := [fsBold];
+  end;
 end;
 
 procedure TRestMainForm.DBGrInfoHeaderAdvDrawDataCell(Sender: TCustomDBGridEh;
@@ -3431,6 +3512,36 @@ begin
   inherited;
   if Sender.DataSource.DataSet.FieldByName('U_USR$CAUSEDELETEKEY_USR$NAME').AsString > '' then
     Params.Font.Color := clRed;
+end;
+
+procedure TRestMainForm.DBGrMainColumns1GetCellParams(Sender: TObject;
+  EditMode: Boolean; Params: TColCellParamsEh);
+begin
+  if FLineTable.FieldByName('usr$mn_printdate').AsString = '' then
+  begin
+    Params.Font.Color := clGreen;
+    Params.Font.Style := [fsBold];
+  end;
+end;
+
+procedure TRestMainForm.DBGrMainColumns2GetCellParams(Sender: TObject;
+  EditMode: Boolean; Params: TColCellParamsEh);
+begin
+  if FLineTable.FieldByName('usr$mn_printdate').AsString = '' then
+  begin
+    Params.Font.Color := clGreen;
+    Params.Font.Style := [fsBold];
+  end;
+end;
+
+procedure TRestMainForm.DBGrMainColumns3GetCellParams(Sender: TObject;
+  EditMode: Boolean; Params: TColCellParamsEh);
+begin
+  if FLineTable.FieldByName('usr$mn_printdate').AsString = '' then
+  begin
+    Params.Font.Color := clGreen;
+    Params.Font.Style := [fsBold];
+  end;
 end;
 
 procedure TRestMainForm.btnPrecheckOrdersClick(Sender: TObject);
@@ -3881,8 +3992,8 @@ end;
 
 procedure TRestMainForm.actAddQuantityUpdate(Sender: TObject);
 begin
-  actAddQuantity.Enabled := (FHeaderTable.FieldByName('usr$timecloseorder').IsNull
-    and FLineTable.FieldByName('usr$mn_printdate').IsNull) and not FViewMode;
+  actAddQuantity.Enabled := FHeaderTable.FieldByName('usr$timecloseorder').IsNull
+    {and FLineTable.FieldByName('usr$mn_printdate').IsNull} and not FViewMode;
 end;
 
 procedure TRestMainForm.actAdminOptionsExecute(Sender: TObject);

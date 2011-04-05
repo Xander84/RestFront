@@ -44,7 +44,7 @@ const
   cn_FontSize = 16;
   cn_EvenRowColor = clInfoBk;
   cn_OddRowColor = clGradientActiveCaption;
-  cn_FontType = 'Times New Roman';
+  cn_FontType = 'Tahoma';
   DATA_DIR = '..\data';
   APP_DATA_FILENAME = 'data.ini';
   STYLE_SECTION_NAME = 'STYLE_SECTION';
@@ -93,6 +93,7 @@ begin
   FButton.BevelColor := clSilver;
   FButton.Appearance.Font.Style := [fsBold];
   FButton.DisabledColor := clGray;
+  FButton.Color := TColor($00E7DCD5);
 end;
 
 procedure SetupGrid(const Grid: TDBGridEh);
@@ -106,6 +107,7 @@ begin
     TitleFont.Size := cn_TitleFontSize;
     OddRowColor := cn_OddRowColor;
     EvenRowColor := cn_EvenRowColor;
+    FooterFont.Size := cn_TitleFontSize;
     for I := 0 to Columns.Count - 1 do
     begin
       Columns[I].Font.Name := cn_FontType;
@@ -122,7 +124,7 @@ var
 begin
   with AnGrid do
   begin
-    DefaultRowHeight := 2 * cn_GridFontSize;
+    DefaultRowHeight := 3 * cn_GridFontSize;
     FixedFont.Size := 12;
     FixedFont.Name := cn_FontType;
     Bands.PrimaryColor := cn_EvenRowColor;
@@ -149,9 +151,6 @@ var
     IDI_ASTERISK, IDI_QUESTION, nil);
 
 procedure TFrontData.DataModuleCreate(Sender: TObject);
-{var
-  IconID: PChar;
-  FPicture: TPicture;     }
 begin
   cn_Height := Screen.Height;
   cn_Width := Screen.Width;
@@ -163,53 +162,12 @@ begin
   FrontPanelStyler.SetComponentStyle(GetDefaultTheme);
   FPanelColor := FrontPanelStyler.Settings.Color;
   FPanelColorTo := FrontPanelStyler.Settings.ColorTo;
-
-  //загрузим стандартные иконки
-{  FPicture := TPicture.Create;
-  try
-    IconID := IconIDs[mtWarning];
-    if IconID <> nil then
-      with RestPictureContainer.Items.Add do
-      begin
-        FPicture.Icon.Handle := LoadIcon(0, IconID);
-        Picture.Assign(FPicture);
-        Name := 'Warning';
-      end;
-
-    IconID := IconIDs[mtError];
-    if IconID <> nil then
-      with RestPictureContainer.Items.Add do
-      begin
-        FPicture.Icon.Handle := LoadIcon(0, IconID);
-        Picture.Assign(FPicture);
-        Name := 'Error';
-      end;
-
-    IconID := IconIDs[mtInformation];
-    if IconID <> nil then
-      with RestPictureContainer.Items.Add do
-      begin
-        FPicture.Icon.Handle := LoadIcon(0, IconID);
-        Picture.Assign(FPicture);
-        Name := 'Information';
-      end;
-
-    IconID := IconIDs[mtConfirmation];
-    if IconID <> nil then
-      with RestPictureContainer.Items.Add do
-      begin
-        FPicture.Icon.Handle := LoadIcon(0, IconID);
-        Picture.Assign(FPicture);
-        Name := 'Confirmation';
-      end;
-  finally
-    FPicture.Free;
-  end;    }
 end;
 
 function TFrontData.CheckUserDataDirectory: Boolean;
 begin
-  Result := False;
+  Result := True;
+{  Result := False;
   SetCurrentDir(ExtractFileDir(ParamStr(0)));
   if DirectoryExists(ExpandFileName(DATA_DIR)) then
   begin
@@ -219,7 +177,7 @@ begin
   begin
     if CreateDir(ExpandFileName(DATA_DIR)) then
       Result := True;
-  end;
+  end; }
 end;
 
 function TFrontData.GetUserApplicationFileName(
@@ -240,8 +198,7 @@ begin
     end;
 
     // —формируем пути к файлу в директори€х данных
-    SetCurrentDir(ExtractFileDir(ParamStr(0)));
-    Result := IncludeTrailingBackslash(ExpandFileName(DATA_DIR)) + FileName;
+    Result := IncludeTrailingPathDelimiter(ExtractFileDir(ParamStr(0))) + FileName;
   end;
 end;
 
@@ -334,47 +291,47 @@ begin
 
     if FunctionFile.ValueExists(GRID_FONT_SECTION_NAME, GRID_HEADER_FONT_SIZE) then
     begin
-      ValueText := AnsiUpperCase(FunctionFile.ReadString(GRID_FONT_SECTION_NAME, GRID_HEADER_FONT_SIZE, '11'));
+      ValueText := AnsiUpperCase(FunctionFile.ReadString(GRID_FONT_SECTION_NAME, GRID_HEADER_FONT_SIZE, '10'));
       try
         cn_TitleFontSize := StrToInt(ValueText);
       except
-        cn_TitleFontSize := 11;
+        cn_TitleFontSize := 10;
       end;
     end else
-      FunctionFile.WriteString(GRID_FONT_SECTION_NAME, GRID_HEADER_FONT_SIZE, '11');
+      FunctionFile.WriteString(GRID_FONT_SECTION_NAME, GRID_HEADER_FONT_SIZE, '10');
 
     if FunctionFile.ValueExists(GRID_FONT_SECTION_NAME, GRID_FONT_SIZE) then
     begin
-      ValueText := AnsiUpperCase(FunctionFile.ReadString(GRID_FONT_SECTION_NAME, GRID_FONT_SIZE, '14'));
+      ValueText := AnsiUpperCase(FunctionFile.ReadString(GRID_FONT_SECTION_NAME, GRID_FONT_SIZE, '10'));
       try
         cn_GridFontSize := StrToInt(ValueText);
       except
-        cn_GridFontSize := 14;
+        cn_GridFontSize := 10;
       end;
     end else
-      FunctionFile.WriteString(GRID_FONT_SECTION_NAME, GRID_FONT_SIZE, '14');
+      FunctionFile.WriteString(GRID_FONT_SECTION_NAME, GRID_FONT_SIZE, '10');
 
     if FunctionFile.ValueExists(BTN_FONT_SECTION_NAME, BTN_SMALL_FONT_SIZE) then
     begin
-      ValueText := AnsiUpperCase(FunctionFile.ReadString(BTN_FONT_SECTION_NAME, BTN_SMALL_FONT_SIZE, '9'));
+      ValueText := AnsiUpperCase(FunctionFile.ReadString(BTN_FONT_SECTION_NAME, BTN_SMALL_FONT_SIZE, '8'));
       try
         cn_ButtonSmallFontSize := StrToInt(ValueText);
       except
-        cn_ButtonSmallFontSize := 9;
+        cn_ButtonSmallFontSize := 8;
       end;
     end else
-      FunctionFile.WriteString(BTN_FONT_SECTION_NAME, BTN_SMALL_FONT_SIZE, '9');
+      FunctionFile.WriteString(BTN_FONT_SECTION_NAME, BTN_SMALL_FONT_SIZE, '8');
 
     if FunctionFile.ValueExists(BTN_FONT_SECTION_NAME, BTN_FONT_SIZE) then
     begin
-      ValueText := AnsiUpperCase(FunctionFile.ReadString(BTN_FONT_SECTION_NAME, BTN_FONT_SIZE, '12'));
+      ValueText := AnsiUpperCase(FunctionFile.ReadString(BTN_FONT_SECTION_NAME, BTN_FONT_SIZE, '10'));
       try
         cn_ButtonFontSize := StrToInt(ValueText);
       except
-        cn_ButtonFontSize := 12;
+        cn_ButtonFontSize := 10;
       end;
     end else
-      FunctionFile.WriteString(BTN_FONT_SECTION_NAME, BTN_FONT_SIZE, '12');
+      FunctionFile.WriteString(BTN_FONT_SECTION_NAME, BTN_FONT_SIZE, '10');
 
     if FunctionFile.ValueExists(LOG_SECTION_NAME, LOG_DB_PATH) then
     begin

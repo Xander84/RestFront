@@ -30,6 +30,8 @@ procedure TBaseFrontForm.AfterConstruction;
 var
   I : Integer;
 begin
+  inherited;
+
   AdvFormStyler.Style := GetFrontStyle;
   for I := 0 to ComponentCount - 1 do
   begin
@@ -51,8 +53,6 @@ begin
   end;
   BorderIcons := [];
   BorderStyle := bsSingle;
-
-  inherited;
 end;
 
 end.

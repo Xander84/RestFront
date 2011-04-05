@@ -98,6 +98,937 @@ object RestMainForm: TRestMainForm
           TabOrder = 1
           Version = '1.6.9.0'
         end
+        object mainTouchKeyBoard: TAdvSmoothTouchKeyBoard
+          Left = 0
+          Top = 472
+          Width = 934
+          Height = 229
+          AutoCompletion.Font.Charset = DEFAULT_CHARSET
+          AutoCompletion.Font.Color = clWhite
+          AutoCompletion.Font.Height = -19
+          AutoCompletion.Font.Name = 'Tahoma'
+          AutoCompletion.Font.Style = []
+          AutoCompletion.Color = clBlack
+          Fill.ColorMirror = clNone
+          Fill.ColorMirrorTo = clNone
+          Fill.BorderColor = clNone
+          Fill.Rounding = 0
+          Fill.ShadowOffset = 0
+          KeyboardType = ktQWERTY
+          Keys = <
+            item
+              Caption = '`'
+              ShiftCaption = '~'
+              KeyValue = -1
+              ShiftKeyValue = -1
+              AltGrKeyValue = -1
+              SpecialKey = skNone
+              X = 2
+              Y = 1
+              Height = 45
+              Width = 62
+              SubKeys = <>
+            end
+            item
+              Caption = '1'
+              ShiftCaption = '!'
+              AltGrCaption = '|'
+              KeyValue = -1
+              ShiftKeyValue = -1
+              AltGrKeyValue = -1
+              SpecialKey = skNone
+              X = 64
+              Y = 1
+              Height = 45
+              Width = 62
+              SubKeys = <>
+            end
+            item
+              Caption = '2'
+              ShiftCaption = '@'
+              KeyValue = -1
+              ShiftKeyValue = -1
+              AltGrKeyValue = -1
+              SpecialKey = skNone
+              X = 126
+              Y = 1
+              Height = 45
+              Width = 62
+              SubKeys = <>
+            end
+            item
+              Caption = '3'
+              ShiftCaption = '#'
+              KeyValue = -1
+              ShiftKeyValue = -1
+              AltGrKeyValue = -1
+              SpecialKey = skNone
+              X = 188
+              Y = 1
+              Height = 45
+              Width = 62
+              SubKeys = <>
+            end
+            item
+              Caption = '4'
+              ShiftCaption = '$'
+              KeyValue = -1
+              ShiftKeyValue = -1
+              AltGrKeyValue = -1
+              SpecialKey = skNone
+              X = 250
+              Y = 1
+              Height = 45
+              Width = 62
+              SubKeys = <>
+            end
+            item
+              Caption = '5'
+              ShiftCaption = '%'
+              KeyValue = -1
+              ShiftKeyValue = -1
+              AltGrKeyValue = -1
+              SpecialKey = skNone
+              X = 312
+              Y = 1
+              Height = 45
+              Width = 62
+              SubKeys = <>
+            end
+            item
+              Caption = '6'
+              ShiftCaption = '^'
+              KeyValue = -1
+              ShiftKeyValue = -1
+              AltGrKeyValue = -1
+              SpecialKey = skNone
+              X = 374
+              Y = 1
+              Height = 45
+              Width = 62
+              SubKeys = <>
+            end
+            item
+              Caption = '7'
+              ShiftCaption = '&'
+              KeyValue = -1
+              ShiftKeyValue = -1
+              AltGrKeyValue = -1
+              SpecialKey = skNone
+              X = 436
+              Y = 1
+              Height = 45
+              Width = 62
+              SubKeys = <>
+            end
+            item
+              Caption = '8'
+              ShiftCaption = '*'
+              KeyValue = -1
+              ShiftKeyValue = -1
+              AltGrKeyValue = -1
+              SpecialKey = skNone
+              X = 498
+              Y = 1
+              Height = 45
+              Width = 62
+              SubKeys = <>
+            end
+            item
+              Caption = '9'
+              ShiftCaption = '('
+              KeyValue = -1
+              ShiftKeyValue = -1
+              AltGrKeyValue = -1
+              SpecialKey = skNone
+              X = 560
+              Y = 1
+              Height = 45
+              Width = 62
+              SubKeys = <>
+            end
+            item
+              Caption = '0'
+              ShiftCaption = ')'
+              KeyValue = -1
+              ShiftKeyValue = -1
+              AltGrKeyValue = -1
+              SpecialKey = skNone
+              X = 622
+              Y = 1
+              Height = 45
+              Width = 62
+              SubKeys = <>
+            end
+            item
+              Caption = '-'
+              ShiftCaption = '_'
+              KeyValue = -1
+              ShiftKeyValue = -1
+              AltGrKeyValue = -1
+              SpecialKey = skNone
+              X = 684
+              Y = 1
+              Height = 45
+              Width = 62
+              SubKeys = <>
+            end
+            item
+              Caption = '='
+              ShiftCaption = '+'
+              KeyValue = -1
+              ShiftKeyValue = -1
+              AltGrKeyValue = -1
+              SpecialKey = skNone
+              X = 746
+              Y = 1
+              Height = 45
+              Width = 62
+              SubKeys = <>
+            end
+            item
+              Caption = '\'
+              ShiftCaption = '|'
+              KeyValue = -1
+              ShiftKeyValue = -1
+              AltGrKeyValue = -1
+              SpecialKey = skNone
+              X = 808
+              Y = 1
+              Height = 45
+              Width = 62
+              SubKeys = <>
+            end
+            item
+              Caption = 'Back'
+              KeyValue = 8
+              ShiftKeyValue = -1
+              AltGrKeyValue = -1
+              SpecialKey = skBackSpace
+              Color = 10526880
+              X = 870
+              Y = 1
+              Height = 45
+              Width = 62
+              SubKeys = <>
+            end
+            item
+              Caption = '->'
+              ShiftCaption = '<-'
+              KeyValue = 9
+              ShiftKeyValue = -1
+              AltGrKeyValue = -1
+              SpecialKey = skTab
+              Color = 10526880
+              X = 2
+              Y = 46
+              Height = 45
+              Width = 93
+              SubKeys = <>
+            end
+            item
+              Caption = 'Q'
+              KeyValue = -1
+              ShiftKeyValue = -1
+              AltGrKeyValue = -1
+              SpecialKey = skNone
+              X = 95
+              Y = 46
+              Height = 45
+              Width = 62
+              SubKeys = <>
+            end
+            item
+              Caption = 'W'
+              KeyValue = -1
+              ShiftKeyValue = -1
+              AltGrKeyValue = -1
+              SpecialKey = skNone
+              X = 157
+              Y = 46
+              Height = 45
+              Width = 62
+              SubKeys = <>
+            end
+            item
+              Caption = 'E'
+              KeyValue = -1
+              ShiftKeyValue = -1
+              AltGrKeyValue = -1
+              SpecialKey = skNone
+              X = 219
+              Y = 46
+              Height = 45
+              Width = 62
+              SubKeys = <
+                item
+                  Caption = #1051
+                end
+                item
+                  Caption = #1050
+                end
+                item
+                  Caption = #1049
+                end
+                item
+                  Caption = #1048
+                end
+                item
+                  Caption = #1083
+                end
+                item
+                  Caption = #1082
+                end
+                item
+                  Caption = #1081
+                end
+                item
+                  Caption = #1080
+                end>
+            end
+            item
+              Caption = 'R'
+              KeyValue = -1
+              ShiftKeyValue = -1
+              AltGrKeyValue = -1
+              SpecialKey = skNone
+              X = 281
+              Y = 46
+              Height = 45
+              Width = 62
+              SubKeys = <>
+            end
+            item
+              Caption = 'T'
+              KeyValue = -1
+              ShiftKeyValue = -1
+              AltGrKeyValue = -1
+              SpecialKey = skNone
+              X = 343
+              Y = 46
+              Height = 45
+              Width = 62
+              SubKeys = <>
+            end
+            item
+              Caption = 'Y'
+              KeyValue = -1
+              ShiftKeyValue = -1
+              AltGrKeyValue = -1
+              SpecialKey = skNone
+              X = 405
+              Y = 46
+              Height = 45
+              Width = 62
+              SubKeys = <
+                item
+                  Caption = #1103
+                end
+                item
+                  Caption = #1069
+                end
+                item
+                  Caption = #1101
+                end>
+            end
+            item
+              Caption = 'U'
+              KeyValue = -1
+              ShiftKeyValue = -1
+              AltGrKeyValue = -1
+              SpecialKey = skNone
+              X = 467
+              Y = 46
+              Height = 45
+              Width = 62
+              SubKeys = <
+                item
+                  Caption = #1068
+                end
+                item
+                  Caption = #1067
+                end
+                item
+                  Caption = #1066
+                end
+                item
+                  Caption = #1065
+                end
+                item
+                  Caption = #1100
+                end
+                item
+                  Caption = #1099
+                end
+                item
+                  Caption = #1098
+                end
+                item
+                  Caption = #1097
+                end>
+            end
+            item
+              Caption = 'I'
+              KeyValue = -1
+              ShiftKeyValue = -1
+              AltGrKeyValue = -1
+              SpecialKey = skNone
+              X = 529
+              Y = 46
+              Height = 45
+              Width = 62
+              SubKeys = <
+                item
+                  Caption = #1055
+                end
+                item
+                  Caption = #1054
+                end
+                item
+                  Caption = #1053
+                end
+                item
+                  Caption = #1052
+                end
+                item
+                  Caption = #1087
+                end
+                item
+                  Caption = #1086
+                end
+                item
+                  Caption = #1085
+                end
+                item
+                  Caption = #1084
+                end>
+            end
+            item
+              Caption = 'O'
+              KeyValue = -1
+              ShiftKeyValue = -1
+              AltGrKeyValue = -1
+              SpecialKey = skNone
+              X = 591
+              Y = 46
+              Height = 45
+              Width = 62
+              SubKeys = <
+                item
+                  Caption = #1062
+                end
+                item
+                  Caption = #1060
+                end
+                item
+                  Caption = #1059
+                end
+                item
+                  Caption = #1058
+                end
+                item
+                  Caption = #1094
+                end
+                item
+                  Caption = #1092
+                end
+                item
+                  Caption = #1091
+                end
+                item
+                  Caption = #1090
+                end>
+            end
+            item
+              Caption = 'P'
+              KeyValue = -1
+              ShiftKeyValue = -1
+              AltGrKeyValue = -1
+              SpecialKey = skNone
+              X = 653
+              Y = 46
+              Height = 45
+              Width = 62
+              SubKeys = <>
+            end
+            item
+              Caption = '['
+              ShiftCaption = '{'
+              KeyValue = -1
+              ShiftKeyValue = -1
+              AltGrKeyValue = -1
+              SpecialKey = skNone
+              X = 715
+              Y = 46
+              Height = 45
+              Width = 62
+              SubKeys = <>
+            end
+            item
+              Caption = ']'
+              ShiftCaption = '}'
+              KeyValue = -1
+              ShiftKeyValue = -1
+              AltGrKeyValue = -1
+              SpecialKey = skNone
+              X = 777
+              Y = 46
+              Height = 45
+              Width = 62
+              SubKeys = <>
+            end
+            item
+              Caption = 'Enter'
+              KeyValue = 13
+              ShiftKeyValue = 0
+              AltGrKeyValue = 0
+              SpecialKey = skReturn
+              Color = 10526880
+              X = 855
+              Y = 46
+              Height = 91
+              Width = 78
+              SubKeys = <>
+            end
+            item
+              Caption = 'Caps Lock'
+              KeyValue = 20
+              ShiftKeyValue = 0
+              AltGrKeyValue = 0
+              SpecialKey = skCaps
+              Color = 10526880
+              X = 2
+              Y = 92
+              Height = 45
+              Width = 109
+              SubKeys = <>
+            end
+            item
+              Caption = 'A'
+              KeyValue = -1
+              ShiftKeyValue = -1
+              AltGrKeyValue = -1
+              SpecialKey = skNone
+              X = 110
+              Y = 92
+              Height = 45
+              Width = 62
+              SubKeys = <
+                item
+                  Caption = #1044
+                end
+                item
+                  Caption = #1042
+                end
+                item
+                  Caption = #1041
+                end
+                item
+                  Caption = #1040
+                end
+                item
+                  Caption = #1076
+                end
+                item
+                  Caption = #1074
+                end
+                item
+                  Caption = #1073
+                end
+                item
+                  Caption = #1072
+                end>
+            end
+            item
+              Caption = 'S'
+              KeyValue = -1
+              ShiftKeyValue = -1
+              AltGrKeyValue = -1
+              SpecialKey = skNone
+              X = 172
+              Y = 92
+              Height = 45
+              Width = 62
+              SubKeys = <>
+            end
+            item
+              Caption = 'D'
+              KeyValue = -1
+              ShiftKeyValue = -1
+              AltGrKeyValue = -1
+              SpecialKey = skNone
+              X = 234
+              Y = 92
+              Height = 45
+              Width = 62
+              SubKeys = <>
+            end
+            item
+              Caption = 'F'
+              KeyValue = -1
+              ShiftKeyValue = -1
+              AltGrKeyValue = -1
+              SpecialKey = skNone
+              X = 296
+              Y = 92
+              Height = 45
+              Width = 62
+              SubKeys = <>
+            end
+            item
+              Caption = 'G'
+              KeyValue = -1
+              ShiftKeyValue = -1
+              AltGrKeyValue = -1
+              SpecialKey = skNone
+              X = 358
+              Y = 92
+              Height = 45
+              Width = 62
+              SubKeys = <>
+            end
+            item
+              Caption = 'H'
+              KeyValue = -1
+              ShiftKeyValue = -1
+              AltGrKeyValue = -1
+              SpecialKey = skNone
+              X = 420
+              Y = 92
+              Height = 45
+              Width = 62
+              SubKeys = <>
+            end
+            item
+              Caption = 'J'
+              KeyValue = -1
+              ShiftKeyValue = -1
+              AltGrKeyValue = -1
+              SpecialKey = skNone
+              X = 483
+              Y = 92
+              Height = 45
+              Width = 62
+              SubKeys = <>
+            end
+            item
+              Caption = 'K'
+              KeyValue = -1
+              ShiftKeyValue = -1
+              AltGrKeyValue = -1
+              SpecialKey = skNone
+              X = 545
+              Y = 92
+              Height = 45
+              Width = 62
+              SubKeys = <>
+            end
+            item
+              Caption = 'L'
+              KeyValue = -1
+              ShiftKeyValue = -1
+              AltGrKeyValue = -1
+              SpecialKey = skNone
+              X = 607
+              Y = 92
+              Height = 45
+              Width = 62
+              SubKeys = <>
+            end
+            item
+              Caption = ';'
+              ShiftCaption = ':'
+              KeyValue = -1
+              ShiftKeyValue = -1
+              AltGrKeyValue = -1
+              SpecialKey = skNone
+              X = 669
+              Y = 92
+              Height = 45
+              Width = 62
+              SubKeys = <>
+            end
+            item
+              Caption = ','
+              ShiftCaption = '"'
+              KeyValue = -1
+              ShiftKeyValue = -1
+              AltGrKeyValue = -1
+              SpecialKey = skNone
+              X = 731
+              Y = 92
+              Height = 45
+              Width = 62
+              SubKeys = <>
+            end
+            item
+              Caption = 'Shift'
+              KeyValue = 160
+              ShiftKeyValue = -1
+              AltGrKeyValue = -1
+              SpecialKey = skShift
+              Color = 10526880
+              X = 2
+              Y = 137
+              Height = 45
+              Width = 124
+              SubKeys = <>
+            end
+            item
+              Caption = 'Z'
+              KeyValue = -1
+              ShiftKeyValue = -1
+              AltGrKeyValue = -1
+              SpecialKey = skNone
+              X = 126
+              Y = 137
+              Height = 45
+              Width = 62
+              SubKeys = <>
+            end
+            item
+              Caption = 'X'
+              KeyValue = -1
+              ShiftKeyValue = -1
+              AltGrKeyValue = -1
+              SpecialKey = skNone
+              X = 188
+              Y = 137
+              Height = 45
+              Width = 62
+              SubKeys = <>
+            end
+            item
+              Caption = 'C'
+              KeyValue = -1
+              ShiftKeyValue = -1
+              AltGrKeyValue = -1
+              SpecialKey = skNone
+              X = 250
+              Y = 137
+              Height = 45
+              Width = 62
+              SubKeys = <
+                item
+                  Caption = #1079
+                end>
+            end
+            item
+              Caption = 'V'
+              KeyValue = -1
+              ShiftKeyValue = -1
+              AltGrKeyValue = -1
+              SpecialKey = skNone
+              X = 312
+              Y = 137
+              Height = 45
+              Width = 62
+              SubKeys = <>
+            end
+            item
+              Caption = 'B'
+              KeyValue = -1
+              ShiftKeyValue = -1
+              AltGrKeyValue = -1
+              SpecialKey = skNone
+              X = 374
+              Y = 137
+              Height = 45
+              Width = 62
+              SubKeys = <>
+            end
+            item
+              Caption = 'N'
+              KeyValue = -1
+              ShiftKeyValue = -1
+              AltGrKeyValue = -1
+              SpecialKey = skNone
+              X = 436
+              Y = 137
+              Height = 45
+              Width = 62
+              SubKeys = <
+                item
+                  Caption = #1057
+                end
+                item
+                  Caption = #1089
+                end>
+            end
+            item
+              Caption = 'M'
+              KeyValue = -1
+              ShiftKeyValue = -1
+              AltGrKeyValue = -1
+              SpecialKey = skNone
+              X = 498
+              Y = 137
+              Height = 45
+              Width = 62
+              SubKeys = <>
+            end
+            item
+              Caption = ','
+              ShiftCaption = '<'
+              KeyValue = -1
+              ShiftKeyValue = -1
+              AltGrKeyValue = -1
+              SpecialKey = skNone
+              X = 560
+              Y = 137
+              Height = 45
+              Width = 62
+              SubKeys = <>
+            end
+            item
+              Caption = '.'
+              ShiftCaption = '>'
+              KeyValue = -1
+              ShiftKeyValue = -1
+              AltGrKeyValue = -1
+              SpecialKey = skNone
+              X = 622
+              Y = 137
+              Height = 45
+              Width = 62
+              SubKeys = <>
+            end
+            item
+              Caption = '/'
+              ShiftCaption = '?'
+              KeyValue = -1
+              ShiftKeyValue = -1
+              AltGrKeyValue = -1
+              SpecialKey = skNone
+              X = 684
+              Y = 137
+              Height = 45
+              Width = 62
+              SubKeys = <>
+            end
+            item
+              Caption = 'Shift'
+              KeyValue = 161
+              ShiftKeyValue = -1
+              AltGrKeyValue = -1
+              SpecialKey = skShift
+              Color = 10526880
+              X = 746
+              Y = 137
+              Height = 45
+              Width = 171
+              SubKeys = <>
+            end
+            item
+              Caption = 'Ctrl'
+              KeyValue = 162
+              ShiftKeyValue = -1
+              AltGrKeyValue = -1
+              SpecialKey = skCtrl
+              Color = 10526880
+              X = 2
+              Y = 183
+              Height = 45
+              Width = 93
+              SubKeys = <>
+            end
+            item
+              Caption = 'Win'
+              KeyValue = 91
+              ShiftKeyValue = -1
+              AltGrKeyValue = -1
+              SpecialKey = skWin
+              Color = 10526880
+              X = 95
+              Y = 183
+              Height = 45
+              Width = 62
+              SubKeys = <>
+            end
+            item
+              Caption = 'Alt'
+              KeyValue = 18
+              ShiftKeyValue = -1
+              AltGrKeyValue = -1
+              SpecialKey = skAlt
+              Color = 10526880
+              X = 157
+              Y = 183
+              Height = 45
+              Width = 93
+              SubKeys = <>
+            end
+            item
+              KeyValue = 32
+              ShiftKeyValue = -1
+              AltGrKeyValue = -1
+              SpecialKey = skSpaceBar
+              X = 250
+              Y = 183
+              Height = 45
+              Width = 372
+              SubKeys = <>
+            end
+            item
+              Caption = 'Alt Gr'
+              KeyValue = 0
+              ShiftKeyValue = -1
+              AltGrKeyValue = -1
+              SpecialKey = skAltGr
+              Color = 10526880
+              X = 622
+              Y = 183
+              Height = 45
+              Width = 93
+              SubKeys = <>
+            end
+            item
+              Caption = 'Win'
+              KeyValue = 92
+              ShiftKeyValue = -1
+              AltGrKeyValue = -1
+              SpecialKey = skWin
+              Color = 10526880
+              X = 715
+              Y = 183
+              Height = 45
+              Width = 62
+              SubKeys = <>
+            end
+            item
+              Caption = 'Menu'
+              KeyValue = 93
+              ShiftKeyValue = -1
+              AltGrKeyValue = -1
+              SpecialKey = skApp
+              Color = 10526880
+              X = 777
+              Y = 183
+              Height = 45
+              Width = 62
+              SubKeys = <>
+            end
+            item
+              Caption = '->'
+              KeyValue = 39
+              ShiftKeyValue = -1
+              AltGrKeyValue = -1
+              SpecialKey = skRight
+              Color = 10526880
+              X = 839
+              Y = 183
+              Height = 45
+              Width = 93
+              SubKeys = <>
+            end>
+          SmallFont.Charset = DEFAULT_CHARSET
+          SmallFont.Color = clWindowText
+          SmallFont.Height = -9
+          SmallFont.Name = 'Tahoma'
+          SmallFont.Style = []
+          Version = '1.5.0.0'
+          Align = alBottom
+        end
       end
       object tsMain: TAdvTabSheet
         Caption = 'Main'
@@ -107,9 +1038,9 @@ object RestMainForm: TRestMainForm
         TabColor = clBtnFace
         TabColorTo = clNone
         object pnlRight: TAdvPanel
-          Left = 692
+          Left = 609
           Top = 0
-          Width = 242
+          Width = 325
           Height = 701
           Align = alRight
           BevelOuter = bvNone
@@ -154,7 +1085,7 @@ object RestMainForm: TRestMainForm
           object pnlChoose: TPanel
             Left = 0
             Top = 0
-            Width = 242
+            Width = 325
             Height = 701
             Align = alClient
             BevelOuter = bvNone
@@ -162,7 +1093,7 @@ object RestMainForm: TRestMainForm
             object pcMenu: TAdvPageControl
               Left = 0
               Top = 0
-              Width = 242
+              Width = 325
               Height = 660
               ActivePage = tsMenu
               ActiveFont.Charset = DEFAULT_CHARSET
@@ -185,7 +1116,7 @@ object RestMainForm: TRestMainForm
                 object pnlMenu: TAdvPanel
                   Left = 0
                   Top = 0
-                  Width = 242
+                  Width = 325
                   Height = 345
                   Align = alClient
                   BevelOuter = bvNone
@@ -227,7 +1158,7 @@ object RestMainForm: TRestMainForm
                 object pnlExtraGoodGroup: TAdvPanel
                   Left = 0
                   Top = 345
-                  Width = 242
+                  Width = 325
                   Height = 295
                   Align = alBottom
                   BevelOuter = bvNone
@@ -277,7 +1208,7 @@ object RestMainForm: TRestMainForm
                 object pnlGoodGroup: TAdvPanel
                   Left = 0
                   Top = 58
-                  Width = 242
+                  Width = 325
                   Height = 582
                   Align = alClient
                   BevelOuter = bvNone
@@ -324,7 +1255,7 @@ object RestMainForm: TRestMainForm
                 object Panel4: TAdvPanel
                   Left = 0
                   Top = 0
-                  Width = 242
+                  Width = 325
                   Height = 58
                   Align = alTop
                   BevelOuter = bvNone
@@ -401,7 +1332,7 @@ object RestMainForm: TRestMainForm
                 object pnlHalls: TAdvPanel
                   Left = 0
                   Top = 0
-                  Width = 242
+                  Width = 325
                   Height = 640
                   Align = alClient
                   BevelOuter = bvNone
@@ -448,7 +1379,7 @@ object RestMainForm: TRestMainForm
                 object pnlDesignerTables: TAdvPanel
                   Left = 0
                   Top = 0
-                  Width = 242
+                  Width = 325
                   Height = 640
                   Align = alClient
                   BevelOuter = bvNone
@@ -490,7 +1421,7 @@ object RestMainForm: TRestMainForm
             object Panel1: TAdvPanel
               Left = 0
               Top = 660
-              Width = 242
+              Width = 325
               Height = 41
               Align = alBottom
               BevelOuter = bvNone
@@ -529,7 +1460,7 @@ object RestMainForm: TRestMainForm
               object btnScrollDown: TAdvSmoothButton
                 Left = 7
                 Top = 2
-                Width = 110
+                Width = 155
                 Height = 37
                 Action = actScrollDown
                 Appearance.PictureAlignment = taCenter
@@ -558,9 +1489,9 @@ object RestMainForm: TRestMainForm
                 Version = '1.6.9.0'
               end
               object btnScrollUp: TAdvSmoothButton
-                Left = 126
+                Left = 167
                 Top = 2
-                Width = 110
+                Width = 155
                 Height = 37
                 Action = actScrollUp
                 Appearance.PictureAlignment = taCenter
@@ -594,7 +1525,7 @@ object RestMainForm: TRestMainForm
         object pnlLeft: TPanel
           Left = 0
           Top = 0
-          Width = 692
+          Width = 609
           Height = 701
           Align = alClient
           Color = 14986888
@@ -602,7 +1533,7 @@ object RestMainForm: TRestMainForm
           object pcOrder: TAdvPageControl
             Left = 1
             Top = 1
-            Width = 690
+            Width = 607
             Height = 699
             ActivePage = tsOrderInfo
             ActiveFont.Charset = DEFAULT_CHARSET
@@ -630,9 +1561,9 @@ object RestMainForm: TRestMainForm
                 Height = 50
                 Appearance.Font.Charset = DEFAULT_CHARSET
                 Appearance.Font.Color = clWindowText
-                Appearance.Font.Height = -21
-                Appearance.Font.Name = 'Times New Roman'
-                Appearance.Font.Style = []
+                Appearance.Font.Height = -13
+                Appearance.Font.Name = 'Tahoma'
+                Appearance.Font.Style = [fsBold]
                 Status.Caption = '0'
                 Status.Appearance.Fill.Color = clRed
                 Status.Appearance.Fill.ColorMirror = clNone
@@ -663,18 +1594,18 @@ object RestMainForm: TRestMainForm
               TabColorTo = clNone
               object pnlMainGood: TPanel
                 Left = 0
-                Top = 408
-                Width = 690
-                Height = 271
+                Top = 387
+                Width = 607
+                Height = 292
                 Align = alBottom
                 BevelOuter = bvNone
                 Color = 14986888
                 TabOrder = 0
                 object Panel6: TAdvPanel
-                  Left = 640
+                  Left = 557
                   Top = 0
                   Width = 50
-                  Height = 271
+                  Height = 292
                   Align = alRight
                   BevelOuter = bvNone
                   Color = 16640730
@@ -714,10 +1645,13 @@ object RestMainForm: TRestMainForm
                   StatusBar.ColorTo = 16374724
                   StatusBar.GradientDirection = gdVertical
                   Styler = FrontData.FrontPanelStyler
+                  DesignSize = (
+                    50
+                    292)
                   FullHeight = 271
                   object btnGoodUp: TAdvSmoothButton
                     Left = 3
-                    Top = 5
+                    Top = 6
                     Width = 43
                     Height = 129
                     Action = actGoodUp
@@ -748,10 +1682,11 @@ object RestMainForm: TRestMainForm
                   end
                   object btnGoodDown: TAdvSmoothButton
                     Left = 3
-                    Top = 138
+                    Top = 155
                     Width = 43
                     Height = 129
                     Action = actGoodDown
+                    Anchors = [akLeft, akBottom]
                     Appearance.PictureAlignment = taCenter
                     Appearance.Font.Charset = DEFAULT_CHARSET
                     Appearance.Font.Color = clWindowText
@@ -781,8 +1716,8 @@ object RestMainForm: TRestMainForm
                 object pnlGood: TAdvPanel
                   Left = 0
                   Top = 0
-                  Width = 640
-                  Height = 271
+                  Width = 557
+                  Height = 292
                   Align = alClient
                   BevelOuter = bvNone
                   Color = 16640730
@@ -830,8 +1765,8 @@ object RestMainForm: TRestMainForm
               object DBGrMain: TDBGridEh
                 Left = 0
                 Top = 0
-                Width = 657
-                Height = 408
+                Width = 574
+                Height = 387
                 Align = alClient
                 AutoFitColWidths = True
                 BorderStyle = bsNone
@@ -841,14 +1776,14 @@ object RestMainForm: TRestMainForm
                 Flat = True
                 Font.Charset = DEFAULT_CHARSET
                 Font.Color = clWindowText
-                Font.Height = -21
-                Font.Name = 'Times New Roman'
+                Font.Height = -13
+                Font.Name = 'Tahoma'
                 Font.Style = []
                 FooterColor = clInfoBk
                 FooterFont.Charset = DEFAULT_CHARSET
                 FooterFont.Color = clWindowText
-                FooterFont.Height = -27
-                FooterFont.Name = 'Times New Roman'
+                FooterFont.Height = -13
+                FooterFont.Name = 'Tahoma'
                 FooterFont.Style = []
                 FooterRowCount = 1
                 OddRowColor = clGradientActiveCaption
@@ -883,20 +1818,15 @@ object RestMainForm: TRestMainForm
                     Footers = <>
                     Title.Alignment = taCenter
                     Title.Caption = #1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077
-                    Title.Font.Charset = DEFAULT_CHARSET
-                    Title.Font.Color = clWindowText
-                    Title.Font.Height = -15
-                    Title.Font.Name = 'Times New Roman'
-                    Title.Font.Style = []
                     Width = 366
                     WordWrap = True
                     OnGetCellParams = DBGridEh2Columns0GetCellParams
                   end
                   item
-                    DisplayFormat = ' #,###,##0.00'
+                    DisplayFormat = ' #,###,##0.##'
                     EditButtons = <>
                     FieldName = 'USR$QUANTITY'
-                    Footer.DisplayFormat = '# ##0'
+                    Footer.DisplayFormat = ' #,###,##0.##'
                     Footer.FieldName = 'USR$QUANTITY'
                     Footer.Font.Charset = DEFAULT_CHARSET
                     Footer.Font.Color = clWindowText
@@ -913,20 +1843,22 @@ object RestMainForm: TRestMainForm
                     Title.Font.Name = 'Times New Roman'
                     Title.Font.Style = []
                     Width = 51
+                    OnGetCellParams = DBGrMainColumns1GetCellParams
                   end
                   item
-                    DisplayFormat = '# ##0'
+                    DisplayFormat = '# ##0.##'
                     EditButtons = <>
                     FieldName = 'usr$costncuwithdiscount'
                     Footers = <>
                     Title.Alignment = taCenter
-                    Title.Caption = #1062#1077#1085#1072' '#1089#1086' '#1089#1082#1080#1076#1082#1086#1081
+                    Title.Caption = #1062#1077#1085#1072
                     Title.Font.Charset = DEFAULT_CHARSET
                     Title.Font.Color = clWindowText
                     Title.Font.Height = -15
                     Title.Font.Name = 'Times New Roman'
                     Title.Font.Style = []
                     Width = 112
+                    OnGetCellParams = DBGrMainColumns2GetCellParams
                   end
                   item
                     DisplayFormat = ',#0'
@@ -942,20 +1874,21 @@ object RestMainForm: TRestMainForm
                     Footer.ValueType = fvtSum
                     Footers = <>
                     Title.Alignment = taCenter
-                    Title.Caption = #1057#1091#1084#1084#1072' '#1089#1086' '#1089#1082#1080#1076#1082#1086#1081
+                    Title.Caption = #1057#1091#1084#1084#1072
                     Title.Font.Charset = DEFAULT_CHARSET
                     Title.Font.Color = clWindowText
                     Title.Font.Height = -15
                     Title.Font.Name = 'Times New Roman'
                     Title.Font.Style = []
                     Width = 120
+                    OnGetCellParams = DBGrMainColumns3GetCellParams
                   end>
               end
               object grScrollBar: TScrollBar
-                Left = 657
+                Left = 574
                 Top = 0
                 Width = 33
-                Height = 408
+                Height = 387
                 Align = alRight
                 Kind = sbVertical
                 Max = 1
@@ -973,7 +1906,7 @@ object RestMainForm: TRestMainForm
               object pnlManagerTop: TAdvPanel
                 Left = 0
                 Top = 0
-                Width = 690
+                Width = 607
                 Height = 65
                 Align = alTop
                 BevelOuter = bvNone
@@ -1009,7 +1942,7 @@ object RestMainForm: TRestMainForm
                 StatusBar.GradientDirection = gdVertical
                 Styler = FrontData.FrontPanelStyler
                 DesignSize = (
-                  690
+                  607
                   65)
                 FullHeight = 65
                 object lblResp: TLabel
@@ -1089,7 +2022,7 @@ object RestMainForm: TRestMainForm
                   Version = '1.6.9.0'
                 end
                 object btnUserLeft: TAdvSmoothButton
-                  Left = 497
+                  Left = 414
                   Top = 7
                   Width = 72
                   Height = 50
@@ -1121,7 +2054,7 @@ object RestMainForm: TRestMainForm
                   Version = '1.6.9.0'
                 end
                 object btnUserRight: TAdvSmoothButton
-                  Left = 589
+                  Left = 506
                   Top = 7
                   Width = 72
                   Height = 50
@@ -1156,7 +2089,7 @@ object RestMainForm: TRestMainForm
               object pnlManagerMain: TAdvPanel
                 Left = 0
                 Top = 65
-                Width = 690
+                Width = 607
                 Height = 614
                 Align = alClient
                 TabOrder = 1
@@ -1219,7 +2152,7 @@ object RestMainForm: TRestMainForm
                 object pnlUserOrders: TAdvPanel
                   Left = 193
                   Top = 1
-                  Width = 496
+                  Width = 413
                   Height = 545
                   Align = alClient
                   BevelOuter = bvNone
@@ -1260,7 +2193,7 @@ object RestMainForm: TRestMainForm
                 object pnlManagerBottom: TAdvPanel
                   Left = 1
                   Top = 546
-                  Width = 688
+                  Width = 605
                   Height = 67
                   Align = alBottom
                   BevelOuter = bvNone
@@ -1367,7 +2300,7 @@ object RestMainForm: TRestMainForm
               object sbTable: TScrollBox
                 Left = 0
                 Top = 0
-                Width = 690
+                Width = 607
                 Height = 679
                 Align = alClient
                 BorderStyle = bsNone
@@ -1672,7 +2605,7 @@ object RestMainForm: TRestMainForm
         Top = 1
         Width = 80
         Height = 719
-        ActivePage = tsFunctionButton
+        ActivePage = tsMainButton
         ActiveFont.Charset = DEFAULT_CHARSET
         ActiveFont.Color = clWindowText
         ActiveFont.Height = -11
@@ -1698,8 +2631,8 @@ object RestMainForm: TRestMainForm
             Action = actExitWindows
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
-            Appearance.Font.Height = -13
-            Appearance.Font.Name = 'Times New Roman'
+            Appearance.Font.Height = -11
+            Appearance.Font.Name = 'Tahoma'
             Appearance.Font.Style = [fsBold]
             Status.Caption = '0'
             Status.Appearance.Fill.Color = clRed
@@ -1715,7 +2648,7 @@ object RestMainForm: TRestMainForm
             Status.Appearance.Font.Name = 'Tahoma'
             Status.Appearance.Font.Style = []
             Bevel = False
-            Color = 15195349
+            Color = 14922381
             ParentFont = False
             TabOrder = 0
             Version = '1.6.9.0'
@@ -1728,8 +2661,8 @@ object RestMainForm: TRestMainForm
             Action = actRestartRest
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
-            Appearance.Font.Height = -13
-            Appearance.Font.Name = 'Times New Roman'
+            Appearance.Font.Height = -11
+            Appearance.Font.Name = 'Tahoma'
             Appearance.Font.Style = [fsBold]
             Status.Caption = '0'
             Status.Appearance.Fill.Color = clRed
@@ -1745,7 +2678,7 @@ object RestMainForm: TRestMainForm
             Status.Appearance.Font.Name = 'Tahoma'
             Status.Appearance.Font.Style = []
             Bevel = False
-            Color = 15195349
+            Color = 14922381
             ParentFont = False
             TabOrder = 1
             Version = '1.6.9.0'
@@ -1758,8 +2691,8 @@ object RestMainForm: TRestMainForm
             Action = actKeyBoard
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
-            Appearance.Font.Height = -13
-            Appearance.Font.Name = 'Times New Roman'
+            Appearance.Font.Height = -11
+            Appearance.Font.Name = 'Tahoma'
             Appearance.Font.Style = [fsBold]
             Status.Caption = '0'
             Status.Appearance.Fill.Color = clRed
@@ -1775,7 +2708,7 @@ object RestMainForm: TRestMainForm
             Status.Appearance.Font.Name = 'Tahoma'
             Status.Appearance.Font.Style = []
             Bevel = False
-            Color = 15195349
+            Color = 14922381
             ParentFont = False
             TabOrder = 2
             TabStop = False
@@ -1789,8 +2722,8 @@ object RestMainForm: TRestMainForm
             Action = actAdminOptions
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
-            Appearance.Font.Height = -13
-            Appearance.Font.Name = 'Times New Roman'
+            Appearance.Font.Height = -11
+            Appearance.Font.Name = 'Tahoma'
             Appearance.Font.Style = [fsBold]
             Status.Caption = '0'
             Status.Appearance.Fill.Color = clRed
@@ -1806,7 +2739,7 @@ object RestMainForm: TRestMainForm
             Status.Appearance.Font.Name = 'Tahoma'
             Status.Appearance.Font.Style = []
             Bevel = False
-            Color = 15195349
+            Color = 14922381
             ParentFont = False
             TabOrder = 3
             Version = '1.6.9.0'
@@ -2649,8 +3582,8 @@ object RestMainForm: TRestMainForm
             Action = actKeyBoard
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
-            Appearance.Font.Height = -13
-            Appearance.Font.Name = 'Times New Roman'
+            Appearance.Font.Height = -11
+            Appearance.Font.Name = 'Tahoma'
             Appearance.Font.Style = [fsBold]
             Status.Caption = '0'
             Status.Appearance.Fill.Color = clRed
@@ -2681,8 +3614,8 @@ object RestMainForm: TRestMainForm
             Anchors = [akLeft, akBottom]
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
-            Appearance.Font.Height = -13
-            Appearance.Font.Name = 'Times New Roman'
+            Appearance.Font.Height = -11
+            Appearance.Font.Name = 'Tahoma'
             Appearance.Font.Style = [fsBold]
             Status.Caption = '0'
             Status.Appearance.Fill.Color = clRed
@@ -2713,8 +3646,8 @@ object RestMainForm: TRestMainForm
             Anchors = [akLeft, akBottom]
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
-            Appearance.Font.Height = -12
-            Appearance.Font.Name = 'Times New Roman'
+            Appearance.Font.Height = -11
+            Appearance.Font.Name = 'Tahoma'
             Appearance.Font.Style = [fsBold]
             Status.Caption = '0'
             Status.Appearance.Fill.Color = clRed
@@ -2923,6 +3856,7 @@ object RestMainForm: TRestMainForm
   end
   object tmrClose: TTimer
     Tag = 1
+    Interval = 10000
     OnTimer = tmrCloseTimer
     Left = 368
     Top = 64
