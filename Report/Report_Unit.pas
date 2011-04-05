@@ -203,8 +203,6 @@ begin
   BaseQueryList.Clear;
   FReport := Tgs_fr4SingleReport.Create(nil);
   try
-    InitReportParams(FReport, PrinterName);
-
     Str := TMemoryStream.Create;
     FrxDBDataset := TfrxDBDataset.Create(nil);
     FrxDBDataset1 := TfrxDBDataset.Create(nil);
@@ -305,7 +303,10 @@ begin
       FReport.Variables[' ' + cn_RestParam] := Null;
       FReport.Variables.AddVariable(cn_RestParam, 'DocID', '''' + VarToStr(DocID) + '''');
       if FReport.PrepareReport then
+      begin
+        InitReportParams(FReport, PrinterName);
         FReport.Print;
+      end;
 
     finally
       FrxDBDataset.Free;
@@ -333,8 +334,6 @@ begin
   PrinterName := FFrontBase.GetPrinterName;
   FReport := Tgs_fr4SingleReport.Create(nil);
   try
-    InitReportParams(FReport, PrinterName);
-
     Str := TMemoryStream.Create;
     FrxDBDataset := TfrxDBDataset.Create(nil);
     try
@@ -402,8 +401,6 @@ begin
   FReport := Tgs_fr4SingleReport.Create(nil);
   try
     try
-      InitReportParams(FReport, PrinterName);
-
       Str := TMemoryStream.Create;
       FfrxDBDataset := TfrxDBDataset.Create(nil);
       try
@@ -469,8 +466,10 @@ begin
         FReport.Variables.AddVariable(cn_RestParam, 'LineID', '''' + VarToStr(DocumentKey) + '''');
         FReport.Variables.AddVariable(cn_RestParam, 'PrinterName', '''' + VarToStr(PrinterName) + '''');
         if FReport.PrepareReport then
+        begin
+          InitReportParams(FReport, PrinterName);
           FReport.Print;
-
+        end;
         Result := True;
       finally
         Str.Free;
@@ -502,8 +501,6 @@ begin
   PrinterName := FFrontBase.GetPrinterName;
   FReport := Tgs_fr4SingleReport.Create(nil);
   try
-    InitReportParams(FReport, PrinterName);
-
     Str := TMemoryStream.Create;
     FrxDBDataset := TfrxDBDataset.Create(nil);
     try
@@ -634,8 +631,10 @@ begin
       FReport.Variables.AddVariable(cn_RestParam, 'PARAM0', '''' + DateToStr(DateBegin) + '''');
       FReport.Variables.AddVariable(cn_RestParam, 'PARAM1', '''' + DateToStr(DateEnd) + '''');
       if FReport.PrepareReport then
+      begin
+        InitReportParams(FReport, PrinterName);
         FReport.ShowPreparedReport;
-
+      end;
     finally
       FrxDBDataset.Free;
       Str.Free;
@@ -669,7 +668,6 @@ begin
 
   FReport := Tgs_fr4SingleReport.Create(nil);
   try
-    InitReportParams(FReport, PrinterName);
 
     Str := TMemoryStream.Create;
     Query := TIBQuery.Create(nil);
@@ -730,8 +728,10 @@ begin
         FReport.Variables[' ' + cn_RestParam] := Null;
         FReport.Variables.AddVariable(cn_RestParam, 'DocID', '''' + VarToStr(DocID) + '''');
         if FReport.PrepareReport then
+        begin
+          InitReportParams(FReport, PrinterName);
           FReport.Print;
-
+        end;
         Result := True;
       end;
     finally
@@ -764,8 +764,6 @@ begin
 
   FReport := Tgs_fr4SingleReport.Create(nil);
   try
-    InitReportParams(FReport, PrinterName);
-
     Str := TMemoryStream.Create;
     Query := TIBQuery.Create(nil);
     MemTable := TkbmMemTable.Create(nil);
@@ -877,8 +875,10 @@ begin
         FReport.Variables.AddVariable(cn_RestParam, 'DocID', '''' + VarToStr(DocID) + '''');
         FReport.Variables.AddVariable(cn_RestParam, 'PrinterName', '''' + VarToStr(PrinterName) + '''');
         if FReport.PrepareReport then
+        begin
+          InitReportParams(FReport, PrinterName);
           FReport.Print;
-
+        end;
         Result := True;
       end;
     finally
