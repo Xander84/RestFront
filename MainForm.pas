@@ -1843,6 +1843,8 @@ begin
         if Touch_MessageBox('Внимание', 'Закрыть заказ?', MB_YESNO, mtConfirmation) = IDYES then
         begin
           DBGrMain.DataSource := nil;
+          FSelectedButton := nil;
+          FMenuSelectedButton := nil;
           try
             if FFrontBase.CreateNewOrder(FHeaderTable, FLineTable, FModificationDataSet, OrderKey) then
             begin
@@ -1916,6 +1918,8 @@ begin
         dsLineInfo.DataSet := nil;
         FHeaderInfoTable.Close;
         FLineInfoTable.Close;
+        FSelectedButton := nil;
+        FMenuSelectedButton := nil;
 
         RestFormState := Pass;
         FLogManager.DoSimpleLog(GetCurrentUserInfo, ev_Exit);
