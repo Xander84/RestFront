@@ -204,6 +204,7 @@ type
     btnPrecheckOrders: TAdvSmoothToggleButton;
     btnWithOutPrecheckOrders: TAdvSmoothToggleButton;
     mainTouchKeyBoard: TAdvSmoothTouchKeyBoard;
+    tmrTime: TTimer;
 
     //Проверка введёного пароля
     procedure actPassEnterExecute(Sender: TObject);
@@ -287,6 +288,7 @@ type
       Params: TColCellParamsEh);
     procedure DBGrMainColumns3GetCellParams(Sender: TObject; EditMode: Boolean;
       Params: TColCellParamsEh);
+    procedure tmrTimeTimer(Sender: TObject);
   private
     //Компонент обращения к БД
     FFrontBase: TFrontBase;
@@ -1832,7 +1834,7 @@ begin
         FHeaderInfoTable.Close;
         FLineInfoTable.Close;
 
-        RestFormState := OrderMenu;
+        RestFormState := FBaseFormState;
       end;
 
     MenuInfo:
@@ -3828,6 +3830,14 @@ begin
     FButton := pnlHalls.FindComponent(FActiveHallButton);
     if Assigned(FButton) then
       TAdvSmoothButton(FButton).Click;
+  end;
+end;
+
+procedure TRestMainForm.tmrTimeTimer(Sender: TObject);
+begin
+  if FRestFormState = MenuInfo then
+  begin
+
   end;
 end;
 

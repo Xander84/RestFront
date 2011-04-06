@@ -895,7 +895,10 @@ begin
           InsOrder.ParamByName('usr$timecloseorder').Value := HeaderTable.FieldByName('usr$timecloseorder').Value;
           InsOrder.ParamByName('documentkey').AsInteger := MasterID;
           InsOrder.ParamByName('usr$tablekey').AsInteger := HeaderTable.FieldByName('usr$tablekey').AsInteger;
-          InsOrder.ParamByName('usr$computername').AsString := HeaderTable.FieldByName('USR$COMPUTERNAME').AsString;
+          if HeaderTable.FieldByName('USR$COMPUTERNAME').AsString <> '' then
+            InsOrder.ParamByName('usr$computername').AsString := HeaderTable.FieldByName('USR$COMPUTERNAME').AsString
+          else
+            InsOrder.ParamByName('usr$computername').AsString := GetLocalComputerName;
           InsOrder.ExecQuery;
         end;
       end;
@@ -951,7 +954,10 @@ begin
               InsOrderLine.ParamByName('usr$costeq').AsVariant := '';  //????
               InsOrderLine.ParamByName('usr$depotkey').AsVariant := ''; //????
               InsOrderLine.ParamByName('usr$extramodify').AsString := LineTable.FieldByName('extramodify').AsString;
-              InsOrderLine.ParamByName('usr$computername').AsString := LineTable.FieldByName('USR$COMPUTERNAME').AsString;
+              if LineTable.FieldByName('USR$COMPUTERNAME').AsString <> '' then
+                InsOrderLine.ParamByName('usr$computername').AsString := LineTable.FieldByName('USR$COMPUTERNAME').AsString
+              else
+                InsOrderLine.FieldByName('USR$COMPUTERNAME').AsString := GetLocalComputerName;
               InsOrderLine.ExecQuery;
 
               ModifyTable.First;
@@ -1461,7 +1467,10 @@ begin
           HeaderTable.FieldByName('editorkey').Value := FReadSQL.FieldByName('editorkey').Value;
           HeaderTable.FieldByName('editiondate').Value := FReadSQL.FieldByName('editiondate').Value;
           HeaderTable.FieldByName('usr$tablekey').AsInteger := FReadSQL.FieldByName('usr$tablekey').AsInteger;
-          HeaderTable.FieldByName('usr$computername').AsString := FReadSQL.FieldByName('usr$computername').AsString;
+          if FReadSQL.FieldByName('usr$computername').AsString <> '' then
+            HeaderTable.FieldByName('usr$computername').AsString := FReadSQL.FieldByName('usr$computername').AsString
+          else
+            HeaderTable.FieldByName('usr$computername').AsString := GetLocalComputerName;
           HeaderTable.Post;
           FReadSQL.Next;
         end;
@@ -2529,7 +2538,7 @@ begin
         '   and s.usr$kassa > '''' ' +
         ' order by  ' +
         '   s.id desc ';
-      FReadSQL.Params[0].AsString := AnsiUpperCase(GetLocalComputerName);
+      FReadSQL.Params[0].AsString := GetLocalComputerName;
       FReadSQL.ExecQuery;
       if not FReadSQL.Eof then
       begin

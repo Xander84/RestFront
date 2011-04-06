@@ -2605,7 +2605,7 @@ object RestMainForm: TRestMainForm
         Top = 1
         Width = 80
         Height = 719
-        ActivePage = tsMainButton
+        ActivePage = tsOrderButton
         ActiveFont.Charset = DEFAULT_CHARSET
         ActiveFont.Color = clWindowText
         ActiveFont.Height = -11
@@ -2826,8 +2826,8 @@ object RestMainForm: TRestMainForm
             Action = actDeletePosition
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
-            Appearance.Font.Height = -13
-            Appearance.Font.Name = 'Times New Roman'
+            Appearance.Font.Height = -11
+            Appearance.Font.Name = 'Tahoma'
             Appearance.Font.Style = [fsBold]
             Status.Caption = '0'
             Status.Appearance.Fill.Color = clRed
@@ -2856,8 +2856,8 @@ object RestMainForm: TRestMainForm
             Action = actCutCheck
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
-            Appearance.Font.Height = -13
-            Appearance.Font.Name = 'Times New Roman'
+            Appearance.Font.Height = -11
+            Appearance.Font.Name = 'Tahoma'
             Appearance.Font.Style = [fsBold]
             Status.Caption = '0'
             Status.Appearance.Fill.Color = clRed
@@ -2886,8 +2886,8 @@ object RestMainForm: TRestMainForm
             Action = actPreCheck
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
-            Appearance.Font.Height = -13
-            Appearance.Font.Name = 'Times New Roman'
+            Appearance.Font.Height = -11
+            Appearance.Font.Name = 'Tahoma'
             Appearance.Font.Style = [fsBold]
             Status.Caption = '0'
             Status.Appearance.Fill.Color = clRed
@@ -2916,8 +2916,8 @@ object RestMainForm: TRestMainForm
             Action = actModification
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
-            Appearance.Font.Height = -13
-            Appearance.Font.Name = 'Times New Roman'
+            Appearance.Font.Height = -11
+            Appearance.Font.Name = 'Tahoma'
             Appearance.Font.Style = [fsBold]
             Status.Caption = '0'
             Status.Appearance.Fill.Color = clRed
@@ -2946,8 +2946,8 @@ object RestMainForm: TRestMainForm
             Action = actKeyBoard
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
-            Appearance.Font.Height = -13
-            Appearance.Font.Name = 'Times New Roman'
+            Appearance.Font.Height = -11
+            Appearance.Font.Name = 'Tahoma'
             Appearance.Font.Style = [fsBold]
             Status.Caption = '0'
             Status.Appearance.Fill.Color = clRed
@@ -2977,8 +2977,8 @@ object RestMainForm: TRestMainForm
             Action = actDiscount
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
-            Appearance.Font.Height = -13
-            Appearance.Font.Name = 'Times New Roman'
+            Appearance.Font.Height = -11
+            Appearance.Font.Name = 'Tahoma'
             Appearance.Font.Style = [fsBold]
             Status.Caption = '0'
             Status.Appearance.Fill.Color = clRed
@@ -3008,8 +3008,8 @@ object RestMainForm: TRestMainForm
             Appearance.PictureAlignment = taCenter
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
-            Appearance.Font.Height = -13
-            Appearance.Font.Name = 'Times New Roman'
+            Appearance.Font.Height = -11
+            Appearance.Font.Name = 'Tahoma'
             Appearance.Font.Style = [fsBold]
             Status.Caption = '0'
             Status.Appearance.Fill.Color = clRed
@@ -3038,8 +3038,8 @@ object RestMainForm: TRestMainForm
             Action = actDevide
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
-            Appearance.Font.Height = -13
-            Appearance.Font.Name = 'Times New Roman'
+            Appearance.Font.Height = -11
+            Appearance.Font.Name = 'Tahoma'
             Appearance.Font.Style = [fsBold]
             Status.Caption = '0'
             Status.Appearance.Fill.Color = clRed
@@ -3069,8 +3069,8 @@ object RestMainForm: TRestMainForm
             Anchors = [akLeft, akBottom]
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
-            Appearance.Font.Height = -11
-            Appearance.Font.Name = 'Times New Roman'
+            Appearance.Font.Height = -9
+            Appearance.Font.Name = 'Tahoma'
             Appearance.Font.Style = [fsBold]
             Status.Caption = '0'
             Status.Appearance.Fill.Color = clRed
@@ -3101,8 +3101,8 @@ object RestMainForm: TRestMainForm
             Anchors = [akLeft, akBottom]
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
-            Appearance.Font.Height = -12
-            Appearance.Font.Name = 'Times New Roman'
+            Appearance.Font.Height = -11
+            Appearance.Font.Name = 'Tahoma'
             Appearance.Font.Style = [fsBold]
             Status.Caption = '0'
             Status.Appearance.Fill.Color = clRed
@@ -3143,8 +3143,8 @@ object RestMainForm: TRestMainForm
             Action = actCashForm
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
-            Appearance.Font.Height = -13
-            Appearance.Font.Name = 'Times New Roman'
+            Appearance.Font.Height = -11
+            Appearance.Font.Name = 'Tahoma'
             Appearance.Font.Style = [fsBold]
             Status.Caption = '0'
             Status.Appearance.Fill.Color = clRed
@@ -3173,8 +3173,8 @@ object RestMainForm: TRestMainForm
             Action = actAllChecks
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
-            Appearance.Font.Height = -13
-            Appearance.Font.Name = 'Times New Roman'
+            Appearance.Font.Height = -9
+            Appearance.Font.Name = 'Tahoma'
             Appearance.Font.Style = [fsBold]
             Status.Caption = '0'
             Status.Appearance.Fill.Color = clRed
@@ -3203,8 +3203,8 @@ object RestMainForm: TRestMainForm
             Action = actManagerInfo
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
-            Appearance.Font.Height = -13
-            Appearance.Font.Name = 'Times New Roman'
+            Appearance.Font.Height = -11
+            Appearance.Font.Name = 'Tahoma'
             Appearance.Font.Style = [fsBold]
             Status.Caption = '0'
             Status.Appearance.Fill.Color = clRed
@@ -3233,8 +3233,8 @@ object RestMainForm: TRestMainForm
             Action = actKassirInfo
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
-            Appearance.Font.Height = -13
-            Appearance.Font.Name = 'Times New Roman'
+            Appearance.Font.Height = -11
+            Appearance.Font.Name = 'Tahoma'
             Appearance.Font.Style = [fsBold]
             Status.Caption = '0'
             Status.Appearance.Fill.Color = clRed
@@ -3264,8 +3264,8 @@ object RestMainForm: TRestMainForm
             Anchors = [akLeft, akBottom]
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
-            Appearance.Font.Height = -13
-            Appearance.Font.Name = 'Times New Roman'
+            Appearance.Font.Height = -11
+            Appearance.Font.Name = 'Tahoma'
             Appearance.Font.Style = [fsBold]
             Status.Caption = '0'
             Status.Appearance.Fill.Color = clRed
@@ -3292,6 +3292,12 @@ object RestMainForm: TRestMainForm
           Caption = 'tsManagerInfoButton'
           Color = 14986888
           ColorTo = clNone
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -9
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          ParentFont = False
           TabColor = clBtnFace
           TabColorTo = clNone
           DesignSize = (
@@ -3304,6 +3310,12 @@ object RestMainForm: TRestMainForm
             Height = 33
             Date = 40569.698956435180000000
             Time = 40569.698956435180000000
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -9
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
             TabOrder = 0
           end
           object xDateEnd: TDateTimePicker
@@ -3313,6 +3325,12 @@ object RestMainForm: TRestMainForm
             Height = 33
             Date = 40569.698956435180000000
             Time = 40569.698956435180000000
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -9
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
             TabOrder = 1
           end
           object btnExitManagerInfo: TAdvSmoothButton
@@ -3323,8 +3341,8 @@ object RestMainForm: TRestMainForm
             Anchors = [akLeft, akBottom]
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
-            Appearance.Font.Height = -13
-            Appearance.Font.Name = 'Times New Roman'
+            Appearance.Font.Height = -11
+            Appearance.Font.Name = 'Tahoma'
             Appearance.Font.Style = [fsBold]
             Status.Caption = '0'
             Status.Appearance.Fill.Color = clRed
@@ -3354,8 +3372,8 @@ object RestMainForm: TRestMainForm
             Height = 50
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
-            Appearance.Font.Height = -13
-            Appearance.Font.Name = 'Times New Roman'
+            Appearance.Font.Height = -11
+            Appearance.Font.Name = 'Tahoma'
             Appearance.Font.Style = [fsBold]
             Status.Caption = '0'
             Status.Appearance.Fill.Color = clRed
@@ -3385,8 +3403,8 @@ object RestMainForm: TRestMainForm
             Height = 50
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
-            Appearance.Font.Height = -13
-            Appearance.Font.Name = 'Times New Roman'
+            Appearance.Font.Height = -11
+            Appearance.Font.Name = 'Tahoma'
             Appearance.Font.Style = [fsBold]
             Status.Caption = '0'
             Status.Appearance.Fill.Color = clRed
@@ -3416,8 +3434,8 @@ object RestMainForm: TRestMainForm
             Height = 50
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
-            Appearance.Font.Height = -13
-            Appearance.Font.Name = 'Times New Roman'
+            Appearance.Font.Height = -11
+            Appearance.Font.Name = 'Tahoma'
             Appearance.Font.Style = [fsBold]
             Status.Caption = '0'
             Status.Appearance.Fill.Color = clRed
@@ -3447,8 +3465,8 @@ object RestMainForm: TRestMainForm
             Height = 50
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
-            Appearance.Font.Height = -13
-            Appearance.Font.Name = 'Times New Roman'
+            Appearance.Font.Height = -11
+            Appearance.Font.Name = 'Tahoma'
             Appearance.Font.Style = [fsBold]
             Status.Caption = '0'
             Status.Appearance.Fill.Color = clRed
@@ -3478,8 +3496,8 @@ object RestMainForm: TRestMainForm
             Height = 50
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
-            Appearance.Font.Height = -13
-            Appearance.Font.Name = 'Times New Roman'
+            Appearance.Font.Height = -11
+            Appearance.Font.Name = 'Tahoma'
             Appearance.Font.Style = [fsBold]
             Status.Caption = '0'
             Status.Appearance.Fill.Color = clRed
@@ -3509,8 +3527,8 @@ object RestMainForm: TRestMainForm
             Height = 50
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
-            Appearance.Font.Height = -13
-            Appearance.Font.Name = 'Times New Roman'
+            Appearance.Font.Height = -11
+            Appearance.Font.Name = 'Tahoma'
             Appearance.Font.Style = [fsBold]
             Status.Caption = '0'
             Status.Appearance.Fill.Color = clRed
@@ -3540,8 +3558,8 @@ object RestMainForm: TRestMainForm
             Height = 50
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
-            Appearance.Font.Height = -13
-            Appearance.Font.Name = 'Times New Roman'
+            Appearance.Font.Height = -11
+            Appearance.Font.Name = 'Tahoma'
             Appearance.Font.Style = [fsBold]
             Status.Caption = '0'
             Status.Appearance.Fill.Color = clRed
@@ -3646,7 +3664,7 @@ object RestMainForm: TRestMainForm
             Anchors = [akLeft, akBottom]
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
-            Appearance.Font.Height = -11
+            Appearance.Font.Height = -9
             Appearance.Font.Name = 'Tahoma'
             Appearance.Font.Style = [fsBold]
             Status.Caption = '0'
@@ -4061,14 +4079,19 @@ object RestMainForm: TRestMainForm
     NotesFont.Style = []
     UseSystemFont = False
     MenuBorderColor = 9841920
-    Left = 464
-    Top = 192
+    Left = 472
+    Top = 184
   end
   object tmrTables: TTimer
     Enabled = False
     Interval = 30000
     OnTimer = tmrTablesTimer
-    Left = 560
-    Top = 192
+    Left = 568
+    Top = 184
+  end
+  object tmrTime: TTimer
+    OnTimer = tmrTimeTimer
+    Left = 368
+    Top = 240
   end
 end
