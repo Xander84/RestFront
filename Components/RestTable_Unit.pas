@@ -310,7 +310,7 @@ var
   bm: Graphics.TBitmap;
 begin
   FNumber := Value;
-  if Assigned(PngImage) then
+  if Assigned(PngImage) and (not PngImage.Empty) then
   begin
     bm := Graphics.TBitmap.Create;
     try
@@ -475,7 +475,7 @@ begin
   FTableName := Value;
   if Value <> '' then
   begin
-    if Assigned(PngImage) then
+    if Assigned(PngImage) and (not PngImage.Empty) then
     begin
       bm := Graphics.TBitmap.Create;
       try
