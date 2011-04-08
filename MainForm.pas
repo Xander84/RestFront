@@ -3657,7 +3657,7 @@ begin
   FRestTable := TRestTable(Sender);
   FOrderKey := FRestTable.OrderKey;
   //Проверить на кол-во заказов и сразу построить pop-up список
-  FSQL := TIBSQL.Create(nil);
+{  FSQL := TIBSQL.Create(nil);
   FSQL.Transaction := FFrontBase.ReadTransaction;
   try
     tablePopupMenu.Items.Clear;
@@ -3701,11 +3701,11 @@ begin
     FSQL.Close;
   finally
     FSQL.Free;
-  end;
+  end;     }
 
-  if FRestTable.OrderCount > 1 then
+  if True{FRestTable.OrderCount > 1} then
   begin
-    FRestTable.Tag := 0;
+//    FRestTable.Tag := 0;
     Pt := FRestTable.ClientToScreen(Point(0, 0));
     FRestTable.PopupMenu.PopupComponent := FRestTable;
     FRestTable.PopupMenu.Popup(Pt.X + 16, Pt.Y + 16);
