@@ -491,7 +491,7 @@ begin
     if FFrontBase.Options.UseHalls then
     begin
       FFrontBase.GetHallsInfo(FHallsTable);
-      if FHallsTable.RecordCount > 1 then
+      if FHallsTable.RecordCount > 0 then
         RestFormState := HallsPage
       else
         RestFormState := OrderMenu;
@@ -1458,6 +1458,7 @@ begin
     RemoveTableButton;
     RemoveChooseTable;
     FButton := TButton(Sender);
+    LoadHallBackGround(FButton.Tag);
     CreateTableButtonList(FButton.Tag);
     FActiveHallButton := FButton.Name;
     if FRestFormState = HallInfo then
@@ -1466,7 +1467,6 @@ begin
       AddChooseTables(FButton.Tag);
     end else
       tmrTables.Enabled := True;
-    LoadHallBackGround(FButton.Tag);
   finally
     LockWindowUpdate(0);
   end;
@@ -2594,6 +2594,7 @@ begin
           pnlMainGood.Visible := False;
           pnlChoose.Visible   := False;
           pnlExtraGoodGroup.Visible := False;
+          imgHallBackground.Picture := nil;
           //5. установки кнопок
           FMenuButtonCount := 0;
 
@@ -2785,7 +2786,22 @@ begin
           FWithPreCheck := True;
 
           FFrontBase.GetHallsInfo(FHallsTable);
-          CreateHallButtonList;
+          if FHallsTable.RecordCount = 1 then
+          begin
+            pnlRight.Visible := False;
+            RemoveTableButton;
+            RemoveChooseTable;
+
+            LoadHallBackGround(FHallsTable.FieldByName('ID').AsInteger);
+            CreateTableButtonList(FHallsTable.FieldByName('ID').AsInteger);
+            if FRestFormState = HallInfo then
+            begin
+              pcMenu.ActivePage := tsTablesDesigner;
+              AddChooseTables(FHallsTable.FieldByName('ID').AsInteger);
+            end else
+              tmrTables.Enabled := True;
+          end else
+            CreateHallButtonList;
           CreateMenuButtonList;
           AddPopularGoods;
 
