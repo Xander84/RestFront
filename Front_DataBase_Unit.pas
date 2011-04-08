@@ -330,12 +330,12 @@ type
     function LockUserOrder(const OrderKey: Integer): Boolean;
     function UnLockUserOrder(const OrderKey: Integer): Boolean;
 
-    function GetPayKindType(var MemTable: TkbmMemTable; const PayType: Integer; IsPlCard: Integer = 0): Boolean;
+    function GetPayKindType(const MemTable: TkbmMemTable; const PayType: Integer; IsPlCard: Integer = 0): Boolean;
 
-    function CreateNewOrder(var HeaderTable, LineTable, ModifyTable: TkbmMemTable; out OrderKey: Integer): Boolean;
-    function SaveAndReloadOrder(var HeaderTable, LineTable, ModifyTable: TkbmMemTable; OrderKey: Integer): Boolean;
-    function GetOrder(var HeaderTable, LineTable, ModifyTable: TkbmMemTable; OrderKey: Integer): Boolean; // Если OrderKey = -1 то новый заказ
-    function CloseModifyTable(var ModifyTable: TkbmMemTable; const CloseTime: TTime): Boolean;
+    function CreateNewOrder(const HeaderTable, LineTable, ModifyTable: TkbmMemTable; out OrderKey: Integer): Boolean;
+    function SaveAndReloadOrder(const HeaderTable, LineTable, ModifyTable: TkbmMemTable; OrderKey: Integer): Boolean;
+    function GetOrder(const HeaderTable, LineTable, ModifyTable: TkbmMemTable; OrderKey: Integer): Boolean; // Если OrderKey = -1 то новый заказ
+    function CloseModifyTable(const ModifyTable: TkbmMemTable; const CloseTime: TTime): Boolean;
     //оплачен или нет
     function OrderIsPayed(const ID: Integer): Boolean;
     function OrderIsLocked(const ID: Integer): Boolean;
@@ -614,7 +614,7 @@ begin
   CacheList := TDictionary<String, Integer>.Create();
 end;
 
-function TFrontBase.CreateNewOrder(var HeaderTable,
+function TFrontBase.CreateNewOrder(const HeaderTable,
   LineTable, ModifyTable: TkbmMemTable; out OrderKey: Integer): Boolean;
 var
   InsDoc, InsOrder, InsOrderLine, InsModify, DelModify, UpdParent:TIBSQL;
@@ -1395,7 +1395,7 @@ begin
   Result := FIDSQL.FieldByName('ID').AsInteger;
 end;
 
-function TFrontBase.GetOrder(var HeaderTable, LineTable, ModifyTable: TkbmMemTable;
+function TFrontBase.GetOrder(const HeaderTable, LineTable, ModifyTable: TkbmMemTable;
   OrderKey: Integer): Boolean;
 var
   FSQL: TIBSQL;
@@ -2313,7 +2313,7 @@ begin
     Result := AnsiUpperCase(ComputerName);
 end;
 
-function TFrontBase.GetPayKindType(var MemTable: TkbmMemTable;
+function TFrontBase.GetPayKindType(const MemTable: TkbmMemTable;
   const PayType: Integer; IsPlCard: Integer): Boolean;
 var
   S: String;
@@ -2882,7 +2882,7 @@ begin
 //  FGoodHashList.Clear;
 end;
 
-function TFrontBase.CloseModifyTable(var ModifyTable: TkbmMemTable;
+function TFrontBase.CloseModifyTable(const ModifyTable: TkbmMemTable;
   const CloseTime: TTime): Boolean;
 var
   FSQL: TIBSQL;
@@ -2930,7 +2930,7 @@ begin
   end;
 end;
 
-function TFrontBase.SaveAndReloadOrder(var HeaderTable, LineTable,
+function TFrontBase.SaveAndReloadOrder(const HeaderTable, LineTable,
   ModifyTable: TkbmMemTable; OrderKey: Integer): Boolean;
 begin
   try

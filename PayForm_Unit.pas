@@ -135,9 +135,7 @@ end;
 
 procedure TPayForm.FormShow(Sender: TObject);
 begin
-  if Assigned(FFrontBase) then
-    if FFrontBase.GetPayKindType(FPayFormDataSet, FPayType, FIsPlCard) then
-      CreatePayFormButtonList;
+  CreatePayFormButtonList;
 end;
 
 procedure TPayForm.PayFormButtonOnClick(Sender: TObject);

@@ -488,22 +488,42 @@ begin
   FForm.PayType := FCreditID;
   FForm.IsPlCard := 1;
   try
-    FForm.ShowModal;
-    if FForm.ModalResult = mrOK then
+    if FFrontBase.GetPayKindType(FForm.PayFormDataSet,
+      FForm.PayType, FForm.IsPlCard) then
     begin
-      FPersonalCardKey := -1;
-      FCurrentPayType := FForm.PayFormDataSet.FieldByName('USR$PAYTYPEKEY').AsInteger;
-      FCurrentPayName := FForm.PayFormDataSet.FieldByName('USR$NAME').AsString;
-      FNoFiscal := FForm.PayFormDataSet.FieldByName('USR$NOFISCAL').AsInteger;
-      FPayType := cn_paytype_credit;
-      edMain.Text := '';
-      if dsPayLine.IsEmpty then
+      if FForm.PayFormDataSet.RecordCount = 1 then
       begin
-        edMain.Text := CurrToStr(FSumToPay);
-        edMain.SelStart := Length(edMain.Text);
+        FPersonalCardKey := -1;
+        FCurrentPayType := FForm.PayFormDataSet.FieldByName('USR$PAYTYPEKEY').AsInteger;
+        FCurrentPayName := FForm.PayFormDataSet.FieldByName('USR$NAME').AsString;
+        FNoFiscal := FForm.PayFormDataSet.FieldByName('USR$NOFISCAL').AsInteger;
+        FPayType := cn_paytype_credit;
+        edMain.Text := '';
+        if dsPayLine.IsEmpty then
+        begin
+          edMain.Text := CurrToStr(FSumToPay);
+          edMain.SelStart := Length(edMain.Text);
+        end;
+      end else
+      begin
+        FForm.ShowModal;
+        if FForm.ModalResult = mrOK then
+        begin
+          FPersonalCardKey := -1;
+          FCurrentPayType := FForm.PayFormDataSet.FieldByName('USR$PAYTYPEKEY').AsInteger;
+          FCurrentPayName := FForm.PayFormDataSet.FieldByName('USR$NAME').AsString;
+          FNoFiscal := FForm.PayFormDataSet.FieldByName('USR$NOFISCAL').AsInteger;
+          FPayType := cn_paytype_credit;
+          edMain.Text := '';
+          if dsPayLine.IsEmpty then
+          begin
+            edMain.Text := CurrToStr(FSumToPay);
+            edMain.SelStart := Length(edMain.Text);
+          end;
+        end else
+          PrevSettings(FPayType);
       end;
-    end else
-      PrevSettings(FPayType);
+    end;
   finally
     FForm.Free;
   end;
@@ -543,22 +563,42 @@ begin
   FForm.PayType := FCreditID;
   FForm.IsPlCard := 0;
   try
-    FForm.ShowModal;
-    if FForm.ModalResult = mrOK then
+    if FFrontBase.GetPayKindType(FForm.PayFormDataSet,
+      FForm.PayType, FForm.IsPlCard) then
     begin
-      FPersonalCardKey := -1;
-      FCurrentPayType := FForm.PayFormDataSet.FieldByName('USR$PAYTYPEKEY').AsInteger;
-      FCurrentPayName := FForm.PayFormDataSet.FieldByName('USR$NAME').AsString;
-      FNoFiscal := FForm.PayFormDataSet.FieldByName('USR$NOFISCAL').AsInteger;
-      FPayType := cn_paytype_noncash;
-      edMain.Text := '';
-      if dsPayLine.IsEmpty then
+      if FForm.PayFormDataSet.RecordCount = 1 then
       begin
-        edMain.Text := CurrToStr(FSumToPay);
-        edMain.SelStart := Length(edMain.Text);
+        FPersonalCardKey := -1;
+        FCurrentPayType := FForm.PayFormDataSet.FieldByName('USR$PAYTYPEKEY').AsInteger;
+        FCurrentPayName := FForm.PayFormDataSet.FieldByName('USR$NAME').AsString;
+        FNoFiscal := FForm.PayFormDataSet.FieldByName('USR$NOFISCAL').AsInteger;
+        FPayType := cn_paytype_noncash;
+        edMain.Text := '';
+        if dsPayLine.IsEmpty then
+        begin
+          edMain.Text := CurrToStr(FSumToPay);
+          edMain.SelStart := Length(edMain.Text);
+        end;
+      end else
+      begin
+        FForm.ShowModal;
+        if FForm.ModalResult = mrOK then
+        begin
+          FPersonalCardKey := -1;
+          FCurrentPayType := FForm.PayFormDataSet.FieldByName('USR$PAYTYPEKEY').AsInteger;
+          FCurrentPayName := FForm.PayFormDataSet.FieldByName('USR$NAME').AsString;
+          FNoFiscal := FForm.PayFormDataSet.FieldByName('USR$NOFISCAL').AsInteger;
+          FPayType := cn_paytype_noncash;
+          edMain.Text := '';
+          if dsPayLine.IsEmpty then
+          begin
+            edMain.Text := CurrToStr(FSumToPay);
+            edMain.SelStart := Length(edMain.Text);
+          end;
+        end else
+          PrevSettings(FPayType);
       end;
-    end else
-      PrevSettings(FPayType);
+    end;
   finally
     FForm.Free;
   end;
