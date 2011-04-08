@@ -11,8 +11,8 @@ type
   TRestTable = class(TPngSpeedButton)
   private
     FNumber: String;
-    FPosX: Integer;
-    FPosY: Integer;
+    FPosX: Double;
+    FPosY: Double;
     FHallKey: Integer;
     FTableTypeKey: Integer;
     FMainTableKey: Integer;
@@ -28,8 +28,8 @@ type
     FOrderList: TDictionary<Integer, String>;
     FRespName: String;
     FNeedToInsert: Boolean;
-    procedure SetPosX(const Value: Integer);
-    procedure SetPosY(const Value: Integer);
+    procedure SetPosX(const Value: Double);
+    procedure SetPosY(const Value: Double);
     procedure SetHallKey(const Value: Integer);
     procedure SetTableType(const Value: Integer);
 
@@ -40,8 +40,8 @@ type
     procedure SetTransparent(const Value: Boolean);
     procedure SetTransparentColor(const Value: TColor);
     procedure SetID(const Value: Integer);
-    function GetPosX: Integer;
-    function GetPosY: Integer;
+    function GetPosX: Double;
+    function GetPosY: Double;
     procedure SetOrderKey(const Value: Integer);
     procedure SetRespKey(const Value: Integer);
     procedure SetIsLocked(const Value: Boolean);
@@ -49,7 +49,8 @@ type
     procedure SetComputerName(const Value: String);
     function GetOrderCount: Integer;
 
-    procedure WMContextMenu(var Message: TWMContextMenu); message WM_CONTEXTMENU;
+    procedure WMContextMenu(var Message: TWMContextMenu);
+      message WM_CONTEXTMENU;
     procedure SetRespName(const Value: String);
   public
     constructor Create(AOwner: TComponent); override;
@@ -72,16 +73,17 @@ type
     property RespKey: Integer read FRespKey write SetRespKey;
     property FrontBase: TFrontBase read FFrontBase write SetFrontBase;
     property OrderCount: Integer read GetOrderCount;
-    property OrderList: TDictionary<Integer, String> read FOrderList;
+    property OrderList: TDictionary<Integer, String>read FOrderList;
     property RespName: String read FRespName write SetRespName;
     property NeedToInsert: Boolean read FNeedToInsert write FNeedToInsert;
   published
     // номер стола
     property Number: String read FNumber write SetNumber;
-    property PosX: Integer read GetPosX write SetPosX;
-    property PosY: Integer read GetPosY write SetPosY;
+    property PosX: Double read GetPosX write SetPosX;
+    property PosY: Double read GetPosY write SetPosY;
     property Transparent: Boolean read FTransparent write SetTransparent;
-    property TransparentColor: TColor read FTransparentColor write SetTransparentColor;
+    property TransparentColor: TColor read FTransparentColor write
+      SetTransparentColor;
   end;
 
   TChooseTable = class(TRestTable)
@@ -99,6 +101,9 @@ type
 procedure Register;
 
 implementation
+
+const
+  POS_MULTIPLIER = 100000;
 
 procedure Register;
 begin
@@ -131,14 +136,20 @@ begin
   Result := FOrderList.Count;
 end;
 
-function TRestTable.GetPosX: Integer;
+function TRestTable.GetPosX: Double;
 begin
-  Result := Top;
+  if Assigned(Parent) and (Parent.Height > 0) then
+    Result := POS_MULTIPLIER * Top / Parent.Height
+  else
+    Result := 0;
 end;
 
-function TRestTable.GetPosY: Integer;
+function TRestTable.GetPosY: Double;
 begin
-  Result := Left;
+  if Assigned(Parent) and (Parent.Width > 0) then
+    Result := POS_MULTIPLIER * Left / Parent.Width
+  else
+    Result := 0;
 end;
 
 procedure TRestTable.ReadTableType;
@@ -157,8 +168,7 @@ begin
       if not FSQL.Transaction.InTransaction then
         FSQL.Transaction.StartTransaction;
 
-      FSQL.SQL.Text :=
-        ' SELECT * FROM USR$MN_TABLETYPE T ' +
+      FSQL.SQL.Text := ' SELECT * FROM USR$MN_TABLETYPE T ' +
         ' WHERE T.ID = :ID ';
       FSQL.Params[0].AsInteger := FTableTypeKey;
       FSQL.ExecQuery;
@@ -175,19 +185,20 @@ begin
             FSQL.FieldByName('USR$PICTURE1').SaveToStream(Str);
             Str.Position := 0;
             FPng.LoadFromStream(Str);
-            PngImage := FPng;
+            pngimage := FPng;
           finally
             FPng.Free;
           end;
-        end else
-        if not IsEmpty and (not FSQL.FieldByName('USR$PICTURE2').IsNull) then
+        end
+        else if not IsEmpty and (not FSQL.FieldByName('USR$PICTURE2').IsNull)
+          then
         begin
           FPng := TPngImage.Create;
           try
             FSQL.FieldByName('USR$PICTURE2').SaveToStream(Str);
             Str.Position := 0;
             FPng.LoadFromStream(Str);
-            PngImage := FPng;
+            pngimage := FPng;
           finally
             FPng.Free;
           end;
@@ -215,13 +226,10 @@ begin
     FTransaction.DefaultDatabase := FFrontBase.ReadTransaction.DefaultDatabase;
     FTransaction.StartTransaction;
     FSQL.Transaction := FTransaction;
-    FSQL.SQL.Text :=
-      'UPDATE USR$MN_TABLE T ' +
-      'SET T.USR$POSY = :POSY, ' +
-      '    T.USR$POSX = :POSX  ' +
-      'WHERE T.ID = :ID ';
-    FSQL.ParamByName('POSY').AsInteger := PosY;
-    FSQL.ParamByName('POSX').AsInteger := PosX;
+    FSQL.SQL.Text := 'UPDATE USR$MN_TABLE T ' + 'SET T.USR$POSY = :POSY, ' +
+      '    T.USR$POSX = :POSX  ' + 'WHERE T.ID = :ID ';
+    FSQL.ParamByName('POSY').AsCurrency := PosY;
+    FSQL.ParamByName('POSX').AsCurrency := PosX;
     FSQL.ParamByName('ID').AsInteger := FID;
     FSQL.ExecQuery;
     FSQL.Close;
@@ -250,16 +258,16 @@ begin
     FID := FFrontBase.GetNextID;
 
     FSQL.SQL.Text :=
-      'INSERT INTO USR$MN_TABLE(ID, USR$NUMBER, USR$POSY, USR$POSX, USR$HALLKEY, ' +
-      '  USR$TYPE, USR$MAINTABLEKEY) ' +
+      'INSERT INTO USR$MN_TABLE(ID, USR$NUMBER, USR$POSY, USR$POSX, USR$HALLKEY, '
+      + '  USR$TYPE, USR$MAINTABLEKEY) ' +
       'VALUES (:ID, :NUMBER, :POSY, :POSX, :HALLKEY, :TYPEKEY, null) ';
     FSQL.ParamByName('ID').AsInteger := FID;
     FSQL.ParamByName('NUMBER').AsString := Number;
-    FSQL.ParamByName('POSY').AsInteger := PosY;
-    FSQL.ParamByName('POSX').AsInteger := PosX;
+    FSQL.ParamByName('POSY').AsCurrency := PosY;
+    FSQL.ParamByName('POSX').AsCurrency := PosX;
     FSQL.ParamByName('HALLKEY').AsInteger := HallKey;
     FSQL.ParamByName('TYPEKEY').AsInteger := TableTypeKey;
-//    FSQL.ParamByName('MAINTABLEKEY').AsInteger := MainTableKey;
+    // FSQL.ParamByName('MAINTABLEKEY').AsInteger := MainTableKey;
     FSQL.ExecQuery;
     FSQL.Close;
 
@@ -310,21 +318,21 @@ var
   bm: Graphics.TBitmap;
 begin
   FNumber := Value;
-  if Assigned(PngImage) and (not PngImage.Empty) then
+  if Assigned(pngimage) and (not pngimage.Empty) then
   begin
     bm := Graphics.TBitmap.Create;
     try
-      bm.Width := PngImage.Width;
-      bm.Height := PngImage.Height;
-      bm.Canvas.Draw(0, 0, PngImage);
-      bm.Transparent := true;
+      bm.Width := pngimage.Width;
+      bm.Height := pngimage.Height;
+      bm.Canvas.Draw(0, 0, pngimage);
+      bm.Transparent := True;
       bm.Canvas.Brush.Style := bsClear;
       if FRespName <> '' then
         bm.Canvas.TextOut(0, 0, FNumber + '(' + FRespName + ')')
       else
         bm.Canvas.TextOut(0, 0, FNumber);
 
-      PngImage.Assign(bm);
+      pngimage.Assign(bm);
     finally
       bm.Free;
     end;
@@ -336,16 +344,22 @@ begin
   FOrderKey := Value;
 end;
 
-procedure TRestTable.SetPosX(const Value: Integer);
+procedure TRestTable.SetPosX(const Value: Double);
 begin
   FPosX := Value;
-  Top := Value;
+  if Assigned(Parent) then
+    Top := Round(Parent.Height / POS_MULTIPLIER * Value)
+  else
+    Top := Round(Value);
 end;
 
-procedure TRestTable.SetPosY(const Value: Integer);
+procedure TRestTable.SetPosY(const Value: Double);
 begin
   FPosY := Value;
-  Left := Value;
+  if Assigned(Parent) then
+    Left := Round(Parent.Width / POS_MULTIPLIER * Value)
+  else
+    Left := Round(Value);
 end;
 
 procedure TRestTable.SetRespKey(const Value: Integer);
@@ -390,7 +404,8 @@ begin
   Pt.Y := Pt.Y + 8;
   Message.Pos := PointToSmallPoint(Pt);
 
-  if Message.Result <> 0 then Exit;
+  if Message.Result <> 0 then
+    Exit;
   if csDesigning in ComponentState then
   begin
     inherited;
@@ -401,7 +416,8 @@ begin
   Handled := False;
   DoContextPopup(Temp, Handled);
   Message.Result := Ord(Handled);
-  if Handled then Exit;
+  if Handled then
+    Exit;
 
   PopupMenu := GetPopupMenu;
   if (PopupMenu <> nil) and PopupMenu.AutoPopup then
@@ -436,8 +452,7 @@ begin
       if not FSQL.Transaction.InTransaction then
         FSQL.Transaction.StartTransaction;
 
-      FSQL.SQL.Text :=
-        ' SELECT * FROM USR$MN_TABLETYPE T ' +
+      FSQL.SQL.Text := ' SELECT * FROM USR$MN_TABLETYPE T ' +
         ' WHERE T.ID = :ID ';
       FSQL.Params[0].AsInteger := FTableTypeKey;
       FSQL.ExecQuery;
@@ -454,7 +469,7 @@ begin
             FSQL.FieldByName('USR$PICTURE1').SaveToStream(Str);
             Str.Position := 0;
             FPng.LoadFromStream(Str);
-            PngImage := FPng;
+            pngimage := FPng;
           finally
             FPng.Free;
           end;
@@ -475,18 +490,18 @@ begin
   FTableName := Value;
   if Value <> '' then
   begin
-    if Assigned(PngImage) and (not PngImage.Empty) then
+    if Assigned(pngimage) and (not pngimage.Empty) then
     begin
       bm := Graphics.TBitmap.Create;
       try
-        bm.Width := PngImage.Width;
-        bm.Height := PngImage.Height;
-        bm.Canvas.Draw(0, 0, PngImage);
-        bm.Transparent := true;
+        bm.Width := pngimage.Width;
+        bm.Height := pngimage.Height;
+        bm.Canvas.Draw(0, 0, pngimage);
+        bm.Transparent := True;
         bm.Canvas.Brush.Style := bsClear;
         bm.Canvas.TextOut(0, 0, FTableName);
 
-        PngImage.Assign(bm);
+        pngimage.Assign(bm);
       finally
         bm.Free;
       end;

@@ -708,8 +708,8 @@ begin
   FTablesInfoTable := TkbmMemTable.Create(nil);
   FTablesInfoTable.FieldDefs.Add('ID', ftInteger, 0);
   FTablesInfoTable.FieldDefs.Add('USR$NUMBER', ftString, 80);
-  FTablesInfoTable.FieldDefs.Add('USR$POSX', ftInteger, 0);
-  FTablesInfoTable.FieldDefs.Add('USR$POSY', ftInteger, 0);
+  FTablesInfoTable.FieldDefs.Add('USR$POSX', ftCurrency, 0);
+  FTablesInfoTable.FieldDefs.Add('USR$POSY', ftCurrency, 0);
   FTablesInfoTable.FieldDefs.Add('USR$HALLKEY', ftInteger, 0);
   FTablesInfoTable.FieldDefs.Add('USR$TYPE', ftInteger, 0);
   FTablesInfoTable.FieldDefs.Add('USR$MAINTABLEKEY', ftInteger, 0);
@@ -869,8 +869,8 @@ begin
         FButton.FrontBase := FFrontBase;
         FButton.ID := FTablesInfoTable.FieldByName('ID').AsInteger;
         FButton.IsEmpty := FTablesInfoTable.FieldByName('ORDERKEY').AsInteger = 0;
-        FButton.PosX := FTablesInfoTable.FieldByName('USR$POSX').AsInteger;
-        FButton.PosY := FTablesInfoTable.FieldByName('USR$POSY').AsInteger;
+        FButton.PosX := FTablesInfoTable.FieldByName('USR$POSX').AsCurrency;
+        FButton.PosY := FTablesInfoTable.FieldByName('USR$POSY').AsCurrency;
         FButton.TableTypeKey := FTablesInfoTable.FieldByName('USR$TYPE').AsInteger;
         FButton.OrderKey := FTablesInfoTable.FieldByName('ORDERKEY').AsInteger;
         FButton.RespKey := FTablesInfoTable.FieldByName('USR$RESPKEY').AsInteger;
