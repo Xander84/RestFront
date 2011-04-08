@@ -75,6 +75,7 @@ const
      '   doc.usr$mn_printdate,     ' +
      '   doc.editiondate,          ' +
      '   doc.editorkey,            ' +
+     '   doc.creationdate,         ' +
      '   o.usr$respkey,            ' +
      '   o.usr$guestcount,         ' +
      '   o.usr$timeorder,          ' +
@@ -364,8 +365,9 @@ type
     //работа с оборудованием
     procedure InitDisplay;
     function GetPrinterName: String;
-    function GetReportTemplate(var Stream: TStream; const ID: Integer): Boolean;
-    function SaveReportTemplate(var Stream: TStream; const ID: Integer): Boolean;
+    function GetReportTemplate(const Stream: TStream; const ID: Integer): Boolean;
+    function SaveReportTemplate(const Stream: TStream; const ID: Integer): Boolean;
+    function GetHallBackGround(const Stream: TStream; const HallKey: Integer): Boolean;
     procedure GetCashInfo;
 
     function GetNameWaiterOnID(const ID: Integer; WithGroup, TwoRows: Boolean): String;
@@ -482,6 +484,7 @@ begin
   DS.FieldDefs.Add('usr$bonussum', ftFloat, 0);
   DS.FieldDefs.Add('editorkey', ftInteger, 0);
   DS.FieldDefs.Add('editiondate', ftTimeStamp, 0);
+  DS.FieldDefs.Add('creationdate', ftTimeStamp, 0);
   DS.FieldDefs.Add('USR$TABLEKEY', ftInteger, 0);
   DS.FieldDefs.Add('USR$COMPUTERNAME', ftString, 20);
   DS.CreateTable;
@@ -1466,6 +1469,7 @@ begin
           HeaderTable.FieldByName('usr$bonussum').Value := FReadSQL.FieldByName('usr$bonussum').Value;
           HeaderTable.FieldByName('editorkey').Value := FReadSQL.FieldByName('editorkey').Value;
           HeaderTable.FieldByName('editiondate').Value := FReadSQL.FieldByName('editiondate').Value;
+          HeaderTable.FieldByName('creationdate').Value := FReadSQL.FieldByName('creationdate').Value;
           HeaderTable.FieldByName('usr$tablekey').AsInteger := FReadSQL.FieldByName('usr$tablekey').AsInteger;
           if FReadSQL.FieldByName('usr$computername').AsString <> '' then
             HeaderTable.FieldByName('usr$computername').AsString := FReadSQL.FieldByName('usr$computername').AsString
@@ -2771,6 +2775,35 @@ begin
   Result := 1 shl (AGroupID - 1);
 end;
 
+function TFrontBase.GetHallBackGround(const Stream: TStream;
+  const HallKey: Integer): Boolean;
+begin
+  Result := False;
+
+  FReadSQL.Close;
+  try
+    try
+      if not FReadSQL.Transaction.InTransaction then
+        FReadSQL.Transaction.StartTransaction;
+      FReadSQL.SQL.Text :=
+        'SELECT USR$BACKGROUNDPICTURE AS backgroundpicture '  +
+        'FROM USR$MN_HALL  ' +
+        'WHERE ID = :ID ';
+      FReadSQL.Params[0].AsInteger := HallKey;
+      FReadSQL.ExecQuery;
+      if not FReadSQL.Eof then
+      begin
+        Result := True;
+        FReadSQL.FieldByName('backgroundpicture').SaveToStream(Stream);
+      end;
+    except
+      raise;
+    end;
+  finally
+    FReadSQL.Close;
+  end;
+end;
+
 procedure TFrontBase.GetHallsInfo(const MemTable: TkbmMemTable);
 begin
   MemTable.Close;
@@ -3010,7 +3043,7 @@ begin
   end;
 end;
 
-function TFrontBase.GetReportTemplate(var Stream: TStream; const ID: Integer): Boolean;
+function TFrontBase.GetReportTemplate(const Stream: TStream; const ID: Integer): Boolean;
 begin
   Result := False;
 
@@ -3023,10 +3056,6 @@ begin
         'SELECT USR$TEMPLATEDATA AS TEMPLATEDATA '  +
         'FROM USR$MN_REPORT  ' +
         'WHERE ID = :ID ';
-  {      'SELECT TM.TEMPLATEDATA ' +
-        'FROM RP_REPORTLIST L ' +
-        'JOIN RP_REPORTTEMPLATE TM ON L.TEMPLATEKEY = TM.ID ' +
-        'WHERE L.ID = :ID ';        }
       FReadSQL.Params[0].AsInteger := ID;
       FReadSQL.ExecQuery;
       if not FReadSQL.Eof then
@@ -3613,7 +3642,7 @@ begin
   end;
 end;
 
-function TFrontBase.SaveReportTemplate(var Stream: TStream;
+function TFrontBase.SaveReportTemplate(const Stream: TStream;
   const ID: Integer): Boolean;
 var
   FSQL: TIBSQL;

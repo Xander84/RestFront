@@ -1535,7 +1535,7 @@ object RestMainForm: TRestMainForm
             Top = 1
             Width = 607
             Height = 699
-            ActivePage = tsOrderInfo
+            ActivePage = tsTablePage
             ActiveFont.Charset = DEFAULT_CHARSET
             ActiveFont.Color = clWindowText
             ActiveFont.Height = -11
@@ -2307,6 +2307,18 @@ object RestMainForm: TRestMainForm
                 TabOrder = 0
                 Touch.GestureManager = gmFront
                 OnGesture = sbTableGesture
+                object imgHallBackground: TImage
+                  Left = 0
+                  Top = 0
+                  Width = 607
+                  Height = 679
+                  Align = alClient
+                  Stretch = True
+                  ExplicitLeft = 128
+                  ExplicitTop = 208
+                  ExplicitWidth = 105
+                  ExplicitHeight = 105
+                end
               end
             end
           end
@@ -2591,6 +2603,7 @@ object RestMainForm: TRestMainForm
       Width = 1016
       Height = 19
       Panels = <>
+      SimplePanel = True
     end
     object pnlExtra: TPanel
       Left = 0
@@ -2605,7 +2618,7 @@ object RestMainForm: TRestMainForm
         Top = 1
         Width = 80
         Height = 719
-        ActivePage = tsOrderButton
+        ActivePage = tsFunctionButton
         ActiveFont.Charset = DEFAULT_CHARSET
         ActiveFont.Color = clWindowText
         ActiveFont.Height = -11

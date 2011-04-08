@@ -14,13 +14,14 @@ uses
   AdvSmoothButton, AdvPanel, AdvPageControl, AdvSmoothTouchKeyBoard,
   FrontLog_Unit, Grids, Menus, AddUserForm_unit, AdminForm_Unit,
   Buttons, RestTable_Unit, dxfDesigner, GestureMgr, AdvObj, AdvMenus, AdvMenuStylers,
-  AdvSmoothToggleButton;
+  AdvSmoothToggleButton, pngimage;
 
 const
   btnHeight = 65;
   btnWidth  = 140;
   btnHalfWidth = 102;
   btnLongWidth = 215;
+  btnNewLong = 155;
   btnOrderName = 'btnOrder%d';
   btnMenuName  = 'btnMenu%d';
   btnGroupName = 'btnGroup%d';
@@ -205,6 +206,7 @@ type
     btnWithOutPrecheckOrders: TAdvSmoothToggleButton;
     mainTouchKeyBoard: TAdvSmoothTouchKeyBoard;
     tmrTime: TTimer;
+    imgHallBackground: TImage;
 
     //Проверка введёного пароля
     procedure actPassEnterExecute(Sender: TObject);
@@ -398,6 +400,7 @@ type
     procedure HallButtonOnClick(Sender: TObject);
     procedure ChooseTableOnClick(Sender: TObject);
     procedure CreateTableButtonList(const HallKey: Integer);
+    procedure LoadHallBackGround(const HallKey: Integer);
     procedure RemoveTableButton;
     procedure RemoveChooseTable;
     procedure PopItemOnClick(Sender: TObject);
@@ -919,10 +922,10 @@ begin
       FButton.Height := btnHeight;
       {$IFNDEF DEBUG}
       if Screen.Width > 1024 then
-        FButton.Width := 4 * 155 + 4
+        FButton.Width := 4 * btnNewLong + 4
       else
       {$ENDIF}
-        FButton.Width := 2 * 155;
+        FButton.Width := 2 * btnNewLong;
 
       FTableChooseLastTop := FTableChooseLastTop + btnHeight + btnFirstTop;
 
@@ -1062,10 +1065,10 @@ begin
     FButton.Height := btnHeight;
     {$IFNDEF DEBUG}
     if Screen.Width > 1024 then
-      FButton.Width := 4 * 155 + 4
+      FButton.Width := 4 * btnNewLong + 4
     else
     {$ENDIF}
-      FButton.Width := 2 * 155; //btnLongWidth;
+      FButton.Width := 2 * btnNewLong; //btnLongWidth;
 
     FHallLastTop := FHallLastTop + btnHeight + btnFirstTop;
 
@@ -1097,10 +1100,10 @@ begin
     FButton.OnClick := MenuButtonOnClick;
     FButton.Name := Format(btnMenuName, [FMenuButtonNumber]);
     FButton.Height := btnHeight;
-    FButton.Width  := 155 {btnLongWidth};
+    FButton.Width  := btnNewLong {btnLongWidth};
 
     //проверяем, есть ли ещё место в ряду
-    if (FMenuLastLeftButton + 155) > pnlRight.Width then
+    if (FMenuLastLeftButton + btnNewLong) > pnlRight.Width then
     begin
       FMenuLastTop := FMenuLastTop + btnHeight + 2{btnFirstTop};
       FMenuLastLeftButton := {btnFirstTop} 2 {$IFDEF NEW_TABCONTROL} + 4 {$ENDIF};
@@ -1118,7 +1121,7 @@ begin
   finally
     FButton.Appearance.EndUpdate;
   end;
-  FMenuLastLeftButton := FMenuLastLeftButton + 155 + 2{AdjustWidth(10)};
+  FMenuLastLeftButton := FMenuLastLeftButton + btnNewLong + 2{AdjustWidth(10)};
   FMenuButtonList.Add(FButton);
   Inc(FMenuButtonNumber);
 end;
@@ -1463,8 +1466,35 @@ begin
       AddChooseTables(FButton.Tag);
     end else
       tmrTables.Enabled := True;
+    LoadHallBackGround(FButton.Tag);
   finally
     LockWindowUpdate(0);
+  end;
+end;
+
+procedure TRestMainForm.LoadHallBackGround(const HallKey: Integer);
+var
+  Str: TStream;
+  FImage: TPngImage;
+begin
+  Str := TMemoryStream.Create;
+  try
+    if FFrontBase.GetHallBackGround(Str, HallKey) then
+    begin
+      if Str.Size > 0 then
+      begin
+        Str.Position := 0;
+        FImage := TPngImage.Create;
+        try
+          FImage.LoadFromStream(Str);
+          imgHallBackground.Picture.Assign(FImage);
+        finally
+          FImage.Free;
+        end;
+      end;
+    end;
+  finally
+    Str.Free;
   end;
 end;
 
@@ -3838,11 +3868,28 @@ begin
 end;
 
 procedure TRestMainForm.tmrTimeTimer(Sender: TObject);
+var
+  S: String;
 begin
-  if FRestFormState = MenuInfo then
-  begin
+  case FRestFormState of
+    Pass:
+      S := ' ' + DateToStr(Date) + ' ' + TimeToStr(Now);
 
+    OrderMenu, ManagerPage, ManagerChooseOrder,
+    ManagerInfo, KassirInfo, HallsPage, HallInfo:
+      S := ' ' + DateToStr(Date) + ' ' + TimeToStr(Now) + ' пользователь: ' +
+        FFrontBase.UserName;
+
+    MenuInfo:
+      begin
+        S := ' ' + DateToStr(Date) + ' ' + TimeToStr(Now) + ' пользователь: ' +
+          FFrontBase.UserName + ', дата создания заказа: ' +
+          FHeaderTable.FieldByName('creationdate').AsString;
+        if FLineTable.FieldByName('usr$mn_printdate').AsString <> '' then
+          S := S + ', дата печати: ' + FLineTable.FieldByName('usr$mn_printdate').AsString;
+      end;
   end;
+  sbMain.SimpleText := S;
 end;
 
 procedure TRestMainForm.actUsersLeftExecute(Sender: TObject);
