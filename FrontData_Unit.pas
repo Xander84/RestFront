@@ -91,6 +91,7 @@ procedure SetButtonStyle(const FButton: TAdvSmoothButton);
 begin
   FButton.SetComponentStyle(tsTerminal);
   FButton.BevelColor := clSilver;
+  FButton.Bevel := True;
   FButton.Appearance.Font.Style := [fsBold];
   FButton.DisabledColor := clGray;
   FButton.Color := TColor($00E7DCD5);
