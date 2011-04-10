@@ -581,6 +581,8 @@ begin
   btnUserLeft.Picture := FrontData.RestPictureContainer.FindPicture('Left');
   btnUserRight.Picture := FrontData.RestPictureContainer.FindPicture('Right');
   btnPay.Picture := FrontData.RestPictureContainer.FindPicture('Money');
+  btnOK.Picture := FrontData.RestPictureContainer.FindPicture('button_ok');
+  btnCancel3.Picture := FrontData.RestPictureContainer.FindPicture('button_cancel');
 
   MenuOfficeStyler.SetComponentStyle(GetFrontStyle);
   mainTouchKeyBoard.SetComponentStyle(GetFrontStyle);
@@ -951,7 +953,6 @@ begin
   //Создание кнопки
   FButton := TAdvSmoothButton.Create(pnlGood);
   SetButtonStyle(FButton);
-//  FButton.BevelColor := clWhite;
   FButton.Appearance.Font.Name := 'Tahoma';
   FButton.Appearance.Font.Size := 7;
   FButton.Appearance.BeginUpdate;
@@ -1017,7 +1018,7 @@ begin
     FButton.OnClick := GroupButtonOnClick;
     FButton.Name := Format(btnGroupName, [FGroupButtonNumber]);
     FButton.Height := btnHeight;
-    FButton.Width  := btnHalfWidth; //btnHalfWidth;
+    FButton.Width  := btnHalfWidth;
 
     //проверяем, есть ли ещё место в ряду
     if (FGroupLastLeftButton + btnHalfWidth) > FPanel.Width then
@@ -1034,10 +1035,10 @@ begin
     end;
 
     FButton.Tag := FGroupDataSet.FieldByName('ID').AsInteger;
-    if Length(FGroupDataSet.FieldByName('NAME').AsString) > 16 then
+{    if Length(FGroupDataSet.FieldByName('NAME').AsString) > 16 then
       FButton.Appearance.Font.Size := cn_ButtonSmallFontSize
-    else
-      FButton.Appearance.Font.Size := cn_ButtonSmallFontSize;//cn_ButtonFontSize;
+    else  }
+      FButton.Appearance.Font.Size := cn_ButtonSmallFontSize;
     FButton.Caption := FGroupDataSet.FieldByName('NAME').AsString;
   finally
     FButton.Appearance.EndUpdate;
@@ -1068,7 +1069,7 @@ begin
       FButton.Width := 4 * btnNewLong + 4
     else
     {$ENDIF}
-      FButton.Width := 2 * btnNewLong; //btnLongWidth;
+      FButton.Width := 2 * btnNewLong;
 
     FHallLastTop := FHallLastTop + btnHeight + btnFirstTop;
 
@@ -1100,20 +1101,20 @@ begin
     FButton.OnClick := MenuButtonOnClick;
     FButton.Name := Format(btnMenuName, [FMenuButtonNumber]);
     FButton.Height := btnHeight;
-    FButton.Width  := btnNewLong {btnLongWidth};
+    FButton.Width  := btnNewLong;
 
     //проверяем, есть ли ещё место в ряду
     if (FMenuLastLeftButton + btnNewLong) > pnlRight.Width then
     begin
-      FMenuLastTop := FMenuLastTop + btnHeight + 2{btnFirstTop};
-      FMenuLastLeftButton := {btnFirstTop} 2 {$IFDEF NEW_TABCONTROL} + 4 {$ENDIF};
+      FMenuLastTop := FMenuLastTop + btnHeight + 2;
+      FMenuLastLeftButton := 2 {$IFDEF NEW_TABCONTROL} + 4 {$ENDIF};
 
       FButton.Left := FMenuLastLeftButton;
       FButton.Top  := FMenuLastTop;
     end else
     begin
       FButton.Left := FMenuLastLeftButton;
-      FButton.Top  := FMenuLastTop {+ btnHeight + 2};
+      FButton.Top  := FMenuLastTop;
     end;
 
     FButton.Tag := FMenuDataSet.FieldByName('ID').AsInteger;
@@ -1121,7 +1122,7 @@ begin
   finally
     FButton.Appearance.EndUpdate;
   end;
-  FMenuLastLeftButton := FMenuLastLeftButton + btnNewLong + 2{AdjustWidth(10)};
+  FMenuLastLeftButton := FMenuLastLeftButton + btnNewLong + 2;
   FMenuButtonList.Add(FButton);
   Inc(FMenuButtonNumber);
 end;
@@ -1319,7 +1320,6 @@ begin
     end;
   end;
 
-  FOrderNumber := '';
   FFrontBase.GetOrder(FHeaderTable, FLineTable, FModificationDataSet, -1);
   FOrderNumber := Table.Number + '.' + IntToStr(Table.OrderCount + 1);
 
@@ -1404,6 +1404,7 @@ end;
 procedure TRestMainForm.MenuButtonOnClick(Sender: TObject);
 var
   FButton: TAdvSmoothButton;
+  FGroupButton: TComponent;
 begin
   if FMenuSelectedButton <> nil then
   begin
@@ -1416,12 +1417,16 @@ begin
 
   FGroupLastTop := btnFirstTop;
   FGroupFirstTop := btnFirstTop;
-  FGroupLastLeftButton := {btnFirstTop} 2 {$IFDEF NEW_TABCONTROL} + 4 {$ENDIF};
+  FGroupLastLeftButton := 2 {$IFDEF NEW_TABCONTROL} + 4 {$ENDIF};
   RemoveGroupButton;
   FMenuKey := FButton.Tag;
   CreateGroupButtonList(FMenuKey);
   if FMenuButtonCount > 6 then
     pcMenu.ActivePage := tsGroup;
+
+  FGroupButton := pnlGood.FindComponent(Format(btnGroupName, [1]));
+  if Assigned(FGroupButton) then
+    TAdvSmoothButton(FGroupButton).Click;
 end;
 
 procedure TRestMainForm.GroupButtonOnClick(Sender: TObject);
@@ -3266,7 +3271,7 @@ begin
     FState := RestFormState;
     RestFormState := OrderMenu;
     FWithPreCheck := False;
-    RestFormState := FState;//KassirInfo;
+    RestFormState := FState;
     CreateUserList;
   end;
 end;

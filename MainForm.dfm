@@ -1535,7 +1535,7 @@ object RestMainForm: TRestMainForm
             Top = 1
             Width = 607
             Height = 699
-            ActivePage = tsTablePage
+            ActivePage = tsOrderInfo
             ActiveFont.Charset = DEFAULT_CHARSET
             ActiveFont.Color = clWindowText
             ActiveFont.Height = -11
@@ -2618,7 +2618,7 @@ object RestMainForm: TRestMainForm
         Top = 1
         Width = 80
         Height = 719
-        ActivePage = tsMainButton
+        ActivePage = tsFunctionButton
         ActiveFont.Charset = DEFAULT_CHARSET
         ActiveFont.Color = clWindowText
         ActiveFont.Height = -11
@@ -2704,7 +2704,7 @@ object RestMainForm: TRestMainForm
             Action = actKeyBoard
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
-            Appearance.Font.Height = -11
+            Appearance.Font.Height = -9
             Appearance.Font.Name = 'Tahoma'
             Appearance.Font.Style = [fsBold]
             Status.Caption = '0'
@@ -2959,7 +2959,7 @@ object RestMainForm: TRestMainForm
             Action = actKeyBoard
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
-            Appearance.Font.Height = -11
+            Appearance.Font.Height = -9
             Appearance.Font.Name = 'Tahoma'
             Appearance.Font.Style = [fsBold]
             Status.Caption = '0'
@@ -3080,11 +3080,13 @@ object RestMainForm: TRestMainForm
             Height = 50
             Action = actOK
             Anchors = [akLeft, akBottom]
+            Appearance.PictureAlignment = taCenter
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
             Appearance.Font.Height = -9
             Appearance.Font.Name = 'Tahoma'
             Appearance.Font.Style = [fsBold]
+            Appearance.Layout = blNone
             Status.Caption = '0'
             Status.Appearance.Fill.Color = clRed
             Status.Appearance.Fill.ColorMirror = clNone
@@ -3112,11 +3114,13 @@ object RestMainForm: TRestMainForm
             Height = 50
             Action = actCancel
             Anchors = [akLeft, akBottom]
+            Appearance.PictureAlignment = taCenter
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
             Appearance.Font.Height = -11
             Appearance.Font.Name = 'Tahoma'
             Appearance.Font.Style = [fsBold]
+            Appearance.Layout = blNone
             Status.Caption = '0'
             Status.Appearance.Fill.Color = clRed
             Status.Appearance.Fill.ColorMirror = clNone
@@ -3385,7 +3389,7 @@ object RestMainForm: TRestMainForm
             Height = 50
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
-            Appearance.Font.Height = -11
+            Appearance.Font.Height = -9
             Appearance.Font.Name = 'Tahoma'
             Appearance.Font.Style = [fsBold]
             Status.Caption = '0'
@@ -3416,7 +3420,7 @@ object RestMainForm: TRestMainForm
             Height = 50
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
-            Appearance.Font.Height = -11
+            Appearance.Font.Height = -9
             Appearance.Font.Name = 'Tahoma'
             Appearance.Font.Style = [fsBold]
             Status.Caption = '0'
@@ -3447,7 +3451,7 @@ object RestMainForm: TRestMainForm
             Height = 50
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
-            Appearance.Font.Height = -11
+            Appearance.Font.Height = -9
             Appearance.Font.Name = 'Tahoma'
             Appearance.Font.Style = [fsBold]
             Status.Caption = '0'
@@ -3478,7 +3482,7 @@ object RestMainForm: TRestMainForm
             Height = 50
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
-            Appearance.Font.Height = -11
+            Appearance.Font.Height = -9
             Appearance.Font.Name = 'Tahoma'
             Appearance.Font.Style = [fsBold]
             Status.Caption = '0'
@@ -3509,7 +3513,7 @@ object RestMainForm: TRestMainForm
             Height = 50
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
-            Appearance.Font.Height = -11
+            Appearance.Font.Height = -9
             Appearance.Font.Name = 'Tahoma'
             Appearance.Font.Style = [fsBold]
             Status.Caption = '0'
@@ -3540,7 +3544,7 @@ object RestMainForm: TRestMainForm
             Height = 50
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
-            Appearance.Font.Height = -11
+            Appearance.Font.Height = -9
             Appearance.Font.Name = 'Tahoma'
             Appearance.Font.Style = [fsBold]
             Status.Caption = '0'
@@ -3571,7 +3575,7 @@ object RestMainForm: TRestMainForm
             Height = 50
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
-            Appearance.Font.Height = -11
+            Appearance.Font.Height = -9
             Appearance.Font.Name = 'Tahoma'
             Appearance.Font.Style = [fsBold]
             Status.Caption = '0'
@@ -3613,7 +3617,7 @@ object RestMainForm: TRestMainForm
             Action = actKeyBoard
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
-            Appearance.Font.Height = -11
+            Appearance.Font.Height = -9
             Appearance.Font.Name = 'Tahoma'
             Appearance.Font.Style = [fsBold]
             Status.Caption = '0'
