@@ -2820,8 +2820,8 @@ begin
       MemTable.Append;
       MemTable.FieldByName('ID').AsInteger := FReadSQL.FieldByName('ID').AsInteger;
       MemTable.FieldByName('USR$NAME').AsString := FReadSQL.FieldByName('USR$NAME').AsString;
-      MemTable.FieldByName('USR$LENGTH').AsInteger := FReadSQL.FieldByName('USR$LENGTH').AsInteger;
-      MemTable.FieldByName('USR$WIDTH').AsInteger := FReadSQL.FieldByName('USR$WIDTH').AsInteger;
+      MemTable.FieldByName('USR$LENGTH').AsFloat := FReadSQL.FieldByName('USR$LENGTH').AsFloat;
+      MemTable.FieldByName('USR$WIDTH').AsFloat := FReadSQL.FieldByName('USR$WIDTH').AsFloat;
       MemTable.FieldByName('USR$RESTAURANTKEY').AsInteger := FReadSQL.FieldByName('USR$RESTAURANTKEY').AsInteger;
       MemTable.Post;
 
@@ -3507,8 +3507,8 @@ begin
       MemTable.Append;
       MemTable.FieldByName('ID').AsInteger := FReadSQL.FieldByName('ID').AsInteger;
       MemTable.FieldByName('USR$NUMBER').AsString := FReadSQL.FieldByName('USR$NUMBER').AsString;
-      MemTable.FieldByName('USR$POSY').AsInteger := FReadSQL.FieldByName('USR$POSY').AsInteger;
-      MemTable.FieldByName('USR$POSX').AsInteger := FReadSQL.FieldByName('USR$POSX').AsInteger;
+      MemTable.FieldByName('USR$POSY').AsFloat := FReadSQL.FieldByName('USR$POSY').AsFloat;
+      MemTable.FieldByName('USR$POSX').AsFloat := FReadSQL.FieldByName('USR$POSX').AsFloat;
       MemTable.FieldByName('USR$TYPE').AsInteger := FReadSQL.FieldByName('USR$TYPE').AsInteger;
       MemTable.FieldByName('USR$MAINTABLEKEY').AsInteger := FReadSQL.FieldByName('USR$MAINTABLEKEY').AsInteger;
       MemTable.FieldByName('ORDERKEY').AsInteger := 0;
@@ -3545,8 +3545,8 @@ begin
       MemTable.Append;
       MemTable.FieldByName('ID').AsInteger := FReadSQL.FieldByName('ID').AsInteger;
       MemTable.FieldByName('USR$NUMBER').AsString := FReadSQL.FieldByName('USR$NUMBER').AsString;
-      MemTable.FieldByName('USR$POSY').AsInteger := FReadSQL.FieldByName('USR$POSY').AsInteger;
-      MemTable.FieldByName('USR$POSX').AsInteger := FReadSQL.FieldByName('USR$POSX').AsInteger;
+      MemTable.FieldByName('USR$POSY').AsFloat := FReadSQL.FieldByName('USR$POSY').AsFloat;
+      MemTable.FieldByName('USR$POSX').AsFloat := FReadSQL.FieldByName('USR$POSX').AsFloat;
       MemTable.FieldByName('USR$TYPE').AsInteger := FReadSQL.FieldByName('USR$TYPE').AsInteger;
       MemTable.FieldByName('USR$MAINTABLEKEY').AsInteger := FReadSQL.FieldByName('USR$MAINTABLEKEY').AsInteger;
       MemTable.FieldByName('USR$RESPKEY').AsInteger := FReadSQL.FieldByName('USR$RESPKEY').AsInteger;

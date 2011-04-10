@@ -103,7 +103,7 @@ procedure Register;
 implementation
 
 const
-  POS_MULTIPLIER = 100000;
+  POS_MULTIPLIER = 100;
 
 procedure Register;
 begin
@@ -138,16 +138,16 @@ end;
 
 function TRestTable.GetPosX: Double;
 begin
-  if Assigned(Parent) and (Parent.Height > 0) then
-    Result := POS_MULTIPLIER * Top / Parent.Height
+  if Assigned(Parent) and (Parent.Width > 0) then
+    Result := POS_MULTIPLIER * Left / Parent.Width
   else
     Result := 0;
 end;
 
 function TRestTable.GetPosY: Double;
 begin
-  if Assigned(Parent) and (Parent.Width > 0) then
-    Result := POS_MULTIPLIER * Left / Parent.Width
+  if Assigned(Parent) and (Parent.Height > 0) then
+    Result := POS_MULTIPLIER * Top / Parent.Height
   else
     Result := 0;
 end;
@@ -174,8 +174,18 @@ begin
       FSQL.ExecQuery;
       if not FSQL.Eof then
       begin
-        Width := FSQL.FieldByName('USR$WIDTH').AsInteger;
-        Height := FSQL.FieldByName('USR$LENGTH').AsInteger;
+        if Assigned(Parent) then
+        begin
+          // Вычисление ширины\высоты кнопки исходя из размеров фона и относительного размера кнопки
+          Width := Round(Parent.Width * FSQL.FieldByName('USR$WIDTH').AsFloat / POS_MULTIPLIER);
+          Height := Round(Parent.Height * FSQL.FieldByName('USR$LENGTH').AsFloat / POS_MULTIPLIER);
+        end
+        else
+        begin
+          Width := Round(FSQL.FieldByName('USR$WIDTH').AsFloat);
+          Height := Round(FSQL.FieldByName('USR$LENGTH').AsFloat);
+        end;
+
         FTransparent := FSQL.FieldByName('USR$TRANSPARENT').AsInteger = 1;
         FTransparentColor := FSQL.FieldByName('USR$TRANSPARENTCOLOR').AsInteger;
         if FIsEmpty and (not FSQL.FieldByName('USR$PICTURE1').IsNull) then
@@ -228,8 +238,8 @@ begin
     FSQL.Transaction := FTransaction;
     FSQL.SQL.Text := 'UPDATE USR$MN_TABLE T ' + 'SET T.USR$POSY = :POSY, ' +
       '    T.USR$POSX = :POSX  ' + 'WHERE T.ID = :ID ';
-    FSQL.ParamByName('POSY').AsCurrency := PosY;
-    FSQL.ParamByName('POSX').AsCurrency := PosX;
+    FSQL.ParamByName('POSY').AsFloat := PosY;
+    FSQL.ParamByName('POSX').AsFloat := PosX;
     FSQL.ParamByName('ID').AsInteger := FID;
     FSQL.ExecQuery;
     FSQL.Close;
@@ -263,8 +273,8 @@ begin
       'VALUES (:ID, :NUMBER, :POSY, :POSX, :HALLKEY, :TYPEKEY, null) ';
     FSQL.ParamByName('ID').AsInteger := FID;
     FSQL.ParamByName('NUMBER').AsString := Number;
-    FSQL.ParamByName('POSY').AsCurrency := PosY;
-    FSQL.ParamByName('POSX').AsCurrency := PosX;
+    FSQL.ParamByName('POSY').AsFloat := PosY;
+    FSQL.ParamByName('POSX').AsFloat := PosX;
     FSQL.ParamByName('HALLKEY').AsInteger := HallKey;
     FSQL.ParamByName('TYPEKEY').AsInteger := TableTypeKey;
     // FSQL.ParamByName('MAINTABLEKEY').AsInteger := MainTableKey;
@@ -348,18 +358,18 @@ procedure TRestTable.SetPosX(const Value: Double);
 begin
   FPosX := Value;
   if Assigned(Parent) then
-    Top := Round(Parent.Height / POS_MULTIPLIER * Value)
+    Left := Round(Parent.Width / POS_MULTIPLIER * Value)
   else
-    Top := Round(Value);
+    Left := Round(Value);
 end;
 
 procedure TRestTable.SetPosY(const Value: Double);
 begin
   FPosY := Value;
   if Assigned(Parent) then
-    Left := Round(Parent.Width / POS_MULTIPLIER * Value)
+    Top := Round(Parent.Height / POS_MULTIPLIER * Value)
   else
-    Left := Round(Value);
+    Top := Round(Value);
 end;
 
 procedure TRestTable.SetRespKey(const Value: Integer);
@@ -458,8 +468,18 @@ begin
       FSQL.ExecQuery;
       if not FSQL.Eof then
       begin
-        Width := FSQL.FieldByName('USR$WIDTH').AsInteger;
-        Height := FSQL.FieldByName('USR$LENGTH').AsInteger;
+        if Assigned(Parent) then
+        begin
+          // Вычисление ширины\высоты кнопки исходя из размеров фона и относительного размера кнопки
+          Width := Round(Parent.Width * FSQL.FieldByName('USR$WIDTH').AsFloat / POS_MULTIPLIER);
+          Height := Round(Parent.Height * FSQL.FieldByName('USR$LENGTH').AsFloat / POS_MULTIPLIER);
+        end
+        else
+        begin
+          Width := Round(FSQL.FieldByName('USR$WIDTH').AsFloat);
+          Height := Round(FSQL.FieldByName('USR$LENGTH').AsFloat);
+        end;
+
         FTransparent := FSQL.FieldByName('USR$TRANSPARENT').AsInteger = 1;
         FTransparentColor := FSQL.FieldByName('USR$TRANSPARENTCOLOR').AsInteger;
         if not FSQL.FieldByName('USR$PICTURE1').IsNull then

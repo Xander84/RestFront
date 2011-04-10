@@ -701,8 +701,8 @@ begin
   FHallsTable := TkbmMemTable.Create(nil);
   FHallsTable.FieldDefs.Add('ID', ftInteger, 0);
   FHallsTable.FieldDefs.Add('USR$NAME', ftString, 80);
-  FHallsTable.FieldDefs.Add('USR$LENGTH', ftInteger, 0);
-  FHallsTable.FieldDefs.Add('USR$WIDTH', ftInteger, 0);
+  FHallsTable.FieldDefs.Add('USR$LENGTH', ftFloat, 0);
+  FHallsTable.FieldDefs.Add('USR$WIDTH', ftFloat, 0);
   FHallsTable.FieldDefs.Add('USR$RESTAURANTKEY', ftInteger, 0);
   FHallsTable.CreateTable;
   FHallsTable.Open;
@@ -710,8 +710,8 @@ begin
   FTablesInfoTable := TkbmMemTable.Create(nil);
   FTablesInfoTable.FieldDefs.Add('ID', ftInteger, 0);
   FTablesInfoTable.FieldDefs.Add('USR$NUMBER', ftString, 80);
-  FTablesInfoTable.FieldDefs.Add('USR$POSX', ftCurrency, 0);
-  FTablesInfoTable.FieldDefs.Add('USR$POSY', ftCurrency, 0);
+  FTablesInfoTable.FieldDefs.Add('USR$POSX', ftFloat, 0);
+  FTablesInfoTable.FieldDefs.Add('USR$POSY', ftFloat, 0);
   FTablesInfoTable.FieldDefs.Add('USR$HALLKEY', ftInteger, 0);
   FTablesInfoTable.FieldDefs.Add('USR$TYPE', ftInteger, 0);
   FTablesInfoTable.FieldDefs.Add('USR$MAINTABLEKEY', ftInteger, 0);
