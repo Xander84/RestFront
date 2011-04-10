@@ -163,6 +163,7 @@ object TouchMessageBox: TTouchMessageBox
       Bevel = False
       Caption = #1054#1050
       Color = 15195349
+      DisabledColor = clBlack
       ParentFont = False
       TabOrder = 0
       Version = '1.6.9.0'
@@ -194,6 +195,7 @@ object TouchMessageBox: TTouchMessageBox
       Bevel = False
       Caption = #1044#1072
       Color = 15195349
+      DisabledColor = clBlack
       ParentFont = False
       TabOrder = 1
       Version = '1.6.9.0'
@@ -225,6 +227,7 @@ object TouchMessageBox: TTouchMessageBox
       Bevel = False
       Caption = #1053#1077#1090
       Color = 15195349
+      DisabledColor = clBlack
       ParentFont = False
       TabOrder = 2
       Version = '1.6.9.0'

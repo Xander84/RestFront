@@ -52,11 +52,11 @@ type
     //отчет Z1 с гашением
     function PrintZ1ReportWithCleaning: Boolean;
     //отчет Z2 с гашением
-    function PrintZ2ReportWithCleaning: Boolean;
+ //   function PrintZ2ReportWithCleaning: Boolean;
     //отчет X1 без гашения
     function PrintX1ReportWithOutCleaning: Boolean;
     //отчет X2 без гашения
-    function PrintX2ReportWithOutCleaning: Boolean;
+ //   function PrintX2ReportWithOutCleaning: Boolean;
     // открытие денежного ящика    
     procedure OpenDrawer;
     // закрытие сессии (печать Z отчета)
@@ -71,7 +71,7 @@ type
     //возврат ошибки
 //    procedure ErrMessage(Err: Integer);
 
-    function Get_Self: Integer;    
+    function Get_Self: Integer;
     property Self: Integer read Get_Self;
   end;
 
@@ -88,9 +88,9 @@ type
     function PrintCheck(const Doc, DocLine, PayLine: TkbmMemTable; const FSums: TSaleSums): Boolean;
 
     function PrintZ1ReportWithCleaning: Boolean;
-    function PrintZ2ReportWithCleaning: Boolean;
+ //   function PrintZ2ReportWithCleaning: Boolean;
     function PrintX1ReportWithOutCleaning: Boolean;
-    function PrintX2ReportWithOutCleaning: Boolean;
+ //   function PrintX2ReportWithOutCleaning: Boolean;
     function OpenDay: Boolean;
     procedure MoneyIn;
     procedure MoneyOut;
@@ -233,20 +233,14 @@ begin
   Result := True;
 end;
 
-function TAbstractFiscalRegister.PrintX2ReportWithOutCleaning: Boolean;
-begin
-  Result := True;
-end;
+
 
 function TAbstractFiscalRegister.PrintZ1ReportWithCleaning: Boolean;
 begin
   Result := True;
 end;
 
-function TAbstractFiscalRegister.PrintZ2ReportWithCleaning: Boolean;
-begin
-  Result := True;
-end;
+
 
 function TAbstractFiscalRegister.QueryInterface(const IID: TGUID;
   out Obj): HResult;

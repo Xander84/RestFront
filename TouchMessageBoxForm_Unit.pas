@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, BaseFrontForm_Unit, FrontData_Unit, ExtCtrls, AdvPanel,
+  Dialogs, BaseFrontForm_Unit, ExtCtrls, AdvPanel,
   AdvSmoothButton, StdCtrls, ImgList, PngImageList;
 
 type

@@ -28,9 +28,9 @@ type
     function PrintCheck(const Doc, DocLine, PayLine: TkbmMemTable; const FSums: TSaleSums): Boolean;
 
     function PrintZ1ReportWithCleaning: Boolean;
-    function PrintZ2ReportWithCleaning: Boolean;
+ //   function PrintZ2ReportWithCleaning: Boolean;
     function PrintX1ReportWithOutCleaning: Boolean;
-    function PrintX2ReportWithOutCleaning: Boolean;
+ //   function PrintX2ReportWithOutCleaning: Boolean;
     procedure OpenDrawer;
     procedure EndSession;
     function OpenDay: Boolean;
@@ -45,9 +45,13 @@ type
 
 implementation
 
-uses SysUtils, Math, DevideForm_Unit, Controls;
+uses SysUtils, Math, DevideForm_Unit, Controls,  TouchMessageBoxForm_Unit;
+const
+  Spark_Cash = 8; // Наличные………………
+  Spark_NoCash = 7; // Безнал
+  Spark_Credit = 1; // Карты
 
-{ TSpark617Register }
+ { TSpark617Register }
 
 function TSpark617Register.CheckDeviceInfo: Boolean;
 var
@@ -61,55 +65,41 @@ begin
     if GetDeviceInfo(5) = 0 then
       SetClerk(FFrontBase.UserName);
     if GetDeviceInfo(1) = 1 then
-      MessageBox(Application.Handle, PChar('Приближение конца бумаги!'),
-       'Внимание', MB_OK or MB_ICONEXCLAMATION);
+      Touch_MessageBox('Внимание', 'Приближение конца бумаги!', MB_OK or MB_ICONEXCLAMATION);
     if GetDeviceInfo(8) = 1 then
     begin
-      MessageBox(Application.Handle, PChar('Принтер занят!'),
-       'Внимание', MB_OK or MB_ICONEXCLAMATION);
-
+      Touch_MessageBox('Внимание', 'Принтер занят!', MB_OK or MB_ICONEXCLAMATION);
       exit;
     end;
     if GetDeviceInfo(9) = 1 then
     begin
-      MessageBox(Application.Handle, PChar('Ошибка принтера!'),
-       'Внимание', MB_OK or MB_ICONEXCLAMATION);
-
+      Touch_MessageBox('Внимание', 'Ошибка принтера!', MB_OK or MB_ICONEXCLAMATION);
       exit;
     end;
     if GetDeviceInfo(10) = 1 then
     begin
-      MessageBox(Application.Handle, PChar('Бумага закончилась!'),
-       'Внимание', MB_OK or MB_ICONEXCLAMATION);
-
+      Touch_MessageBox('Внимание', 'Бумага закончилась!', MB_OK or MB_ICONEXCLAMATION);
       exit;
     end;
     if GetDeviceInfo(11) = 1 then
     begin
-      MessageBox(Application.Handle, PChar('Фискальная память заполнена!'),
-       'Внимание', MB_OK or MB_ICONEXCLAMATION);
-
+      Touch_MessageBox('Внимание', 'Фискальная память заполнена!', MB_OK or MB_ICONEXCLAMATION);
       exit;
     end;
     if GetDeviceInfo(12) = 1 then
     begin
-      MessageBox(Application.Handle, PChar('Ошибка фискальной памяти!'),
-       'Внимание', MB_OK or MB_ICONEXCLAMATION);
-
+      Touch_MessageBox('Внимание', 'Ошибка фискальной памяти!', MB_OK or MB_ICONEXCLAMATION);
       exit;
     end;
     if GetDeviceInfo(13) = 1 then
     begin
-      MessageBox(Application.Handle, PChar('Ошибка в фискальной операции!'),
-       'Внимание', MB_OK or MB_ICONEXCLAMATION);
+      Touch_MessageBox('Внимание', 'Ошибка в фискальной операции!', MB_OK or MB_ICONEXCLAMATION);
 
       exit;
     end;
     if GetDeviceInfo(14) = 1 then
     begin
-      MessageBox(Application.Handle, PChar('Превышение лимита времени смены (24 часа)!'),
-       'Внимание', MB_OK or MB_ICONEXCLAMATION);
-
+      Touch_MessageBox('Внимание', 'Превышение лимита времени смены (24 часа)!', MB_OK or MB_ICONEXCLAMATION);
       exit;
     end;
 
@@ -199,13 +189,13 @@ begin
       Res := SetDescriptorText(80, 'Официант:');
       ErrMessage(Res);
 
-      Res := SetPaymentMean(1, 'Пласт. карта', 0, 1, 1, 1);
+      Res := SetPaymentMean(Spark_Credit, 'Пласт. карта', 0, 1, 1, 1);
       ErrMessage(Res);
 
-      Res := SetPaymentMean(7, 'Безналичные', 0, 1, 1, 0);
+      Res := SetPaymentMean(Spark_NoCash, 'Безналичные', 0, 1, 1, 1);
       ErrMessage(Res);
 
-      Res := SetPaymentMean(8, 'Наличные', 0, 1, 1, 1);
+      Res := SetPaymentMean(Spark_Cash, 'Наличные', 0, 1, 1, 1);
       ErrMessage(Res);
 
       Res := StartSession(FFrontBase.UserName, FFrontBase.CashNumber); //открыть сессию
@@ -225,8 +215,7 @@ begin
   try
     inherited Create(AOwner);
   except
-    MessageBox(Application.Handle, PChar('Не установлен драйвер для ФР ''Спарк 617ТФ''!'),
-     'Внимание', MB_OK or MB_ICONEXCLAMATION);
+    Touch_MessageBox('Внимание', 'Не установлен драйвер для ФР ''Спарк 617ТФ''!', MB_OK or MB_ICONEXCLAMATION);
     FDriverInit := False;
   end;
   IsInit := False;
@@ -259,8 +248,7 @@ begin
   if Err <> 0 then
   begin
     ErrStr := WideCharToString(PWideChar(GetErrorComment(Err)));
-    MessageBox(Application.Handle, PChar(ErrStr),
-      'Внимание', MB_OK or MB_ICONEXCLAMATION);
+    Touch_MessageBox('Внимание', ErrStr, MB_OK or MB_ICONEXCLAMATION);
   end;
 end;
 
@@ -364,24 +352,22 @@ begin
       DocLine.First;
       while not DocLine.Eof do
       begin
-        if (DocLine.FieldByName('usr$sumdiscount').AsCurrency > 0) and (TotalDiscount > 0) then
-        begin
-          Res := AbsoluteCorrectionText(-Round(TotalDiscount + 0.0001), 'Округление');
-          if Res <> 0 then
-          begin
-            ErrMessage(Res);
-            CancelDocument;
-            exit;
-          end;
-          TotalDiscount := 0;
-        end;
+{
 
+}
+        SumDiscount := 0;
         GoodName := DocLine.FieldByName('GOODNAME').AsString;
         QuantityStr := CurrToStr(DocLine.FieldByName('usr$quantity').AsCurrency);
         PriceStr := CurrToStr(DocLine.FieldByName('usr$costncu').AsCurrency);
-        if Length(GoodName) > (40 - 2 - Length(QuantityStr) - Length(PriceStr)) then
-          Delete(GoodName, (40 - 2 - Length(QuantityStr) - Length(PriceStr)), Length(GoodName));
-        GoodName := GoodName + ' ' + QuantityStr + 'x' + PriceStr;
+        if Length(GoodName) > 35 then
+          Delete(GoodName, 36, Length(GoodName))
+        else
+        begin
+          while Length(GoodName) < 34 do
+            GoodName := GoodName + ' ';
+          GoodName := GoodName + '.';
+        end;
+        GoodName := GoodName +  QuantityStr + 'x' + PriceStr;
 
         Quantity := 1000;
         Price := DocLine.FieldByName('usr$sumncu').AsCurrency;
@@ -402,29 +388,42 @@ begin
           if DocLine.FieldByName('usr$persdiscount').AsCurrency <> 0 then
             WasDiscount := True;
         end;
+
+        if (SumDiscount > 0)  then
+          begin
+            Res := AbsoluteCorrectionText(-Round(SumDiscount), '');
+            if Res <> 0 then
+            begin
+              ErrMessage(Res);
+              CancelDocument;
+              exit;
+            end;
+        end;
         DocLine.Next;
       end;
 
-      if TotalDiscount <> 0 then
-      begin
-        if WasDiscount then
-          DiscName := 'Скидка'
-        else
-          DiscName := 'Округление';
-
-        Res := AbsoluteCorrectionText(-Round(TotalDiscount + 0.0001), DiscName);
-        if Res <> 0 then
+{
+        if TotalDiscount <> 0 then
         begin
-          ErrMessage(Res);
-          CancelDocument;
-          exit;
-        end;
-      end;
+          if WasDiscount then
+            DiscName := 'Скидка'
+          else
+            DiscName := 'Округление';
 
+          Res := AbsoluteCorrectionText(-Round(TotalDiscount + 0.0001), DiscName);
+          if Res <> 0 then
+          begin
+            ErrMessage(Res);
+            CancelDocument;
+            exit;
+          end;
+        end;
+
+}
       // кредитная карта
       if FSums.FCardSum > 0 then
       begin
-        Res := Tender2(FSums.FCardSum, 1, '', '');
+        Res := Tender2(FSums.FCardSum, Spark_Credit, '', '');
         if res <> 0 then
         begin
           ErrMessage(Res);
@@ -436,7 +435,7 @@ begin
       // Безнал
       if (FSums.FCreditSum + FSums.FPersonalCardSum) > 0 then
       begin
-        Res := Tender2(FSums.FCreditSum + FSums.FPersonalCardSum, 7, '', '');
+        Res := Tender2(FSums.FCreditSum + FSums.FPersonalCardSum, Spark_NoCash, '', '');
         if res <> 0 then
         begin
           ErrMessage(Res);
@@ -445,30 +444,33 @@ begin
             exit;
         end;
       end;
-      // наличные
-      if FSums.FCashSum > 0 then
+      Res := GetDeviceInfo(102);   //проверяем документ еще открыт ?
+      if Res <> 0 then
       begin
-        Res := Tender2(FSums.FCashSum, 8, '', '');
-        if res <> 0 then
+        // наличные
+        if FSums.FCashSum > 0 then
         begin
-          ErrMessage(Res);
-          Res := CancelDocument;
-          if Res = 0 then
-            exit;
+          Res := Tender2(FSums.FCashSum, Spark_Cash, '', '');
+          if res <> 0 then
+          begin
+            ErrMessage(Res);
+            Res := CancelDocument;
+            if Res = 0 then
+              exit;
+          end;
+        end;
+
+        Res := EndDocument;
+        if Res = 0 then
+        begin
+          Res := GetDeviceInfo(102);
+          if Res <> 0 then
+          begin
+            StartDocument(1, 1, StrToInt(DocNumber), FFrontBase.UserName);
+            Res := CancelDocument;
+          end
         end;
       end;
-
-      Res := EndDocument;
-      if Res = 0 then
-      begin
-        Res := GetDeviceInfo(102);
-        if Res <> 0 then
-        begin
-          StartDocument(1, 1, StrToInt(DocNumber), FFrontBase.UserName);
-          Res := CancelDocument;
-        end
-      end;
-
       if Res = 0 then
         Result := True
       else begin
@@ -524,11 +526,9 @@ begin
         Doc.Post;
       end;
     end else
-      MessageBox(Application.Handle, PChar('Ошибка инициализации ФР ''Спарк 617ТФ''!'),
-       'Внимание', MB_OK or MB_ICONEXCLAMATION);
+      Touch_MessageBox('Внимание', 'Ошибка инициализации ФР ''Спарк 617ТФ''!', MB_OK or MB_ICONEXCLAMATION);
   end else
-    MessageBox(Application.Handle, PChar('Не установлен драйвер для ФР ''Спарк 617ТФ''!'),
-     'Внимание', MB_OK or MB_ICONEXCLAMATION);
+    Touch_MessageBox('Внимание', 'Не установлен драйвер для ФР ''Спарк 617ТФ''!', MB_OK or MB_ICONEXCLAMATION);
 end;
 
 function TSpark617Register.PrintZ1ReportWithCleaning: Boolean;
@@ -539,8 +539,7 @@ begin
   if FDriverInit then
   begin
     Init;
-    if MessageBox(Application.Handle, 'Вы действительно хотите снять отчет с гашением Z1?',
-      'Внимание', MB_YESNO) = IDYES then
+    if Touch_MessageBox('Внимание', 'Вы действительно хотите снять отчет с гашением Z1?', MB_YESNO) = IDYES then
     begin
       Res := PrintReport(3);
       if Res = 0 then
@@ -552,26 +551,28 @@ begin
   end;
 end;
 
-function TSpark617Register.PrintZ2ReportWithCleaning: Boolean;
-var
-  Res: Integer;
-begin
-  Result := False;
-  if FDriverInit then
+{
+  function TSpark617Register.PrintZ2ReportWithCleaning: Boolean;
+  var
+    Res: Integer;
   begin
-    Init;
-    if MessageBox(Application.Handle, 'Вы действительно хотите снять отчет с гашением Z2?',
-      'Внимание', MB_YESNO) = IDYES then
+    Result := False;
+    if FDriverInit then
     begin
-      Res := PrintReport(4);
-      if Res = 0 then
-        Result := True
-      else
-        ErrMessage(Res);
+      Init;
+      if MessageBox(Application.Handle, 'Вы действительно хотите снять отчет с гашением Z2?',
+        'Внимание', MB_YESNO) = IDYES then
+      begin
+        Res := PrintReport(4);
+        if Res = 0 then
+          Result := True
+        else
+          ErrMessage(Res);
+      end;
+      CheckDeviceInfo;
     end;
-    CheckDeviceInfo;
   end;
-end;
+}
 
 function TSpark617Register.PrintX1ReportWithOutCleaning: Boolean;
 var
@@ -581,8 +582,7 @@ begin
   if FDriverInit then
   begin
     Init;
-    if MessageBox(Application.Handle, 'Вы действительно хотите снять отчет X1?',
-      'Внимание', MB_YESNO) = IDYES then
+    if Touch_MessageBox('Внимание', 'Вы действительно хотите снять отчет X1?', MB_YESNO) = IDYES then
     begin
       Res := PrintReport(1);
       if Res = 0 then
@@ -594,26 +594,28 @@ begin
   end;
 end;
 
-function TSpark617Register.PrintX2ReportWithOutCleaning: Boolean;
-var
-  Res: Integer;
-begin
-  Result := False;
-  if FDriverInit then
+{
+  function TSpark617Register.PrintX2ReportWithOutCleaning: Boolean;
+  var
+    Res: Integer;
   begin
-    Init;
-    if MessageBox(Application.Handle, 'Вы действительно хотите снять отчет X2?',
-      'Внимание', MB_YESNO) = IDYES then
+    Result := False;
+    if FDriverInit then
     begin
-      Res := PrintReport(2);
-      if Res = 0 then
-        Result := True
-      else
-        ErrMessage(Res);
+      Init;
+      if MessageBox(Application.Handle, 'Вы действительно хотите снять отчет X2?',
+        'Внимание', MB_YESNO) = IDYES then
+      begin
+        Res := PrintReport(2);
+        if Res = 0 then
+          Result := True
+        else
+          ErrMessage(Res);
+      end;
+      CheckDeviceInfo;
     end;
-    CheckDeviceInfo;
   end;
-end;
+}
 
 function TSpark617Register.SetParams: Boolean;
 var
