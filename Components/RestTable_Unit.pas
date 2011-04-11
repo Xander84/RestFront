@@ -65,6 +65,7 @@ type
     destructor Destroy; override;
 
     procedure SaveTableToDB;
+    procedure DropTableFromDB;
     procedure SaveTablePositionToDB;
     // ссылка на зал
     property HallKey: Integer read FHallKey write SetHallKey;
@@ -252,6 +253,32 @@ begin
     begin
 
     end;
+  end;
+end;
+
+procedure TRestTable.DropTableFromDB;
+var
+  FSQL: TIBSQL;
+  FTransaction: TIBTransaction;
+begin
+  Assert(FID <> -1, 'ID not Assigned');
+  Assert(Assigned(FFrontBase), 'FrontBase not Assigned');
+
+  FSQL := TIBSQL.Create(nil);
+  FTransaction := TIBTransaction.Create(nil);
+  try
+    FTransaction.DefaultDatabase := FFrontBase.ReadTransaction.DefaultDatabase;
+    FTransaction.StartTransaction;
+    FSQL.Transaction := FTransaction;
+    FSQL.SQL.Text := 'DELETE FROM USR$MN_TABLE T WHERE T.ID = :ID ';
+    FSQL.ParamByName('ID').AsInteger := FID;
+    FSQL.ExecQuery;
+    FSQL.Close;
+
+    FTransaction.Commit;
+  finally
+    FSQL.Free;
+    FTransaction.Free;
   end;
 end;
 
