@@ -118,7 +118,6 @@ end;
 
 destructor TRestReport.Destroy;
 begin
-
   inherited;
 end;
 

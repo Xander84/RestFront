@@ -719,6 +719,7 @@ var
 begin
   for I := 0 to FQueryList.Count - 1 do
   begin
+    TgsDataSet(FQueryList.Items[I]).Free;
     FQueryList.Items[I] := nil;
   end;
   FQueryList.Clear;
