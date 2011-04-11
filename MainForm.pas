@@ -503,6 +503,7 @@ begin
     Touch_MessageBox('Внимание', 'Неверный пароль', MB_OK, mtWarning);
     if edPassword.CanFocus then
       edPassword.SetFocus;
+    edPassword.Text := '';
     FLogManager.DoSimpleEvent(ev_invalidPass);
   end;
 end;
@@ -1651,14 +1652,14 @@ end;
 procedure TRestMainForm.sbTableGesture(Sender: TObject;
   const EventInfo: TGestureEventInfo; var Handled: Boolean);
 begin
-  if EventInfo.GestureID = sgiLeft then
+{  if EventInfo.GestureID = sgiLeft then
     sbTable.ScrollBy(-20, 0)
   else if  EventInfo.GestureID = sgiRight then
     sbTable.ScrollBy(20, 0)
   else if  EventInfo.GestureID = sgiUp then
     sbTable.ScrollBy(0, 20)
   else if EventInfo.GestureID = sgiDown then
-    sbTable.ScrollBy(0, -20);
+    sbTable.ScrollBy(0, -20);   }
 end;
 
 procedure TRestMainForm.ScrollControl(const FControl: TWinControl; const Down: Boolean;
@@ -2335,6 +2336,7 @@ begin
     end;
 
     //3. переход на форму менеджера
+    FWithPreCheck := True;
     RestFormState := ManagerChooseOrder;
     CreateUserList;
 
@@ -2716,7 +2718,7 @@ begin
           FUserOrderButtonNumber   := 1;
 
           FLineID := 1;
-          FWithPreCheck := True;
+//          FWithPreCheck := True;
 
           FFrontBase.GetUserOrders(-1, FOrderDataSet);
 
