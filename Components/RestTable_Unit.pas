@@ -168,19 +168,11 @@ end;
 function TRestTable.GetRelativeHeight: Double;
 begin
   Result := FRelativeHeight;
-  {if Assigned(Parent) and (Parent.Height > 0) then
-    Result := POS_MULTIPLIER * Self.Height / Parent.Height
-  else
-    Result := Self.Height;}
 end;
 
 function TRestTable.GetRelativeWidth: Double;
 begin
   Result := FRelativeWidth;
-  {if Assigned(Parent) and (Parent.Width > 0) then
-    Result := POS_MULTIPLIER * Self.Width / Parent.Width
-  else
-    Result := Self.Width;}
 end;
 
 procedure TRestTable.Paint;
@@ -204,10 +196,12 @@ end;
 
 procedure TRestTable.DrawTableCondition;
 const
-  MARK_SIZE_PX = 30;
+  MARK_SIZE_PX = 25;
 var
   ImgCanvas: TCanvas;
   MarkX, MarkY, MarkWidth, MarkHeight: Integer;
+  MarkRect: TRect;
+  OrderCount: String;
 
   procedure CalcMarkProps;
   begin
@@ -223,35 +217,45 @@ begin
 
   ImgCanvas := Self.Canvas;
   ImgCanvas.Brush.Style := bsSolid;
+  ImgCanvas.Pen.Color := clBlack;
+  MarkRect := Rect(MarkX, MarkY, MarkX + MarkWidth, MarkY + MarkHeight);
+  OrderCount := IntToStr(FOrderList.Count);
 
   case FTableCondition of
     rtcFree:
     begin
-      ImgCanvas.Brush.Color := clGreen;
-      ImgCanvas.Pen.Color := clGreen;
+      ImgCanvas.Brush.Color := clLime;
       ImgCanvas.Ellipse(MarkX, MarkY, MarkX + MarkWidth, MarkY + MarkHeight);
     end;
 
     rtcFreeOther:
     begin
-
+      ImgCanvas.Brush.Color := clLime;
+      ImgCanvas.Rectangle(MarkX, MarkY, MarkX + MarkWidth, MarkY + MarkHeight);
     end;
 
     rtcOccupied:
     begin
       ImgCanvas.Brush.Color := clYellow;
-      ImgCanvas.Pen.Color := clYellow;
       ImgCanvas.Ellipse(MarkX, MarkY, MarkX + MarkWidth, MarkY + MarkHeight);
+      // Кол-во заказов
+      //ImgCanvas.TextRect(MarkRect, OrderCount, [tfCenter, tfVerticalCenter, tfSingleLine]);
     end;
 
     rtcOccupiedOther:
     begin
-
+      ImgCanvas.Brush.Color := clYellow;
+      ImgCanvas.Rectangle(MarkX, MarkY, MarkX + MarkWidth, MarkY + MarkHeight);
+      // Кол-во заказов
+      //ImgCanvas.TextRect(MarkRect, OrderCount, [tfCenter, tfVerticalCenter, tfSingleLine]);
     end;
 
     rtcPreCheck:
     begin
-
+      ImgCanvas.Brush.Color := clRed;
+      ImgCanvas.Ellipse(MarkX, MarkY, MarkX + MarkWidth, MarkY + MarkHeight);
+      // Кол-во заказов
+      //ImgCanvas.TextRect(MarkRect, OrderCount, [tfCenter, tfVerticalCenter, tfSingleLine]);
     end;
   end;
 end;
