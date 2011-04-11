@@ -309,9 +309,9 @@ var
   Res: Integer;
   DocNumber, WaiterName: String;
   DocStr: Integer;
-  WasDiscount: Boolean;
+//  WasDiscount: Boolean;
   TotalDiscount: Currency;
-  GoodName, DiscName: String;
+  GoodName{, DiscName}: String;
   Quantity, Price, SumDiscount: Currency;
   QuantityStr: String;
   PriceStr: String;
@@ -348,15 +348,10 @@ begin
       end;
 
       TotalDiscount := 0;
-      WasDiscount := False;
 
       DocLine.First;
       while not DocLine.Eof do
       begin
-{
-
-}
-        SumDiscount := 0;
         GoodName := DocLine.FieldByName('GOODNAME').AsString;
         QuantityStr := CurrToStr(DocLine.FieldByName('usr$quantity').AsCurrency);
         PriceStr := CurrToStr(DocLine.FieldByName('usr$costncu').AsCurrency);
@@ -385,9 +380,6 @@ begin
             CancelDocument;
             exit;
           end;
-
-          if DocLine.FieldByName('usr$persdiscount').AsCurrency <> 0 then
-            WasDiscount := True;
         end;
 
         if (SumDiscount > 0)  then
@@ -403,24 +395,6 @@ begin
         DocLine.Next;
       end;
 
-{
-        if TotalDiscount <> 0 then
-        begin
-          if WasDiscount then
-            DiscName := 'Скидка'
-          else
-            DiscName := 'Округление';
-
-          Res := AbsoluteCorrectionText(-Round(TotalDiscount + 0.0001), DiscName);
-          if Res <> 0 then
-          begin
-            ErrMessage(Res);
-            CancelDocument;
-            exit;
-          end;
-        end;
-
-}
       // кредитная карта
       if FSums.FCardSum > 0 then
       begin
