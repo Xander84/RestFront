@@ -207,6 +207,7 @@ type
     mainTouchKeyBoard: TAdvSmoothTouchKeyBoard;
     tmrTime: TTimer;
     imgHallBackground: TImage;
+    btnPrintCopyCheck: TAdvSmoothButton;
 
     //Проверка введёного пароля
     procedure actPassEnterExecute(Sender: TObject);
@@ -291,6 +292,7 @@ type
     procedure DBGrMainColumns3GetCellParams(Sender: TObject; EditMode: Boolean;
       Params: TColCellParamsEh);
     procedure tmrTimeTimer(Sender: TObject);
+    procedure btnPrintCopyCheckClick(Sender: TObject);
   private
     //Компонент обращения к БД
     FFrontBase: TFrontBase;
@@ -473,7 +475,7 @@ uses
   SellParamForm_Unit, PercOrCardForm_Unit, DiscountTypeForm_Unit,
   ChooseDiscountCardForm_Unit, EditReportForm_Unit,
   GDIPPictureContainer, IB, GDIPFill, CashForm_Unit, IBSQL,
-  TouchMessageBoxForm_Unit;
+  TouchMessageBoxForm_Unit, Base_FiscalRegister_unit;
 
 
 {$R *.dfm}
@@ -3626,6 +3628,21 @@ begin
   FWithPreCheck := WithPreCheck;
   RestFormState := KassirInfo;
   CreateUserList;
+end;
+
+procedure TRestMainForm.btnPrintCopyCheckClick(Sender: TObject);
+var
+  FSum: TSaleSums;
+begin
+  with FSum do
+  begin
+    FCashSum := FHeaderInfoTable.FieldByName('USR$SUMNCUWITHDISCOUNT').AsCurrency;
+    FCardSum := 0;
+    FCreditSum := 0;
+    FPersonalCardSum := 0;
+  end;
+  FReport.PrintAfterSalePreCheck(FHeaderInfoTable.FieldByName('ID').AsInteger,
+    FSum);
 end;
 
 procedure TRestMainForm.btnPrintIncomeReportClick(Sender: TObject);

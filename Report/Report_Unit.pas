@@ -241,8 +241,8 @@ begin
       Header.Open;
 
       Sells := BaseQueryList.Query[BaseQueryList.Add('Sells', True)];
-      Sells.AddField('PayType', 'ftString', 15, False);
-      Sells.AddField('PaySum', 'ftString', 15, False);
+      Sells.AddField('PayType1', 'ftString', 15, False);
+      Sells.AddField('PaySum1', 'ftString', 15, False);
       Sells.AddField('ChangeSum', 'ftString', 15, False);
       Sells.AddField('NOW', 'ftDate', 0, False);
       Sells.AddField('NOWTIME', 'ftTime', 0, False);
@@ -252,8 +252,8 @@ begin
         if FCashSum > 0 then
         begin
           Sells.Append;
-          Sells.FieldByName('PayType').AsString := 'Наличные';
-          Sells.FieldByName('PaySum').AsString := CurrToStr(FCashSum);
+          Sells.FieldByName('PayType1').AsString := 'Наличные';
+          Sells.FieldByName('PaySum1').AsString := CurrToStr(FCashSum);
           Sells.FieldByName('ChangeSum').AsString := CurrToStr(FChangeSum);
           Sells.FieldByName('NOW').AsDateTime := Date;
           Sells.FieldByName('NOWTIME').AsDateTime := Now;
@@ -262,8 +262,8 @@ begin
         if (FCreditSum + FPersonalCardSum) > 0 then
         begin
           Sells.Append;
-          Sells.FieldByName('PayType').AsString := 'Безналичные';
-          Sells.FieldByName('PaySum').AsString := CurrToStr(FCreditSum + FPersonalCardSum);
+          Sells.FieldByName('PayType1').AsString := 'Безналичные';
+          Sells.FieldByName('PaySum1').AsString := CurrToStr(FCreditSum + FPersonalCardSum);
           Sells.FieldByName('ChangeSum').AsString := CurrToStr(FChangeSum);
           Sells.FieldByName('NOW').AsDateTime := Date;
           Sells.FieldByName('NOWTIME').AsDateTime := Now;
@@ -272,8 +272,8 @@ begin
         if FCardSum > 0 then
         begin
           Sells.Append;
-          Sells.FieldByName('PayType').AsString := 'Карта';
-          Sells.FieldByName('PaySum').AsString := CurrToStr(FCardSum);
+          Sells.FieldByName('PayType1').AsString := 'Карта';
+          Sells.FieldByName('PaySum1').AsString := CurrToStr(FCardSum);
           Sells.FieldByName('ChangeSum').AsString := CurrToStr(FChangeSum);
           Sells.FieldByName('NOW').AsDateTime := Date;
           Sells.FieldByName('NOWTIME').AsDateTime := Now;
