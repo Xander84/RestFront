@@ -1856,7 +1856,8 @@ begin
   FSelectedButton := nil;
   FMenuSelectedButton := nil;
   case FRestFormState of
-    Pass: Assert(False, 'Что мы тут делаем?');
+    Pass:
+      ;
 
     OrderMenu, ManagerPage, ManagerChooseOrder, KassirInfo:
       begin
@@ -1951,7 +1952,8 @@ begin
   FSelectedButton := nil;
   FMenuSelectedButton := nil;
   case FRestFormState of
-    Pass: Assert(False, 'Что мы тут делаем');
+    Pass:
+      ;
 
     OrderMenu, ManagerChooseOrder:
       begin
