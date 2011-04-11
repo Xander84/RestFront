@@ -342,7 +342,7 @@ begin
                   ALeft := FOldLeft + dX;
                   ATop := FOldTop + dY;
                 end;
-              1:
+{              1:
               begin
                 ALeft := FOldLeft + dX;
                 ATop := FOldTop + dY;
@@ -377,7 +377,7 @@ begin
               begin
                 ALeft := FOldLeft + dX;
                 AWidth := FOldWidth - dX;
-              end;
+              end;     }
             end;
             if FMode <> 0 then
             begin
@@ -516,10 +516,10 @@ begin
   if AControl = nil then Exit;
   case Mode of
     0, 9: AControl.Cursor := crDefault;
-    1, 5: AControl.Cursor := crSizeNWSE;
-    2, 6: AControl.Cursor := crSizeNS;
-    3, 7: AControl.Cursor := crSizeNESW;
-    4, 8: AControl.Cursor := crSizeWE;
+//    1, 5: AControl.Cursor := crSizeNWSE;
+//    2, 6: AControl.Cursor := crSizeNS;
+//    3, 7: AControl.Cursor := crSizeNESW;
+//    4, 8: AControl.Cursor := crSizeWE;
   else
     AControl.Cursor := crDefault;
   end;
