@@ -2888,6 +2888,7 @@ begin
 
           FLineID := 1;
           FWithPreCheck := True;
+          tmrTables.Enabled := False;
 
           FFrontBase.GetHallsInfo(FHallsTable);
           if FHallsTable.RecordCount = 1 then
@@ -2913,7 +2914,6 @@ begin
           dxfDesigner.Active := False;
 
           tmrClose.Tag := 1;
-          tmrTables.Enabled := False;
 
           ClearDisplay;
         finally
@@ -3999,11 +3999,21 @@ procedure TRestMainForm.tmrTablesTimer(Sender: TObject);
 var
   FButton: TComponent;
 begin
-  if (FActiveHallButton <> '') and (FRestFormState = HallsPage) then
-  begin
-    FButton := pnlHalls.FindComponent(FActiveHallButton);
-    if Assigned(FButton) then
-      TAdvSmoothButton(FButton).Click;
+  LockWindowUpdate(Handle);
+  try
+    if (FActiveHallButton <> '') and (FRestFormState = HallsPage) then
+    begin
+      FButton := pnlHalls.FindComponent(FActiveHallButton);
+      if Assigned(FButton) then
+        TAdvSmoothButton(FButton).Click;
+    end else
+    if FHallsTable.RecordCount = 1 then
+    begin
+      RemoveTableButton;
+      CreateTableButtonList(FHallsTable.FieldByName('ID').AsInteger);
+    end;
+  finally
+    LockWindowUpdate(0);
   end;
 end;
 

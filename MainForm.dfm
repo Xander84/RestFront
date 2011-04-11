@@ -2304,6 +2304,8 @@ object RestMainForm: TRestMainForm
                 Height = 679
                 Align = alClient
                 BorderStyle = bsNone
+                DoubleBuffered = False
+                ParentDoubleBuffered = False
                 TabOrder = 0
                 Touch.GestureManager = gmFront
                 OnGesture = sbTableGesture
