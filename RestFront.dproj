@@ -143,6 +143,9 @@
 			<DCCReference Include="TouchMessageBoxForm_Unit.pas">
 				<Form>TTouchMessageBox</Form>
 			</DCCReference>
+			<DCCReference Include="ReturneyMoneyForm_Unit.pas">
+				<Form>ReturnMoneyForm</Form>
+			</DCCReference>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>

@@ -44,7 +44,8 @@ uses
   rp_frmGrid_unit in 'Report\rp_frmGrid_unit.pas' {frmGrid: TFrame},
   fs_iQueryListRTTI in 'Report\fs_iQueryListRTTI.pas',
   PersonalCardForm_Unit in 'PersonalCardForm_Unit.pas' {PersonalCardForm},
-  TouchMessageBoxForm_Unit in 'TouchMessageBoxForm_Unit.pas' {TTouchMessageBox};
+  TouchMessageBoxForm_Unit in 'TouchMessageBoxForm_Unit.pas' {TTouchMessageBox},
+  ReturneyMoneyForm_Unit in 'ReturneyMoneyForm_Unit.pas' {ReturnMoneyForm};
 
 {$R *.res}
 
@@ -72,7 +73,7 @@ begin
     Application.Initialize;
     Application.Title := 'Ресторан';
     Application.CreateForm(TFrontData, FrontData);
-    Application.CreateForm(TRestMainForm, RestMainForm);;
+    Application.CreateForm(TRestMainForm, RestMainForm);
     Application.Run;
   finally
     ApplicationEventsHandler.Free;

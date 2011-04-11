@@ -35,6 +35,7 @@ type
     procedure EndSession;
 
     function PrintCheck(const Doc, DocLine, PayLine: TkbmMemTable; const FSums: TSaleSums): Boolean;
+    function ReturnGoodMoney(const FSums: TSaleSums): Boolean;
 
     property FrontBase: TFrontBase read FFrontBase write FFrontBase;
     property FiscalRegister: IBaseFiscalRegister read FFiscalRegister;
@@ -204,6 +205,14 @@ procedure TFiscalRegister.PrintReportWithOutCleaning;
 begin
   if Assigned(FFiscalRegister) then
     FFiscalRegister.PrintX1ReportWithOutCleaning;
+end;
+
+function TFiscalRegister.ReturnGoodMoney(const FSums: TSaleSums): Boolean;
+begin
+  if Assigned(FFiscalRegister) then
+    Result := FFiscalRegister.ReturnGoodMoney(FSums)
+  else
+    Result := True;
 end;
 
 procedure TFiscalRegister.StartDay;

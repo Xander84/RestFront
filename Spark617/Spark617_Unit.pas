@@ -26,6 +26,7 @@ type
     function CheckDeviceInfo: Boolean;
     function Init: Boolean;
     function PrintCheck(const Doc, DocLine, PayLine: TkbmMemTable; const FSums: TSaleSums): Boolean;
+    function ReturnGoodMoney(const FSums: TSaleSums): Boolean;
 
     function PrintZ1ReportWithCleaning: Boolean;
  //   function PrintZ2ReportWithCleaning: Boolean;
@@ -523,6 +524,85 @@ begin
         ErrMessage(Res);
     end;
     CheckDeviceInfo;
+  end;
+end;
+
+function TSpark617Register.ReturnGoodMoney(const FSums: TSaleSums): Boolean;
+var
+  Res: Integer;
+begin
+  Result := False;
+  Assert(Assigned(FFrontBase), 'FrontBase not Assigned');
+
+  if FDriverInit then
+  begin
+    if Init then
+    begin
+      SetClerk(FFrontBase.UserName);
+
+      Res := StartDocument(6, 1, 0, FFrontBase.UserName);
+      if Res <> 0 then
+      begin
+        ErrMessage(Res);
+        CancelDocument;
+        exit;
+      end;
+      // кредитная карта
+      if FSums.FCardSum > 0 then
+      begin
+        Res := Tender2(FSums.FCardSum, Spark_Credit, '', '');
+        if res <> 0 then
+        begin
+          ErrMessage(Res);
+          Res := CancelDocument;
+          if Res = 0 then
+            exit;
+        end;
+      end;
+      // Безнал
+      if (FSums.FCreditSum + FSums.FPersonalCardSum) > 0 then
+      begin
+        Res := Tender2(FSums.FCreditSum + FSums.FPersonalCardSum, Spark_NoCash, '', '');
+        if res <> 0 then
+        begin
+          ErrMessage(Res);
+          Res := CancelDocument;
+          if Res = 0 then
+            exit;
+        end;
+      end;
+      Res := GetDeviceInfo(102);   //проверяем документ еще открыт ?
+      if Res <> 0 then
+      begin
+        // наличные
+        if FSums.FCashSum > 0 then
+        begin
+          Res := Tender2(FSums.FCashSum, Spark_Cash, '', '');
+          if res <> 0 then
+          begin
+            ErrMessage(Res);
+            Res := CancelDocument;
+            if Res = 0 then
+              exit;
+          end;
+        end;
+
+        Res := EndDocument;
+        if Res = 0 then
+        begin
+          Res := GetDeviceInfo(102);
+          if Res <> 0 then
+          begin
+            ErrMessage(Res);
+            Res := CancelDocument;
+          end
+        end;
+      end;
+      if Res = 0 then
+        Result := True;
+
+      CheckDeviceInfo;
+    end;
   end;
 end;
 

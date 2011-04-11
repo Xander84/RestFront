@@ -48,6 +48,9 @@ object RestMainForm: TRestMainForm
         ColorTo = 14986888
         TabColor = clBtnFace
         TabColorTo = clNone
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         DesignSize = (
           934
           701)
@@ -1037,6 +1040,9 @@ object RestMainForm: TRestMainForm
         ImageIndex = 1
         TabColor = clBtnFace
         TabColorTo = clNone
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object pnlRight: TAdvPanel
           Left = 609
           Top = 0
@@ -1554,6 +1560,9 @@ object RestMainForm: TRestMainForm
               ColorTo = 14986888
               TabColor = clBtnFace
               TabColorTo = clNone
+              ExplicitTop = 0
+              ExplicitWidth = 0
+              ExplicitHeight = 0
               object btnNewOrder: TAdvSmoothButton
                 Left = 16
                 Top = 8
@@ -2297,6 +2306,9 @@ object RestMainForm: TRestMainForm
               ColorTo = clNone
               TabColor = clBtnFace
               TabColorTo = clNone
+              ExplicitTop = 0
+              ExplicitWidth = 0
+              ExplicitHeight = 0
               object sbTable: TScrollBox
                 Left = 0
                 Top = 0
@@ -2332,6 +2344,9 @@ object RestMainForm: TRestMainForm
         ColorTo = clNone
         TabColor = clBtnFace
         TabColorTo = clNone
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object pnlManagerInfo: TPanel
           Left = 0
           Top = 0
@@ -2620,7 +2635,7 @@ object RestMainForm: TRestMainForm
         Top = 1
         Width = 80
         Height = 719
-        ActivePage = tsFunctionButton
+        ActivePage = tsEmpty
         ActiveFont.Charset = DEFAULT_CHARSET
         ActiveFont.Color = clWindowText
         ActiveFont.Height = -11
@@ -2638,6 +2653,9 @@ object RestMainForm: TRestMainForm
           ColorTo = clNone
           TabColor = clBtnFace
           TabColorTo = clNone
+          ExplicitTop = 0
+          ExplicitWidth = 0
+          ExplicitHeight = 0
           object btnExitWindows: TAdvSmoothButton
             Left = 4
             Top = 1
@@ -2767,6 +2785,9 @@ object RestMainForm: TRestMainForm
           ImageIndex = 1
           TabColor = clBtnFace
           TabColorTo = clNone
+          ExplicitTop = 0
+          ExplicitWidth = 0
+          ExplicitHeight = 0
           DesignSize = (
             80
             699)
@@ -3151,6 +3172,9 @@ object RestMainForm: TRestMainForm
           ImageIndex = 2
           TabColor = clBtnFace
           TabColorTo = clNone
+          ExplicitTop = 0
+          ExplicitWidth = 0
+          ExplicitHeight = 0
           DesignSize = (
             80
             699)
@@ -3319,6 +3343,9 @@ object RestMainForm: TRestMainForm
           ParentFont = False
           TabColor = clBtnFace
           TabColorTo = clNone
+          ExplicitTop = 0
+          ExplicitWidth = 0
+          ExplicitHeight = 0
           DesignSize = (
             80
             699)
@@ -3639,6 +3666,9 @@ object RestMainForm: TRestMainForm
           ColorTo = clNone
           TabColor = clBtnFace
           TabColorTo = clNone
+          ExplicitTop = 0
+          ExplicitWidth = 0
+          ExplicitHeight = 0
           DesignSize = (
             80
             699)
@@ -3736,6 +3766,37 @@ object RestMainForm: TRestMainForm
             ParentFont = False
             TabOrder = 2
             Visible = False
+            Version = '1.6.9.0'
+          end
+          object btnReturnGoodSum: TAdvSmoothButton
+            Left = 4
+            Top = 56
+            Width = 72
+            Height = 50
+            Action = actReturnGoodSum
+            Appearance.Font.Charset = DEFAULT_CHARSET
+            Appearance.Font.Color = clWindowText
+            Appearance.Font.Height = -9
+            Appearance.Font.Name = 'Tahoma'
+            Appearance.Font.Style = [fsBold]
+            Status.Caption = '0'
+            Status.Appearance.Fill.Color = clRed
+            Status.Appearance.Fill.ColorMirror = clNone
+            Status.Appearance.Fill.ColorMirrorTo = clNone
+            Status.Appearance.Fill.GradientType = gtSolid
+            Status.Appearance.Fill.BorderColor = clGray
+            Status.Appearance.Fill.Rounding = 0
+            Status.Appearance.Fill.ShadowOffset = 0
+            Status.Appearance.Font.Charset = DEFAULT_CHARSET
+            Status.Appearance.Font.Color = clWhite
+            Status.Appearance.Font.Height = -11
+            Status.Appearance.Font.Name = 'Tahoma'
+            Status.Appearance.Font.Style = []
+            Bevel = False
+            Color = 16575452
+            ParentFont = False
+            TabOrder = 3
+            TabStop = False
             Version = '1.6.9.0'
           end
         end
@@ -3903,6 +3964,12 @@ object RestMainForm: TRestMainForm
       Hint = #1054#1087#1083#1072#1090#1072
       OnExecute = actKassirInfoExecute
       OnUpdate = actKassirInfoUpdate
+    end
+    object actReturnGoodSum: TAction
+      Category = 'menu'
+      Caption = #1042#1086#1079#1074#1088#1072#1090' '#1079#1072' '#1090#1086#1074#1072#1088
+      Hint = #1042#1086#1079#1074#1088#1072#1090' '#1079#1072' '#1090#1086#1074#1072#1088
+      OnExecute = actReturnGoodSumExecute
     end
   end
   object dsMain: TDataSource

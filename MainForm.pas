@@ -208,6 +208,8 @@ type
     tmrTime: TTimer;
     imgHallBackground: TImage;
     btnPrintCopyCheck: TAdvSmoothButton;
+    btnReturnGoodSum: TAdvSmoothButton;
+    actReturnGoodSum: TAction;
 
     //Проверка введёного пароля
     procedure actPassEnterExecute(Sender: TObject);
@@ -293,6 +295,7 @@ type
       Params: TColCellParamsEh);
     procedure tmrTimeTimer(Sender: TObject);
     procedure btnPrintCopyCheckClick(Sender: TObject);
+    procedure actReturnGoodSumExecute(Sender: TObject);
   private
     //Компонент обращения к БД
     FFrontBase: TFrontBase;
@@ -483,7 +486,8 @@ uses
   SellParamForm_Unit, PercOrCardForm_Unit, DiscountTypeForm_Unit,
   ChooseDiscountCardForm_Unit, EditReportForm_Unit,
   GDIPPictureContainer, IB, GDIPFill, CashForm_Unit, IBSQL,
-  TouchMessageBoxForm_Unit, Base_FiscalRegister_unit;
+  TouchMessageBoxForm_Unit, Base_FiscalRegister_unit,
+  ReturneyMoneyForm_Unit;
 
 
 {$R *.dfm}
@@ -2871,6 +2875,7 @@ begin
           tsTablePage.Visible := True;
           pnlRight.Visible := True;
           btnOK2.Visible := True;
+          btnReturnGoodSum.Visible := False;
           RemoveGoodButton;
           RemoveGroupButton;
           RemoveOrderButton;
@@ -2988,6 +2993,7 @@ begin
           btnAdminOptions.Visible := False;
           btnAllChecks.Visible := True;
           btnOK2.Visible := False;
+          btnReturnGoodSum.Visible := False;
 
           FUserFirstTop       := btnFirstTop;
           FUserLastLeftButton := btnFirstTop;
@@ -3040,6 +3046,7 @@ begin
           pcOrder.ActivePage := tsManagerPage;
           pcExtraButton.ActivePage := tsEmpty;
           btnOK2.Visible := False;
+          btnReturnGoodSum.Visible := False;
 
           FUserFirstTop       := btnFirstTop;
           FUserLastLeftButton := btnFirstTop;
@@ -3092,6 +3099,7 @@ begin
           pcOrder.ActivePage := tsManagerPage;
           pcExtraButton.ActivePage := tsEmpty;
           btnOK2.Visible := False;
+          btnReturnGoodSum.Visible := True;
 
           FUserFirstTop       := btnFirstTop;
           FUserLastLeftButton := btnFirstTop;
@@ -4046,6 +4054,26 @@ begin
     end;
     {$ENDIF MSWINDOWS}
   end;
+end;
+
+procedure TRestMainForm.actReturnGoodSumExecute(Sender: TObject);
+var
+  FForm: TReturnMoneyForm;
+begin
+  if FFrontBase.CashCode <> -1 then
+  begin
+    FForm := TReturnMoneyForm.CreateWithFrontBase(nil, FFrontBase);
+    try
+      FForm.FiscalRegistry := FFiscal;
+      FForm.FrontBase := FFrontBase;
+      FForm.Doc := FHeaderTable;
+      FForm.DocLine := FLineTable;
+      FForm.ShowModal;
+    finally
+      FForm.Free;
+    end;
+  end else
+    Touch_MessageBox('Внимание', 'Для данной рабочей станции не указан кассовый терминал!', MB_OK, mtWarning);
 end;
 
 procedure TRestMainForm.OnBeforePostLine(DataSet: TDataSet);

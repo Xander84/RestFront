@@ -75,7 +75,6 @@ type
     // структура оплаты
     FSums: TSaleSums;
 
-    FPrinting: Boolean;
     FInDeleteOrUpdate: Boolean;
     FInInsert: Boolean;
     FInBrowse: Boolean;
@@ -103,11 +102,14 @@ type
     procedure OnAfterScroll(DataSet: TDataSet);
 
     procedure PrevSettings(const PayType: Integer; NeedLocate: Boolean = True);
+  protected
+    FPrinting: Boolean;
     procedure CalcSums;
   public
     constructor CreateWithFrontBase(AOwner: TComponent; FBase: TFrontBase);
     destructor Destroy; override;
 
+    property Sums: TSaleSums read FSums;
     property SumToPay: Currency read FSumToPay write SetSumToPay;
     property FiscalRegistry: TFiscalRegister read FFiscalRegiter write SetFiscalRegister;
     property Doc: TkbmMemTable read FDoc write SetDoc;
@@ -354,7 +356,7 @@ begin
     Touch_MessageBox('Внимание', 'Сумма оплаты по безналичному расчету превышает сумму чека!', MB_OK, mtWarning);
     exit;
   end;
-  if ((FSums.FPersonalCardSum > 0) and ((FSums.FCardSum + FSums.FCreditSum + FSums.FCreditSum) > 0)) then
+  if ((FSums.FPersonalCardSum > 0) and ((FSums.FCardSum + FSums.FCashSum + FSums.FCreditSum) > 0)) then
   begin
     Touch_MessageBox('Внимание', 'Не может быть смешанной оплаты при оплате персональной карточкой!', MB_OK, mtWarning);
     exit;

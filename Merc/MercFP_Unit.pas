@@ -91,6 +91,7 @@ type
     function CheckDeviceInfo: Boolean;
     function Init: Boolean;
     function PrintCheck(const Doc, DocLine, PayLine: TkbmMemTable; const FSums: TSaleSums): Boolean;
+    function ReturnGoodMoney(const FSums: TSaleSums): Boolean;
 
     function PrintZ1ReportWithCleaning: Boolean;
     function PrintZ2ReportWithCleaning: Boolean;
@@ -364,6 +365,12 @@ function TMercuryRegister.PrintZ2ReportWithCleaning: Boolean;
 begin
   Result := False;
   Touch_MessageBox('Внимание', 'Данный вид отчёта не поддерживается', MB_OK, mtError);
+end;
+
+function TMercuryRegister.ReturnGoodMoney(const FSums: TSaleSums): Boolean;
+begin
+  { TODO : Реализовать }
+  Result := True;
 end;
 
 procedure TMercuryRegister.SetFrontBase(const Value: TFrontBase);

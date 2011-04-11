@@ -43,7 +43,9 @@ type
     function Init: Boolean;
     // Печать чека
     function PrintCheck(const Doc, DocLine, PayLine: TkbmMemTable; const FSums: TSaleSums): Boolean;
-
+    //Выплата за возвращенный товар. Печатается чек возврата с указанием суммы и вида оплаты.
+    //Никакой информации о возвращенном товаре чек не содержит.
+    function ReturnGoodMoney(const FSums: TSaleSums): Boolean;
     // Установка рабочей базы
     procedure SetFrontBase(const Value: TFrontBase);
     function GetFrontBase: TFrontBase;
@@ -86,7 +88,7 @@ type
     function CheckDeviceInfo: Boolean;
     function Init: Boolean;
     function PrintCheck(const Doc, DocLine, PayLine: TkbmMemTable; const FSums: TSaleSums): Boolean;
-
+    function ReturnGoodMoney(const FSums: TSaleSums): Boolean;
     function PrintZ1ReportWithCleaning: Boolean;
  //   function PrintZ2ReportWithCleaning: Boolean;
     function PrintX1ReportWithOutCleaning: Boolean;
@@ -245,6 +247,11 @@ begin
     Result := 0
   else
     Result := E_NOINTERFACE;
+end;
+
+function TAbstractFiscalRegister.ReturnGoodMoney(const FSums: TSaleSums): Boolean;
+begin
+  Result := True;
 end;
 
 procedure TAbstractFiscalRegister.SetFrontBase(const Value: TFrontBase);
