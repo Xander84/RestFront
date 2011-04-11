@@ -3353,9 +3353,15 @@ begin
       Tr.Commit;
       Result := True;
     except
-      Result := False;
-      Tr.Rollback;
-      raise;
+      on E: Exception do
+      begin
+        if (E is EIBError) and (EIBError(E).IBErrorCode = isc_no_dup) then
+          Touch_MessageBox('Внимание', 'Пользователь уже существует', MB_OK, mtError)
+        else
+          Touch_MessageBox('Внимание', 'Ошибка при создании пользователя ' + E.Message, MB_OK, mtError);
+        Result := False;
+        Tr.Rollback;
+      end;
     end;
   finally
     FSQL.Free;
