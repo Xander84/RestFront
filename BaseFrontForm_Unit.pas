@@ -32,6 +32,7 @@ var
 begin
   inherited;
 
+  Color := FrontData.PanelColorTo;
   AdvFormStyler.Style := GetFrontStyle;
   for I := 0 to ComponentCount - 1 do
   begin
@@ -49,7 +50,9 @@ begin
       TAdvTabSheet(Components[I]).ColorTo := FrontData.PanelColorTo;
     end else
     if (Components[I] is TAdvSmoothButton) then
-      SetButtonStyle(TAdvSmoothButton(Components[I]));
+      SetButtonStyle(TAdvSmoothButton(Components[I]))
+    else if (Components[I] is TAdvPageControl) then
+      TAdvPageControl(Components[I]).TabBackGroundColor := FrontData.PanelColor;
   end;
   BorderIcons := [];
   BorderStyle := bsSingle;
