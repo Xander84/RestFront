@@ -8,18 +8,22 @@ uses
   Windows, Menus;
 
 type
+  TRestTableCondition = (rtcUnknown, rtcFree, rtcFreeOther, rtcOccupied, rtcOccupiedOther, rtcPreCheck);
+
   TRestTable = class(TPngSpeedButton)
   private
     FNumber: String;
     FPosX: Double;
     FPosY: Double;
+    FRelativeWidth: Double;
+    FRelativeHeight: Double;
     FHallKey: Integer;
     FTableTypeKey: Integer;
     FMainTableKey: Integer;
-    FIsEmpty: Boolean;
+    // Состояние стола
+    FTableCondition: TRestTableCondition;
+
     FFrontBase: TFrontBase;
-    FTransparent: Boolean;
-    FTransparentColor: TColor;
     FID: Integer;
     FOrderKey: Integer;
     FRespKey: Integer;
@@ -35,10 +39,7 @@ type
 
     procedure ReadTableType; virtual;
     procedure SetMainTableKey(const Value: Integer);
-    procedure SetIsEmpty(const Value: Boolean);
     procedure SetFrontBase(const Value: TFrontBase);
-    procedure SetTransparent(const Value: Boolean);
-    procedure SetTransparentColor(const Value: TColor);
     procedure SetID(const Value: Integer);
     function GetPosX: Double;
     function GetPosY: Double;
@@ -49,9 +50,16 @@ type
     procedure SetComputerName(const Value: String);
     function GetOrderCount: Integer;
 
-    procedure WMContextMenu(var Message: TWMContextMenu);
-      message WM_CONTEXTMENU;
+    procedure WMContextMenu(var Message: TWMContextMenu); message WM_CONTEXTMENU;
     procedure SetRespName(const Value: String);
+    function GetRelativeHeight: Double;
+    function GetRelativeWidth: Double;
+    procedure SetRelativeHeight(const Value: Double);
+    procedure SetRelativeWidth(const Value: Double);
+    procedure SetTableCondition(const Value: TRestTableCondition);
+  protected
+    procedure Paint; override;
+    procedure DrawTableCondition;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -65,7 +73,6 @@ type
     // ссылка на главный стол
     property MainTableKey: Integer read FMainTableKey write SetMainTableKey;
     // занят или нет
-    property IsEmpty: Boolean read FIsEmpty write SetIsEmpty;
     property IsLocked: Boolean read FIsLocked write SetIsLocked;
     property ComputerName: String read FComputerName write SetComputerName;
     property ID: Integer read FID write SetID;
@@ -76,14 +83,15 @@ type
     property OrderList: TDictionary<Integer, String>read FOrderList;
     property RespName: String read FRespName write SetRespName;
     property NeedToInsert: Boolean read FNeedToInsert write FNeedToInsert;
+
+    property TableCondition: TRestTableCondition read FTableCondition write SetTableCondition;
   published
     // номер стола
     property Number: String read FNumber write SetNumber;
     property PosX: Double read GetPosX write SetPosX;
     property PosY: Double read GetPosY write SetPosY;
-    property Transparent: Boolean read FTransparent write SetTransparent;
-    property TransparentColor: TColor read FTransparentColor write
-      SetTransparentColor;
+    property RelativeWidth: Double read GetRelativeWidth write SetRelativeWidth;
+    property RelativeHeight: Double read GetRelativeHeight write SetRelativeHeight;
   end;
 
   TChooseTable = class(TRestTable)
@@ -91,6 +99,8 @@ type
     FTableName: String;
     procedure ReadTableType; override;
     procedure SetTableName(const Value: String);
+  protected
+    procedure Paint; override;
   public
     property MainTableKey;
     property ID;
@@ -116,13 +126,15 @@ constructor TRestTable.Create;
 begin
   inherited Create(AOwner);
   FTableTypeKey := -1;
-  FIsEmpty := True;
   FID := -1;
   Flat := True;
   FOrderList := TDictionary<Integer, String>.Create();
   FRespName := '';
   FNeedToInsert := False;
   Tag := 1;
+
+  // По умолчанию стол обладает пустым состоянием, никакого значка не рисуется
+  FTableCondition := TRestTableCondition.rtcUnknown;
 end;
 
 destructor TRestTable.Destroy;
@@ -152,13 +164,105 @@ begin
     Result := 0;
 end;
 
-procedure TRestTable.ReadTableType;
+function TRestTable.GetRelativeHeight: Double;
+begin
+  Result := FRelativeHeight;
+  {if Assigned(Parent) and (Parent.Height > 0) then
+    Result := POS_MULTIPLIER * Self.Height / Parent.Height
+  else
+    Result := Self.Height;}
+end;
+
+function TRestTable.GetRelativeWidth: Double;
+begin
+  Result := FRelativeWidth;
+  {if Assigned(Parent) and (Parent.Width > 0) then
+    Result := POS_MULTIPLIER * Self.Width / Parent.Width
+  else
+    Result := Self.Width;}
+end;
+
+procedure TRestTable.Paint;
 var
+  ImgCanvas: TCanvas;
+begin
+  inherited;
+
+  ImgCanvas := Self.Canvas;
+  ImgCanvas.Brush.Style := bsClear;
+
+  // Рисуем номер стола
+  if FRespName <> '' then
+    ImgCanvas.TextOut(0, 0, FNumber + '(' + FRespName + ')')
+  else
+    ImgCanvas.TextOut(0, 0, FNumber);
+
+  // Отрисовываем значок состояния стола
+  DrawTableCondition;
+end;
+
+procedure TRestTable.DrawTableCondition;
+const
+  MARK_SIZE_PX = 30;
+var
+  ImgCanvas: TCanvas;
+  MarkX, MarkY, MarkWidth, MarkHeight: Integer;
+
+  procedure CalcMarkProps;
+  begin
+    MarkWidth := MARK_SIZE_PX;
+    MarkHeight := MARK_SIZE_PX;
+    MarkX := (Self.Width - MARK_SIZE_PX) div 2;
+    MarkY := (Self.Height - MARK_SIZE_PX) div 2;
+  end;
+
+begin
+  // Расчет размеров значка состояния
+  CalcMarkProps;
+
+  ImgCanvas := Self.Canvas;
+  ImgCanvas.Brush.Style := bsSolid;
+
+  case FTableCondition of
+    rtcFree:
+    begin
+      ImgCanvas.Brush.Color := clGreen;
+      ImgCanvas.Pen.Color := clGreen;
+      ImgCanvas.Ellipse(MarkX, MarkY, MarkX + MarkWidth, MarkY + MarkHeight);
+    end;
+
+    rtcFreeOther:
+    begin
+
+    end;
+
+    rtcOccupied:
+    begin
+      ImgCanvas.Brush.Color := clYellow;
+      ImgCanvas.Pen.Color := clYellow;
+      ImgCanvas.Ellipse(MarkX, MarkY, MarkX + MarkWidth, MarkY + MarkHeight);
+    end;
+
+    rtcOccupiedOther:
+    begin
+
+    end;
+
+    rtcPreCheck:
+    begin
+
+    end;
+  end;
+end;
+
+procedure TRestTable.ReadTableType;
+{var
   FSQL: TIBSQL;
   FPng: TPngImage;
-  Str: TStream;
+  Str: TStream;}
 begin
-  Assert(Assigned(FFrontBase), 'FrontBase not Assigned');
+ { Assert(Assigned(FFrontBase), 'FrontBase not Assigned');
+
   if FTableTypeKey > -1 then
   begin
     FSQL := TIBSQL.Create(nil);
@@ -168,8 +272,8 @@ begin
       if not FSQL.Transaction.InTransaction then
         FSQL.Transaction.StartTransaction;
 
-      FSQL.SQL.Text := ' SELECT * FROM USR$MN_TABLETYPE T ' +
-        ' WHERE T.ID = :ID ';
+      FSQL.SQL.Text :=
+        ' SELECT usr$width, usr$length, usr$type FROM usr$mn_tabletype t ' + ' WHERE t.id = :id ';
       FSQL.Params[0].AsInteger := FTableTypeKey;
       FSQL.ExecQuery;
       if not FSQL.Eof then
@@ -185,41 +289,15 @@ begin
           Width := Round(FSQL.FieldByName('USR$WIDTH').AsFloat);
           Height := Round(FSQL.FieldByName('USR$LENGTH').AsFloat);
         end;
-
-        FTransparent := FSQL.FieldByName('USR$TRANSPARENT').AsInteger = 1;
-        FTransparentColor := FSQL.FieldByName('USR$TRANSPARENTCOLOR').AsInteger;
-        if FIsEmpty and (not FSQL.FieldByName('USR$PICTURE1').IsNull) then
-        begin
-          FPng := TPngImage.Create;
-          try
-            FSQL.FieldByName('USR$PICTURE1').SaveToStream(Str);
-            Str.Position := 0;
-            FPng.LoadFromStream(Str);
-            pngimage := FPng;
-          finally
-            FPng.Free;
-          end;
-        end
-        else if not IsEmpty and (not FSQL.FieldByName('USR$PICTURE2').IsNull)
-          then
-        begin
-          FPng := TPngImage.Create;
-          try
-            FSQL.FieldByName('USR$PICTURE2').SaveToStream(Str);
-            Str.Position := 0;
-            FPng.LoadFromStream(Str);
-            pngimage := FPng;
-          finally
-            FPng.Free;
-          end;
-        end;
       end;
       FSQL.Close;
+
+      Self.Repaint;
     finally
       FSQL.Free;
       Str.Free;
     end;
-  end;
+  end; }
 end;
 
 procedure TRestTable.SaveTablePositionToDB;
@@ -236,8 +314,8 @@ begin
     FTransaction.DefaultDatabase := FFrontBase.ReadTransaction.DefaultDatabase;
     FTransaction.StartTransaction;
     FSQL.Transaction := FTransaction;
-    FSQL.SQL.Text := 'UPDATE USR$MN_TABLE T ' + 'SET T.USR$POSY = :POSY, ' +
-      '    T.USR$POSX = :POSX  ' + 'WHERE T.ID = :ID ';
+    FSQL.SQL.Text := 'UPDATE USR$MN_TABLE T ' + 'SET T.USR$POSY = :POSY, ' + '    T.USR$POSX = :POSX  ' +
+      'WHERE T.ID = :ID ';
     FSQL.ParamByName('POSY').AsFloat := PosY;
     FSQL.ParamByName('POSX').AsFloat := PosX;
     FSQL.ParamByName('ID').AsInteger := FID;
@@ -267,10 +345,8 @@ begin
 
     FID := FFrontBase.GetNextID;
 
-    FSQL.SQL.Text :=
-      'INSERT INTO USR$MN_TABLE(ID, USR$NUMBER, USR$POSY, USR$POSX, USR$HALLKEY, '
-      + '  USR$TYPE, USR$MAINTABLEKEY) ' +
-      'VALUES (:ID, :NUMBER, :POSY, :POSX, :HALLKEY, :TYPEKEY, null) ';
+    FSQL.SQL.Text := 'INSERT INTO USR$MN_TABLE(ID, USR$NUMBER, USR$POSY, USR$POSX, USR$HALLKEY, ' +
+      '  USR$TYPE, USR$MAINTABLEKEY) ' + 'VALUES (:ID, :NUMBER, :POSY, :POSX, :HALLKEY, :TYPEKEY, null) ';
     FSQL.ParamByName('ID').AsInteger := FID;
     FSQL.ParamByName('NUMBER').AsString := Number;
     FSQL.ParamByName('POSY').AsFloat := PosY;
@@ -308,11 +384,6 @@ begin
   FID := Value;
 end;
 
-procedure TRestTable.SetIsEmpty(const Value: Boolean);
-begin
-  FIsEmpty := Value;
-end;
-
 procedure TRestTable.SetIsLocked(const Value: Boolean);
 begin
   FIsLocked := Value;
@@ -324,29 +395,8 @@ begin
 end;
 
 procedure TRestTable.SetNumber(const Value: String);
-var
-  bm: Graphics.TBitmap;
 begin
   FNumber := Value;
-  if Assigned(pngimage) and (not pngimage.Empty) then
-  begin
-    bm := Graphics.TBitmap.Create;
-    try
-      bm.Width := pngimage.Width;
-      bm.Height := pngimage.Height;
-      bm.Canvas.Draw(0, 0, pngimage);
-      bm.Transparent := True;
-      bm.Canvas.Brush.Style := bsClear;
-      if FRespName <> '' then
-        bm.Canvas.TextOut(0, 0, FNumber + '(' + FRespName + ')')
-      else
-        bm.Canvas.TextOut(0, 0, FNumber);
-
-      pngimage.Assign(bm);
-    finally
-      bm.Free;
-    end;
-  end;
 end;
 
 procedure TRestTable.SetOrderKey(const Value: Integer);
@@ -372,6 +422,24 @@ begin
     Top := Round(Value);
 end;
 
+procedure TRestTable.SetRelativeHeight(const Value: Double);
+begin
+  FRelativeHeight := Value;
+  if Assigned(Parent) then
+    Height := Round(Parent.Height / POS_MULTIPLIER * Value)
+  else
+    Height := Round(Value);
+end;
+
+procedure TRestTable.SetRelativeWidth(const Value: Double);
+begin
+  FRelativeWidth := Value;
+  if Assigned(Parent) then
+    Width := Round(Parent.Width / POS_MULTIPLIER * Value)
+  else
+    Width := Round(Value);
+end;
+
 procedure TRestTable.SetRespKey(const Value: Integer);
 begin
   FRespKey := Value;
@@ -384,23 +452,17 @@ begin
     SetNumber(FNumber);
 end;
 
+procedure TRestTable.SetTableCondition(const Value: TRestTableCondition);
+begin
+  FTableCondition := Value;
+  // Так как состояние стола изменилось надо перерисовать кнопку
+  Self.Repaint;
+end;
+
 procedure TRestTable.SetTableType(const Value: Integer);
 begin
   if FTableTypeKey <> Value then
-  begin
     FTableTypeKey := Value;
-    ReadTableType;
-  end;
-end;
-
-procedure TRestTable.SetTransparent(const Value: Boolean);
-begin
-  FTransparent := Value;
-end;
-
-procedure TRestTable.SetTransparentColor(const Value: TColor);
-begin
-  FTransparentColor := Value;
 end;
 
 procedure TRestTable.WMContextMenu(var Message: TWMContextMenu);
@@ -447,12 +509,13 @@ end;
 { TChooseTable }
 
 procedure TChooseTable.ReadTableType;
-var
+{var
   FSQL: TIBSQL;
   FPng: TPngImage;
-  Str: TStream;
+  Str: TStream;}
 begin
-  Assert(Assigned(FFrontBase), 'FrontBase not Assigned');
+  {Assert(Assigned(FFrontBase), 'FrontBase not Assigned');
+
   if FTableTypeKey > -1 then
   begin
     FSQL := TIBSQL.Create(nil);
@@ -462,8 +525,7 @@ begin
       if not FSQL.Transaction.InTransaction then
         FSQL.Transaction.StartTransaction;
 
-      FSQL.SQL.Text := ' SELECT * FROM USR$MN_TABLETYPE T ' +
-        ' WHERE T.ID = :ID ';
+      FSQL.SQL.Text := ' SELECT * FROM USR$MN_TABLETYPE T ' + ' WHERE T.ID = :ID ';
       FSQL.Params[0].AsInteger := FTableTypeKey;
       FSQL.ExecQuery;
       if not FSQL.Eof then
@@ -480,8 +542,6 @@ begin
           Height := Round(FSQL.FieldByName('USR$LENGTH').AsFloat);
         end;
 
-        FTransparent := FSQL.FieldByName('USR$TRANSPARENT').AsInteger = 1;
-        FTransparentColor := FSQL.FieldByName('USR$TRANSPARENTCOLOR').AsInteger;
         if not FSQL.FieldByName('USR$PICTURE1').IsNull then
         begin
           FPng := TPngImage.Create;
@@ -490,6 +550,8 @@ begin
             Str.Position := 0;
             FPng.LoadFromStream(Str);
             pngimage := FPng;
+
+            Self.Repaint;
           finally
             FPng.Free;
           end;
@@ -500,32 +562,27 @@ begin
       FSQL.Free;
       Str.Free;
     end;
-  end;
+  end; }
 end;
 
 procedure TChooseTable.SetTableName(const Value: String);
-var
-  bm: Graphics.TBitmap;
 begin
   FTableName := Value;
-  if Value <> '' then
-  begin
-    if Assigned(pngimage) and (not pngimage.Empty) then
-    begin
-      bm := Graphics.TBitmap.Create;
-      try
-        bm.Width := pngimage.Width;
-        bm.Height := pngimage.Height;
-        bm.Canvas.Draw(0, 0, pngimage);
-        bm.Transparent := True;
-        bm.Canvas.Brush.Style := bsClear;
-        bm.Canvas.TextOut(0, 0, FTableName);
+end;
 
-        pngimage.Assign(bm);
-      finally
-        bm.Free;
-      end;
-    end;
+procedure TChooseTable.Paint;
+var
+  ImgCanvas: TCanvas;
+begin
+  inherited;
+
+  if FTableName <> '' then
+  begin
+    ImgCanvas := Self.Canvas;
+    ImgCanvas.Brush.Style := bsClear;
+
+    // Рисуем имя стола
+    ImgCanvas.TextOut(0, 0, FTableName);
   end;
 end;
 

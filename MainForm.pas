@@ -14,7 +14,7 @@ uses
   AdvSmoothButton, AdvPanel, AdvPageControl, AdvSmoothTouchKeyBoard,
   FrontLog_Unit, Grids, Menus, AddUserForm_unit, AdminForm_Unit,
   Buttons, RestTable_Unit, dxfDesigner, GestureMgr, AdvObj, AdvMenus, AdvMenuStylers,
-  AdvSmoothToggleButton, pngimage;
+  AdvSmoothToggleButton, pngimage, Generics.Collections;
 
 const
   btnHeight = 65;
@@ -384,7 +384,13 @@ type
     // Режим только просмотра (для кассира)
     FViewMode: Boolean;
 
+    FTableImageDictionary: TDictionary<Integer, TPngImage>;
+
     FSplitForm: TSplitOrder;
+
+    // Загрузка изображений столов
+    procedure LoadTableImages;
+
     //Создание первичных наборов данных
     procedure CreateDataSets;
     //режим заказов
@@ -603,6 +609,11 @@ begin
   begin
     pnlMainGood.Height := pnlMainGood.Height + btnHeight;
   end;
+
+  // Список типов столов с изображениями
+  FTableImageDictionary := TDictionary<Integer, TPngImage>.Create;
+  // Загрузим изображения столов из БД
+  LoadTableImages;
 end;
 
 procedure TRestMainForm.FormDestroy(Sender: TObject);
@@ -653,6 +664,9 @@ begin
   FTablesList.Free;
   FHallButtonList.Free;
   FChooseTableButtonList.Free;
+
+  // Список типов столов с изображениями
+  FTableImageDictionary.Free;
 end;
 
 procedure TRestMainForm.edPasswordKeyPress(Sender: TObject; var Key: Char);
@@ -715,6 +729,8 @@ begin
   FTablesInfoTable.FieldDefs.Add('USR$NUMBER', ftString, 80);
   FTablesInfoTable.FieldDefs.Add('USR$POSX', ftFloat, 0);
   FTablesInfoTable.FieldDefs.Add('USR$POSY', ftFloat, 0);
+  FTablesInfoTable.FieldDefs.Add('USR$WIDTH', ftFloat, 0);
+  FTablesInfoTable.FieldDefs.Add('USR$LENGTH', ftFloat, 0);
   FTablesInfoTable.FieldDefs.Add('USR$HALLKEY', ftInteger, 0);
   FTablesInfoTable.FieldDefs.Add('USR$TYPE', ftInteger, 0);
   FTablesInfoTable.FieldDefs.Add('USR$MAINTABLEKEY', ftInteger, 0);
@@ -853,6 +869,29 @@ procedure TRestMainForm.CreateTableButtonList(const HallKey: Integer);
 var
   FButton: TRestTable;
   FPrevTableID: Integer;
+
+  // Определяем состояние стола
+  procedure SetTableCondition;
+  begin
+    // Пуст или нет
+    if FTablesInfoTable.FieldByName('ORDERKEY').AsInteger = 0 then
+    begin
+      // Свой или нет
+      if FFrontBase.ContactKey = FTablesInfoTable.FieldByName('USR$RESPKEY').AsInteger then
+        FButton.TableCondition := TRestTableCondition.rtcFree
+      else
+        FButton.TableCondition := TRestTableCondition.rtcFreeOther;
+    end
+    else
+    begin
+      // Свой или нет
+      if FFrontBase.ContactKey = FTablesInfoTable.FieldByName('USR$RESPKEY').AsInteger then
+        FButton.TableCondition := TRestTableCondition.rtcOccupied
+      else
+        FButton.TableCondition := TRestTableCondition.rtcOccupiedOther;
+    end;
+  end;
+
 begin
   if FRestFormState = HallsPage then
     FFrontBase.GetTablesInfo(FTablesInfoTable, HallKey)
@@ -873,23 +912,37 @@ begin
         FButton.Parent := sbTable;
         FButton.FrontBase := FFrontBase;
         FButton.ID := FTablesInfoTable.FieldByName('ID').AsInteger;
-        FButton.IsEmpty := FTablesInfoTable.FieldByName('ORDERKEY').AsInteger = 0;
-        FButton.PosX := FTablesInfoTable.FieldByName('USR$POSX').AsCurrency;
-        FButton.PosY := FTablesInfoTable.FieldByName('USR$POSY').AsCurrency;
         FButton.TableTypeKey := FTablesInfoTable.FieldByName('USR$TYPE').AsInteger;
+        // Относительная позиция кнопки в родителе
+        FButton.PosX := FTablesInfoTable.FieldByName('USR$POSX').AsFloat;
+        FButton.PosY := FTablesInfoTable.FieldByName('USR$POSY').AsFloat;
+        // Размер кнопки относительно родительской панели
+        FButton.RelativeWidth := FTablesInfoTable.FieldByName('USR$WIDTH').AsFloat;
+        FButton.RelativeHeight := FTablesInfoTable.FieldByName('USR$LENGTH').AsFloat;
+        // Заказ
         FButton.OrderKey := FTablesInfoTable.FieldByName('ORDERKEY').AsInteger;
-        FButton.RespKey := FTablesInfoTable.FieldByName('USR$RESPKEY').AsInteger;
         FButton.IsLocked := FTablesInfoTable.FieldByName('ISLOCKED').AsInteger = 1;
+        // Определяем состояние стола
+        FButton.RespKey := FTablesInfoTable.FieldByName('USR$RESPKEY').AsInteger;
+        // Номер стола и имя кассы
         FButton.Number := FTablesInfoTable.FieldByName('USR$NUMBER').AsString;
         FButton.ComputerName := FTablesInfoTable.FieldByName('USR$COMPUTERNAME').AsString;
 //        FButton.RespName := FTablesInfoTable.FieldByName('RESPNAME').AsString;
+
         if FRestFormState = HallsPage then
         begin
           FButton.OnClick := TableButtonOnClick;
           FButton.PopupMenu := tablePopupMenu;
+          // Определяем состояние стола
+          SetTableCondition;
         end;
+
         if FButton.OrderKey <> 0 then
           FButton.OrderList.Add(FButton.OrderKey, FTablesInfoTable.FieldByName('NUMBER').AsString);
+
+        // Присвоение изображения стола из списка изображений типов столов
+        if FTableImageDictionary.ContainsKey(FButton.TableTypeKey) then
+          FButton.PngImage := FTableImageDictionary.Items[FButton.TableTypeKey];
 
         FTablesList.Add(FButton);
         FPrevTableID := FTablesInfoTable.FieldByName('ID').AsInteger;
@@ -913,7 +966,7 @@ begin
   IBSQL := TIBSQL.Create(nil);
   try
     IBSQL.Transaction := FFrontBase.ReadTransaction;
-    IBSQL.SQL.Text := ' SELECT ID, USR$NAME FROM USR$MN_TABLETYPE ';
+    IBSQL.SQL.Text := ' SELECT ID, USR$NAME, usr$width, usr$length FROM USR$MN_TABLETYPE ';
     IBSQL.ExecQuery;
     while not IBSQL.Eof do
     begin
@@ -922,8 +975,14 @@ begin
       FButton.OnClick := ChooseTableOnClick;
       FButton.FrontBase := FFrontBase;
       FButton.TableTypeKey := IBSQL.FieldByName('ID').AsInteger;
+      FButton.RelativeWidth := IBSQL.FieldByName('usr$width').AsFloat;
+      FButton.RelativeHeight := IBSQL.FieldByName('usr$length').AsFloat;
 //      FButton.TableName := IBSQL.FieldByName('USR$NAME').AsString;
       FButton.HallKey := HallKey;
+      // Изображение стола
+      if FTableImageDictionary.ContainsKey(FButton.TableTypeKey) then
+        FButton.PngImage := FTableImageDictionary.Items[FButton.TableTypeKey];
+
       FButton.Height := btnHeight;
       {$IFNDEF DEBUG}
       if Screen.Width > 1024 then
@@ -1503,6 +1562,42 @@ begin
     end;
   finally
     Str.Free;
+  end;
+end;
+
+procedure TRestMainForm.LoadTableImages;
+var
+  ibsql: TIBSQL;
+  PngImage: TPngImage;
+  Str: TStream;
+begin
+  if Assigned(FTableImageDictionary) then
+  begin
+    ibsql := TIBSQL.Create(nil);
+    try
+      ibsql.Transaction := FFrontBase.ReadTransaction;
+      ibsql.SQL.Text :=
+        ' SELECT id, usr$picture1 AS img FROM usr$mn_tabletype ';
+      ibsql.ExecQuery;
+
+      while not ibsql.Eof do
+      begin
+        Str := TMemoryStream.Create;
+        try
+          ibsql.FieldByName('img').SaveToStream(Str);
+          Str.Position := 0;
+          PngImage := TPngImage.Create;
+          PngImage.LoadFromStream(Str);
+        finally
+          FreeAndNil(Str);
+        end;
+
+        FTableImageDictionary.Add(ibsql.FieldByName('id').AsInteger, PngImage);
+        ibsql.Next;
+      end;
+    finally
+      FreeAndNil(ibsql);
+    end;
   end;
 end;
 
@@ -3435,9 +3530,6 @@ begin
       FButton.Parent := sbTable;
       FButton.FrontBase := FFrontBase;
       FButton.OrderKey := 0;
-      FButton.IsEmpty := True;
-      FButton.PosX := sbTable.Height div 2;
-      FButton.PosY := sbTable.Width div 2;
       FButton.TableTypeKey := FChooseButton.TableTypeKey;
       FButton.HallKey := FChooseButton.HallKey;
       FButton.OrderKey := 0;
@@ -3445,6 +3537,14 @@ begin
       FButton.IsLocked := False;
       FButton.Number := FForm.Number;
       FButton.NeedToInsert := True;
+
+      // Относительная позиция и размеры стола
+      FButton.PosX := 50;
+      FButton.PosY := 50;
+      FButton.RelativeWidth := FChooseButton.RelativeWidth;
+      FButton.RelativeHeight := FChooseButton.RelativeHeight;
+      // Изображение стола
+      FButton.PngImage := FChooseButton.PngImage;
 
       FTablesList.Add(FButton);
     end;

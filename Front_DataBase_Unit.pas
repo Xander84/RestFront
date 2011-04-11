@@ -3503,8 +3503,9 @@ begin
   FReadSQL.Close;
   try
     FReadSQL.SQL.Text :=
-      'SELECT T.* ' +
+      'SELECT T.*, tt.usr$width, tt.usr$length ' +
       'FROM USR$MN_TABLE T ' +
+      ' LEFT JOIN usr$mn_tabletype tt ON tt.id = t.usr$type ' +
       'WHERE T.USR$HALLKEY = :ID ';
     FReadSQL.Params[0].AsInteger := HallKey;
     FReadSQL.ExecQuery;
@@ -3515,6 +3516,8 @@ begin
       MemTable.FieldByName('USR$NUMBER').AsString := FReadSQL.FieldByName('USR$NUMBER').AsString;
       MemTable.FieldByName('USR$POSY').AsFloat := FReadSQL.FieldByName('USR$POSY').AsFloat;
       MemTable.FieldByName('USR$POSX').AsFloat := FReadSQL.FieldByName('USR$POSX').AsFloat;
+      MemTable.FieldByName('USR$WIDTH').AsFloat := FReadSQL.FieldByName('USR$WIDTH').AsFloat;
+      MemTable.FieldByName('USR$LENGTH').AsFloat := FReadSQL.FieldByName('USR$LENGTH').AsFloat;
       MemTable.FieldByName('USR$TYPE').AsInteger := FReadSQL.FieldByName('USR$TYPE').AsInteger;
       MemTable.FieldByName('USR$MAINTABLEKEY').AsInteger := FReadSQL.FieldByName('USR$MAINTABLEKEY').AsInteger;
       MemTable.FieldByName('ORDERKEY').AsInteger := 0;
@@ -3537,11 +3540,13 @@ begin
   FReadSQL.Close;
   try
     FReadSQL.SQL.Text :=
-      'SELECT T.*, U.USR$RESPKEY, U.USR$ISLOCKED, U.DOCUMENTKEY, U.USR$COMPUTERNAME, DOC.NUMBER, CON.NAME ' +
+      'SELECT T.*, U.USR$RESPKEY, U.USR$ISLOCKED, U.DOCUMENTKEY, U.USR$COMPUTERNAME, DOC.NUMBER, CON.NAME, ' +
+      '  tt.usr$width, tt.usr$length ' +
       'FROM USR$MN_TABLE T ' +
-      'LEFT JOIN USR$MN_ORDER U ON (U.USR$TABLEKEY = T.ID AND U.USR$PAY <> 1) ' +
-      'LEFT JOIN GD_DOCUMENT DOC ON DOC.ID = U.DOCUMENTKEY ' +
-      'LEFT JOIN GD_CONTACT CON ON CON.ID = U.USR$RESPKEY ' +
+      ' LEFT JOIN usr$mn_tabletype tt ON tt.id = t.usr$type ' +
+      ' LEFT JOIN USR$MN_ORDER U ON (U.USR$TABLEKEY = T.ID AND U.USR$PAY <> 1) ' +
+      ' LEFT JOIN GD_DOCUMENT DOC ON DOC.ID = U.DOCUMENTKEY ' +
+      ' LEFT JOIN GD_CONTACT CON ON CON.ID = U.USR$RESPKEY ' +
       'WHERE T.USR$HALLKEY = :ID ' +
       'ORDER BY U.DOCUMENTKEY, DOC.NUMBER ';
     FReadSQL.Params[0].AsInteger := HallKey;
@@ -3553,6 +3558,8 @@ begin
       MemTable.FieldByName('USR$NUMBER').AsString := FReadSQL.FieldByName('USR$NUMBER').AsString;
       MemTable.FieldByName('USR$POSY').AsFloat := FReadSQL.FieldByName('USR$POSY').AsFloat;
       MemTable.FieldByName('USR$POSX').AsFloat := FReadSQL.FieldByName('USR$POSX').AsFloat;
+      MemTable.FieldByName('USR$WIDTH').AsFloat := FReadSQL.FieldByName('USR$WIDTH').AsFloat;
+      MemTable.FieldByName('USR$LENGTH').AsFloat := FReadSQL.FieldByName('USR$LENGTH').AsFloat;
       MemTable.FieldByName('USR$TYPE').AsInteger := FReadSQL.FieldByName('USR$TYPE').AsInteger;
       MemTable.FieldByName('USR$MAINTABLEKEY').AsInteger := FReadSQL.FieldByName('USR$MAINTABLEKEY').AsInteger;
       MemTable.FieldByName('USR$RESPKEY').AsInteger := FReadSQL.FieldByName('USR$RESPKEY').AsInteger;
