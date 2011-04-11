@@ -617,6 +617,8 @@ begin
 end;
 
 procedure TRestMainForm.FormDestroy(Sender: TObject);
+var
+  Value: TPngImage;
 begin
   FLogManager.DoSimpleEvent(ev_TerminateProgram);
   if Assigned(FFrontBase) then
@@ -666,6 +668,8 @@ begin
   FChooseTableButtonList.Free;
 
   // Список типов столов с изображениями
+  for Value in FTableImageDictionary.Values do
+    Value.Free;
   FTableImageDictionary.Free;
 end;
 
@@ -953,6 +957,7 @@ begin
           FButton.OrderList.Add(FTablesInfoTable.FieldByName('ORDERKEY').AsInteger,
             FTablesInfoTable.FieldByName('NUMBER').AsString);
       end;
+
       FTablesInfoTable.Next;
     end;
   end;
@@ -1522,12 +1527,15 @@ var
 begin
   LockWindowUpdate(Handle);
   try
+    FButton := TButton(Sender);
+
     RemoveTableButton;
     RemoveChooseTable;
-    FButton := TButton(Sender);
     LoadHallBackGround(FButton.Tag);
     CreateTableButtonList(FButton.Tag);
+
     FActiveHallButton := FButton.Name;
+
     if FRestFormState = HallInfo then
     begin
       pcMenu.ActivePage := tsTablesDesigner;
@@ -2894,11 +2902,12 @@ begin
           if FHallsTable.RecordCount = 1 then
           begin
             pnlRight.Visible := False;
+
             RemoveTableButton;
             RemoveChooseTable;
-
             LoadHallBackGround(FHallsTable.FieldByName('ID').AsInteger);
             CreateTableButtonList(FHallsTable.FieldByName('ID').AsInteger);
+
             if FRestFormState = HallInfo then
             begin
               pcMenu.ActivePage := tsTablesDesigner;
