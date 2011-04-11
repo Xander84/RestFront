@@ -14,7 +14,7 @@ uses
   AdvSmoothButton, AdvPanel, AdvPageControl, AdvSmoothTouchKeyBoard,
   FrontLog_Unit, Grids, Menus, AddUserForm_unit, AdminForm_Unit,
   Buttons, RestTable_Unit, dxfDesigner, GestureMgr, AdvObj, AdvMenus, AdvMenuStylers,
-  AdvSmoothToggleButton, pngimage, Generics.Collections;
+  AdvSmoothToggleButton, pngimage, Generics.Collections, rfTableManager_unit;
 
 const
   btnHeight = 65;
@@ -366,7 +366,9 @@ type
     FGoodButtonList   : TObjectList;
     FUsersButtonList  : TObjectList;
     FUsersOrderButtonList: TObjectList;
-    FTablesList       : TObjectList;
+
+    FTableManager: TrfTableManager;
+
     FHallButtonList   : TObjectList;
     FChooseTableButtonList: TObjectList;
     // режим редактирования столов
@@ -545,7 +547,6 @@ begin
   FGroupButtonList := TObjectList.Create;
   FUsersButtonList := TObjectList.Create;
   FUsersOrderButtonList := TObjectList.Create;
-  FTablesList := TObjectList.Create;
   FHallButtonList := TObjectList.Create;
   FChooseTableButtonList := TObjectList.Create;
 
@@ -614,6 +615,12 @@ begin
   FTableImageDictionary := TDictionary<Integer, TPngImage>.Create;
   // Загрузим изображения столов из БД
   LoadTableImages;
+
+  // Менеджер столов зала
+  FTableManager := TrfTableManager.Create(FFrontBase, sbTable);
+  FTableManager.TableImageDictionary := FTableImageDictionary;
+  FTableManager.TableButtonOnClick := TableButtonOnClick;
+  FTableManager.TableButtonPopupMenu := tablePopupMenu;
 end;
 
 procedure TRestMainForm.FormDestroy(Sender: TObject);
@@ -663,9 +670,11 @@ begin
   FGoodButtonList.Free;
   FUsersButtonList.Free;
   FUsersOrderButtonList.Free;
-  FTablesList.Free;
   FHallButtonList.Free;
   FChooseTableButtonList.Free;
+
+  // Менеджер столов зала
+  FTableManager.Free;
 
   // Список типов столов с изображениями
   for Value in FTableImageDictionary.Values do
@@ -870,97 +879,15 @@ begin
 end;
 
 procedure TRestMainForm.CreateTableButtonList(const HallKey: Integer);
-var
-  FButton: TRestTable;
-  FPrevTableID: Integer;
-
-  // Определяем состояние стола
-  procedure SetTableCondition;
-  begin
-    // Пуст или нет
-    if FTablesInfoTable.FieldByName('ORDERKEY').AsInteger = 0 then
-    begin
-      // Свой или нет
-      if FFrontBase.ContactKey = FTablesInfoTable.FieldByName('USR$RESPKEY').AsInteger then
-        FButton.TableCondition := TRestTableCondition.rtcFree
-      else
-        FButton.TableCondition := TRestTableCondition.rtcFreeOther;
-    end
-    else
-    begin
-      // Свой или нет
-      if FFrontBase.ContactKey = FTablesInfoTable.FieldByName('USR$RESPKEY').AsInteger then
-        FButton.TableCondition := TRestTableCondition.rtcOccupied
-      else
-        FButton.TableCondition := TRestTableCondition.rtcOccupiedOther;
-    end;
-  end;
-
 begin
+  // В зависимости от типа страницы возьмем данные по столам с заказами или без
   if FRestFormState = HallsPage then
     FFrontBase.GetTablesInfo(FTablesInfoTable, HallKey)
   else
     FFrontBase.GetTables(FTablesInfoTable, HallKey);
 
-  if FTablesInfoTable.Active then
-  begin
-    FTablesInfoTable.First;
-    FPrevTableID := 0;
-    while not FTablesInfoTable.Eof do
-    begin
-      // если пустой стол или новый заказ, то
-      if (FTablesInfoTable.FieldByName('ORDERKEY').AsInteger = 0) or
-        (FPrevTableID <> FTablesInfoTable.FieldByName('ID').AsInteger) then
-      begin
-        FButton := TRestTable.Create(sbTable);
-        FButton.Parent := sbTable;
-        FButton.FrontBase := FFrontBase;
-        FButton.ID := FTablesInfoTable.FieldByName('ID').AsInteger;
-        FButton.TableTypeKey := FTablesInfoTable.FieldByName('USR$TYPE').AsInteger;
-        // Относительная позиция кнопки в родителе
-        FButton.PosX := FTablesInfoTable.FieldByName('USR$POSX').AsFloat;
-        FButton.PosY := FTablesInfoTable.FieldByName('USR$POSY').AsFloat;
-        // Размер кнопки относительно родительской панели
-        FButton.RelativeWidth := FTablesInfoTable.FieldByName('USR$WIDTH').AsFloat;
-        FButton.RelativeHeight := FTablesInfoTable.FieldByName('USR$LENGTH').AsFloat;
-        // Заказ
-        FButton.OrderKey := FTablesInfoTable.FieldByName('ORDERKEY').AsInteger;
-        FButton.IsLocked := FTablesInfoTable.FieldByName('ISLOCKED').AsInteger = 1;
-        // Определяем состояние стола
-        FButton.RespKey := FTablesInfoTable.FieldByName('USR$RESPKEY').AsInteger;
-        // Номер стола и имя кассы
-        FButton.Number := FTablesInfoTable.FieldByName('USR$NUMBER').AsString;
-        FButton.ComputerName := FTablesInfoTable.FieldByName('USR$COMPUTERNAME').AsString;
-//        FButton.RespName := FTablesInfoTable.FieldByName('RESPNAME').AsString;
-
-        if FRestFormState = HallsPage then
-        begin
-          FButton.OnClick := TableButtonOnClick;
-          FButton.PopupMenu := tablePopupMenu;
-          // Определяем состояние стола
-          SetTableCondition;
-        end;
-
-        if FButton.OrderKey <> 0 then
-          FButton.OrderList.Add(FButton.OrderKey, FTablesInfoTable.FieldByName('NUMBER').AsString);
-
-        // Присвоение изображения стола из списка изображений типов столов
-        if FTableImageDictionary.ContainsKey(FButton.TableTypeKey) then
-          FButton.PngImage := FTableImageDictionary.Items[FButton.TableTypeKey];
-
-        FTablesList.Add(FButton);
-        FPrevTableID := FTablesInfoTable.FieldByName('ID').AsInteger;
-      end else
-      if FPrevTableID = FTablesInfoTable.FieldByName('ID').AsInteger then
-      begin
-        if Assigned(FButton) then
-          FButton.OrderList.Add(FTablesInfoTable.FieldByName('ORDERKEY').AsInteger,
-            FTablesInfoTable.FieldByName('NUMBER').AsString);
-      end;
-
-      FTablesInfoTable.Next;
-    end;
-  end;
+  // Загрузить столы из датасета
+  FTableManager.LoadTables(FTablesInfoTable);
 end;
 
 procedure TRestMainForm.AddChooseTables(const HallKey: Integer);
@@ -978,7 +905,6 @@ begin
       FButton := TChooseTable.Create(pnlDesignerTables);
       FButton.Parent := pnlDesignerTables;
       FButton.OnClick := ChooseTableOnClick;
-      FButton.FrontBase := FFrontBase;
       FButton.TableTypeKey := IBSQL.FieldByName('ID').AsInteger;
       FButton.RelativeWidth := IBSQL.FieldByName('usr$width').AsFloat;
       FButton.RelativeHeight := IBSQL.FieldByName('usr$length').AsFloat;
@@ -1465,7 +1391,7 @@ end;
 
 procedure TRestMainForm.RemoveTableButton;
 begin
-  FTablesList.Clear;
+  FTableManager.Clear;
 end;
 
 procedure TRestMainForm.MenuButtonOnClick(Sender: TObject);
@@ -1739,19 +1665,11 @@ begin
 end;
 
 procedure TRestMainForm.SaveTablePositions;
-var
-  I: Integer;
 begin
   dxfDesigner.EditControl := nil;
   dxfDesigner.Active := False;
-  for I := 0 to sbTable.ControlCount - 1 do
-    if sbTable.Controls[I] is TRestTable then
-    begin
-      if TRestTable(sbTable.Controls[I]).NeedToInsert then
-        TRestTable(sbTable.Controls[I]).SaveTableToDB
-      else
-        TRestTable(sbTable.Controls[I]).SaveTablePositionToDB;
-    end;
+  // Сохраним данные столов в БД
+  FTableManager.SaveTables;
 end;
 
 procedure TRestMainForm.sbTableGesture(Sender: TObject;
@@ -3526,7 +3444,6 @@ end;
 procedure TRestMainForm.ChooseTableOnClick(Sender: TObject);
 var
   FForm: TDevideForm;
-  FButton: TRestTable;
   FChooseButton: TChooseTable;
 begin
   FForm := TDevideForm.Create(nil);
@@ -3538,27 +3455,8 @@ begin
     if FForm.ModalResult = mrOk then
     begin
       FChooseButton := TChooseTable(Sender);
-      FButton := TRestTable.Create(sbTable);
-      FButton.Parent := sbTable;
-      FButton.FrontBase := FFrontBase;
-      FButton.OrderKey := 0;
-      FButton.TableTypeKey := FChooseButton.TableTypeKey;
-      FButton.HallKey := FChooseButton.HallKey;
-      FButton.OrderKey := 0;
-      FButton.RespKey := 0;
-      FButton.IsLocked := False;
-      FButton.Number := FForm.Number;
-      FButton.NeedToInsert := True;
-
-      // Относительная позиция и размеры стола
-      FButton.PosX := 50;
-      FButton.PosY := 50;
-      FButton.RelativeWidth := FChooseButton.RelativeWidth;
-      FButton.RelativeHeight := FChooseButton.RelativeHeight;
-      // Изображение стола
-      FButton.PngImage := FChooseButton.PngImage;
-
-      FTablesList.Add(FButton);
+      // Добавим новый стол
+      FTableManager.AddTable(FForm.Number, FChooseButton);
     end;
   finally
     FForm.Free;

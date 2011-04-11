@@ -3,8 +3,8 @@ unit RestTable_Unit;
 interface
 
 uses
-  SysUtils, Classes, Controls, Front_DataBase_Unit, Graphics, IBSQL, Messages,
-  IBDatabase, PngSpeedButton, pngimage, Buttons, Generics.Collections, Types,
+  SysUtils, Classes, Controls, Graphics, Messages,
+  PngSpeedButton, pngimage, Buttons, Generics.Collections, Types,
   Windows, Menus;
 
 type
@@ -23,7 +23,6 @@ type
     // Состояние стола
     FTableCondition: TRestTableCondition;
 
-    FFrontBase: TFrontBase;
     FID: Integer;
     FOrderKey: Integer;
     FRespKey: Integer;
@@ -37,9 +36,7 @@ type
     procedure SetHallKey(const Value: Integer);
     procedure SetTableType(const Value: Integer);
 
-    procedure ReadTableType; virtual;
     procedure SetMainTableKey(const Value: Integer);
-    procedure SetFrontBase(const Value: TFrontBase);
     procedure SetID(const Value: Integer);
     function GetPosX: Double;
     function GetPosY: Double;
@@ -64,9 +61,6 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
-    procedure SaveTableToDB;
-    procedure DropTableFromDB;
-    procedure SaveTablePositionToDB;
     // ссылка на зал
     property HallKey: Integer read FHallKey write SetHallKey;
     // тип стола
@@ -79,7 +73,6 @@ type
     property ID: Integer read FID write SetID;
     property OrderKey: Integer read FOrderKey write SetOrderKey;
     property RespKey: Integer read FRespKey write SetRespKey;
-    property FrontBase: TFrontBase read FFrontBase write SetFrontBase;
     property OrderCount: Integer read GetOrderCount;
     property OrderList: TDictionary<Integer, String>read FOrderList;
     property RespName: String read FRespName write SetRespName;
@@ -98,14 +91,12 @@ type
   TChooseTable = class(TRestTable)
   private
     FTableName: String;
-    procedure ReadTableType; override;
     procedure SetTableName(const Value: String);
   protected
     procedure Paint; override;
   public
     property MainTableKey;
     property ID;
-    property FrontBase;
     property TableName: String read FTableName write SetTableName;
   end;
 
@@ -128,14 +119,15 @@ begin
   inherited Create(AOwner);
   FTableTypeKey := -1;
   FID := -1;
-  Flat := True;
-  FOrderList := TDictionary<Integer, String>.Create();
   FRespName := '';
   FNeedToInsert := False;
-  Tag := 1;
-
   // По умолчанию стол обладает пустым состоянием, никакого значка не рисуется
   FTableCondition := TRestTableCondition.rtcUnknown;
+  // Список заказов для этого стола
+  FOrderList := TDictionary<Integer, String>.Create();
+
+  Flat := True;
+  Tag := 1;
 end;
 
 destructor TRestTable.Destroy;
@@ -223,186 +215,42 @@ begin
 
   case FTableCondition of
     rtcFree:
-    begin
-      ImgCanvas.Brush.Color := clLime;
-      ImgCanvas.Ellipse(MarkX, MarkY, MarkX + MarkWidth, MarkY + MarkHeight);
-    end;
+      begin
+      end;
 
     rtcFreeOther:
-    begin
-      ImgCanvas.Brush.Color := clLime;
-      ImgCanvas.Rectangle(MarkX, MarkY, MarkX + MarkWidth, MarkY + MarkHeight);
-    end;
+      begin
+      end;
 
     rtcOccupied:
-    begin
-      ImgCanvas.Brush.Color := clYellow;
-      ImgCanvas.Ellipse(MarkX, MarkY, MarkX + MarkWidth, MarkY + MarkHeight);
-      // Кол-во заказов
-      //ImgCanvas.TextRect(MarkRect, OrderCount, [tfCenter, tfVerticalCenter, tfSingleLine]);
-    end;
+      begin
+        ImgCanvas.Brush.Color := clGreen;
+        ImgCanvas.Rectangle(MarkX, MarkY, MarkX + MarkWidth, MarkY + MarkHeight);
+        // Кол-во заказов
+        // ImgCanvas.TextRect(MarkRect, OrderCount, [tfCenter, tfVerticalCenter, tfSingleLine]);
+      end;
 
     rtcOccupiedOther:
-    begin
-      ImgCanvas.Brush.Color := clYellow;
-      ImgCanvas.Rectangle(MarkX, MarkY, MarkX + MarkWidth, MarkY + MarkHeight);
-      // Кол-во заказов
-      //ImgCanvas.TextRect(MarkRect, OrderCount, [tfCenter, tfVerticalCenter, tfSingleLine]);
-    end;
+      begin
+        ImgCanvas.Brush.Color := clYellow;
+        ImgCanvas.Rectangle(MarkX, MarkY, MarkX + MarkWidth, MarkY + MarkHeight);
+        // Кол-во заказов
+        // ImgCanvas.TextRect(MarkRect, OrderCount, [tfCenter, tfVerticalCenter, tfSingleLine]);
+      end;
 
     rtcPreCheck:
-    begin
-      ImgCanvas.Brush.Color := clRed;
-      ImgCanvas.Ellipse(MarkX, MarkY, MarkX + MarkWidth, MarkY + MarkHeight);
-      // Кол-во заказов
-      //ImgCanvas.TextRect(MarkRect, OrderCount, [tfCenter, tfVerticalCenter, tfSingleLine]);
-    end;
-  end;
-end;
-
-procedure TRestTable.DropTableFromDB;
-var
-  FSQL: TIBSQL;
-  FTransaction: TIBTransaction;
-begin
-  Assert(FID <> -1, 'ID not Assigned');
-  Assert(Assigned(FFrontBase), 'FrontBase not Assigned');
-
-  FSQL := TIBSQL.Create(nil);
-  FTransaction := TIBTransaction.Create(nil);
-  try
-    FTransaction.DefaultDatabase := FFrontBase.ReadTransaction.DefaultDatabase;
-    FTransaction.StartTransaction;
-    FSQL.Transaction := FTransaction;
-    FSQL.SQL.Text := 'DELETE FROM USR$MN_TABLE T WHERE T.ID = :ID ';
-    FSQL.ParamByName('ID').AsInteger := FID;
-    FSQL.ExecQuery;
-    FSQL.Close;
-
-    FTransaction.Commit;
-  finally
-    FSQL.Free;
-    FTransaction.Free;
-  end;
-end;
-
-procedure TRestTable.ReadTableType;
-{var
-  FSQL: TIBSQL;
-  FPng: TPngImage;
-  Str: TStream;}
-begin
- { Assert(Assigned(FFrontBase), 'FrontBase not Assigned');
-
-  if FTableTypeKey > -1 then
-  begin
-    FSQL := TIBSQL.Create(nil);
-    Str := TMemoryStream.Create;
-    try
-      FSQL.Transaction := FFrontBase.ReadTransaction;
-      if not FSQL.Transaction.InTransaction then
-        FSQL.Transaction.StartTransaction;
-
-      FSQL.SQL.Text :=
-        ' SELECT usr$width, usr$length, usr$type FROM usr$mn_tabletype t ' + ' WHERE t.id = :id ';
-      FSQL.Params[0].AsInteger := FTableTypeKey;
-      FSQL.ExecQuery;
-      if not FSQL.Eof then
       begin
-        if Assigned(Parent) then
-        begin
-          // Вычисление ширины\высоты кнопки исходя из размеров фона и относительного размера кнопки
-          Width := Round(Parent.Width * FSQL.FieldByName('USR$WIDTH').AsFloat / POS_MULTIPLIER);
-          Height := Round(Parent.Height * FSQL.FieldByName('USR$LENGTH').AsFloat / POS_MULTIPLIER);
-        end
-        else
-        begin
-          Width := Round(FSQL.FieldByName('USR$WIDTH').AsFloat);
-          Height := Round(FSQL.FieldByName('USR$LENGTH').AsFloat);
-        end;
+        ImgCanvas.Brush.Color := clRed;
+        ImgCanvas.Rectangle(MarkX, MarkY, MarkX + MarkWidth, MarkY + MarkHeight);
+        // Кол-во заказов
+        // ImgCanvas.TextRect(MarkRect, OrderCount, [tfCenter, tfVerticalCenter, tfSingleLine]);
       end;
-      FSQL.Close;
-
-      Self.Repaint;
-    finally
-      FSQL.Free;
-      Str.Free;
-    end;
-  end; }
-end;
-
-procedure TRestTable.SaveTablePositionToDB;
-var
-  FSQL: TIBSQL;
-  FTransaction: TIBTransaction;
-begin
-  Assert(FID <> -1, 'ID not Assigned');
-  Assert(Assigned(FFrontBase), 'FrontBase not Assigned');
-
-  FSQL := TIBSQL.Create(nil);
-  FTransaction := TIBTransaction.Create(nil);
-  try
-    FTransaction.DefaultDatabase := FFrontBase.ReadTransaction.DefaultDatabase;
-    FTransaction.StartTransaction;
-    FSQL.Transaction := FTransaction;
-    FSQL.SQL.Text := 'UPDATE USR$MN_TABLE T ' + 'SET T.USR$POSY = :POSY, ' + '    T.USR$POSX = :POSX  ' +
-      'WHERE T.ID = :ID ';
-    FSQL.ParamByName('POSY').AsFloat := PosY;
-    FSQL.ParamByName('POSX').AsFloat := PosX;
-    FSQL.ParamByName('ID').AsInteger := FID;
-    FSQL.ExecQuery;
-    FSQL.Close;
-
-    FTransaction.Commit;
-  finally
-    FSQL.Free;
-    FTransaction.Free;
-  end;
-end;
-
-procedure TRestTable.SaveTableToDB;
-var
-  FSQL: TIBSQL;
-  FTransaction: TIBTransaction;
-begin
-  Assert(Assigned(FFrontBase), 'FrontBase not Assigned');
-
-  FSQL := TIBSQL.Create(nil);
-  FTransaction := TIBTransaction.Create(nil);
-  try
-    FTransaction.DefaultDatabase := FFrontBase.ReadTransaction.DefaultDatabase;
-    FTransaction.StartTransaction;
-    FSQL.Transaction := FTransaction;
-
-    FID := FFrontBase.GetNextID;
-
-    FSQL.SQL.Text := 'INSERT INTO USR$MN_TABLE(ID, USR$NUMBER, USR$POSY, USR$POSX, USR$HALLKEY, ' +
-      '  USR$TYPE, USR$MAINTABLEKEY) ' + 'VALUES (:ID, :NUMBER, :POSY, :POSX, :HALLKEY, :TYPEKEY, null) ';
-    FSQL.ParamByName('ID').AsInteger := FID;
-    FSQL.ParamByName('NUMBER').AsString := Number;
-    FSQL.ParamByName('POSY').AsFloat := PosY;
-    FSQL.ParamByName('POSX').AsFloat := PosX;
-    FSQL.ParamByName('HALLKEY').AsInteger := HallKey;
-    FSQL.ParamByName('TYPEKEY').AsInteger := TableTypeKey;
-    // FSQL.ParamByName('MAINTABLEKEY').AsInteger := MainTableKey;
-    FSQL.ExecQuery;
-    FSQL.Close;
-
-    FTransaction.Commit;
-  finally
-    FSQL.Free;
-    FTransaction.Free;
   end;
 end;
 
 procedure TRestTable.SetComputerName(const Value: String);
 begin
   FComputerName := Value;
-end;
-
-procedure TRestTable.SetFrontBase(const Value: TFrontBase);
-begin
-  FFrontBase := Value;
 end;
 
 procedure TRestTable.SetHallKey(const Value: Integer);
@@ -538,63 +386,6 @@ begin
 end;
 
 { TChooseTable }
-
-procedure TChooseTable.ReadTableType;
-{var
-  FSQL: TIBSQL;
-  FPng: TPngImage;
-  Str: TStream;}
-begin
-  {Assert(Assigned(FFrontBase), 'FrontBase not Assigned');
-
-  if FTableTypeKey > -1 then
-  begin
-    FSQL := TIBSQL.Create(nil);
-    Str := TMemoryStream.Create;
-    try
-      FSQL.Transaction := FFrontBase.ReadTransaction;
-      if not FSQL.Transaction.InTransaction then
-        FSQL.Transaction.StartTransaction;
-
-      FSQL.SQL.Text := ' SELECT * FROM USR$MN_TABLETYPE T ' + ' WHERE T.ID = :ID ';
-      FSQL.Params[0].AsInteger := FTableTypeKey;
-      FSQL.ExecQuery;
-      if not FSQL.Eof then
-      begin
-        if Assigned(Parent) then
-        begin
-          // Вычисление ширины\высоты кнопки исходя из размеров фона и относительного размера кнопки
-          Width := Round(Parent.Width * FSQL.FieldByName('USR$WIDTH').AsFloat / POS_MULTIPLIER);
-          Height := Round(Parent.Height * FSQL.FieldByName('USR$LENGTH').AsFloat / POS_MULTIPLIER);
-        end
-        else
-        begin
-          Width := Round(FSQL.FieldByName('USR$WIDTH').AsFloat);
-          Height := Round(FSQL.FieldByName('USR$LENGTH').AsFloat);
-        end;
-
-        if not FSQL.FieldByName('USR$PICTURE1').IsNull then
-        begin
-          FPng := TPngImage.Create;
-          try
-            FSQL.FieldByName('USR$PICTURE1').SaveToStream(Str);
-            Str.Position := 0;
-            FPng.LoadFromStream(Str);
-            pngimage := FPng;
-
-            Self.Repaint;
-          finally
-            FPng.Free;
-          end;
-        end;
-      end;
-      FSQL.Close;
-    finally
-      FSQL.Free;
-      Str.Free;
-    end;
-  end; }
-end;
 
 procedure TChooseTable.SetTableName(const Value: String);
 begin
