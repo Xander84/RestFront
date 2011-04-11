@@ -1535,7 +1535,7 @@ object RestMainForm: TRestMainForm
             Top = 1
             Width = 607
             Height = 699
-            ActivePage = tsTablePage
+            ActivePage = tsManagerPage
             ActiveFont.Charset = DEFAULT_CHARSET
             ActiveFont.Color = clWindowText
             ActiveFont.Height = -11
@@ -1948,12 +1948,12 @@ object RestMainForm: TRestMainForm
                 object lblResp: TLabel
                   Left = 190
                   Top = 7
-                  Width = 5
-                  Height = 21
+                  Width = 6
+                  Height = 23
                   Font.Charset = DEFAULT_CHARSET
                   Font.Color = clWindowText
                   Font.Height = -19
-                  Font.Name = 'Times New Roman'
+                  Font.Name = 'Tahoma'
                   Font.Style = []
                   ParentFont = False
                   Transparent = True
@@ -2620,7 +2620,7 @@ object RestMainForm: TRestMainForm
         Top = 1
         Width = 80
         Height = 719
-        ActivePage = tsOrderButton
+        ActivePage = tsFunctionButton
         ActiveFont.Charset = DEFAULT_CHARSET
         ActiveFont.Color = clWindowText
         ActiveFont.Height = -11
@@ -2670,7 +2670,7 @@ object RestMainForm: TRestMainForm
           end
           object btnRestartRest: TAdvSmoothButton
             Left = 4
-            Top = 55
+            Top = 56
             Width = 72
             Height = 50
             Action = actRestartRest
@@ -3186,7 +3186,7 @@ object RestMainForm: TRestMainForm
           end
           object btnAllChecks: TAdvSmoothButton
             Left = 4
-            Top = 57
+            Top = 56
             Width = 72
             Height = 50
             Action = actAllChecks
@@ -3216,7 +3216,7 @@ object RestMainForm: TRestMainForm
           end
           object btnManagerInfo: TAdvSmoothButton
             Left = 4
-            Top = 113
+            Top = 112
             Width = 72
             Height = 50
             Action = actManagerInfo
@@ -3246,7 +3246,7 @@ object RestMainForm: TRestMainForm
           end
           object btnKassa: TAdvSmoothButton
             Left = 4
-            Top = 169
+            Top = 168
             Width = 72
             Height = 50
             Action = actKassirInfo
