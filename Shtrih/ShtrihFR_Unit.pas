@@ -33,8 +33,8 @@ type
     procedure OpenDrawer;
     procedure EndSession;
     function OpenDay: Boolean;
-    procedure MoneyIn;
-    procedure MoneyOut;
+    procedure MoneyIn(const Sum: Currency);
+    procedure MoneyOut(const Sum: Currency);
     function GetDocumentNumber: Integer;
 
     property FrontBase: TFrontBase read GetFrontBase write SetFrontBase;
@@ -44,7 +44,7 @@ type
 implementation
 
 uses
-  SysUtils, Math, DevideForm_Unit, Controls, Dialogs;
+  SysUtils, Math, Controls, Dialogs;
 
 { TShtrihFR }
 
@@ -113,47 +113,29 @@ begin
   IsInit := SetParams;
 end;
 
-procedure TShtrihFR.MoneyIn;
+procedure TShtrihFR.MoneyIn(const Sum: Currency);
 var
-  Form: TDevideForm;
   Res: Integer;
 begin
-  Form := TDevideForm.Create(nil);
-  try
-    Form.LabelCaption := '—ÛÏÏ‡';
-    Form.ShowModal;
-    if Form.ModalResult = mrOK then
-      if FDriverInit then
-      begin
-        Summ1 := StrToCurr(Form.Number);
-        Res := CashIncome;
-        if ResultCode <> 0 then
-          ErrMessage(Res);
-      end;
-  finally
-    Form.Free;
+  if FDriverInit then
+  begin
+    Summ1 := Sum;
+    Res := CashIncome;
+    if ResultCode <> 0 then
+      ErrMessage(Res);
   end;
 end;
 
-procedure TShtrihFR.MoneyOut;
+procedure TShtrihFR.MoneyOut(const Sum: Currency);
 var
-  Form: TDevideForm;
   Res: Integer;
 begin
-  Form := TDevideForm.Create(nil);
-  try
-    Form.LabelCaption := '—ÛÏÏ‡';
-    Form.ShowModal;
-    if Form.ModalResult = mrOK then
-      if FDriverInit then
-      begin
-        Summ1 := StrToCurr(Form.Number);
-        Res := CashOutCome;
-        if ResultCode <> 0 then
-          ErrMessage(Res);
-      end;
-  finally
-    Form.Free;
+  if FDriverInit then
+  begin
+    Summ1 := Sum;
+    Res := CashOutCome;
+    if ResultCode <> 0 then
+      ErrMessage(Res);
   end;
 end;
 

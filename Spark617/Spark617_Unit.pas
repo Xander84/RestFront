@@ -16,7 +16,7 @@ type
     function SetParams: Boolean;
     procedure ErrMessage(Err: Integer);
     procedure SetFrontBase(const Value: TFrontBase);
-    procedure MoneyOperation(const Param: Integer);
+    procedure MoneyOperation(const Param: Integer; Sum: Currency);
     function GetFrontBase: TFrontBase;
     function Get_Self: Integer;
   public
@@ -34,8 +34,8 @@ type
     procedure OpenDrawer;
     procedure EndSession;
     function OpenDay: Boolean;
-    procedure MoneyIn;
-    procedure MoneyOut;
+    procedure MoneyIn(const Sum: Currency);
+    procedure MoneyOut(const Sum: Currency);
     function GetDocumentNumber: Integer;
 
     property FrontBase: TFrontBase read GetFrontBase write SetFrontBase;
@@ -45,11 +45,12 @@ type
 
 implementation
 
-uses SysUtils, Math, DevideForm_Unit, Controls,  TouchMessageBoxForm_Unit;
+uses SysUtils, Math, Controls, TouchMessageBoxForm_Unit;
+
 const
-  Spark_Cash = 8; // Наличные………………
-  Spark_NoCash = 7; // Безнал
-  Spark_Credit = 1; // Карты
+  Spark_Cash   = 8;  // Наличные
+  Spark_NoCash = 7;  // Безнал
+  Spark_Credit = 1;  // Карты
 
  { TSpark617Register }
 
@@ -280,14 +281,14 @@ begin
   IsInit := True;
 end;
 
-procedure TSpark617Register.MoneyIn;
+procedure TSpark617Register.MoneyIn(const Sum: Currency);
 begin
-  MoneyOperation(4);
+  MoneyOperation(4, Sum);
 end;
 
-procedure TSpark617Register.MoneyOut;
+procedure TSpark617Register.MoneyOut(const Sum: Currency);
 begin
-  MoneyOperation(5);
+  MoneyOperation(5, Sum);
 end;
 
 procedure TSpark617Register.OpenDrawer;
@@ -662,32 +663,23 @@ begin
   Result := Integer(Self);
 end;
 
-procedure TSpark617Register.MoneyOperation(const Param: Integer);
+procedure TSpark617Register.MoneyOperation(const Param: Integer; Sum: Currency);
 var
-  Form: TDevideForm;
   Res: Integer;
 begin
-  Form := TDevideForm.Create(nil);
-  try
-    Form.LabelCaption := 'Сумма';
-    Form.ShowModal;
-    if Form.ModalResult = mrOK then
-      if FDriverInit then
-      begin
-        Init;
-        Res := StartDocument(Param, 1, 0, FFrontBase.UserName);
-        if Res <> 0 then
-          ErrMessage(Res);
-        Res := Tender2(StrToCurr(Form.Number), 8, '', '');
-        if Res <> 0 then
-          ErrMessage(Res);
-        Res := EndDocument;
-        if Res <> 0 then
-          ErrMessage(Res);
-        CheckDeviceInfo;
-      end;
-  finally
-    Form.Free;
+  if FDriverInit then
+  begin
+    Init;
+    Res := StartDocument(Param, 1, 0, FFrontBase.UserName);
+    if Res <> 0 then
+      ErrMessage(Res);
+    Res := Tender2(Sum, 8, '', '');
+    if Res <> 0 then
+      ErrMessage(Res);
+    Res := EndDocument;
+    if Res <> 0 then
+      ErrMessage(Res);
+    CheckDeviceInfo;
   end;
 end;
 

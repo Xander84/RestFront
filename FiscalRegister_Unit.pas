@@ -4,7 +4,7 @@ interface
 
 uses
   Classes, Windows, Base_FiscalRegister_unit, Front_DataBase_Unit, SysUtils,
-  kbmMemTable;
+  kbmMemTable, Controls;
 
 {
   Класс работы с фискальником.
@@ -43,7 +43,8 @@ type
 implementation
 
 uses
-  Spark617_Unit, MercFP_Unit, ShtrihFR_Unit, TouchMessageBoxForm_Unit, Dialogs;
+  Spark617_Unit, MercFP_Unit, ShtrihFR_Unit, TouchMessageBoxForm_Unit, Dialogs,
+  DevideForm_Unit;
 
 { TFiscalRegister }
 
@@ -142,15 +143,39 @@ begin
 end;
 
 procedure TFiscalRegister.MoneyIn;
+var
+  Form: TDevideForm;
 begin
   if Assigned(FFiscalRegister) then
-    FFiscalRegister.MoneyIn;
+  begin
+    Form := TDevideForm.Create(nil);
+    try
+      Form.LabelCaption := 'Сумма';
+      Form.ShowModal;
+      if Form.ModalResult = mrOK then
+        FFiscalRegister.MoneyIn(StrToCurr(Form.Number));
+    finally
+      Form.Free;
+    end;
+  end;
 end;
 
 procedure TFiscalRegister.MoneyOut;
+var
+  Form: TDevideForm;
 begin
   if Assigned(FFiscalRegister) then
-    FFiscalRegister.MoneyOut;
+  begin
+    Form := TDevideForm.Create(nil);
+    try
+      Form.LabelCaption := 'Сумма';
+      Form.ShowModal;
+      if Form.ModalResult = mrOK then
+        FFiscalRegister.MoneyOut(StrToCurr(Form.Number));
+    finally
+      Form.Free;
+    end;
+  end;
 end;
 
 procedure TFiscalRegister.OpenDrawer;

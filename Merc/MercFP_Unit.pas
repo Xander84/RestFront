@@ -58,7 +58,7 @@ type
     function PrintCashier: Boolean;
     function Print: Boolean;
 
-    procedure MoneyOperation(const Param: Integer);
+    procedure MoneyOperation(const Param: Integer; Sum: Currency);
 
     function GetFrontBase: TFrontBase;
     function Get_Self: Integer;
@@ -99,8 +99,8 @@ type
     procedure OpenDrawer;
     procedure EndSession;
     function OpenDay: Boolean;
-    procedure MoneyIn;
-    procedure MoneyOut;
+    procedure MoneyIn(const Sum: Currency);
+    procedure MoneyOut(const Sum: Currency);
 
     function GetDocumentNumber: Integer;
 
@@ -113,7 +113,7 @@ type
 implementation
 
 uses
-  SysUtils, Math, DevideForm_Unit, Controls, TouchMessageBoxForm_Unit, Dialogs;
+  SysUtils, Math, Controls, TouchMessageBoxForm_Unit, Dialogs;
 
 { TMercuryRegister }
 
@@ -237,14 +237,14 @@ begin
     Result := True;
 end;
 
-procedure TMercuryRegister.MoneyIn;
+procedure TMercuryRegister.MoneyIn(const Sum: Currency);
 begin
-  MoneyOperation(5);
+  MoneyOperation(5, Sum);
 end;
 
-procedure TMercuryRegister.MoneyOut;
+procedure TMercuryRegister.MoneyOut(const Sum: Currency);
 begin
-  MoneyOperation(6);
+  MoneyOperation(6, Sum);
 end;
 
 procedure TMercuryRegister.OpenDrawer;
@@ -527,39 +527,29 @@ begin
   end;
 end;
 
-procedure TMercuryRegister.MoneyOperation(const Param: Integer);
-var
-  Form: TDevideForm;
+procedure TMercuryRegister.MoneyOperation(const Param: Integer; Sum: Currency);
 begin
-  Form := TDevideForm.Create(nil);
-  try
-    Form.LabelCaption := '—ÛÏÏ‡';
-    Form.ShowModal;
-    if Form.ModalResult = mrOK then
-      if FDriverInit then
-      begin
-        if not OpenCheck(Param) then
-          exit;
+  if FDriverInit then
+  begin
+    if not OpenCheck(Param) then
+      exit;
 
-        ClearLastError;
-        try
-          AddItem(0, StrToCurr(Form.Number), False, 0, 0,
-                  0, 0, 0, 0, '', cn_FontFlagPosition, 0, FIV, 0);
+    ClearLastError;
+    try
+      AddItem(0, Sum, False, 0, 0,
+              0, 0, 0, 0, '', cn_FontFlagPosition, 0, FIV, 0);
 
-          if SetLastError then
-            exit;
-          Inc(FIV);
+      if SetLastError then
+        exit;
+      Inc(FIV);
 
-          if Param = 5 then
-            Close(0)
-          else
-            Close(StrToCurr(Form.Number));
-        except
-          ShowLastError;
-        end;
-      end;
-  finally
-    Form.Free;
+      if Param = 5 then
+        Close(0)
+      else
+        Close(Sum);
+    except
+      ShowLastError;
+    end;
   end;
 end;
 

@@ -64,9 +64,9 @@ type
     // открыте смены
     function OpenDay: Boolean;
     //деньги в кассу
-    procedure MoneyIn;
+    procedure MoneyIn(const Sum: Currency);
     //деньги из кассы
-    procedure MoneyOut;
+    procedure MoneyOut(const Sum: Currency);
     function GetDocumentNumber: Integer;
     //возврат ошибки
 //    procedure ErrMessage(Err: Integer);
@@ -92,8 +92,8 @@ type
     function PrintX1ReportWithOutCleaning: Boolean;
  //   function PrintX2ReportWithOutCleaning: Boolean;
     function OpenDay: Boolean;
-    procedure MoneyIn;
-    procedure MoneyOut;
+    procedure MoneyIn(const Sum: Currency);
+    procedure MoneyOut(const Sum: Currency);
     function GetDocumentNumber: Integer;
     procedure OpenDrawer;
     procedure EndSession;
@@ -180,12 +180,12 @@ begin
   Result := True;
 end;
 
-procedure TAbstractFiscalRegister.MoneyIn;
+procedure TAbstractFiscalRegister.MoneyIn(const Sum: Currency);
 begin
 
 end;
 
-procedure TAbstractFiscalRegister.MoneyOut;
+procedure TAbstractFiscalRegister.MoneyOut(const Sum: Currency);
 begin
 
 end;
@@ -233,14 +233,10 @@ begin
   Result := True;
 end;
 
-
-
 function TAbstractFiscalRegister.PrintZ1ReportWithCleaning: Boolean;
 begin
   Result := True;
 end;
-
-
 
 function TAbstractFiscalRegister.QueryInterface(const IID: TGUID;
   out Obj): HResult;
