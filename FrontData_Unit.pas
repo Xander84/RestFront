@@ -90,9 +90,10 @@ uses
 procedure SetButtonStyle(const FButton: TAdvSmoothButton);
 begin
   FButton.SetComponentStyle(tsTerminal);
-  FButton.BevelColor := clSilver;
+  FButton.BevelColor := clBlack{clSilver};
   FButton.Bevel := True;
   FButton.Appearance.Font.Style := [fsBold];
+  FButton.Appearance.Font.Name := cn_FontType;
   FButton.DisabledColor := clGray;
   FButton.Color := TColor($00E7DCD5);
 end;

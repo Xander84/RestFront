@@ -3,7 +3,7 @@ unit rfTableManager_unit;
 interface
 
 uses
-  SysUtils, Classes, Contnrs, Controls, Generics.Collections, Front_DataBase_Unit, kbmMemTable, RestTable_Unit, AdvMenus, pngimage;
+  SysUtils, Classes, Contnrs, Controls, Generics.Collections, Front_DataBase_Unit, RestTable_Unit, AdvMenus, pngimage, AdvGDIP;
 
 type
   TrfTableManager = class(TObject)
@@ -13,16 +13,21 @@ type
 
     // Объекты присваемые из главной формы
     FTableImageDictionary: TDictionary<Integer, TPngImage>;
+    FConditionImageDictionary: TDictionary<TRestTableCondition, TAdvGDIPPicture>;
     FTableButtonOnClick: TNotifyEvent;
     FTableButtonPopupMenu: TAdvPopupMenu;
     // Список столов
-    FTablesList: TObjectList;
+    FTablesList: TList<TRestTable>;
+    // Список Ид столов которые будут удалены из БД при сохранении
+    FToDeleteList: TList<Integer>;
+
+    procedure LoadImages;
   public
     constructor Create(const Database: TFrontBase; const TableParent: TWinControl);
     destructor Destroy; override;
 
     { Загрузить столы из датасета }
-    procedure LoadTables(const DataTable: TkbmMemTable);
+    procedure LoadTables(const HallKey: Integer);
     { Обновить информацию о заказах на столах }
     procedure RefreshOrderData;
     { Сохранить столы в БД }
@@ -30,16 +35,18 @@ type
     { Очистить список столов }
     procedure Clear;
 
+    function GetImageForType(const ATableType: Integer): TPngImage;
+    function GetImageForCondition(const ATableCondition: TRestTableCondition): TAdvGDIPPicture;
+
     { Добавить стол }
     function AddTable(const ATableNumber: String; const ADesignerTable: TRestTable): TRestTable;
     { Удалить стол по идентификатору }
-    procedure DropTable(const ID: Integer);
+    procedure DropTable(ATable: TRestTable);
 
     // Список столов
-    property TablesList: TObjectList read FTablesList;
+    property TablesList: TList<TRestTable> read FTablesList;
 
     // Объекты присваемые из главной формы
-    property TableImageDictionary: TDictionary<Integer, TPngImage>read FTableImageDictionary write FTableImageDictionary;
     property TableButtonOnClick: TNotifyEvent read FTableButtonOnClick write FTableButtonOnClick;
     property TableButtonPopupMenu: TAdvPopupMenu read FTableButtonPopupMenu write FTableButtonPopupMenu;
   end;
@@ -47,7 +54,7 @@ type
 implementation
 
 uses
-  ibsql, ibdatabase;
+  ibsql, ibdatabase, FrontData_Unit;
 
 { TrfTableManager }
 
@@ -60,12 +67,35 @@ constructor TrfTableManager.Create(const Database: TFrontBase; const TableParent
 begin
   FDataBase := Database;
   FTableParent := TableParent;
-  FTablesList := TObjectList.Create(true);
+  FTablesList := TList<TRestTable>.Create;
+  FToDeleteList := TList<Integer>.Create;
+  // Список типов столов с изображениями
+  FTableImageDictionary := TDictionary<Integer, TPngImage>.Create;
+  // Список картинок для состояний столов
+  FConditionImageDictionary := TDictionary<TRestTableCondition,TAdvGDIPPicture>.Create;
+
+  // Загрузим изобрадения
+  LoadImages;
 end;
 
 destructor TrfTableManager.Destroy;
+var
+  TableImage: TPngImage;
+  Table: TRestTable;
 begin
-  FTablesList.Free;
+  // Список типов столов с изображениями
+  for TableImage in FTableImageDictionary.Values do
+    if Assigned(TableImage) then
+      TableImage.Free;
+  FreeAndNil(FTableImageDictionary);
+  // Список картинок для состояний столов (изображения не надо уничтожать, т.к. они находятся в датамодуле)
+  FreeAndNil(FConditionImageDictionary);
+
+  FreeAndNil(FToDeleteList);
+  for Table in FTablesList do
+    if Assigned(Table) then
+      Table.Free;
+  FreeAndNil(FTablesList);
   inherited;
 end;
 
@@ -74,6 +104,7 @@ begin
   // Создадим новый стол, копию переданного стола
   Result := TRestTable.Create(FTableParent);
   Result.Parent := FTableParent;
+  Result.Manager := Self;
 
   Result.TableTypeKey := ADesignerTable.TableTypeKey;
   Result.HallKey := ADesignerTable.HallKey;
@@ -94,124 +125,136 @@ begin
   FTablesList.Add(Result);
 end;
 
-procedure TrfTableManager.DropTable(const ID: Integer);
+procedure TrfTableManager.DropTable(ATable: TRestTable);
 var
   ibsql: TIBSQL;
   WriteTransaction: TIBTransaction;
 begin
-  Assert(ID <> -1, 'ID not Assigned');
-  Assert(Assigned(FDataBase), 'FrontBase not Assigned');
-
-  ibsql := TIBSQL.Create(nil);
-  WriteTransaction := TIBTransaction.Create(nil);
-  try
-    WriteTransaction.DefaultDatabase := FDataBase.ReadTransaction.DefaultDatabase;
-    WriteTransaction.StartTransaction;
-
-    ibsql.Transaction := WriteTransaction;
-    ibsql.SQL.Text := 'DELETE FROM usr$mn_table t WHERE t.id = :id ';
-    ibsql.ParamByName('id').AsInteger := ID;
-    ibsql.ExecQuery;
-    ibsql.Close;
-
-    WriteTransaction.Commit;
-  finally
-    ibsql.Free;
-    WriteTransaction.Free;
-  end;
+  // Созраним ИД стола в список на удаление из БД
+  FToDeleteList.Add(ATable.ID);
+  // Удалим объект
+  FTablesList.Remove(ATable);
 end;
 
-procedure TrfTableManager.LoadTables(const DataTable: TkbmMemTable);
-var
-  NewTable: TRestTable;
-  PrevTableID: Integer;
+function TrfTableManager.GetImageForCondition(const ATableCondition: TRestTableCondition): TAdvGDIPPicture;
+begin
+  Result := nil;
+  if FConditionImageDictionary.ContainsKey(ATableCondition) then
+    Result := FConditionImageDictionary.Items[ATableCondition];
+end;
 
-  // Определяем состояние стола
-  procedure SetTableCondition;
+function TrfTableManager.GetImageForType(const ATableType: Integer): TPngImage;
+begin
+  // Изображение стола
+  Result := nil;
+  if FTableImageDictionary.ContainsKey(ATableType) then
+    Result := FTableImageDictionary.Items[ATableType];
+end;
+
+procedure TrfTableManager.LoadImages;
+var
+  ibsql: TIBSQL;
+  PngImage: TPngImage;
+  Str: TStream;
+begin
+  // Загрузка изображений столов
+  if Assigned(FTableImageDictionary) then
   begin
-    // Пуст или нет
-    if DataTable.FieldByName('ORDERKEY').AsInteger = 0 then
-    begin
-      // Свой или нет
-      if FDataBase.ContactKey = DataTable.FieldByName('USR$RESPKEY').AsInteger then
-        NewTable.TableCondition := TRestTableCondition.rtcFree
-      else
-        NewTable.TableCondition := TRestTableCondition.rtcFreeOther;
-    end
-    else
-    begin
-      // Свой или нет
-      if FDataBase.ContactKey = DataTable.FieldByName('USR$RESPKEY').AsInteger then
-        NewTable.TableCondition := TRestTableCondition.rtcOccupied
-      else
-        NewTable.TableCondition := TRestTableCondition.rtcOccupiedOther;
+    ibsql := TIBSQL.Create(nil);
+    try
+      ibsql.Transaction := FDataBase.ReadTransaction;
+      ibsql.SQL.Text :=
+        ' SELECT id, usr$picture1 AS img FROM usr$mn_tabletype ';
+      ibsql.ExecQuery;
+
+      while not ibsql.Eof do
+      begin
+        Str := TMemoryStream.Create;
+        try
+          ibsql.FieldByName('img').SaveToStream(Str);
+          Str.Position := 0;
+          PngImage := TPngImage.Create;
+          PngImage.LoadFromStream(Str);
+        finally
+          FreeAndNil(Str);
+        end;
+
+        FTableImageDictionary.Add(ibsql.FieldByName('id').AsInteger, PngImage);
+        ibsql.Next;
+      end;
+    finally
+      FreeAndNil(ibsql);
     end;
   end;
 
+  // Загрузка изображений состояний столов
+  FConditionImageDictionary.Add(rtcUnknown, nil);
+  FConditionImageDictionary.Add(rtcFree, FrontData.RestPictureContainer.FindPicture('bullet_green_small'));
+  FConditionImageDictionary.Add(rtcFreeOther, FrontData.RestPictureContainer.FindPicture('bullet_yellow_small'));
+  FConditionImageDictionary.Add(rtcOccupied, FrontData.RestPictureContainer.FindPicture('user_small'));
+  FConditionImageDictionary.Add(rtcOccupiedOther, FrontData.RestPictureContainer.FindPicture('user_small'));
+  FConditionImageDictionary.Add(rtcPreCheck, FrontData.RestPictureContainer.FindPicture('money_dollar_small'));
+end;
+
+procedure TrfTableManager.LoadTables(const HallKey: Integer);
+var
+  NewTable: TRestTable;
+  ibsql: TIBSQL;
 begin
   // Очистим список столов
   FTablesList.Clear;
 
-  // Загрузим столы из переданного датасета
-  if DataTable.Active then
-  begin
-    PrevTableID := -1;
+  ibsql := TIBSQL.Create(nil);
+  try
+    ibsql.Transaction := FDataBase.ReadTransaction;
+    ibsql.SQL.Text :=
+      ' SELECT ' +
+      '   t.id, t.usr$type, t.usr$number, ' +
+      '   t.usr$posx, t.usr$posy, tt.usr$width, tt.usr$length ' +
+      ' FROM ' +
+      '   usr$mn_table t ' +
+      '   LEFT JOIN usr$mn_tabletype tt ON tt.id = t.usr$type ' +
+      ' WHERE ' +
+      '   t.usr$hallkey = :id ';
+    ibsql.Params[0].AsInteger := HallKey;
+    ibsql.ExecQuery;
 
-    DataTable.First;
-    while not DataTable.Eof do
+    // Загрузим столы из данных запроса
+    while not ibsql.Eof do
     begin
-      // если пустой стол или новый заказ, то
-      if (DataTable.FieldByName('ORDERKEY').AsInteger = 0) or (PrevTableID <> DataTable.FieldByName('ID').AsInteger) then
-      begin
-        NewTable := TRestTable.Create(FTableParent);
-        NewTable.Parent := FTableParent;
+      NewTable := TRestTable.Create(FTableParent);
+      NewTable.Parent := FTableParent;
+      NewTable.Manager := Self;
 
-        NewTable.ID := DataTable.FieldByName('ID').AsInteger;
-        NewTable.TableTypeKey := DataTable.FieldByName('USR$TYPE').AsInteger;
-        // Относительная позиция кнопки в родителе
-        NewTable.PosX := DataTable.FieldByName('USR$POSX').AsFloat;
-        NewTable.PosY := DataTable.FieldByName('USR$POSY').AsFloat;
-        // Размер кнопки относительно родительской панели
-        NewTable.RelativeWidth := DataTable.FieldByName('USR$WIDTH').AsFloat;
-        NewTable.RelativeHeight := DataTable.FieldByName('USR$LENGTH').AsFloat;
-        // Заказ
-        NewTable.OrderKey := DataTable.FieldByName('ORDERKEY').AsInteger;
-        NewTable.IsLocked := (DataTable.FieldByName('ISLOCKED').AsInteger = 1);
-        // Определяем состояние стола
-        NewTable.RespKey := DataTable.FieldByName('USR$RESPKEY').AsInteger;
-        // Номер стола и имя кассы
-        NewTable.Number := DataTable.FieldByName('USR$NUMBER').AsString;
-        NewTable.ComputerName := DataTable.FieldByName('USR$COMPUTERNAME').AsString;
-        // FButton.RespName := FTablesInfoTable.FieldByName('RESPNAME').AsString;
+      NewTable.ID := ibsql.FieldByName('ID').AsInteger;
+      NewTable.TableTypeKey := ibsql.FieldByName('USR$TYPE').AsInteger;
+      // Относительная позиция кнопки в родителе
+      NewTable.PosX := ibsql.FieldByName('USR$POSX').AsFloat;
+      NewTable.PosY := ibsql.FieldByName('USR$POSY').AsFloat;
+      // Размер кнопки относительно родительской панели
+      NewTable.RelativeWidth := ibsql.FieldByName('USR$WIDTH').AsFloat;
+      NewTable.RelativeHeight := ibsql.FieldByName('USR$LENGTH').AsFloat;
+      // Номер стола и имя кассы
+      NewTable.Number := ibsql.FieldByName('USR$NUMBER').AsString;
+      //NewTable.ComputerName := ibsql.FieldByName('USR$COMPUTERNAME').AsString;
+      // FButton.RespName := ibsql.FieldByName('RESPNAME').AsString;
 
-        // Обработчик действия по клику на стол
-        if Assigned(TableButtonOnClick) then
-          NewTable.OnClick := TableButtonOnClick;
-        // Контекстное меню для стола
-        if Assigned(TableButtonPopupMenu) then
-          NewTable.PopupMenu := TableButtonPopupMenu;
-        // Определяем состояние стола
-        SetTableCondition;
+      // Обработчик действия по клику на стол
+      if Assigned(TableButtonOnClick) then
+        NewTable.OnClick := TableButtonOnClick;
+      // Контекстное меню для стола
+      if Assigned(TableButtonPopupMenu) then
+        NewTable.PopupMenu := TableButtonPopupMenu;
 
-        if NewTable.OrderKey <> 0 then
-          NewTable.OrderList.Add(DataTable.FieldByName('ORDERKEY').AsInteger, DataTable.FieldByName('NUMBER').AsString);
+      // Присвоение изображения стола из списка изображений типов столов
+      NewTable.pngimage := GetImageForType(NewTable.TableTypeKey);
 
-        // Присвоение изображения стола из списка изображений типов столов
-        if Assigned(TableImageDictionary) and TableImageDictionary.ContainsKey(NewTable.TableTypeKey) then
-          NewTable.pngimage := TableImageDictionary.Items[NewTable.TableTypeKey];
-
-        FTablesList.Add(NewTable);
-        PrevTableID := NewTable.ID;
-      end
-      else if PrevTableID = DataTable.FieldByName('ID').AsInteger then
-      begin
-        // В датасете может идти несколько записей подряд с одинаковым столом, это значит несколько заказов на один стол
-        if Assigned(NewTable) then
-          NewTable.OrderList.Add(DataTable.FieldByName('ORDERKEY').AsInteger, DataTable.FieldByName('NUMBER').AsString);
-      end;
-
-      DataTable.Next;
+      FTablesList.Add(NewTable);
+      ibsql.Next;
     end;
+    ibsql.Close;
+  finally
+    FreeAndNil(ibsql);
   end;
 end;
 
@@ -219,7 +262,7 @@ procedure TrfTableManager.SaveTables;
 var
   I: Integer;
   Table: TRestTable;
-  ibsqlUpdate, ibsqlInsert: TIBSQL;
+  ibsqlUpdate, ibsqlInsert, ibsqlDelete: TIBSQL;
   WriteTransaction: TIBTransaction;
 
   procedure UpdateTable(const TableObj: TRestTable);
@@ -246,10 +289,18 @@ var
     ibsqlInsert.Close;
   end;
 
+  procedure DeleteTable(const ID: Integer);
+  begin
+    ibsqlDelete.ParamByName('id').AsInteger := ID;
+    ibsqlDelete.ExecQuery;
+    ibsqlDelete.Close;
+  end;
+
 begin
   WriteTransaction := TIBTransaction.Create(nil);
   ibsqlUpdate := TIBSQL.Create(nil);
   ibsqlInsert := TIBSQL.Create(nil);
+  ibsqlDelete := TIBSQL.Create(nil);
   try
     WriteTransaction.DefaultDatabase := FDataBase.ReadTransaction.DefaultDatabase;
     WriteTransaction.StartTransaction;
@@ -266,6 +317,11 @@ begin
         'INSERT INTO usr$mn_table(id, usr$number, usr$posy, usr$posx, usr$hallkey, usr$type, usr$maintablekey) ' +
         ' VALUES (:id, :number, :posy, :posx, :hallkey, :typekey, null) ';
 
+      ibsqlDelete.Transaction := WriteTransaction;
+      ibsqlDelete.SQL.Text :=
+        'DELETE FROM usr$mn_table t WHERE t.id = :id ';
+
+      // Обновление или вставка столов
       for I := 0 to FTablesList.Count - 1 do
       begin
         Table := TRestTable(FTablesList.Items[I]);
@@ -275,6 +331,11 @@ begin
           UpdateTable(Table);
       end;
 
+      // Удаление столов
+      for I in FToDeleteList do
+        DeleteTable(I);
+      FToDeleteList.Clear;
+
       if WriteTransaction.InTransaction then
         WriteTransaction.Commit;
     except
@@ -282,6 +343,7 @@ begin
         WriteTransaction.Rollback;
     end;
   finally
+    FreeAndNil(ibsqlDelete);
     FreeAndNil(ibsqlInsert);
     FreeAndNil(ibsqlUpdate);
     FreeAndNil(WriteTransaction);
@@ -289,8 +351,58 @@ begin
 end;
 
 procedure TrfTableManager.RefreshOrderData;
+var
+  ibsql: TIBSQL;
+  I: Integer;
+  Table: TRestTable;
 begin
+  ibsql := TIBSQL.Create(nil);
+  try
+    ibsql.Transaction := FDataBase.ReadTransaction;
+    // Список заказов для указанного стола
+    ibsql.SQL.Text :=
+      ' SELECT ' +
+      '   u.usr$respkey, ' +
+      '   u.documentkey, ' +
+      '   u.usr$computername, ' +
+      '   doc.number, ' +
+      '   con.name ' +
+      ' FROM ' +
+      '   usr$mn_table t ' +
+      '   JOIN usr$mn_order u ON u.usr$tablekey = t.id AND u.usr$pay <> 1 ' +
+      '   LEFT JOIN gd_document doc ON doc.id = u.documentkey ' +
+      '   LEFT JOIN gd_contact con ON con.id = u.usr$respkey ' +
+      ' WHERE ' +
+      '   t.id = :id ';
 
+    // Пройдем по всем столам и обновим заказы для них
+    for I := 0 to FTablesList.Count - 1 do
+    begin
+      Table := TRestTable(FTablesList.Items[I]);
+      Table.OrderList.Clear;
+
+      ibsql.ParamByName('id').AsInteger := Table.ID;
+      ibsql.ExecQuery;
+      while not ibsql.Eof do
+      begin
+        if Table.OrderKey <> ibsql.FieldByName('DOCUMENTKEY').AsInteger then
+          Table.OrderKey := ibsql.FieldByName('DOCUMENTKEY').AsInteger;
+
+        if Table.RespKey <> ibsql.FieldByName('USR$RESPKEY').AsInteger then
+          Table.RespKey := ibsql.FieldByName('USR$RESPKEY').AsInteger;
+
+        Table.OrderList.Add(ibsql.FieldByName('DOCUMENTKEY').AsInteger,
+          ibsql.FieldByName('NUMBER').AsString);
+
+        ibsql.Next;
+      end;
+      // Обновим состояние стола
+      Table.RefreshTableCondition(FDataBase.ContactKey);
+      ibsql.Close;
+    end;
+  finally
+    FreeAndNil(ibsql);
+  end;
 end;
 
 end.

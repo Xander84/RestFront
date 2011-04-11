@@ -97,6 +97,7 @@ object RestMainForm: TRestMainForm
           Status.Appearance.Font.Style = []
           Bevel = False
           Color = 15195349
+          DisabledColor = clBlack
           ParentFont = False
           TabOrder = 1
           Version = '1.6.9.0'
@@ -1040,9 +1041,6 @@ object RestMainForm: TRestMainForm
         ImageIndex = 1
         TabColor = clBtnFace
         TabColorTo = clNone
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 0
         object pnlRight: TAdvPanel
           Left = 609
           Top = 0
@@ -1101,7 +1099,7 @@ object RestMainForm: TRestMainForm
               Top = 0
               Width = 325
               Height = 660
-              ActivePage = tsMenu
+              ActivePage = tsTablesDesigner
               ActiveFont.Charset = DEFAULT_CHARSET
               ActiveFont.Color = clWindowText
               ActiveFont.Height = -11
@@ -1323,6 +1321,7 @@ object RestMainForm: TRestMainForm
                     Status.Appearance.Font.Style = []
                     Bevel = False
                     Color = 15195349
+                    DisabledColor = clBlack
                     ParentFont = False
                     TabOrder = 0
                     Version = '1.6.9.0'
@@ -1490,6 +1489,7 @@ object RestMainForm: TRestMainForm
                 Status.Appearance.Font.Style = []
                 Bevel = False
                 Color = 15195349
+                DisabledColor = clBlack
                 ParentFont = False
                 TabOrder = 0
                 Version = '1.6.9.0'
@@ -1521,6 +1521,7 @@ object RestMainForm: TRestMainForm
                 Status.Appearance.Font.Style = []
                 Bevel = False
                 Color = 15195349
+                DisabledColor = clBlack
                 ParentFont = False
                 TabOrder = 1
                 Version = '1.6.9.0'
@@ -1588,6 +1589,7 @@ object RestMainForm: TRestMainForm
                 Status.Appearance.Font.Style = []
                 Caption = #1053#1086#1074#1099#1081' '#1079#1072#1082#1072#1079
                 Color = 15195349
+                DisabledColor = clBlack
                 ParentFont = False
                 TabOrder = 0
                 Version = '1.6.9.0'
@@ -1685,6 +1687,7 @@ object RestMainForm: TRestMainForm
                     Status.Appearance.Font.Style = []
                     Bevel = False
                     Color = 15195349
+                    DisabledColor = clBlack
                     ParentFont = False
                     TabOrder = 0
                     Version = '1.6.9.0'
@@ -1717,6 +1720,7 @@ object RestMainForm: TRestMainForm
                     Status.Appearance.Font.Style = []
                     Bevel = False
                     Color = 15195349
+                    DisabledColor = clBlack
                     ParentFont = False
                     TabOrder = 1
                     Version = '1.6.9.0'
@@ -1995,6 +1999,7 @@ object RestMainForm: TRestMainForm
                   Status.Appearance.Font.Style = []
                   Bevel = False
                   Color = 15195349
+                  DisabledColor = clBlack
                   ParentFont = False
                   TabOrder = 0
                   Version = '1.6.9.0'
@@ -2026,6 +2031,7 @@ object RestMainForm: TRestMainForm
                   Status.Appearance.Font.Style = []
                   Bevel = False
                   Color = 15195349
+                  DisabledColor = clBlack
                   ParentFont = False
                   TabOrder = 1
                   Version = '1.6.9.0'
@@ -2058,6 +2064,7 @@ object RestMainForm: TRestMainForm
                   Status.Appearance.Font.Style = []
                   Bevel = False
                   Color = 15195349
+                  DisabledColor = clBlack
                   ParentFont = False
                   TabOrder = 2
                   Version = '1.6.9.0'
@@ -2090,6 +2097,7 @@ object RestMainForm: TRestMainForm
                   Status.Appearance.Font.Style = []
                   Bevel = False
                   Color = 15195349
+                  DisabledColor = clBlack
                   ParentFont = False
                   TabOrder = 3
                   Version = '1.6.9.0'
@@ -2660,11 +2668,11 @@ object RestMainForm: TRestMainForm
             Left = 4
             Top = 1
             Width = 72
-            Height = 50
+            Height = 54
             Action = actExitWindows
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
-            Appearance.Font.Height = -11
+            Appearance.Font.Height = -9
             Appearance.Font.Name = 'Tahoma'
             Appearance.Font.Style = [fsBold]
             Status.Caption = '0'
@@ -2682,6 +2690,7 @@ object RestMainForm: TRestMainForm
             Status.Appearance.Font.Style = []
             Bevel = False
             Color = 14922381
+            DisabledColor = clBlack
             ParentFont = False
             TabOrder = 0
             Version = '1.6.9.0'
@@ -2690,11 +2699,11 @@ object RestMainForm: TRestMainForm
             Left = 4
             Top = 56
             Width = 72
-            Height = 50
+            Height = 54
             Action = actRestartRest
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
-            Appearance.Font.Height = -11
+            Appearance.Font.Height = -9
             Appearance.Font.Name = 'Tahoma'
             Appearance.Font.Style = [fsBold]
             Status.Caption = '0'
@@ -2712,6 +2721,7 @@ object RestMainForm: TRestMainForm
             Status.Appearance.Font.Style = []
             Bevel = False
             Color = 14922381
+            DisabledColor = clBlack
             ParentFont = False
             TabOrder = 1
             Version = '1.6.9.0'
@@ -2720,7 +2730,7 @@ object RestMainForm: TRestMainForm
             Left = 4
             Top = 112
             Width = 72
-            Height = 50
+            Height = 54
             Action = actKeyBoard
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
@@ -2742,6 +2752,7 @@ object RestMainForm: TRestMainForm
             Status.Appearance.Font.Style = []
             Bevel = False
             Color = 14922381
+            DisabledColor = clBlack
             ParentFont = False
             TabOrder = 2
             TabStop = False
@@ -2751,11 +2762,11 @@ object RestMainForm: TRestMainForm
             Left = 4
             Top = 168
             Width = 72
-            Height = 50
+            Height = 54
             Action = actAdminOptions
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
-            Appearance.Font.Height = -11
+            Appearance.Font.Height = -9
             Appearance.Font.Name = 'Tahoma'
             Appearance.Font.Style = [fsBold]
             Status.Caption = '0'
@@ -2773,6 +2784,7 @@ object RestMainForm: TRestMainForm
             Status.Appearance.Font.Style = []
             Bevel = False
             Color = 14922381
+            DisabledColor = clBlack
             ParentFont = False
             TabOrder = 3
             Version = '1.6.9.0'
@@ -2792,18 +2804,18 @@ object RestMainForm: TRestMainForm
             80
             699)
           object btnAddQuantity: TAdvSmoothButton
-            Left = 4
+            Left = 3
             Top = 1
             Width = 72
-            Height = 50
+            Height = 54
             Action = actAddQuantity
             Appearance.PictureAlignment = taCenter
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
-            Appearance.Font.Height = -21
-            Appearance.Font.Name = 'Times New Roman'
+            Appearance.Font.Height = -9
+            Appearance.Font.Name = 'Tahoma'
             Appearance.Font.Style = [fsBold]
-            Appearance.Layout = blNone
+            Appearance.Layout = blPictureTop
             Status.Caption = '0'
             Status.Appearance.Fill.Color = clRed
             Status.Appearance.Fill.ColorMirror = clNone
@@ -2818,23 +2830,26 @@ object RestMainForm: TRestMainForm
             Status.Appearance.Font.Name = 'Tahoma'
             Status.Appearance.Font.Style = []
             Bevel = False
+            Caption = #1059#1074#1077#1083#1080#1095#1080#1090#1100
             Color = 15195349
+            DisabledColor = clBlack
             ParentFont = False
             TabOrder = 0
             Version = '1.6.9.0'
           end
           object btnRemoveQuantity: TAdvSmoothButton
-            Left = 4
-            Top = 56
+            Left = 3
+            Top = 57
             Width = 72
-            Height = 50
+            Height = 54
             Action = actRemoveQuantity
             Appearance.PictureAlignment = taCenter
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
-            Appearance.Font.Height = -21
-            Appearance.Font.Name = 'Times New Roman'
+            Appearance.Font.Height = -9
+            Appearance.Font.Name = 'Tahoma'
             Appearance.Font.Style = [fsBold]
+            Appearance.Layout = blPictureTop
             Status.Caption = '0'
             Status.Appearance.Fill.Color = clRed
             Status.Appearance.Fill.ColorMirror = clNone
@@ -2849,22 +2864,26 @@ object RestMainForm: TRestMainForm
             Status.Appearance.Font.Name = 'Tahoma'
             Status.Appearance.Font.Style = []
             Bevel = False
+            Caption = #1059#1084#1077#1085#1100#1096#1080#1090#1100
             Color = 15195349
+            DisabledColor = clBlack
             ParentFont = False
             TabOrder = 1
             Version = '1.6.9.0'
           end
           object btnDeletePosition: TAdvSmoothButton
             Left = 4
-            Top = 112
+            Top = 113
             Width = 72
-            Height = 50
+            Height = 54
             Action = actDeletePosition
+            Appearance.PictureAlignment = taCenter
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
-            Appearance.Font.Height = -11
+            Appearance.Font.Height = -9
             Appearance.Font.Name = 'Tahoma'
             Appearance.Font.Style = [fsBold]
+            Appearance.Layout = blPictureTop
             Status.Caption = '0'
             Status.Appearance.Fill.Color = clRed
             Status.Appearance.Fill.ColorMirror = clNone
@@ -2880,21 +2899,24 @@ object RestMainForm: TRestMainForm
             Status.Appearance.Font.Style = []
             Bevel = False
             Color = 15195349
+            DisabledColor = clBlack
             ParentFont = False
             TabOrder = 2
             Version = '1.6.9.0'
           end
           object btnCutCheck: TAdvSmoothButton
             Left = 4
-            Top = 168
+            Top = 169
             Width = 72
-            Height = 50
+            Height = 54
             Action = actCutCheck
+            Appearance.PictureAlignment = taCenter
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
-            Appearance.Font.Height = -11
+            Appearance.Font.Height = -9
             Appearance.Font.Name = 'Tahoma'
             Appearance.Font.Style = [fsBold]
+            Appearance.Layout = blPictureTop
             Status.Caption = '0'
             Status.Appearance.Fill.Color = clRed
             Status.Appearance.Fill.ColorMirror = clNone
@@ -2910,21 +2932,24 @@ object RestMainForm: TRestMainForm
             Status.Appearance.Font.Style = []
             Bevel = False
             Color = 15195349
+            DisabledColor = clBlack
             ParentFont = False
             TabOrder = 3
             Version = '1.6.9.0'
           end
           object btnPreCheck: TAdvSmoothButton
             Left = 4
-            Top = 224
+            Top = 225
             Width = 72
-            Height = 50
+            Height = 54
             Action = actPreCheck
+            Appearance.PictureAlignment = taCenter
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
-            Appearance.Font.Height = -11
+            Appearance.Font.Height = -9
             Appearance.Font.Name = 'Tahoma'
             Appearance.Font.Style = [fsBold]
+            Appearance.Layout = blPictureTop
             Status.Caption = '0'
             Status.Appearance.Fill.Color = clRed
             Status.Appearance.Fill.ColorMirror = clNone
@@ -2940,21 +2965,24 @@ object RestMainForm: TRestMainForm
             Status.Appearance.Font.Style = []
             Bevel = False
             Color = 15195349
+            DisabledColor = clBlack
             ParentFont = False
             TabOrder = 4
             Version = '1.6.9.0'
           end
           object btnModification: TAdvSmoothButton
             Left = 4
-            Top = 280
+            Top = 281
             Width = 72
-            Height = 50
+            Height = 54
             Action = actModification
+            Appearance.PictureAlignment = taCenter
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
-            Appearance.Font.Height = -11
+            Appearance.Font.Height = -9
             Appearance.Font.Name = 'Tahoma'
             Appearance.Font.Style = [fsBold]
+            Appearance.Layout = blPictureTop
             Status.Caption = '0'
             Status.Appearance.Fill.Color = clRed
             Status.Appearance.Fill.ColorMirror = clNone
@@ -2970,21 +2998,24 @@ object RestMainForm: TRestMainForm
             Status.Appearance.Font.Style = []
             Bevel = False
             Color = 15195349
+            DisabledColor = clBlack
             ParentFont = False
             TabOrder = 5
             Version = '1.6.9.0'
           end
           object btnKeyBoard: TAdvSmoothButton
             Left = 4
-            Top = 336
+            Top = 337
             Width = 72
-            Height = 50
+            Height = 54
             Action = actKeyBoard
+            Appearance.PictureAlignment = taCenter
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
             Appearance.Font.Height = -9
             Appearance.Font.Name = 'Tahoma'
             Appearance.Font.Style = [fsBold]
+            Appearance.Layout = blPictureTop
             Status.Caption = '0'
             Status.Appearance.Fill.Color = clRed
             Status.Appearance.Fill.ColorMirror = clNone
@@ -3000,6 +3031,7 @@ object RestMainForm: TRestMainForm
             Status.Appearance.Font.Style = []
             Bevel = False
             Color = 15195349
+            DisabledColor = clBlack
             ParentFont = False
             TabOrder = 6
             TabStop = False
@@ -3007,15 +3039,17 @@ object RestMainForm: TRestMainForm
           end
           object btnDiscount: TAdvSmoothButton
             Left = 4
-            Top = 392
+            Top = 393
             Width = 72
-            Height = 50
+            Height = 54
             Action = actDiscount
+            Appearance.PictureAlignment = taCenter
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
-            Appearance.Font.Height = -11
+            Appearance.Font.Height = -9
             Appearance.Font.Name = 'Tahoma'
             Appearance.Font.Style = [fsBold]
+            Appearance.Layout = blPictureTop
             Status.Caption = '0'
             Status.Appearance.Fill.Color = clRed
             Status.Appearance.Fill.ColorMirror = clNone
@@ -3031,22 +3065,24 @@ object RestMainForm: TRestMainForm
             Status.Appearance.Font.Style = []
             Bevel = False
             Color = 15195349
+            DisabledColor = clBlack
             ParentFont = False
             TabOrder = 7
             Version = '1.6.9.0'
           end
           object btnPay: TAdvSmoothButton
             Left = 4
-            Top = 448
+            Top = 449
             Width = 72
-            Height = 50
+            Height = 54
             Action = actPay
             Appearance.PictureAlignment = taCenter
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
-            Appearance.Font.Height = -11
+            Appearance.Font.Height = -9
             Appearance.Font.Name = 'Tahoma'
             Appearance.Font.Style = [fsBold]
+            Appearance.Layout = blPictureTop
             Status.Caption = '0'
             Status.Appearance.Fill.Color = clRed
             Status.Appearance.Fill.ColorMirror = clNone
@@ -3061,22 +3097,26 @@ object RestMainForm: TRestMainForm
             Status.Appearance.Font.Name = 'Tahoma'
             Status.Appearance.Font.Style = []
             Bevel = False
+            Caption = #1054#1087#1083#1072#1090#1072
             Color = 15195349
+            DisabledColor = clBlack
             ParentFont = False
             TabOrder = 8
             Version = '1.6.9.0'
           end
           object btnDevide: TAdvSmoothButton
             Left = 4
-            Top = 504
+            Top = 505
             Width = 72
-            Height = 50
+            Height = 54
             Action = actDevide
+            Appearance.PictureAlignment = taCenter
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
-            Appearance.Font.Height = -11
+            Appearance.Font.Height = -9
             Appearance.Font.Name = 'Tahoma'
             Appearance.Font.Style = [fsBold]
+            Appearance.Layout = blPictureTop
             Status.Caption = '0'
             Status.Appearance.Fill.Color = clRed
             Status.Appearance.Fill.ColorMirror = clNone
@@ -3092,15 +3132,16 @@ object RestMainForm: TRestMainForm
             Status.Appearance.Font.Style = []
             Bevel = False
             Color = 15195349
+            DisabledColor = clBlack
             ParentFont = False
             TabOrder = 9
             Version = '1.6.9.0'
           end
           object btnOK: TAdvSmoothButton
             Left = 4
-            Top = 588
+            Top = 584
             Width = 72
-            Height = 50
+            Height = 54
             Action = actOK
             Anchors = [akLeft, akBottom]
             Appearance.PictureAlignment = taCenter
@@ -3126,21 +3167,22 @@ object RestMainForm: TRestMainForm
             Bevel = False
             Caption = #1057#1086#1093#1088#1072#1085#1080#1090#1100
             Color = 16575452
+            DisabledColor = clBlack
             ParentFont = False
             TabOrder = 10
             Version = '1.6.9.0'
           end
           object btnCancel3: TAdvSmoothButton
             Left = 4
-            Top = 644
+            Top = 640
             Width = 72
-            Height = 50
+            Height = 54
             Action = actCancel
             Anchors = [akLeft, akBottom]
             Appearance.PictureAlignment = taCenter
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
-            Appearance.Font.Height = -11
+            Appearance.Font.Height = -9
             Appearance.Font.Name = 'Tahoma'
             Appearance.Font.Style = [fsBold]
             Appearance.Layout = blPictureTop
@@ -3160,6 +3202,7 @@ object RestMainForm: TRestMainForm
             Bevel = False
             Caption = #1054#1090#1084#1077#1085#1080#1090#1100
             Color = 16575452
+            DisabledColor = clBlack
             ParentFont = False
             TabOrder = 11
             Version = '1.6.9.0'
@@ -3182,11 +3225,11 @@ object RestMainForm: TRestMainForm
             Left = 4
             Top = 1
             Width = 72
-            Height = 50
+            Height = 54
             Action = actCashForm
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
-            Appearance.Font.Height = -11
+            Appearance.Font.Height = -9
             Appearance.Font.Name = 'Tahoma'
             Appearance.Font.Style = [fsBold]
             Status.Caption = '0'
@@ -3204,6 +3247,7 @@ object RestMainForm: TRestMainForm
             Status.Appearance.Font.Style = []
             Bevel = False
             Color = 15195349
+            DisabledColor = clBlack
             ParentFont = False
             TabOrder = 0
             Version = '1.6.9.0'
@@ -3212,7 +3256,7 @@ object RestMainForm: TRestMainForm
             Left = 4
             Top = 56
             Width = 72
-            Height = 50
+            Height = 54
             Action = actAllChecks
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
@@ -3234,6 +3278,7 @@ object RestMainForm: TRestMainForm
             Status.Appearance.Font.Style = []
             Bevel = False
             Color = 15195349
+            DisabledColor = clBlack
             ParentFont = False
             TabOrder = 1
             Version = '1.6.9.0'
@@ -3242,11 +3287,11 @@ object RestMainForm: TRestMainForm
             Left = 4
             Top = 112
             Width = 72
-            Height = 50
+            Height = 54
             Action = actManagerInfo
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
-            Appearance.Font.Height = -11
+            Appearance.Font.Height = -9
             Appearance.Font.Name = 'Tahoma'
             Appearance.Font.Style = [fsBold]
             Status.Caption = '0'
@@ -3264,6 +3309,7 @@ object RestMainForm: TRestMainForm
             Status.Appearance.Font.Style = []
             Bevel = False
             Color = 15195349
+            DisabledColor = clBlack
             ParentFont = False
             TabOrder = 2
             Version = '1.6.9.0'
@@ -3272,11 +3318,11 @@ object RestMainForm: TRestMainForm
             Left = 4
             Top = 168
             Width = 72
-            Height = 50
+            Height = 54
             Action = actKassirInfo
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
-            Appearance.Font.Height = -11
+            Appearance.Font.Height = -9
             Appearance.Font.Name = 'Tahoma'
             Appearance.Font.Style = [fsBold]
             Status.Caption = '0'
@@ -3294,20 +3340,21 @@ object RestMainForm: TRestMainForm
             Status.Appearance.Font.Style = []
             Bevel = False
             Color = 15195349
+            DisabledColor = clBlack
             ParentFont = False
             TabOrder = 3
             Version = '1.6.9.0'
           end
           object btnCancel2: TAdvSmoothButton
             Left = 4
-            Top = 644
+            Top = 640
             Width = 72
-            Height = 50
+            Height = 54
             Action = actCancel
             Anchors = [akLeft, akBottom]
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
-            Appearance.Font.Height = -11
+            Appearance.Font.Height = -9
             Appearance.Font.Name = 'Tahoma'
             Appearance.Font.Style = [fsBold]
             Status.Caption = '0'
@@ -3326,6 +3373,7 @@ object RestMainForm: TRestMainForm
             Bevel = False
             Caption = #1042#1099#1093#1086#1076
             Color = 16575452
+            DisabledColor = clBlack
             ParentFont = False
             TabOrder = 4
             Version = '1.6.9.0'
@@ -3381,41 +3429,10 @@ object RestMainForm: TRestMainForm
           end
           object btnExitManagerInfo: TAdvSmoothButton
             Left = 4
-            Top = 644
+            Top = 640
             Width = 72
-            Height = 50
+            Height = 54
             Anchors = [akLeft, akBottom]
-            Appearance.Font.Charset = DEFAULT_CHARSET
-            Appearance.Font.Color = clWindowText
-            Appearance.Font.Height = -11
-            Appearance.Font.Name = 'Tahoma'
-            Appearance.Font.Style = [fsBold]
-            Status.Caption = '0'
-            Status.Appearance.Fill.Color = clRed
-            Status.Appearance.Fill.ColorMirror = clNone
-            Status.Appearance.Fill.ColorMirrorTo = clNone
-            Status.Appearance.Fill.GradientType = gtSolid
-            Status.Appearance.Fill.BorderColor = clGray
-            Status.Appearance.Fill.Rounding = 0
-            Status.Appearance.Fill.ShadowOffset = 0
-            Status.Appearance.Font.Charset = DEFAULT_CHARSET
-            Status.Appearance.Font.Color = clWhite
-            Status.Appearance.Font.Height = -11
-            Status.Appearance.Font.Name = 'Tahoma'
-            Status.Appearance.Font.Style = []
-            Bevel = False
-            Caption = #1042#1099#1093#1086#1076
-            Color = 14922381
-            ParentFont = False
-            TabOrder = 2
-            Version = '1.6.9.0'
-            OnClick = btnExitManagerInfoClick
-          end
-          object btnWithPrecheck: TAdvSmoothButton
-            Left = 3
-            Top = 142
-            Width = 72
-            Height = 50
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
             Appearance.Font.Height = -9
@@ -3435,8 +3452,41 @@ object RestMainForm: TRestMainForm
             Status.Appearance.Font.Name = 'Tahoma'
             Status.Appearance.Font.Style = []
             Bevel = False
-            Caption = #1057' '#1087#1088#1077#1095#1077#1082#1072#1084#1080
+            Caption = #1042#1099#1093#1086#1076
             Color = 14922381
+            DisabledColor = clBlack
+            ParentFont = False
+            TabOrder = 2
+            Version = '1.6.9.0'
+            OnClick = btnExitManagerInfoClick
+          end
+          object btnWithPrecheck: TAdvSmoothButton
+            Left = 3
+            Top = 142
+            Width = 72
+            Height = 54
+            Appearance.Font.Charset = DEFAULT_CHARSET
+            Appearance.Font.Color = clWindowText
+            Appearance.Font.Height = -9
+            Appearance.Font.Name = 'Tahoma'
+            Appearance.Font.Style = [fsBold]
+            Status.Caption = '0'
+            Status.Appearance.Fill.Color = clRed
+            Status.Appearance.Fill.ColorMirror = clNone
+            Status.Appearance.Fill.ColorMirrorTo = clNone
+            Status.Appearance.Fill.GradientType = gtSolid
+            Status.Appearance.Fill.BorderColor = clGray
+            Status.Appearance.Fill.Rounding = 0
+            Status.Appearance.Fill.ShadowOffset = 0
+            Status.Appearance.Font.Charset = DEFAULT_CHARSET
+            Status.Appearance.Font.Color = clWhite
+            Status.Appearance.Font.Height = -11
+            Status.Appearance.Font.Name = 'Tahoma'
+            Status.Appearance.Font.Style = []
+            Bevel = False
+            Caption = #1057'  '#1087#1088#1077#1095#1077#1082#1072#1084#1080
+            Color = 14922381
+            DisabledColor = clBlack
             ParentFont = False
             TabOrder = 3
             Version = '1.6.9.0'
@@ -3446,7 +3496,7 @@ object RestMainForm: TRestMainForm
             Left = 3
             Top = 198
             Width = 72
-            Height = 50
+            Height = 54
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
             Appearance.Font.Height = -9
@@ -3468,6 +3518,7 @@ object RestMainForm: TRestMainForm
             Bevel = False
             Caption = #1041#1077#1079' '#1087#1088#1077#1095#1077#1082#1086#1074
             Color = 14922381
+            DisabledColor = clBlack
             ParentFont = False
             TabOrder = 4
             Version = '1.6.9.0'
@@ -3477,7 +3528,7 @@ object RestMainForm: TRestMainForm
             Left = 3
             Top = 254
             Width = 72
-            Height = 50
+            Height = 54
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
             Appearance.Font.Height = -9
@@ -3499,6 +3550,7 @@ object RestMainForm: TRestMainForm
             Bevel = False
             Caption = #1054#1087#1083#1072#1095#1077#1085#1085#1099#1077
             Color = 14922381
+            DisabledColor = clBlack
             ParentFont = False
             TabOrder = 5
             Version = '1.6.9.0'
@@ -3508,7 +3560,7 @@ object RestMainForm: TRestMainForm
             Left = 3
             Top = 310
             Width = 72
-            Height = 50
+            Height = 54
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
             Appearance.Font.Height = -9
@@ -3530,6 +3582,7 @@ object RestMainForm: TRestMainForm
             Bevel = False
             Caption = #1053#1077#1086#1087#1083#1072#1095#1077#1085#1085#1099#1077
             Color = 14922381
+            DisabledColor = clBlack
             ParentFont = False
             TabOrder = 6
             Version = '1.6.9.0'
@@ -3539,7 +3592,7 @@ object RestMainForm: TRestMainForm
             Left = 3
             Top = 86
             Width = 72
-            Height = 50
+            Height = 54
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
             Appearance.Font.Height = -9
@@ -3561,6 +3614,7 @@ object RestMainForm: TRestMainForm
             Bevel = False
             Caption = #1042#1089#1077' '#1095#1077#1082#1080
             Color = 14922381
+            DisabledColor = clBlack
             ParentFont = False
             TabOrder = 7
             Version = '1.6.9.0'
@@ -3570,7 +3624,7 @@ object RestMainForm: TRestMainForm
             Left = 3
             Top = 381
             Width = 72
-            Height = 50
+            Height = 54
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
             Appearance.Font.Height = -9
@@ -3592,6 +3646,7 @@ object RestMainForm: TRestMainForm
             Bevel = False
             Caption = #1054#1090#1095#1077#1090' '#1087#1086' '#1074#1099#1088#1091#1095#1082#1077
             Color = 14922381
+            DisabledColor = clBlack
             ParentFont = False
             TabOrder = 8
             Version = '1.6.9.0'
@@ -3601,7 +3656,7 @@ object RestMainForm: TRestMainForm
             Left = 3
             Top = 437
             Width = 72
-            Height = 50
+            Height = 54
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
             Appearance.Font.Height = -9
@@ -3623,6 +3678,7 @@ object RestMainForm: TRestMainForm
             Bevel = False
             Caption = #1056#1077#1077#1089#1090#1088' '#1089#1095#1077#1090#1086#1074
             Color = 14922381
+            DisabledColor = clBlack
             ParentFont = False
             TabOrder = 9
             Version = '1.6.9.0'
@@ -3632,7 +3688,7 @@ object RestMainForm: TRestMainForm
             Left = 3
             Top = 493
             Width = 72
-            Height = 50
+            Height = 54
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
             Appearance.Font.Height = -9
@@ -3654,6 +3710,7 @@ object RestMainForm: TRestMainForm
             Bevel = False
             Caption = #1055#1088#1077#1095#1077#1082
             Color = 14922381
+            DisabledColor = clBlack
             ParentFont = False
             TabOrder = 10
             Version = '1.6.9.0'
@@ -3666,9 +3723,6 @@ object RestMainForm: TRestMainForm
           ColorTo = clNone
           TabColor = clBtnFace
           TabColorTo = clNone
-          ExplicitTop = 0
-          ExplicitWidth = 0
-          ExplicitHeight = 0
           DesignSize = (
             80
             699)
@@ -3676,7 +3730,7 @@ object RestMainForm: TRestMainForm
             Left = 4
             Top = 1
             Width = 72
-            Height = 50
+            Height = 54
             Action = actKeyBoard
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
@@ -3698,6 +3752,7 @@ object RestMainForm: TRestMainForm
             Status.Appearance.Font.Style = []
             Bevel = False
             Color = 16575452
+            DisabledColor = clBlack
             ParentFont = False
             TabOrder = 0
             TabStop = False
@@ -3705,14 +3760,14 @@ object RestMainForm: TRestMainForm
           end
           object btnCancel1: TAdvSmoothButton
             Left = 4
-            Top = 644
+            Top = 640
             Width = 72
-            Height = 50
+            Height = 54
             Action = actCancel
             Anchors = [akLeft, akBottom]
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
-            Appearance.Font.Height = -11
+            Appearance.Font.Height = -9
             Appearance.Font.Name = 'Tahoma'
             Appearance.Font.Style = [fsBold]
             Status.Caption = '0'
@@ -3731,15 +3786,16 @@ object RestMainForm: TRestMainForm
             Bevel = False
             Caption = #1042#1099#1093#1086#1076
             Color = 16575452
+            DisabledColor = clBlack
             ParentFont = False
             TabOrder = 1
             Version = '1.6.9.0'
           end
           object btnOK2: TAdvSmoothButton
             Left = 4
-            Top = 588
+            Top = 584
             Width = 72
-            Height = 50
+            Height = 54
             Action = actOK
             Anchors = [akLeft, akBottom]
             Appearance.Font.Charset = DEFAULT_CHARSET
@@ -3763,6 +3819,7 @@ object RestMainForm: TRestMainForm
             Bevel = False
             Caption = #1057#1086#1093#1088#1072#1085#1080#1090#1100
             Color = 16575452
+            DisabledColor = clBlack
             ParentFont = False
             TabOrder = 2
             Visible = False
@@ -3794,6 +3851,7 @@ object RestMainForm: TRestMainForm
             Status.Appearance.Font.Style = []
             Bevel = False
             Color = 16575452
+            DisabledColor = clBlack
             ParentFont = False
             TabOrder = 3
             TabStop = False

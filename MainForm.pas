@@ -389,12 +389,7 @@ type
     // Режим только просмотра (для кассира)
     FViewMode: Boolean;
 
-    FTableImageDictionary: TDictionary<Integer, TPngImage>;
-
     FSplitForm: TSplitOrder;
-
-    // Загрузка изображений столов
-    procedure LoadTableImages;
 
     //Создание первичных наборов данных
     procedure CreateDataSets;
@@ -584,8 +579,6 @@ begin
   FLogManager.DatabaseName := cn_LodDataBasePath;
   FLogManager.DoSimpleEvent(ev_StartProgram);
 
-  btnAddQuantity.Picture := FrontData.RestPictureContainer.FindPicture('AddPicture');
-  btnRemoveQuantity.Picture := FrontData.RestPictureContainer.FindPicture('RemovePicture');
   btnGoodUp.Picture := FrontData.RestPictureContainer.FindPicture('Up');
   btnScrollUp.Picture := FrontData.RestPictureContainer.FindPicture('Up');
   btnGoodDown.Picture := FrontData.RestPictureContainer.FindPicture('Down');
@@ -594,9 +587,19 @@ begin
   btnUsersUp.Picture := FrontData.RestPictureContainer.FindPicture('Up');
   btnUserLeft.Picture := FrontData.RestPictureContainer.FindPicture('Left');
   btnUserRight.Picture := FrontData.RestPictureContainer.FindPicture('Right');
-  btnPay.Picture := FrontData.RestPictureContainer.FindPicture('Money');
-  btnOK.Picture := FrontData.RestPictureContainer.FindPicture('button_ok');
-  btnCancel3.Picture := FrontData.RestPictureContainer.FindPicture('button_cancel');
+
+  btnAddQuantity.Picture := FrontData.RestPictureContainer.FindPicture('add');
+  btnRemoveQuantity.Picture := FrontData.RestPictureContainer.FindPicture('delete');
+  btnDeletePosition.Picture := FrontData.RestPictureContainer.FindPicture('cancel');
+  btnCutCheck.Picture := FrontData.RestPictureContainer.FindPicture('document_break');
+  btnPreCheck.Picture := FrontData.RestPictureContainer.FindPicture('document_info');
+  btnModification.Picture := FrontData.RestPictureContainer.FindPicture('pencil');
+  btnKeyBoard.Picture := FrontData.RestPictureContainer.FindPicture('keyboard');
+  btnDiscount.Picture := FrontData.RestPictureContainer.FindPicture('chart_down');
+  btnPay.Picture := FrontData.RestPictureContainer.FindPicture('money');
+  btnDevide.Picture := FrontData.RestPictureContainer.FindPicture('calculator');
+  btnOK.Picture := FrontData.RestPictureContainer.FindPicture('tick');
+  btnCancel3.Picture := FrontData.RestPictureContainer.FindPicture('cross');
 
   MenuOfficeStyler.SetComponentStyle(GetFrontStyle);
   mainTouchKeyBoard.SetComponentStyle(GetFrontStyle);
@@ -615,21 +618,13 @@ begin
     pnlMainGood.Height := pnlMainGood.Height + btnHeight;
   end;
 
-  // Список типов столов с изображениями
-  FTableImageDictionary := TDictionary<Integer, TPngImage>.Create;
-  // Загрузим изображения столов из БД
-  LoadTableImages;
-
   // Менеджер столов зала
   FTableManager := TrfTableManager.Create(FFrontBase, sbTable);
-  FTableManager.TableImageDictionary := FTableImageDictionary;
   FTableManager.TableButtonOnClick := TableButtonOnClick;
   FTableManager.TableButtonPopupMenu := tablePopupMenu;
 end;
 
 procedure TRestMainForm.FormDestroy(Sender: TObject);
-var
-  Value: TPngImage;
 begin
   FLogManager.DoSimpleEvent(ev_TerminateProgram);
   if Assigned(FFrontBase) then
@@ -679,11 +674,6 @@ begin
 
   // Менеджер столов зала
   FTableManager.Free;
-
-  // Список типов столов с изображениями
-  for Value in FTableImageDictionary.Values do
-    Value.Free;
-  FTableImageDictionary.Free;
 end;
 
 procedure TRestMainForm.edPasswordKeyPress(Sender: TObject; var Key: Char);
@@ -792,10 +782,9 @@ var
 begin
   //Создание кнопки
   FButton := TAdvSmoothButton.Create(tsUserOrder);
-  SetButtonStyle(FButton);
-  FButton.Appearance.Font.Name := 'Tahoma';
   FButton.Appearance.BeginUpdate;
   try
+    SetButtonStyle(FButton);
     FButton.Color := btnColor;
     FButton.Appearance.Font.Size := cn_ButtonFontSize;
     FButton.Parent := tsUserOrder;
@@ -885,13 +874,15 @@ end;
 procedure TRestMainForm.CreateTableButtonList(const HallKey: Integer);
 begin
   // В зависимости от типа страницы возьмем данные по столам с заказами или без
-  if FRestFormState = HallsPage then
-    FFrontBase.GetTablesInfo(FTablesInfoTable, HallKey)
-  else
-    FFrontBase.GetTables(FTablesInfoTable, HallKey);
+  //if FRestFormState = HallsPage then
+  //  FFrontBase.GetTablesInfo(FTablesInfoTable, HallKey)
+  //else
+  //  FFrontBase.GetTables(FTablesInfoTable, HallKey);
 
   // Загрузить столы из датасета
-  FTableManager.LoadTables(FTablesInfoTable);
+  FTableManager.LoadTables(HallKey);
+  // Обновим информацию о заказах по списку столов
+  FTableManager.RefreshOrderData;
 end;
 
 procedure TRestMainForm.AddChooseTables(const HallKey: Integer);
@@ -915,8 +906,7 @@ begin
 //      FButton.TableName := IBSQL.FieldByName('USR$NAME').AsString;
       FButton.HallKey := HallKey;
       // Изображение стола
-      if FTableImageDictionary.ContainsKey(FButton.TableTypeKey) then
-        FButton.PngImage := FTableImageDictionary.Items[FButton.TableTypeKey];
+      FButton.PngImage := FTableManager.GetImageForType(FButton.TableTypeKey);
 
       FButton.Height := btnHeight;
       {$IFNDEF DEBUG}
@@ -949,11 +939,10 @@ var
 begin
   //Создание кнопки
   FButton := TAdvSmoothButton.Create(pnlGood);
-  SetButtonStyle(FButton);
-  FButton.Appearance.Font.Name := 'Tahoma';
-  FButton.Appearance.Font.Size := 7;
   FButton.Appearance.BeginUpdate;
   try
+    SetButtonStyle(FButton);
+    FButton.Appearance.Font.Size := 7;
     FButton.Color := btnColor;
     FButton.Parent := pnlGood;
     FButton.OnClick := GoodButtonOnClick;
@@ -1006,10 +995,9 @@ begin
 
   //Создание кнопки
   FButton := TAdvSmoothButton.Create(pnlGood);
-  SetButtonStyle(FButton);
-  FButton.Appearance.Font.Name := 'Tahoma';
   FButton.Appearance.BeginUpdate;
   try
+    SetButtonStyle(FButton);
     FButton.Color := btnColor;
     FButton.Parent := FPanel;
     FButton.OnClick := GroupButtonOnClick;
@@ -1051,10 +1039,9 @@ var
 begin
   //Создание кнопки
   FButton := TAdvSmoothButton.Create(pnlHalls);
-  SetButtonStyle(FButton);
   FButton.Appearance.BeginUpdate;
   try
-    FButton.Appearance.Font.Name := 'Tahoma';
+    SetButtonStyle(FButton);
     FButton.Appearance.Font.Size := cn_ButtonFontSize;
     FButton.Color := btnColor;
     FButton.Parent := pnlHalls;
@@ -1088,10 +1075,9 @@ var
 begin
   //Создание кнопки
   FButton := TAdvSmoothButton.Create(pnlGood);
-  SetButtonStyle(FButton);
   FButton.Appearance.BeginUpdate;
   try
-    FButton.Appearance.Font.Name := 'Tahoma';
+    SetButtonStyle(FButton);
     FButton.Appearance.Font.Size := cn_ButtonFontSize;
     FButton.Color := btnColor;
     FButton.Parent := pnlMenu;
@@ -1500,42 +1486,6 @@ begin
     end;
   finally
     Str.Free;
-  end;
-end;
-
-procedure TRestMainForm.LoadTableImages;
-var
-  ibsql: TIBSQL;
-  PngImage: TPngImage;
-  Str: TStream;
-begin
-  if Assigned(FTableImageDictionary) then
-  begin
-    ibsql := TIBSQL.Create(nil);
-    try
-      ibsql.Transaction := FFrontBase.ReadTransaction;
-      ibsql.SQL.Text :=
-        ' SELECT id, usr$picture1 AS img FROM usr$mn_tabletype ';
-      ibsql.ExecQuery;
-
-      while not ibsql.Eof do
-      begin
-        Str := TMemoryStream.Create;
-        try
-          ibsql.FieldByName('img').SaveToStream(Str);
-          Str.Position := 0;
-          PngImage := TPngImage.Create;
-          PngImage.LoadFromStream(Str);
-        finally
-          FreeAndNil(Str);
-        end;
-
-        FTableImageDictionary.Add(ibsql.FieldByName('id').AsInteger, PngImage);
-        ibsql.Next;
-      end;
-    finally
-      FreeAndNil(ibsql);
-    end;
   end;
 end;
 
@@ -3135,10 +3085,9 @@ var
 begin
   //Создание кнопки
   FButton := TAdvSmoothButton.Create(pnlUsers);
-  SetButtonStyle(FButton);
-  FButton.Appearance.Font.Name := 'Tahoma';
   FButton.Appearance.BeginUpdate;
   try
+    SetButtonStyle(FButton);
     FButton.Color := btnColor;
     FButton.Appearance.Font.Size := cn_ButtonFontSize;
     FButton.Parent := pnlUsers;
@@ -3237,10 +3186,9 @@ var
 begin
   //Создание кнопки
   FButton := TAdvSmoothButton.Create(pnlUserOrders);
-  SetButtonStyle(FButton);
-  FButton.Appearance.Font.Name := 'Tahoma';
   FButton.Appearance.BeginUpdate;
   try
+    SetButtonStyle(FButton);
     FButton.Color := btnColor;
     FButton.Appearance.Font.Size := cn_ButtonFontSize;
     FButton.Parent := pnlUserOrders;
@@ -3812,10 +3760,7 @@ procedure TRestMainForm.tablePopupMenuPopup(Sender: TObject);
 var
   FButton: TRestTable;
   Item: TMenuItem;
-  FSQL: TIBSQL;
-  RespKey: Integer;
-  FOrderKey: Integer;
-  FFirst: Boolean;
+  OrderKey: Integer;
 begin
   inherited;
   FButton := TRestTable(TAdvPopupMenu(Sender).PopupComponent);
@@ -3829,72 +3774,28 @@ begin
     exit;
   end;
 
-  FFirst := True;
-  FSQL := TIBSQL.Create(nil);
-  FSQL.Transaction := FFrontBase.ReadTransaction;
-  try
-    tablePopupMenu.Items.Clear;
-    FButton.OrderList.Clear;
-    if not FSQL.Transaction.InTransaction then
-      FSQL.Transaction.StartTransaction;
+  tablePopupMenu.Items.Clear;
+  // Пункт меню для нового заказа
+  if (FButton.RespKey = FFrontBase.ContactKey) or ((FFrontBase.UserKey and FFrontBase.Options.ManagerGroupMask) <> 0) then
+  begin
+    Item := TMenuItem.Create(tablePopupMenu);
+    Item.Caption := 'Новый заказ';
+    Item.OnClick := PopItemOnClick;
+    Item.Tag := FButton.ID;
+    tablePopupMenu.Items.Add(Item);
+  end;
 
-    FSQL.SQL.Text := 'SELECT T.*, U.USR$RESPKEY, U.DOCUMENTKEY, U.USR$COMPUTERNAME, DOC.NUMBER, CON.NAME ' +
-      'FROM USR$MN_TABLE T ' +
-      'JOIN USR$MN_ORDER U ON (U.USR$TABLEKEY = T.ID AND U.USR$PAY <> 1) ' +
-      'LEFT JOIN GD_DOCUMENT DOC ON DOC.ID = U.DOCUMENTKEY ' +
-      'LEFT JOIN GD_CONTACT CON ON CON.ID = U.USR$RESPKEY ' +
-      'WHERE T.ID = :ID ' +
-      'ORDER BY U.DOCUMENTKEY, DOC.NUMBER ';
-    FSQL.ParamByName('ID').AsInteger := FButton.ID;
-    FSQL.ExecQuery;
-    if FSQL.Eof then
+  for OrderKey in FButton.OrderList.Keys do
+  begin
+    //если заказ не свой или не менеджер, то не добавляем меню
+    if (FFrontBase.ContactKey = FButton.RespKey) or ((FFrontBase.UserKey and FFrontBase.Options.ManagerGroupMask) <> 0) then
     begin
-      Item := TMenuItem.Create(tablePopupMenu);
-      Item.Caption := 'Новый заказ';
-      Item.OnClick := PopItemOnClick;
-      Item.Tag := FButton.ID;
+      Item  := TMenuItem.Create(tablePopupMenu);
+      Item.Tag := OrderKey;
+      Item.Caption := 'Заказ ' + FButton.OrderList.Items[OrderKey];
+      Item.OnClick := OrderButtonOnClick;
       tablePopupMenu.Items.Add(Item);
-    end else
-    begin
-      while not FSQL.Eof do
-      begin
-        FOrderKey := FSQL.FieldByName('DOCUMENTKEY').AsInteger;
-        if FButton.OrderKey <> FOrderKey then
-          FButton.OrderKey := FOrderKey;
-
-        RespKey := FSQL.FieldByName('USR$RESPKEY').AsInteger;
-        if FButton.RespKey <> RespKey then
-          FButton.RespKey := RespKey;
-
-        if FFirst and ((FFrontBase.ContactKey = RespKey) or
-          ((FFrontBase.UserKey and FFrontBase.Options.ManagerGroupMask) <> 0)) then
-        begin
-          Item := TMenuItem.Create(tablePopupMenu);
-          Item.Caption := 'Новый заказ';
-          Item.OnClick := PopItemOnClick;
-          Item.Tag := FButton.ID;
-          tablePopupMenu.Items.Add(Item);
-        end;
-
-        FButton.OrderList.Add(FSQL.FieldByName('DOCUMENTKEY').AsInteger,
-          FSQL.FieldByName('NUMBER').AsString);
-        //если заказ не свой или не менеджер, то не добавляем меню
-        if (FFrontBase.ContactKey = RespKey) or
-          ((FFrontBase.UserKey and FFrontBase.Options.ManagerGroupMask) <> 0) then
-        begin
-          Item  := TMenuItem.Create(tablePopupMenu);
-          Item.Tag := FSQL.FieldByName('DOCUMENTKEY').AsInteger;
-          Item.Caption := 'Заказ ' + FSQL.FieldByName('NUMBER').AsString;
-          Item.OnClick := OrderButtonOnClick;
-          tablePopupMenu.Items.Add(Item);
-        end;
-        FFirst := False;
-        FSQL.Next;
-      end;
     end;
-    FSQL.Close;
-  finally
-    FSQL.Free;
   end;
 
   if (tablePopupMenu.Items.Count = 0) and (FButton.OrderList.Count > 0) then
@@ -3929,8 +3830,11 @@ begin
     end else
     if FHallsTable.RecordCount = 1 then
     begin
-      RemoveTableButton;
-      CreateTableButtonList(FHallsTable.FieldByName('ID').AsInteger);
+      {RemoveTableButton;
+      CreateTableButtonList(FHallsTable.FieldByName('ID').AsInteger);}
+
+      // Обновим информацию о заказах по списку столов
+      FTableManager.RefreshOrderData;
     end;
   finally
     LockWindowUpdate(0);

@@ -31,6 +31,9 @@ type
     FOrderList: TDictionary<Integer, String>;
     FRespName: String;
     FNeedToInsert: Boolean;
+
+    FManager: TObject;
+
     procedure SetPosX(const Value: Double);
     procedure SetPosY(const Value: Double);
     procedure SetHallKey(const Value: Integer);
@@ -61,6 +64,8 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
+    procedure RefreshTableCondition(const AContactKey: Integer);
+
     // ссылка на зал
     property HallKey: Integer read FHallKey write SetHallKey;
     // тип стола
@@ -79,6 +84,7 @@ type
     property NeedToInsert: Boolean read FNeedToInsert write FNeedToInsert;
 
     property TableCondition: TRestTableCondition read FTableCondition write SetTableCondition;
+    property Manager: TObject read FManager write FManager;
   published
     // номер стола
     property Number: String read FNumber write SetNumber;
@@ -104,6 +110,9 @@ procedure Register;
 
 implementation
 
+uses
+  FrontData_Unit, AdvGDIP, rfTableManager_unit;
+
 const
   POS_MULTIPLIER = 100;
 
@@ -128,6 +137,7 @@ begin
 
   Flat := True;
   Tag := 1;
+  Font.Style := [fsBold];
 end;
 
 destructor TRestTable.Destroy;
@@ -186,65 +196,57 @@ begin
   DrawTableCondition;
 end;
 
+procedure TRestTable.RefreshTableCondition(const AContactKey: Integer);
+begin
+  // Пуст или нет
+  if FOrderList.Count = 0 then
+  begin
+    // Свой или нет
+    if AContactKey = FRespKey then
+      FTableCondition := TRestTableCondition.rtcFree
+    else
+      FTableCondition := TRestTableCondition.rtcFreeOther;
+  end
+  else
+  begin
+    // Свой или нет
+    if AContactKey = FRespKey then
+      FTableCondition := TRestTableCondition.rtcOccupied
+    else
+      FTableCondition := TRestTableCondition.rtcOccupiedOther;
+  end;
+  // Перерисуем стол после обновления состояния
+  Repaint;
+end;
+
 procedure TRestTable.DrawTableCondition;
 const
   MARK_SIZE_PX = 25;
 var
   ImgCanvas: TCanvas;
-  MarkX, MarkY, MarkWidth, MarkHeight: Integer;
   MarkRect: TRect;
-  OrderCount: String;
+  ConditionPicture: TAdvGDIPPicture;
+  TableManager: TrfTableManager;
 
-  procedure CalcMarkProps;
+  function GetImageRect(const Image: TAdvGDIPPicture): TRect;
   begin
-    MarkWidth := MARK_SIZE_PX;
-    MarkHeight := MARK_SIZE_PX;
-    MarkX := (Self.Width - MARK_SIZE_PX) div 2;
-    MarkY := (Self.Height - MARK_SIZE_PX) div 2;
+    Result := Rect(Self.Width - Image.Width, 0, Self.Width, Image.Height)
   end;
 
 begin
-  // Расчет размеров значка состояния
-  CalcMarkProps;
-
   ImgCanvas := Self.Canvas;
-  ImgCanvas.Brush.Style := bsSolid;
-  ImgCanvas.Pen.Color := clBlack;
-  MarkRect := Rect(MarkX, MarkY, MarkX + MarkWidth, MarkY + MarkHeight);
-  OrderCount := IntToStr(FOrderList.Count);
 
-  case FTableCondition of
-    rtcFree:
-      begin
-      end;
+  if Assigned(FManager) then
+  begin
+    TableManager := TrfTableManager(FManager);
+    ConditionPicture := TableManager.GetImageForCondition(FTableCondition);
 
-    rtcFreeOther:
-      begin
-      end;
-
-    rtcOccupied:
-      begin
-        ImgCanvas.Brush.Color := clGreen;
-        ImgCanvas.Rectangle(MarkX, MarkY, MarkX + MarkWidth, MarkY + MarkHeight);
-        // Кол-во заказов
-        // ImgCanvas.TextRect(MarkRect, OrderCount, [tfCenter, tfVerticalCenter, tfSingleLine]);
-      end;
-
-    rtcOccupiedOther:
-      begin
-        ImgCanvas.Brush.Color := clYellow;
-        ImgCanvas.Rectangle(MarkX, MarkY, MarkX + MarkWidth, MarkY + MarkHeight);
-        // Кол-во заказов
-        // ImgCanvas.TextRect(MarkRect, OrderCount, [tfCenter, tfVerticalCenter, tfSingleLine]);
-      end;
-
-    rtcPreCheck:
-      begin
-        ImgCanvas.Brush.Color := clRed;
-        ImgCanvas.Rectangle(MarkX, MarkY, MarkX + MarkWidth, MarkY + MarkHeight);
-        // Кол-во заказов
-        // ImgCanvas.TextRect(MarkRect, OrderCount, [tfCenter, tfVerticalCenter, tfSingleLine]);
-      end;
+    if Assigned(ConditionPicture) then
+    begin
+      // Расчет размеров значка состояния
+      MarkRect := GetImageRect(ConditionPicture);
+      ConditionPicture.Draw(ImgCanvas, MarkRect);
+    end;
   end;
 end;
 
