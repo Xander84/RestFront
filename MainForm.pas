@@ -4003,14 +4003,14 @@ end;
 procedure TRestMainForm.OnBeforePostLine(DataSet: TDataSet);
 begin
   //1. Проверяем на скидку
-  if FHeaderTable.FieldByName('USR$DISCOUNTKEY').AsInteger > 0 then
+//  if FHeaderTable.FieldByName('USR$DISCOUNTKEY').AsInteger > 0 then
     DataSet.FieldByName('USR$PERSDISCOUNT').AsCurrency :=
       FFrontBase.GetDiscount(FHeaderTable.FieldByName('USR$DISCOUNTKEY').AsInteger,
         DataSet.FieldByName('usr$goodkey').AsInteger,
         FHeaderTable.FieldByName('usr$logicdate').AsDateTime,
-        DataSet.FieldByName('usr$persdiscount').AsCurrency)
-  else
-    DataSet.FieldByName('USR$PERSDISCOUNT').AsCurrency := 0;
+        DataSet.FieldByName('usr$persdiscount').AsCurrency);
+//  else
+//    DataSet.FieldByName('USR$PERSDISCOUNT').AsCurrency := 0;
 
 { TODO : Двойной бонус? }
   if DataSet.FieldByName('STATEFIELD').AsInteger = cn_StateNothing then

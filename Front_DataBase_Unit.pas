@@ -63,7 +63,9 @@ const
     '  FROM usr$mn_menu mn left join usr$mn_menuname mnn ' +
     '   ON mn.usr$menunamekey = mnn.id ' +
     '    LEFT JOIN gd_document doc on doc.id = mn.documentkey ' +
-    '  WHERE (mn.usr$todate is null or mn.usr$todate>=:date) and (doc.documentdate <= :Date) ' +
+    '  WHERE (mn.usr$todate is null or mn.usr$todate >= :date) and (doc.documentdate <= :Date) ' +
+    '    AND ((mn.USR$TIMEBEGIN <= current_time AND mn.USR$TIMEEND >= current_time) ' +
+    '      OR (mn.USR$TIMEBEGIN IS NULL AND mn.USR$TIMEEND IS NULL)) ' +
     ' and exists (select first(1) dd.id from gd_document dd where dd.parent = mn.documentkey) ' +
     ' ORDER BY mnn.usr$name ';
 
