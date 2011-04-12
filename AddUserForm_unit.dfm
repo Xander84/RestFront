@@ -61,8 +61,6 @@ object AddUserForm: TAddUserForm
     StatusBar.ColorTo = 16374724
     StatusBar.GradientDirection = gdVertical
     Styler = FrontData.FrontPanelStyler
-    ExplicitWidth = 577
-    ExplicitHeight = 346
     FullHeight = 0
     object Label1: TLabel
       Left = 16
@@ -208,6 +206,7 @@ object AddUserForm: TAddUserForm
       ParentFont = False
       PasswordChar = '*'
       TabOrder = 3
+      OnKeyPress = dbePASSWKeyPress
     end
     object edConfirmPass: TEdit
       Left = 16
@@ -223,6 +222,7 @@ object AddUserForm: TAddUserForm
       ParentFont = False
       PasswordChar = '*'
       TabOrder = 4
+      OnKeyPress = edConfirmPassKeyPress
     end
     object DBAdvGrid1: TDBAdvGrid
       Left = 200
@@ -1461,8 +1461,6 @@ object AddUserForm: TAddUserForm
     StatusBar.ColorTo = 16374724
     StatusBar.GradientDirection = gdVertical
     Styler = FrontData.FrontPanelStyler
-    ExplicitLeft = 577
-    ExplicitHeight = 346
     FullHeight = 0
     object btnOK: TAdvSmoothButton
       Left = 5

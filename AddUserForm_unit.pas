@@ -41,6 +41,8 @@ type
     procedure FormCreate(Sender: TObject);
     procedure actAddUserExecute(Sender: TObject);
     procedure actAddUserUpdate(Sender: TObject);
+    procedure dbePASSWKeyPress(Sender: TObject; var Key: Char);
+    procedure edConfirmPassKeyPress(Sender: TObject; var Key: Char);
   public
 
   end;
@@ -63,6 +65,26 @@ begin
   actAddUser.Enabled := (not MainTable.FieldByName('SURNAME').IsNull)
     and (not MainTable.FieldByName('PASSW').IsNull)
     and (MainTable.FieldByName('PASSW').AsString = edConfirmPass.Text);
+end;
+
+procedure TAddUserForm.dbePASSWKeyPress(Sender: TObject; var Key: Char);
+begin
+  if (Key = 'æ') or (Key = 'Æ') then
+    Key := ';';
+  if (Key = ',') or (Key = '.') then
+    Key := '?';
+
+  inherited;
+end;
+
+procedure TAddUserForm.edConfirmPassKeyPress(Sender: TObject; var Key: Char);
+begin
+  if (Key = 'æ') or (Key = 'Æ') then
+    Key := ';';
+  if (Key = ',') or (Key = '.') then
+    Key := '?';
+
+  inherited;
 end;
 
 procedure TAddUserForm.FormCreate(Sender: TObject);
