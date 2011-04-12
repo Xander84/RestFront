@@ -10,6 +10,18 @@ uses
 type
   TRestTableCondition = (rtcUnknown, rtcFree, rtcFreeOther, rtcOccupied, rtcOccupiedOther, rtcPreCheck);
 
+  TrfOrder = class(TObject)
+    FID: Integer;
+    FNumber: String;
+    FTimeClodeOrder: TDateTime;
+  public
+    constructor Create(const AID: Integer; const ANumber: String);
+
+    property ID: Integer read FID write FID;
+    property Number: String read FNumber write FNumber;
+    property TimeCloseOrder: TDateTime read FTimeClodeOrder write FTimeClodeOrder;
+  end;
+
   TRestTable = class(TPngSpeedButton)
   private
     FNumber: String;
@@ -28,7 +40,7 @@ type
     FRespKey: Integer;
     FIsLocked: Boolean;
     FComputerName: String;
-    FOrderList: TDictionary<Integer, String>;
+    FOrderList: TDictionary<Integer, TrfOrder>;
     FRespName: String;
     FNeedToInsert: Boolean;
 
@@ -65,6 +77,8 @@ type
     destructor Destroy; override;
 
     procedure RefreshTableCondition(const AContactKey: Integer);
+    function AddOrder(const AID: Integer; const ANumber: String): TrfOrder;
+    function GetOrder(const AOrderKey: Integer): TrfOrder;
 
     // ссылка на зал
     property HallKey: Integer read FHallKey write SetHallKey;
@@ -79,7 +93,7 @@ type
     property OrderKey: Integer read FOrderKey write SetOrderKey;
     property RespKey: Integer read FRespKey write SetRespKey;
     property OrderCount: Integer read GetOrderCount;
-    property OrderList: TDictionary<Integer, String>read FOrderList;
+    property OrderList: TDictionary<Integer, TrfOrder> read FOrderList;
     property RespName: String read FRespName write SetRespName;
     property NeedToInsert: Boolean read FNeedToInsert write FNeedToInsert;
 
@@ -123,6 +137,12 @@ end;
 
 { TRestTable }
 
+function TRestTable.AddOrder(const AID: Integer; const ANumber: String): TrfOrder;
+begin
+  Result := TrfOrder.Create(AID, ANumber);
+  FOrderList.Add(AID, Result);
+end;
+
 constructor TRestTable.Create;
 begin
   inherited Create(AOwner);
@@ -133,7 +153,7 @@ begin
   // По умолчанию стол обладает пустым состоянием, никакого значка не рисуется
   FTableCondition := TRestTableCondition.rtcUnknown;
   // Список заказов для этого стола
-  FOrderList := TDictionary<Integer, String>.Create();
+  FOrderList := TDictionary<Integer, TrfOrder>.Create();
 
   Flat := True;
   Tag := 1;
@@ -141,9 +161,21 @@ begin
 end;
 
 destructor TRestTable.Destroy;
+var
+  Order: TrfOrder;
 begin
+  for Order in FOrderList.Values do
+    if Assigned(Order) then
+      Order.Free;
   FOrderList.Free;
   inherited;
+end;
+
+function TRestTable.GetOrder(const AOrderKey: Integer): TrfOrder;
+begin
+  Result := nil;
+  if FOrderList.ContainsKey(AOrderKey) then
+    Result := FOrderList.Items[AOrderKey];
 end;
 
 function TRestTable.GetOrderCount: Integer;
@@ -197,31 +229,43 @@ begin
 end;
 
 procedure TRestTable.RefreshTableCondition(const AContactKey: Integer);
+var
+  Order: TrfOrder;
 begin
-  // Пуст или нет
-  if FOrderList.Count = 0 then
-  begin
-    // Свой или нет
-    if AContactKey = FRespKey then
-      FTableCondition := TRestTableCondition.rtcFree
+  try
+    // Пуст или нет
+    if FOrderList.Count = 0 then
+    begin
+      // Свой или нет
+      if AContactKey = FRespKey then
+        FTableCondition := TRestTableCondition.rtcFree
+      else
+        FTableCondition := TRestTableCondition.rtcFreeOther;
+    end
     else
-      FTableCondition := TRestTableCondition.rtcFreeOther;
-  end
-  else
-  begin
-    // Свой или нет
-    if AContactKey = FRespKey then
-      FTableCondition := TRestTableCondition.rtcOccupied
-    else
-      FTableCondition := TRestTableCondition.rtcOccupiedOther;
+    begin
+      // Проверим есть ли пречек
+      for Order in FOrderList.Values do
+        if Order.TimeCloseOrder <> 0 then
+        begin
+          FTableCondition := TRestTableCondition.rtcPreCheck;
+          Exit;
+        end;
+      // Свой или нет
+      if AContactKey = FRespKey then
+        FTableCondition := TRestTableCondition.rtcOccupied
+      else
+        FTableCondition := TRestTableCondition.rtcOccupiedOther;
+    end;
+  finally
+    // Перерисуем стол после обновления состояния
+    Repaint;
   end;
-  // Перерисуем стол после обновления состояния
-  Repaint;
 end;
 
 procedure TRestTable.DrawTableCondition;
 const
-  MARK_SIZE_PX = 25;
+  MARK_MARGIN = 5;
 var
   ImgCanvas: TCanvas;
   MarkRect: TRect;
@@ -230,7 +274,7 @@ var
 
   function GetImageRect(const Image: TAdvGDIPPicture): TRect;
   begin
-    Result := Rect(Self.Width - Image.Width, 0, Self.Width, Image.Height)
+    Result := Rect(Self.Width - Image.Width - MARK_MARGIN, MARK_MARGIN, Self.Width - MARK_MARGIN, Image.Height + MARK_MARGIN)
   end;
 
 begin
@@ -408,6 +452,15 @@ begin
     // Рисуем имя стола
     ImgCanvas.TextOut(0, 0, FTableName);
   end;
+end;
+
+{ TrfOrder }
+
+constructor TrfOrder.Create(const AID: Integer; const ANumber: String);
+begin
+  FID := AID;
+  FNumber := ANumber;
+  FTimeClodeOrder := 0;
 end;
 
 end.

@@ -187,8 +187,6 @@ type
     btnShowKeyboard2: TAdvSmoothButton;
     btnCancel1: TAdvSmoothButton;
     btnCancel2: TAdvSmoothButton;
-    btnOK: TAdvSmoothButton;
-    btnCancel3: TAdvSmoothButton;
     tsHalls: TAdvTabSheet;
     pnlHalls: TAdvPanel;
     dxfDesigner: TdxfDesigner;
@@ -210,6 +208,8 @@ type
     btnPrintCopyCheck: TAdvSmoothButton;
     btnReturnGoodSum: TAdvSmoothButton;
     actReturnGoodSum: TAction;
+    btnOK: TAdvSmoothButton;
+    btnCancel3: TAdvSmoothButton;
 
     //Проверка введёного пароля
     procedure actPassEnterExecute(Sender: TObject);
@@ -379,6 +379,7 @@ type
     //Текущее выбраное меню
     FMenuKey: Integer;
     FActiveHallButton: String;
+    FActiveHallKey: Integer;
     //Указатель на нажатую кнопку
     FSelectedButton: TObject;
     FMenuSelectedButton: TObject;
@@ -405,10 +406,9 @@ type
     procedure CreateHallButtonList;
     procedure AddHallButton;
     procedure RemoveHallButton;
+    procedure CreateHall(const HallKey: Integer);
     procedure HallButtonOnClick(Sender: TObject);
     procedure ChooseTableOnClick(Sender: TObject);
-    procedure CreateTableButtonList(const HallKey: Integer);
-    procedure LoadHallBackGround(const HallKey: Integer);
     procedure RemoveTableButton;
     procedure RemoveChooseTable;
     procedure PopItemOnClick(Sender: TObject);
@@ -622,6 +622,8 @@ begin
   FTableManager := TrfTableManager.Create(FFrontBase, sbTable);
   FTableManager.TableButtonOnClick := TableButtonOnClick;
   FTableManager.TableButtonPopupMenu := tablePopupMenu;
+
+  FActiveHallKey := -1;
 end;
 
 procedure TRestMainForm.FormDestroy(Sender: TObject);
@@ -874,20 +876,6 @@ begin
       FOrderDataSet.Next;
     end;
   end;
-end;
-
-procedure TRestMainForm.CreateTableButtonList(const HallKey: Integer);
-begin
-  // В зависимости от типа страницы возьмем данные по столам с заказами или без
-  //if FRestFormState = HallsPage then
-  //  FFrontBase.GetTablesInfo(FTablesInfoTable, HallKey)
-  //else
-  //  FFrontBase.GetTables(FTablesInfoTable, HallKey);
-
-  // Загрузить столы из датасета
-  FTableManager.LoadTables(HallKey);
-  // Обновим информацию о заказах по списку столов
-  FTableManager.RefreshOrderData;
 end;
 
 procedure TRestMainForm.AddChooseTables(const HallKey: Integer);
@@ -1145,6 +1133,47 @@ begin
   end;
 end;
 
+procedure TRestMainForm.CreateHall(const HallKey: Integer);
+
+  procedure LoadHallBackGround(const HallKey: Integer);
+  var
+    Str: TStream;
+    FImage: TPngImage;
+  begin
+    Str := TMemoryStream.Create;
+    try
+      if FFrontBase.GetHallBackGround(Str, HallKey) then
+      begin
+        if Str.Size > 0 then
+        begin
+          Str.Position := 0;
+          FImage := TPngImage.Create;
+          try
+            FImage.LoadFromStream(Str);
+            imgHallBackground.Picture.Assign(FImage);
+          finally
+            FImage.Free;
+          end;
+        end;
+      end;
+    finally
+      Str.Free;
+    end;
+  end;
+
+begin
+  if FActiveHallKey <> HallKey then
+  begin
+    // Загрузим фон зала
+    LoadHallBackGround(HallKey);
+    // Загрузить столы из датасета
+    FTableManager.LoadTables(HallKey);
+    FActiveHallKey := HallKey;
+  end;
+  // Обновим информацию о заказах по списку столов
+  FTableManager.RefreshOrderData;
+end;
+
 procedure TRestMainForm.CreateHallButtonList;
 var
   FButton: TComponent;
@@ -1386,7 +1415,7 @@ end;
 
 procedure TRestMainForm.RemoveTableButton;
 begin
-  FTableManager.Clear;
+  //FTableManager.Clear;
 end;
 
 procedure TRestMainForm.MenuButtonOnClick(Sender: TObject);
@@ -1450,10 +1479,9 @@ begin
   try
     FButton := TButton(Sender);
 
-    RemoveTableButton;
     RemoveChooseTable;
-    LoadHallBackGround(FButton.Tag);
-    CreateTableButtonList(FButton.Tag);
+    // План зала
+    CreateHall(FButton.Tag);
 
     FActiveHallButton := FButton.Name;
 
@@ -1465,32 +1493,6 @@ begin
       tmrTables.Enabled := True;
   finally
     LockWindowUpdate(0);
-  end;
-end;
-
-procedure TRestMainForm.LoadHallBackGround(const HallKey: Integer);
-var
-  Str: TStream;
-  FImage: TPngImage;
-begin
-  Str := TMemoryStream.Create;
-  try
-    if FFrontBase.GetHallBackGround(Str, HallKey) then
-    begin
-      if Str.Size > 0 then
-      begin
-        Str.Position := 0;
-        FImage := TPngImage.Create;
-        try
-          FImage.LoadFromStream(Str);
-          imgHallBackground.Picture.Assign(FImage);
-        finally
-          FImage.Free;
-        end;
-      end;
-    end;
-  finally
-    Str.Free;
   end;
 end;
 
@@ -2336,6 +2338,8 @@ begin
 end;
 
 procedure TRestMainForm.actPreCheckExecute(Sender: TObject);
+var
+  Order: TrfOrder;
 begin
   if FHeaderTable.FieldByName('usr$timecloseorder').IsNull then
   begin
@@ -2347,6 +2351,11 @@ begin
       if FHeaderTable.State = dsBrowse then
         FHeaderTable.Edit;
       FHeaderTable.FieldByName('usr$timecloseorder').AsDateTime := Now;
+      // Укажем в заказе стола что был распечатен пречек
+      Order := FTableManager.GetOrder(FHeaderTable.FieldByName('usr$tablekey').AsInteger,
+        FHeaderTable.FieldByName('ID').AsInteger);
+      if Assigned(Order) then
+        Order.TimeCloseOrder := Now;
 
       SaveCheck;
       actCancel.Execute;
@@ -2359,6 +2368,7 @@ end;
 procedure TRestMainForm.actCancelPreCheckExecute(Sender: TObject);
 var
   FUserInfo: TUserInfo;
+  Order: TrfOrder;
 begin
   FUserInfo := FFrontBase.CheckUserPasswordWithForm;
   if FUserInfo.CheckedUserPassword then
@@ -2371,6 +2381,12 @@ begin
         FHeaderTable.Edit;
         FHeaderTable.FieldByName('usr$timecloseorder').Clear;
         FHeaderTable.Post;
+
+        // Укажем в заказе стола что пречек был отменен
+        Order := FTableManager.GetOrder(FHeaderTable.FieldByName('usr$tablekey').AsInteger,
+          FHeaderTable.FieldByName('ID').AsInteger);
+        if Assigned(Order) then
+          Order.TimeCloseOrder := 0;
       end;
       SaveCheck;
 
@@ -2588,7 +2604,7 @@ begin
           pnlMainGood.Visible := False;
           pnlChoose.Visible   := False;
           pnlExtraGoodGroup.Visible := False;
-          imgHallBackground.Picture := nil;
+          //imgHallBackground.Picture := nil;
           //5. установки кнопок
           FMenuButtonCount := 0;
 
@@ -2785,10 +2801,9 @@ begin
           begin
             pnlRight.Visible := False;
 
-            RemoveTableButton;
             RemoveChooseTable;
-            LoadHallBackGround(FHallsTable.FieldByName('ID').AsInteger);
-            CreateTableButtonList(FHallsTable.FieldByName('ID').AsInteger);
+            // План зала
+            CreateHall(FHallsTable.FieldByName('ID').AsInteger);
 
             if FRestFormState = HallInfo then
             begin
@@ -3781,7 +3796,8 @@ begin
 
   tablePopupMenu.Items.Clear;
   // Пункт меню для нового заказа
-  if (FButton.RespKey = FFrontBase.ContactKey) or ((FFrontBase.UserKey and FFrontBase.Options.ManagerGroupMask) <> 0) then
+  if (FButton.RespKey <= 0) or (FButton.RespKey = FFrontBase.ContactKey)
+     or ((FFrontBase.UserKey and FFrontBase.Options.ManagerGroupMask) <> 0) then
   begin
     Item := TMenuItem.Create(tablePopupMenu);
     Item.Caption := 'Новый заказ';
@@ -3797,7 +3813,7 @@ begin
     begin
       Item  := TMenuItem.Create(tablePopupMenu);
       Item.Tag := OrderKey;
-      Item.Caption := 'Заказ ' + FButton.OrderList.Items[OrderKey];
+      Item.Caption := 'Заказ ' + FButton.OrderList.Items[OrderKey].Number;
       Item.OnClick := OrderButtonOnClick;
       tablePopupMenu.Items.Add(Item);
     end;
@@ -3835,9 +3851,6 @@ begin
     end else
     if FHallsTable.RecordCount = 1 then
     begin
-      {RemoveTableButton;
-      CreateTableButtonList(FHallsTable.FieldByName('ID').AsInteger);}
-
       // Обновим информацию о заказах по списку столов
       FTableManager.RefreshOrderData;
     end;

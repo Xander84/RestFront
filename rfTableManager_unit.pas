@@ -42,6 +42,10 @@ type
     function AddTable(const ATableNumber: String; const ADesignerTable: TRestTable): TRestTable;
     { Удалить стол по идентификатору }
     procedure DropTable(ATable: TRestTable);
+    { Получим объект стола по ИД }
+    function GetTable(const ATableKey: Integer): TRestTable;
+
+    function GetOrder(const ATableKey, AOrderKey: Integer): TrfOrder;
 
     // Список столов
     property TablesList: TList<TRestTable> read FTablesList;
@@ -151,6 +155,28 @@ begin
     Result := FTableImageDictionary.Items[ATableType];
 end;
 
+function TrfTableManager.GetOrder(const ATableKey, AOrderKey: Integer): TrfOrder;
+var
+  Table: TRestTable;
+begin
+  Table := GetTable(ATableKey);
+  if Assigned(Table) then
+    Result := Table.GetOrder(AOrderKey);
+end;
+
+function TrfTableManager.GetTable(const ATableKey: Integer): TRestTable;
+var
+  Table: TRestTable;
+begin
+  for Table in FTablesList do
+    if Table.ID = ATableKey then
+    begin
+      Result := Table;
+      Exit;
+    end;
+  Result := nil;
+end;
+
 procedure TrfTableManager.LoadImages;
 var
   ibsql: TIBSQL;
@@ -189,72 +215,82 @@ begin
 
   // Загрузка изображений состояний столов
   FConditionImageDictionary.Add(rtcUnknown, nil);
-  FConditionImageDictionary.Add(rtcFree, FrontData.RestPictureContainer.FindPicture('bullet_green_small'));
-  FConditionImageDictionary.Add(rtcFreeOther, FrontData.RestPictureContainer.FindPicture('bullet_yellow_small'));
+  FConditionImageDictionary.Add(rtcFree, nil{FrontData.RestPictureContainer.FindPicture('bullet_green_small')});
+  FConditionImageDictionary.Add(rtcFreeOther, nil{FrontData.RestPictureContainer.FindPicture('bullet_green_small')});
   FConditionImageDictionary.Add(rtcOccupied, FrontData.RestPictureContainer.FindPicture('user_small'));
-  FConditionImageDictionary.Add(rtcOccupiedOther, FrontData.RestPictureContainer.FindPicture('user_small'));
-  FConditionImageDictionary.Add(rtcPreCheck, FrontData.RestPictureContainer.FindPicture('money_dollar_small'));
+  FConditionImageDictionary.Add(rtcOccupiedOther, FrontData.RestPictureContainer.FindPicture('bullet_yellow_small'));
+  FConditionImageDictionary.Add(rtcPreCheck, FrontData.RestPictureContainer.FindPicture('money'));
 end;
 
 procedure TrfTableManager.LoadTables(const HallKey: Integer);
 var
   NewTable: TRestTable;
   ibsql: TIBSQL;
+  ParentDoubleBuffered: Boolean;
 begin
-  // Очистим список столов
-  FTablesList.Clear;
-
-  ibsql := TIBSQL.Create(nil);
+  ParentDoubleBuffered := FTableParent.DoubleBuffered;
+  FTableParent.DoubleBuffered := False;
   try
-    ibsql.Transaction := FDataBase.ReadTransaction;
-    ibsql.SQL.Text :=
-      ' SELECT ' +
-      '   t.id, t.usr$type, t.usr$number, ' +
-      '   t.usr$posx, t.usr$posy, tt.usr$width, tt.usr$length ' +
-      ' FROM ' +
-      '   usr$mn_table t ' +
-      '   LEFT JOIN usr$mn_tabletype tt ON tt.id = t.usr$type ' +
-      ' WHERE ' +
-      '   t.usr$hallkey = :id ';
-    ibsql.Params[0].AsInteger := HallKey;
-    ibsql.ExecQuery;
+    // Очистим список столов
+    for NewTable in FTablesList do
+      if Assigned(NewTable) then
+        NewTable.Free;
+    FTablesList.Clear;
 
-    // Загрузим столы из данных запроса
-    while not ibsql.Eof do
-    begin
-      NewTable := TRestTable.Create(FTableParent);
-      NewTable.Parent := FTableParent;
-      NewTable.Manager := Self;
+    ibsql := TIBSQL.Create(nil);
+    try
+      ibsql.Transaction := FDataBase.ReadTransaction;
+      ibsql.SQL.Text :=
+        ' SELECT ' +
+        '   t.id, t.usr$type, t.usr$number, ' +
+        '   t.usr$posx, t.usr$posy, tt.usr$width, tt.usr$length ' +
+        ' FROM ' +
+        '   usr$mn_table t ' +
+        '   LEFT JOIN usr$mn_tabletype tt ON tt.id = t.usr$type ' +
+        ' WHERE ' +
+        '   t.usr$hallkey = :id ';
+      ibsql.Params[0].AsInteger := HallKey;
+      ibsql.ExecQuery;
 
-      NewTable.ID := ibsql.FieldByName('ID').AsInteger;
-      NewTable.TableTypeKey := ibsql.FieldByName('USR$TYPE').AsInteger;
-      // Относительная позиция кнопки в родителе
-      NewTable.PosX := ibsql.FieldByName('USR$POSX').AsFloat;
-      NewTable.PosY := ibsql.FieldByName('USR$POSY').AsFloat;
-      // Размер кнопки относительно родительской панели
-      NewTable.RelativeWidth := ibsql.FieldByName('USR$WIDTH').AsFloat;
-      NewTable.RelativeHeight := ibsql.FieldByName('USR$LENGTH').AsFloat;
-      // Номер стола и имя кассы
-      NewTable.Number := ibsql.FieldByName('USR$NUMBER').AsString;
-      //NewTable.ComputerName := ibsql.FieldByName('USR$COMPUTERNAME').AsString;
-      // FButton.RespName := ibsql.FieldByName('RESPNAME').AsString;
+      // Загрузим столы из данных запроса
+      while not ibsql.Eof do
+      begin
+        NewTable := TRestTable.Create(FTableParent);
+        NewTable.Parent := FTableParent;
+        NewTable.Manager := Self;
 
-      // Обработчик действия по клику на стол
-      if Assigned(TableButtonOnClick) then
-        NewTable.OnClick := TableButtonOnClick;
-      // Контекстное меню для стола
-      if Assigned(TableButtonPopupMenu) then
-        NewTable.PopupMenu := TableButtonPopupMenu;
+        NewTable.ID := ibsql.FieldByName('ID').AsInteger;
+        NewTable.TableTypeKey := ibsql.FieldByName('USR$TYPE').AsInteger;
+        // Относительная позиция кнопки в родителе
+        NewTable.PosX := ibsql.FieldByName('USR$POSX').AsFloat;
+        NewTable.PosY := ibsql.FieldByName('USR$POSY').AsFloat;
+        // Размер кнопки относительно родительской панели
+        NewTable.RelativeWidth := ibsql.FieldByName('USR$WIDTH').AsFloat;
+        NewTable.RelativeHeight := ibsql.FieldByName('USR$LENGTH').AsFloat;
+        // Номер стола и имя кассы
+        NewTable.Number := ibsql.FieldByName('USR$NUMBER').AsString;
+        //NewTable.ComputerName := ibsql.FieldByName('USR$COMPUTERNAME').AsString;
+        // FButton.RespName := ibsql.FieldByName('RESPNAME').AsString;
 
-      // Присвоение изображения стола из списка изображений типов столов
-      NewTable.pngimage := GetImageForType(NewTable.TableTypeKey);
+        // Обработчик действия по клику на стол
+        if Assigned(TableButtonOnClick) then
+          NewTable.OnClick := TableButtonOnClick;
+        // Контекстное меню для стола
+        if Assigned(TableButtonPopupMenu) then
+          NewTable.PopupMenu := TableButtonPopupMenu;
 
-      FTablesList.Add(NewTable);
-      ibsql.Next;
+        // Присвоение изображения стола из списка изображений типов столов
+        NewTable.pngimage := GetImageForType(NewTable.TableTypeKey);
+
+        FTablesList.Add(NewTable);
+        ibsql.Next;
+      end;
+      ibsql.Close;
+    finally
+      FreeAndNil(ibsql);
     end;
-    ibsql.Close;
   finally
-    FreeAndNil(ibsql);
+    FTableParent.DoubleBuffered := ParentDoubleBuffered;
   end;
 end;
 
@@ -353,8 +389,8 @@ end;
 procedure TrfTableManager.RefreshOrderData;
 var
   ibsql: TIBSQL;
-  I: Integer;
   Table: TRestTable;
+  Order: TrfOrder;
 begin
   ibsql := TIBSQL.Create(nil);
   try
@@ -364,6 +400,7 @@ begin
       ' SELECT ' +
       '   u.usr$respkey, ' +
       '   u.documentkey, ' +
+      '   u.usr$timecloseorder, ' +
       '   u.usr$computername, ' +
       '   doc.number, ' +
       '   con.name ' +
@@ -376,28 +413,33 @@ begin
       '   t.id = :id ';
 
     // Пройдем по всем столам и обновим заказы для них
-    for I := 0 to FTablesList.Count - 1 do
+    for Table in FTablesList do
     begin
-      Table := TRestTable(FTablesList.Items[I]);
-      Table.OrderList.Clear;
-
       ibsql.ParamByName('id').AsInteger := Table.ID;
       ibsql.ExecQuery;
-      while not ibsql.Eof do
+
+      // Если не было заказов на столе и нет в запросе, то не будем перерисовывать
+      if (Table.OrderList.Count <> 0) or (not ibsql.Eof) then
       begin
-        if Table.OrderKey <> ibsql.FieldByName('DOCUMENTKEY').AsInteger then
-          Table.OrderKey := ibsql.FieldByName('DOCUMENTKEY').AsInteger;
+        Table.OrderList.Clear;
+        while not ibsql.Eof do
+        begin
+          if Table.OrderKey <> ibsql.FieldByName('DOCUMENTKEY').AsInteger then
+            Table.OrderKey := ibsql.FieldByName('DOCUMENTKEY').AsInteger;
 
-        if Table.RespKey <> ibsql.FieldByName('USR$RESPKEY').AsInteger then
-          Table.RespKey := ibsql.FieldByName('USR$RESPKEY').AsInteger;
+          if Table.RespKey <> ibsql.FieldByName('USR$RESPKEY').AsInteger then
+            Table.RespKey := ibsql.FieldByName('USR$RESPKEY').AsInteger;
 
-        Table.OrderList.Add(ibsql.FieldByName('DOCUMENTKEY').AsInteger,
-          ibsql.FieldByName('NUMBER').AsString);
+          Order := Table.AddOrder(ibsql.FieldByName('DOCUMENTKEY').AsInteger,
+            ibsql.FieldByName('NUMBER').AsString);
+          Order.TimeCloseOrder := ibsql.FieldByName('usr$timecloseorder').AsDateTime;
 
-        ibsql.Next;
+          ibsql.Next;
+        end;
       end;
       // Обновим состояние стола
       Table.RefreshTableCondition(FDataBase.ContactKey);
+
       ibsql.Close;
     end;
   finally
