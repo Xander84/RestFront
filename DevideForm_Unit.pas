@@ -29,12 +29,18 @@ implementation
 
 {$R *.dfm}
 
+uses
+  FrontData_Unit;
+
 { TDevideForm }
 
 procedure TDevideForm.FormCreate(Sender: TObject);
 begin
   inherited;
   FCanDevided := False;
+
+  btnOK.Picture := FrontData.RestPictureContainer.FindPicture('tick');
+  btnCancel.Picture := FrontData.RestPictureContainer.FindPicture('cross');
 end;
 
 function TDevideForm.GetLabelCaption: String;

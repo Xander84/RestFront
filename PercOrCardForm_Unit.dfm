@@ -26,7 +26,7 @@ object PercOrCard: TPercOrCard
     Color = 16640730
     TabOrder = 0
     UseDockManager = True
-    Version = '1.9.0.0'
+    Version = '2.0.1.0'
     BorderColor = clGray
     Caption.Color = 14059353
     Caption.ColorTo = 9648131
@@ -38,7 +38,7 @@ object PercOrCard: TPercOrCard
     Caption.GradientDirection = gdVertical
     Caption.Indent = 2
     Caption.ShadeLight = 255
-    CollapsColor = clHighlight
+    CollapsColor = clNone
     CollapsDelay = 0
     ColorTo = 14986888
     ShadowColor = clBlack
@@ -56,15 +56,17 @@ object PercOrCard: TPercOrCard
     Styler = FrontData.FrontPanelStyler
     FullHeight = 0
     object btnPercent: TAdvSmoothButton
-      Left = 29
-      Top = 22
+      Left = 35
+      Top = 25
       Width = 135
       Height = 65
+      Appearance.PictureAlignment = taCenter
       Appearance.Font.Charset = DEFAULT_CHARSET
       Appearance.Font.Color = clWindowText
       Appearance.Font.Height = -13
-      Appearance.Font.Name = 'Times New Roman'
+      Appearance.Font.Name = 'Tahoma'
       Appearance.Font.Style = [fsBold]
+      Appearance.Layout = blPictureTop
       Status.Caption = '0'
       Status.Appearance.Fill.Color = clRed
       Status.Appearance.Fill.ColorMirror = clNone
@@ -79,23 +81,26 @@ object PercOrCard: TPercOrCard
       Status.Appearance.Font.Name = 'Tahoma'
       Status.Appearance.Font.Style = []
       Bevel = False
-      Caption = '%'
+      Caption = #1055#1088#1086#1094#1077#1085#1090
       Color = 15195349
+      DisabledColor = clBlack
       ParentFont = False
       TabOrder = 0
-      Version = '1.6.5.2'
+      Version = '1.6.9.0'
       OnClick = btnPercentClick
     end
     object btnCard: TAdvSmoothButton
-      Left = 216
-      Top = 22
+      Left = 204
+      Top = 25
       Width = 135
       Height = 65
+      Appearance.PictureAlignment = taCenter
       Appearance.Font.Charset = DEFAULT_CHARSET
       Appearance.Font.Color = clWindowText
       Appearance.Font.Height = -13
-      Appearance.Font.Name = 'Times New Roman'
+      Appearance.Font.Name = 'Tahoma'
       Appearance.Font.Style = [fsBold]
+      Appearance.Layout = blPictureTop
       Status.Caption = '0'
       Status.Appearance.Fill.Color = clRed
       Status.Appearance.Fill.ColorMirror = clNone
@@ -112,9 +117,10 @@ object PercOrCard: TPercOrCard
       Bevel = False
       Caption = #1050#1072#1088#1090#1086#1095#1082#1072
       Color = 15195349
+      DisabledColor = clBlack
       ParentFont = False
       TabOrder = 1
-      Version = '1.6.5.2'
+      Version = '1.6.9.0'
       OnClick = btnCardClick
     end
   end

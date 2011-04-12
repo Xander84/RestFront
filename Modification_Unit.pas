@@ -183,6 +183,8 @@ begin
   FButton.Width  := btnWidth;
   FButton.Appearance.Font.Name := cn_FontType;
   FButton.Appearance.Font.Size := cn_ButtonFontSize;
+  FButton.BevelWidth := 1;
+  FButton.BevelColor := clBlack;
   FButton.SetComponentStyle(tsOffice2007Silver);
 
   //проверяем, есть ли ещё место в ряду

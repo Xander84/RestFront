@@ -3,7 +3,7 @@ object GuestForm: TGuestForm
   Top = 270
   BorderStyle = bsDialog
   Caption = #1050#1086#1083#1080#1095#1077#1089#1090#1074#1086' '#1075#1086#1089#1090#1077#1081
-  ClientHeight = 126
+  ClientHeight = 169
   ClientWidth = 378
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -20,7 +20,7 @@ object GuestForm: TGuestForm
     Left = 0
     Top = 0
     Width = 378
-    Height = 126
+    Height = 169
     Align = alClient
     BevelOuter = bvNone
     Color = 16640730
@@ -54,29 +54,34 @@ object GuestForm: TGuestForm
     StatusBar.ColorTo = 16374724
     StatusBar.GradientDirection = gdVertical
     Styler = FrontData.FrontPanelStyler
+    ExplicitHeight = 126
     FullHeight = 0
+    object Bevel1: TBevel
+      Left = 5
+      Top = 6
+      Width = 251
+      Height = 156
+    end
     object Label1: TLabel
-      Left = 0
-      Top = 0
-      Width = 378
-      Height = 31
-      Align = alTop
+      Left = 15
+      Top = 8
+      Width = 232
+      Height = 33
       Alignment = taCenter
       Caption = #1050#1086#1083#1080#1095#1077#1089#1090#1074#1086' '#1075#1086#1089#1090#1077#1081
       Color = clNone
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -27
-      Font.Name = 'Times New Roman'
+      Font.Name = 'Tahoma'
       Font.Style = []
       ParentColor = False
       ParentFont = False
       Transparent = True
-      ExplicitWidth = 217
     end
     object lblGuestCount: TLabel
-      Left = 7
-      Top = 43
+      Left = 11
+      Top = 51
       Width = 240
       Height = 31
       Alignment = taCenter
@@ -85,20 +90,22 @@ object GuestForm: TGuestForm
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -27
-      Font.Name = 'Times New Roman'
-      Font.Style = []
+      Font.Name = 'Tahoma'
+      Font.Style = [fsBold]
       ParentFont = False
     end
     object btnOK: TAdvSmoothButton
-      Left = 261
+      Left = 262
       Top = 41
       Width = 110
-      Height = 37
+      Height = 54
+      Appearance.PictureAlignment = taCenter
       Appearance.Font.Charset = DEFAULT_CHARSET
       Appearance.Font.Color = clWindowText
-      Appearance.Font.Height = -13
-      Appearance.Font.Name = 'Times New Roman'
+      Appearance.Font.Height = -11
+      Appearance.Font.Name = 'Tahoma'
       Appearance.Font.Style = [fsBold]
+      Appearance.Layout = blPictureTop
       Status.Caption = '0'
       Status.Appearance.Fill.Color = clRed
       Status.Appearance.Fill.ColorMirror = clNone
@@ -115,53 +122,58 @@ object GuestForm: TGuestForm
       Bevel = False
       Caption = #1054#1050
       Color = 15195349
+      DisabledColor = clBlack
       ParentFont = False
-      TabOrder = 0
+      TabOrder = 2
       Version = '1.6.9.0'
       OnClick = btnOKClick
     end
     object btnCancel: TAdvSmoothButton
       Left = 262
-      Top = 84
+      Top = 101
       Width = 110
-      Height = 37
+      Height = 54
+      Appearance.PictureAlignment = taCenter
       Appearance.Font.Charset = DEFAULT_CHARSET
       Appearance.Font.Color = clWindowText
-      Appearance.Font.Height = -13
-      Appearance.Font.Name = 'Times New Roman'
+      Appearance.Font.Height = -11
+      Appearance.Font.Name = 'Tahoma'
       Appearance.Font.Style = [fsBold]
-      Status.Caption = '0'
+      Appearance.Layout = blPictureTop
       Status.Appearance.Fill.Color = clRed
       Status.Appearance.Fill.ColorMirror = clNone
       Status.Appearance.Fill.ColorMirrorTo = clNone
       Status.Appearance.Fill.GradientType = gtSolid
       Status.Appearance.Fill.BorderColor = clGray
-      Status.Appearance.Fill.Rounding = 0
+      Status.Appearance.Fill.Rounding = 8
       Status.Appearance.Fill.ShadowOffset = 0
       Status.Appearance.Font.Charset = DEFAULT_CHARSET
       Status.Appearance.Font.Color = clWhite
       Status.Appearance.Font.Height = -11
       Status.Appearance.Font.Name = 'Tahoma'
       Status.Appearance.Font.Style = []
+      Status.Appearance.Glow = False
       Bevel = False
       Caption = #1054#1090#1084#1077#1085#1072
       Color = 15195349
+      DisabledColor = clBlack
       ParentFont = False
-      TabOrder = 1
+      TabOrder = 3
       Version = '1.6.9.0'
       OnClick = btnCancelClick
     end
     object btnAddGuest: TAdvSmoothButton
-      Left = 7
-      Top = 84
+      Left = 14
+      Top = 101
       Width = 110
-      Height = 37
+      Height = 54
       Appearance.PictureAlignment = taCenter
       Appearance.Font.Charset = DEFAULT_CHARSET
       Appearance.Font.Color = clWindowText
       Appearance.Font.Height = -13
       Appearance.Font.Name = 'Times New Roman'
       Appearance.Font.Style = [fsBold]
+      Appearance.Layout = blPictureTop
       Status.Caption = '0'
       Status.Appearance.Fill.Color = clRed
       Status.Appearance.Fill.ColorMirror = clNone
@@ -177,22 +189,24 @@ object GuestForm: TGuestForm
       Status.Appearance.Font.Style = []
       Bevel = False
       Color = 15195349
+      DisabledColor = clBlack
       ParentFont = False
-      TabOrder = 2
+      TabOrder = 0
       Version = '1.6.9.0'
       OnClick = btnAddGuestClick
     end
     object btnRemoveGuest: TAdvSmoothButton
       Left = 138
-      Top = 84
+      Top = 101
       Width = 110
-      Height = 37
+      Height = 54
       Appearance.PictureAlignment = taCenter
       Appearance.Font.Charset = DEFAULT_CHARSET
       Appearance.Font.Color = clWindowText
       Appearance.Font.Height = -13
       Appearance.Font.Name = 'Times New Roman'
       Appearance.Font.Style = [fsBold]
+      Appearance.Layout = blPictureTop
       Status.Caption = '0'
       Status.Appearance.Fill.Color = clRed
       Status.Appearance.Fill.ColorMirror = clNone
@@ -208,8 +222,9 @@ object GuestForm: TGuestForm
       Status.Appearance.Font.Style = []
       Bevel = False
       Color = 15195349
+      DisabledColor = clBlack
       ParentFont = False
-      TabOrder = 3
+      TabOrder = 1
       Version = '1.6.9.0'
       OnClick = btnRemoveGuestClick
     end

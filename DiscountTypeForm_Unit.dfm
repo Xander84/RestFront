@@ -3,7 +3,7 @@ object DiscountType: TDiscountType
   Top = 320
   BorderStyle = bsDialog
   Caption = #1058#1080#1087' '#1089#1082#1080#1076#1082#1080
-  ClientHeight = 137
+  ClientHeight = 144
   ClientWidth = 422
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -17,11 +17,11 @@ object DiscountType: TDiscountType
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
-  object AdvPanel1: TAdvPanel
+  object pnlMain: TAdvPanel
     Left = 0
     Top = 0
     Width = 422
-    Height = 137
+    Height = 144
     Align = alClient
     BevelOuter = bvNone
     Color = 16640730
@@ -55,18 +55,19 @@ object DiscountType: TDiscountType
     StatusBar.ColorTo = 16374724
     StatusBar.GradientDirection = gdVertical
     Styler = FrontData.FrontPanelStyler
+    ExplicitHeight = 137
     FullHeight = 0
     object DBLookupComboBox: TDBLookupComboBox
-      Left = 16
+      Left = 10
       Top = 24
-      Width = 393
-      Height = 39
+      Width = 401
+      Height = 41
       Color = clWhite
       DataField = 'USR$NAME'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -27
-      Font.Name = 'Times New Roman'
+      Font.Name = 'Tahoma'
       Font.Style = []
       KeyField = 'ID'
       ListField = 'USR$NAME'
@@ -75,15 +76,17 @@ object DiscountType: TDiscountType
       TabOrder = 0
     end
     object btnOK: TAdvSmoothButton
-      Left = 18
-      Top = 82
-      Width = 135
-      Height = 41
+      Left = 28
+      Top = 81
+      Width = 110
+      Height = 54
+      Appearance.PictureAlignment = taCenter
       Appearance.Font.Charset = DEFAULT_CHARSET
       Appearance.Font.Color = clWindowText
-      Appearance.Font.Height = -13
-      Appearance.Font.Name = 'Times New Roman'
+      Appearance.Font.Height = -11
+      Appearance.Font.Name = 'Tahoma'
       Appearance.Font.Style = [fsBold]
+      Appearance.Layout = blPictureTop
       Status.Caption = '0'
       Status.Appearance.Fill.Color = clRed
       Status.Appearance.Fill.ColorMirror = clNone
@@ -100,21 +103,24 @@ object DiscountType: TDiscountType
       Bevel = False
       Caption = #1054#1050
       Color = 15195349
+      DisabledColor = clBlack
       ParentFont = False
       TabOrder = 1
       Version = '1.6.9.0'
       OnClick = btnOKClick
     end
     object btnCancel: TAdvSmoothButton
-      Left = 274
-      Top = 82
-      Width = 135
-      Height = 41
+      Left = 284
+      Top = 81
+      Width = 110
+      Height = 54
+      Appearance.PictureAlignment = taCenter
       Appearance.Font.Charset = DEFAULT_CHARSET
       Appearance.Font.Color = clWindowText
-      Appearance.Font.Height = -13
-      Appearance.Font.Name = 'Times New Roman'
+      Appearance.Font.Height = -11
+      Appearance.Font.Name = 'Tahoma'
       Appearance.Font.Style = [fsBold]
+      Appearance.Layout = blPictureTop
       Status.Caption = '0'
       Status.Appearance.Fill.Color = clRed
       Status.Appearance.Fill.ColorMirror = clNone
@@ -131,34 +137,14 @@ object DiscountType: TDiscountType
       Bevel = False
       Caption = #1054#1090#1084#1077#1085#1072
       Color = 15195349
+      DisabledColor = clBlack
       ParentFont = False
       TabOrder = 2
       Version = '1.6.9.0'
       OnClick = btnCancelClick
     end
   end
-  object memTableDiscount: TkbmMemTable
-    DesignActivation = True
-    AttachedAutoRefresh = True
-    AttachMaxCount = 1
-    FieldDefs = <>
-    IndexDefs = <>
-    SortOptions = []
-    PersistentBackup = False
-    ProgressFlags = [mtpcLoad, mtpcSave, mtpcCopy]
-    LoadedCompletely = False
-    SavedCompletely = False
-    FilterOptions = []
-    Version = '6.30'
-    LanguageID = 0
-    SortID = 0
-    SubLanguageID = 1
-    LocaleID = 1024
-    Left = 288
-    Top = 32
-  end
   object dsMain: TDataSource
-    DataSet = memTableDiscount
     Left = 328
     Top = 32
   end

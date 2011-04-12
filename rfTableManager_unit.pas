@@ -33,7 +33,7 @@ type
     { Сохранить столы в БД }
     procedure SaveTables;
     { Очистить список столов }
-    procedure Clear;
+    procedure ClearTables;
 
     function GetImageForType(const ATableType: Integer): TPngImage;
     function GetImageForCondition(const ATableCondition: TRestTableCondition): TAdvGDIPPicture;
@@ -62,8 +62,13 @@ uses
 
 { TrfTableManager }
 
-procedure TrfTableManager.Clear;
+procedure TrfTableManager.ClearTables;
+var
+  Table: TRestTable;
 begin
+  for Table in FTablesList do
+    if Assigned(Table) then
+      Table.Free;
   FTablesList.Clear;
 end;
 
@@ -85,7 +90,6 @@ end;
 destructor TrfTableManager.Destroy;
 var
   TableImage: TPngImage;
-  Table: TRestTable;
 begin
   // Список типов столов с изображениями
   for TableImage in FTableImageDictionary.Values do
@@ -96,9 +100,7 @@ begin
   FreeAndNil(FConditionImageDictionary);
 
   FreeAndNil(FToDeleteList);
-  for Table in FTablesList do
-    if Assigned(Table) then
-      Table.Free;
+  ClearTables;
   FreeAndNil(FTablesList);
   inherited;
 end;
@@ -232,10 +234,7 @@ begin
   FTableParent.DoubleBuffered := False;
   try
     // Очистим список столов
-    for NewTable in FTablesList do
-      if Assigned(NewTable) then
-        NewTable.Free;
-    FTablesList.Clear;
+    ClearTables;
 
     ibsql := TIBSQL.Create(nil);
     try
@@ -421,7 +420,8 @@ begin
       // Если не было заказов на столе и нет в запросе, то не будем перерисовывать
       if (Table.OrderList.Count <> 0) or (not ibsql.Eof) then
       begin
-        Table.OrderList.Clear;
+        // Удалим все заказы на столе
+        Table.ClearOrders;
         while not ibsql.Eof do
         begin
           if Table.OrderKey <> ibsql.FieldByName('DOCUMENTKEY').AsInteger then

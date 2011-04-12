@@ -79,6 +79,7 @@ type
     procedure RefreshTableCondition(const AContactKey: Integer);
     function AddOrder(const AID: Integer; const ANumber: String): TrfOrder;
     function GetOrder(const AOrderKey: Integer): TrfOrder;
+    procedure ClearOrders;
 
     // ссылка на зал
     property HallKey: Integer read FHallKey write SetHallKey;
@@ -93,7 +94,7 @@ type
     property OrderKey: Integer read FOrderKey write SetOrderKey;
     property RespKey: Integer read FRespKey write SetRespKey;
     property OrderCount: Integer read GetOrderCount;
-    property OrderList: TDictionary<Integer, TrfOrder> read FOrderList;
+    property OrderList: TDictionary<Integer, TrfOrder>read FOrderList;
     property RespName: String read FRespName write SetRespName;
     property NeedToInsert: Boolean read FNeedToInsert write FNeedToInsert;
 
@@ -129,10 +130,20 @@ uses
 
 const
   POS_MULTIPLIER = 100;
+  MARK_MARGIN = 5;
 
 procedure Register;
 begin
   RegisterComponents('RestFront', [TRestTable]);
+end;
+
+function GetConditionImageRect(const AParentControl:TControl; const Image: TAdvGDIPPicture): TRect; inline;
+begin
+  Result := Rect(
+    AParentControl.Width - Image.Width - MARK_MARGIN,
+    MARK_MARGIN,
+    AParentControl.Width - MARK_MARGIN,
+    Image.Height + MARK_MARGIN)
 end;
 
 { TRestTable }
@@ -141,6 +152,16 @@ function TRestTable.AddOrder(const AID: Integer; const ANumber: String): TrfOrde
 begin
   Result := TrfOrder.Create(AID, ANumber);
   FOrderList.Add(AID, Result);
+end;
+
+procedure TRestTable.ClearOrders;
+var
+  Order: TrfOrder;
+begin
+  for Order in FOrderList.Values do
+    if Assigned(Order) then
+      Order.Free;
+  FOrderList.Clear;
 end;
 
 constructor TRestTable.Create;
@@ -161,12 +182,8 @@ begin
 end;
 
 destructor TRestTable.Destroy;
-var
-  Order: TrfOrder;
 begin
-  for Order in FOrderList.Values do
-    if Assigned(Order) then
-      Order.Free;
+  ClearOrders;
   FOrderList.Free;
   inherited;
 end;
@@ -220,9 +237,9 @@ begin
 
   // Рисуем номер стола
   if FRespName <> '' then
-    ImgCanvas.TextOut(0, 0, FNumber + '(' + FRespName + ')')
+    ImgCanvas.TextOut(MARK_MARGIN, MARK_MARGIN, FNumber + '(' + FRespName + ')')
   else
-    ImgCanvas.TextOut(0, 0, FNumber);
+    ImgCanvas.TextOut(MARK_MARGIN, MARK_MARGIN, FNumber);
 
   // Отрисовываем значок состояния стола
   DrawTableCondition;
@@ -264,19 +281,11 @@ begin
 end;
 
 procedure TRestTable.DrawTableCondition;
-const
-  MARK_MARGIN = 5;
 var
   ImgCanvas: TCanvas;
   MarkRect: TRect;
   ConditionPicture: TAdvGDIPPicture;
   TableManager: TrfTableManager;
-
-  function GetImageRect(const Image: TAdvGDIPPicture): TRect;
-  begin
-    Result := Rect(Self.Width - Image.Width - MARK_MARGIN, MARK_MARGIN, Self.Width - MARK_MARGIN, Image.Height + MARK_MARGIN)
-  end;
-
 begin
   ImgCanvas := Self.Canvas;
 
@@ -288,7 +297,7 @@ begin
     if Assigned(ConditionPicture) then
     begin
       // Расчет размеров значка состояния
-      MarkRect := GetImageRect(ConditionPicture);
+      MarkRect := GetConditionImageRect(Self, ConditionPicture);
       ConditionPicture.Draw(ImgCanvas, MarkRect);
     end;
   end;

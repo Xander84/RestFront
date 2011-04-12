@@ -9,8 +9,7 @@ uses
 
 type
   TChooseDiscountCard = class(TBaseFrontForm)
-    memTable: TkbmMemTable;
-    AdvPanel1: TAdvPanel;
+    pnlMain: TAdvPanel;
     Label1: TLabel;
     usrg_lblCardCode: TEdit;
     Label2: TLabel;
@@ -25,6 +24,7 @@ type
     btnCancel: TAdvSmoothButton;
     btnOK: TAdvSmoothButton;
     btnDelete: TAdvSmoothButton;
+    Bevel1: TBevel;
     procedure btnChooseBonusClick(Sender: TObject);
     procedure btnDeleteClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -36,6 +36,8 @@ type
   private
     FFrontBase: TFrontBase;
     FHeaderTable: TkbmMemTable;
+    FDataTable: TkbmMemTable;
+
     FCardid: Integer;
     FDiskid: Integer;
     FUserID: Integer;
@@ -114,18 +116,18 @@ begin
   Assert(Assigned(FHeaderTable), 'HeaderTable not assigned');
 
   if Cardid > 0 then
-    if FFrontBase.GetDiscountCardInfo(memTable, Cardid, FFrontBase.GetLogicDate, '') then
+    if FFrontBase.GetDiscountCardInfo(FDataTable, Cardid, FFrontBase.GetLogicDate, '') then
     begin
-      memTable.First;
-      if not memTable.Eof then
+      FDataTable.First;
+      if not FDataTable.Eof then
       begin
-        usrg_lblCustomer.Caption := memTable.FieldByName('contactname').AsString;
-        usrg_lblPersDiscount.Caption := memTable.FieldByName('Discountname').AsString + ', ' +
-          memTable.FieldByName('DiscPers').AsString + '%';
+        usrg_lblCustomer.Caption := FDataTable.FieldByName('contactname').AsString;
+        usrg_lblPersDiscount.Caption := FDataTable.FieldByName('Discountname').AsString + ', ' +
+          FDataTable.FieldByName('DiscPers').AsString + '%';
 
-        if memTable.FieldByName('usr$bonus').AsInteger = 1 then
+        if FDataTable.FieldByName('usr$bonus').AsInteger = 1 then
         begin
-          usrg_lbBonusSum.Caption := memTable.FieldByName('USR$BALANCE').AsString;
+          usrg_lbBonusSum.Caption := FDataTable.FieldByName('USR$BALANCE').AsString;
           btnChooseBonus.Enabled := True;
         end else
           usrg_lbBonusSum.Caption := '';
@@ -144,15 +146,20 @@ procedure TChooseDiscountCard.FormCreate(Sender: TObject);
 begin
   btnChooseBonus.Enabled := False;
 
-  memTable.FieldDefs.Add('ID', ftInteger, 0);
-  memTable.FieldDefs.Add('contactname', ftString, 120);
-  memTable.FieldDefs.Add('Discountname', ftString, 40);
-  memTable.FieldDefs.Add('DiscPers', ftCurrency, 0);
-  memTable.FieldDefs.Add('usr$bonus', ftCurrency, 0);
-  memTable.FieldDefs.Add('USR$BALANCE', ftCurrency, 0);
-  memTable.FieldDefs.Add('DiscKey', ftInteger, 0);
-  memTable.CreateTable;
-  memTable.Open;
+  FDataTable := TkbmMemTable.Create(Self);
+  FDataTable.FieldDefs.Add('ID', ftInteger, 0);
+  FDataTable.FieldDefs.Add('contactname', ftString, 120);
+  FDataTable.FieldDefs.Add('Discountname', ftString, 40);
+  FDataTable.FieldDefs.Add('DiscPers', ftCurrency, 0);
+  FDataTable.FieldDefs.Add('usr$bonus', ftCurrency, 0);
+  FDataTable.FieldDefs.Add('USR$BALANCE', ftCurrency, 0);
+  FDataTable.FieldDefs.Add('DiscKey', ftInteger, 0);
+  FDataTable.CreateTable;
+  FDataTable.Open;
+
+  btnOK.Picture := FrontData.RestPictureContainer.FindPicture('tick');
+  btnCancel.Picture := FrontData.RestPictureContainer.FindPicture('cross');
+  btnDelete.Picture := FrontData.RestPictureContainer.FindPicture('cancel');
 end;
 
 procedure TChooseDiscountCard.usrg_lblCardCodeKeyUp(Sender: TObject;
@@ -160,20 +167,20 @@ procedure TChooseDiscountCard.usrg_lblCardCodeKeyUp(Sender: TObject;
 begin
   if (Key = VK_RETURN) then
   begin
-    if FFrontBase.GetDiscountCardInfo(memTable, 0, FFrontBase.GetLogicDate, usrg_lblCardCode.Text) then
+    if FFrontBase.GetDiscountCardInfo(FDataTable, 0, FFrontBase.GetLogicDate, usrg_lblCardCode.Text) then
     begin
-      memTable.First;
-      if not memTable.Eof then
+      FDataTable.First;
+      if not FDataTable.Eof then
       begin
-        FCardid := memTable.FieldByName('ID').AsInteger;
-        FDiskid := memTable.FieldByName('DiscKey').AsInteger;
-        usrg_lblCustomer.Caption := memTable.FieldByName('contactname').AsString;
-        usrg_lblPersDiscount.Caption := memTable.FieldByName('Discountname').AsString + ', ' +
-          memTable.FieldByName('DiscPers').AsString + '%';
+        FCardid := FDataTable.FieldByName('ID').AsInteger;
+        FDiskid := FDataTable.FieldByName('DiscKey').AsInteger;
+        usrg_lblCustomer.Caption := FDataTable.FieldByName('contactname').AsString;
+        usrg_lblPersDiscount.Caption := FDataTable.FieldByName('Discountname').AsString + ', ' +
+          FDataTable.FieldByName('DiscPers').AsString + '%';
 
-        if memTable.FieldByName('usr$bonus').AsInteger = 1 then
+        if FDataTable.FieldByName('usr$bonus').AsInteger = 1 then
         begin
-          usrg_lbBonusSum.Caption := memTable.FieldByName('USR$BALANCE').AsString;
+          usrg_lbBonusSum.Caption := FDataTable.FieldByName('USR$BALANCE').AsString;
           btnChooseBonus.Enabled := True;
         end else
           usrg_lbBonusSum.Caption := '';

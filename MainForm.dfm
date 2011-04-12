@@ -48,15 +48,11 @@ object RestMainForm: TRestMainForm
         ColorTo = 14986888
         TabColor = clBtnFace
         TabColorTo = clNone
-        DesignSize = (
-          934
-          701)
         object edPassword: TEdit
-          Left = 265
-          Top = 299
+          Left = 300
+          Top = 279
           Width = 257
           Height = 31
-          Anchors = []
           Font.Charset = RUSSIAN_CHARSET
           Font.Color = clWindowText
           Font.Height = -19
@@ -68,17 +64,18 @@ object RestMainForm: TRestMainForm
           OnKeyPress = edPasswordKeyPress
         end
         object btnOKPass: TAdvSmoothButton
-          Left = 531
-          Top = 290
-          Width = 72
-          Height = 50
+          Left = 563
+          Top = 267
+          Width = 110
+          Height = 54
           Action = actPassEnter
-          Anchors = []
+          Appearance.PictureAlignment = taCenter
           Appearance.Font.Charset = DEFAULT_CHARSET
           Appearance.Font.Color = clWindowText
-          Appearance.Font.Height = -13
-          Appearance.Font.Name = 'Times New Roman'
+          Appearance.Font.Height = -11
+          Appearance.Font.Name = 'Tahoma'
           Appearance.Font.Style = [fsBold]
+          Appearance.Layout = blPictureTop
           Status.Caption = '0'
           Status.Appearance.Fill.Color = clRed
           Status.Appearance.Fill.ColorMirror = clNone
@@ -1096,7 +1093,7 @@ object RestMainForm: TRestMainForm
               Top = 0
               Width = 325
               Height = 660
-              ActivePage = tsTablesDesigner
+              ActivePage = tsHalls
               ActiveFont.Charset = DEFAULT_CHARSET
               ActiveFont.Color = clWindowText
               ActiveFont.Height = -11
@@ -1300,9 +1297,9 @@ object RestMainForm: TRestMainForm
                     Action = actBackToMenu
                     Appearance.Font.Charset = DEFAULT_CHARSET
                     Appearance.Font.Color = clWindowText
-                    Appearance.Font.Height = -21
-                    Appearance.Font.Name = 'Times New Roman'
-                    Appearance.Font.Style = []
+                    Appearance.Font.Height = -13
+                    Appearance.Font.Name = 'Tahoma'
+                    Appearance.Font.Style = [fsBold]
                     Status.Caption = '0'
                     Status.Appearance.Fill.Color = clRed
                     Status.Appearance.Fill.ColorMirror = clNone
@@ -1532,14 +1529,15 @@ object RestMainForm: TRestMainForm
           Width = 609
           Height = 701
           Align = alClient
+          BevelOuter = bvNone
           Color = 14986888
           TabOrder = 1
           object pcOrder: TAdvPageControl
-            Left = 1
-            Top = 1
-            Width = 607
-            Height = 699
-            ActivePage = tsTablePage
+            Left = 0
+            Top = 0
+            Width = 609
+            Height = 701
+            ActivePage = tsManagerPage
             ActiveFont.Charset = DEFAULT_CHARSET
             ActiveFont.Color = clWindowText
             ActiveFont.Height = -11
@@ -1550,6 +1548,7 @@ object RestMainForm: TRestMainForm
             TabBackGroundColor = clBtnFace
             TabMargin.RightMargin = 0
             TabOverlap = 0
+            LowerActive = 0
             Version = '1.6.2.1'
             TabOrder = 0
             object tsUserOrder: TAdvTabSheet
@@ -1560,14 +1559,16 @@ object RestMainForm: TRestMainForm
               TabColorTo = clNone
               object btnNewOrder: TAdvSmoothButton
                 Left = 16
-                Top = 8
+                Top = 1
                 Width = 145
-                Height = 50
+                Height = 54
+                Appearance.PictureAlignment = taCenter
                 Appearance.Font.Charset = DEFAULT_CHARSET
                 Appearance.Font.Color = clWindowText
-                Appearance.Font.Height = -13
+                Appearance.Font.Height = -11
                 Appearance.Font.Name = 'Tahoma'
                 Appearance.Font.Style = [fsBold]
+                Appearance.Layout = blPictureTop
                 Status.Caption = '0'
                 Status.Appearance.Fill.Color = clRed
                 Status.Appearance.Fill.ColorMirror = clNone
@@ -1599,15 +1600,15 @@ object RestMainForm: TRestMainForm
               TabColorTo = clNone
               object pnlMainGood: TPanel
                 Left = 0
-                Top = 387
-                Width = 607
+                Top = 389
+                Width = 609
                 Height = 292
                 Align = alBottom
                 BevelOuter = bvNone
                 Color = 14986888
                 TabOrder = 0
                 object Panel6: TAdvPanel
-                  Left = 557
+                  Left = 559
                   Top = 0
                   Width = 50
                   Height = 292
@@ -1723,7 +1724,7 @@ object RestMainForm: TRestMainForm
                 object pnlGood: TAdvPanel
                   Left = 0
                   Top = 0
-                  Width = 557
+                  Width = 559
                   Height = 292
                   Align = alClient
                   BevelOuter = bvNone
@@ -1772,8 +1773,8 @@ object RestMainForm: TRestMainForm
               object DBGrMain: TDBGridEh
                 Left = 0
                 Top = 0
-                Width = 574
-                Height = 387
+                Width = 576
+                Height = 389
                 Align = alClient
                 AutoFitColWidths = True
                 BorderStyle = bsNone
@@ -1892,10 +1893,10 @@ object RestMainForm: TRestMainForm
                   end>
               end
               object grScrollBar: TScrollBar
-                Left = 574
+                Left = 576
                 Top = 0
                 Width = 33
-                Height = 387
+                Height = 389
                 Align = alRight
                 Kind = sbVertical
                 Max = 1
@@ -1913,7 +1914,7 @@ object RestMainForm: TRestMainForm
               object pnlManagerTop: TAdvPanel
                 Left = 0
                 Top = 0
-                Width = 607
+                Width = 609
                 Height = 65
                 Align = alTop
                 BevelOuter = bvNone
@@ -1949,7 +1950,7 @@ object RestMainForm: TRestMainForm
                 StatusBar.GradientDirection = gdVertical
                 Styler = FrontData.FrontPanelStyler
                 DesignSize = (
-                  607
+                  609
                   65)
                 FullHeight = 65
                 object lblResp: TLabel
@@ -1968,9 +1969,9 @@ object RestMainForm: TRestMainForm
                 end
                 object btnUsersDown: TAdvSmoothButton
                   Left = 17
-                  Top = 7
+                  Top = 1
                   Width = 72
-                  Height = 50
+                  Height = 54
                   Action = actUsersDown
                   Appearance.PictureAlignment = taCenter
                   Appearance.Font.Charset = DEFAULT_CHARSET
@@ -2000,9 +2001,9 @@ object RestMainForm: TRestMainForm
                 end
                 object btnUsersUp: TAdvSmoothButton
                   Left = 112
-                  Top = 7
+                  Top = 1
                   Width = 72
-                  Height = 50
+                  Height = 54
                   Action = actUsersUp
                   Appearance.PictureAlignment = taCenter
                   Appearance.Font.Charset = DEFAULT_CHARSET
@@ -2031,10 +2032,10 @@ object RestMainForm: TRestMainForm
                   Version = '1.6.9.0'
                 end
                 object btnUserLeft: TAdvSmoothButton
-                  Left = 414
-                  Top = 7
+                  Left = 416
+                  Top = 1
                   Width = 72
-                  Height = 50
+                  Height = 54
                   Action = actUsersLeft
                   Anchors = [akTop, akRight]
                   Appearance.PictureAlignment = taCenter
@@ -2064,10 +2065,10 @@ object RestMainForm: TRestMainForm
                   Version = '1.6.9.0'
                 end
                 object btnUserRight: TAdvSmoothButton
-                  Left = 506
-                  Top = 7
+                  Left = 508
+                  Top = 1
                   Width = 72
-                  Height = 50
+                  Height = 54
                   Action = actUsersRight
                   Anchors = [akTop, akRight]
                   Appearance.PictureAlignment = taCenter
@@ -2100,8 +2101,8 @@ object RestMainForm: TRestMainForm
               object pnlManagerMain: TAdvPanel
                 Left = 0
                 Top = 65
-                Width = 607
-                Height = 614
+                Width = 609
+                Height = 616
                 Align = alClient
                 TabOrder = 1
                 UseDockManager = True
@@ -2123,7 +2124,7 @@ object RestMainForm: TRestMainForm
                   Left = 1
                   Top = 1
                   Width = 192
-                  Height = 545
+                  Height = 547
                   Align = alLeft
                   BevelOuter = bvNone
                   Color = 16640730
@@ -2163,8 +2164,8 @@ object RestMainForm: TRestMainForm
                 object pnlUserOrders: TAdvPanel
                   Left = 193
                   Top = 1
-                  Width = 413
-                  Height = 545
+                  Width = 415
+                  Height = 547
                   Align = alClient
                   BevelOuter = bvNone
                   Color = 16640730
@@ -2203,8 +2204,8 @@ object RestMainForm: TRestMainForm
                 end
                 object pnlManagerBottom: TAdvPanel
                   Left = 1
-                  Top = 546
-                  Width = 605
+                  Top = 548
+                  Width = 607
                   Height = 67
                   Align = alBottom
                   BevelOuter = bvNone
@@ -2245,11 +2246,13 @@ object RestMainForm: TRestMainForm
                     Top = 10
                     Width = 145
                     Height = 50
+                    BorderColor = clGray
+                    BevelWidth = 0
                     Appearance.Font.Charset = DEFAULT_CHARSET
                     Appearance.Font.Color = clWindowText
-                    Appearance.Font.Height = -21
-                    Appearance.Font.Name = 'Times New Roman'
-                    Appearance.Font.Style = []
+                    Appearance.Font.Height = -13
+                    Appearance.Font.Name = 'Tahoma'
+                    Appearance.Font.Style = [fsBold]
                     Caption = #1057' '#1087#1088#1077#1076#1095#1077#1082#1086#1084
                     Version = '1.1.8.0'
                     Status.Caption = '0'
@@ -2274,11 +2277,13 @@ object RestMainForm: TRestMainForm
                     Top = 10
                     Width = 145
                     Height = 50
+                    BorderColor = clGray
+                    BevelWidth = 0
                     Appearance.Font.Charset = DEFAULT_CHARSET
                     Appearance.Font.Color = clWindowText
-                    Appearance.Font.Height = -21
-                    Appearance.Font.Name = 'Times New Roman'
-                    Appearance.Font.Style = []
+                    Appearance.Font.Height = -13
+                    Appearance.Font.Name = 'Tahoma'
+                    Appearance.Font.Style = [fsBold]
                     Caption = #1041#1077#1079' '#1087#1088#1077#1076#1095#1077#1082#1072
                     Version = '1.1.8.0'
                     Status.Caption = '0'
@@ -2311,8 +2316,8 @@ object RestMainForm: TRestMainForm
               object sbTable: TScrollBox
                 Left = 0
                 Top = 0
-                Width = 607
-                Height = 679
+                Width = 609
+                Height = 681
                 Align = alClient
                 BorderStyle = bsNone
                 DoubleBuffered = False
@@ -2323,8 +2328,8 @@ object RestMainForm: TRestMainForm
                 object imgHallBackground: TImage
                   Left = 0
                   Top = 0
-                  Width = 607
-                  Height = 679
+                  Width = 609
+                  Height = 681
                   Align = alClient
                   Stretch = True
                   ExplicitLeft = 128
@@ -2659,11 +2664,13 @@ object RestMainForm: TRestMainForm
             Margins.Bottom = 1
             Action = actExitWindows
             Align = alTop
+            Appearance.PictureAlignment = taCenter
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
             Appearance.Font.Height = -9
             Appearance.Font.Name = 'Tahoma'
             Appearance.Font.Style = [fsBold]
+            Appearance.Layout = blPictureTop
             Status.Caption = '0'
             Status.Appearance.Fill.Color = clRed
             Status.Appearance.Fill.ColorMirror = clNone
@@ -2694,11 +2701,13 @@ object RestMainForm: TRestMainForm
             Margins.Bottom = 1
             Action = actRestartRest
             Align = alTop
+            Appearance.PictureAlignment = taCenter
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
             Appearance.Font.Height = -9
             Appearance.Font.Name = 'Tahoma'
             Appearance.Font.Style = [fsBold]
+            Appearance.Layout = blPictureTop
             Status.Caption = '0'
             Status.Appearance.Fill.Color = clRed
             Status.Appearance.Fill.ColorMirror = clNone
@@ -2729,11 +2738,13 @@ object RestMainForm: TRestMainForm
             Margins.Bottom = 1
             Action = actKeyBoard
             Align = alTop
+            Appearance.PictureAlignment = taCenter
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
             Appearance.Font.Height = -9
             Appearance.Font.Name = 'Tahoma'
             Appearance.Font.Style = [fsBold]
+            Appearance.Layout = blPictureTop
             Status.Caption = '0'
             Status.Appearance.Fill.Color = clRed
             Status.Appearance.Fill.ColorMirror = clNone
@@ -2765,11 +2776,13 @@ object RestMainForm: TRestMainForm
             Margins.Bottom = 1
             Action = actAdminOptions
             Align = alTop
+            Appearance.PictureAlignment = taCenter
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
             Appearance.Font.Height = -9
             Appearance.Font.Name = 'Tahoma'
             Appearance.Font.Style = [fsBold]
+            Appearance.Layout = blPictureTop
             Status.Caption = '0'
             Status.Appearance.Fill.Color = clRed
             Status.Appearance.Fill.ColorMirror = clNone
@@ -3264,11 +3277,13 @@ object RestMainForm: TRestMainForm
             Margins.Bottom = 1
             Action = actCashForm
             Align = alTop
+            Appearance.PictureAlignment = taCenter
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
             Appearance.Font.Height = -9
             Appearance.Font.Name = 'Tahoma'
             Appearance.Font.Style = [fsBold]
+            Appearance.Layout = blPictureTop
             Status.Caption = '0'
             Status.Appearance.Fill.Color = clRed
             Status.Appearance.Fill.ColorMirror = clNone
@@ -3299,11 +3314,13 @@ object RestMainForm: TRestMainForm
             Margins.Bottom = 1
             Action = actAllChecks
             Align = alTop
+            Appearance.PictureAlignment = taCenter
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
             Appearance.Font.Height = -9
             Appearance.Font.Name = 'Tahoma'
             Appearance.Font.Style = [fsBold]
+            Appearance.Layout = blPictureTop
             Status.Caption = '0'
             Status.Appearance.Fill.Color = clRed
             Status.Appearance.Fill.ColorMirror = clNone
@@ -3334,11 +3351,13 @@ object RestMainForm: TRestMainForm
             Margins.Bottom = 1
             Action = actManagerInfo
             Align = alTop
+            Appearance.PictureAlignment = taCenter
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
             Appearance.Font.Height = -9
             Appearance.Font.Name = 'Tahoma'
             Appearance.Font.Style = [fsBold]
+            Appearance.Layout = blPictureTop
             Status.Caption = '0'
             Status.Appearance.Fill.Color = clRed
             Status.Appearance.Fill.ColorMirror = clNone
@@ -3369,11 +3388,13 @@ object RestMainForm: TRestMainForm
             Margins.Bottom = 1
             Action = actKassirInfo
             Align = alTop
+            Appearance.PictureAlignment = taCenter
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
             Appearance.Font.Height = -9
             Appearance.Font.Name = 'Tahoma'
             Appearance.Font.Style = [fsBold]
+            Appearance.Layout = blPictureTop
             Status.Caption = '0'
             Status.Appearance.Fill.Color = clRed
             Status.Appearance.Fill.ColorMirror = clNone
@@ -3404,11 +3425,13 @@ object RestMainForm: TRestMainForm
             Margins.Bottom = 1
             Action = actCancel
             Align = alBottom
+            Appearance.PictureAlignment = taCenter
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
             Appearance.Font.Height = -9
             Appearance.Font.Name = 'Tahoma'
             Appearance.Font.Style = [fsBold]
+            Appearance.Layout = blPictureTop
             Status.Caption = '0'
             Status.Appearance.Fill.Color = clRed
             Status.Appearance.Fill.ColorMirror = clNone
@@ -3486,11 +3509,13 @@ object RestMainForm: TRestMainForm
             Margins.Top = 1
             Margins.Bottom = 1
             Align = alBottom
+            Appearance.PictureAlignment = taCenter
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
             Appearance.Font.Height = -9
             Appearance.Font.Name = 'Tahoma'
             Appearance.Font.Style = [fsBold]
+            Appearance.Layout = blPictureTop
             Status.Caption = '0'
             Status.Appearance.Fill.Color = clRed
             Status.Appearance.Fill.ColorMirror = clNone
@@ -3522,11 +3547,13 @@ object RestMainForm: TRestMainForm
             Margins.Top = 1
             Margins.Bottom = 1
             Align = alTop
+            Appearance.PictureAlignment = taCenter
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
             Appearance.Font.Height = -9
             Appearance.Font.Name = 'Tahoma'
             Appearance.Font.Style = [fsBold]
+            Appearance.Layout = blPictureTop
             Status.Caption = '0'
             Status.Appearance.Fill.Color = clRed
             Status.Appearance.Fill.ColorMirror = clNone
@@ -3558,11 +3585,13 @@ object RestMainForm: TRestMainForm
             Margins.Top = 1
             Margins.Bottom = 1
             Align = alTop
+            Appearance.PictureAlignment = taCenter
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
             Appearance.Font.Height = -9
             Appearance.Font.Name = 'Tahoma'
             Appearance.Font.Style = [fsBold]
+            Appearance.Layout = blPictureTop
             Status.Caption = '0'
             Status.Appearance.Fill.Color = clRed
             Status.Appearance.Fill.ColorMirror = clNone
@@ -3594,11 +3623,13 @@ object RestMainForm: TRestMainForm
             Margins.Top = 1
             Margins.Bottom = 1
             Align = alTop
+            Appearance.PictureAlignment = taCenter
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
             Appearance.Font.Height = -9
             Appearance.Font.Name = 'Tahoma'
             Appearance.Font.Style = [fsBold]
+            Appearance.Layout = blPictureTop
             Status.Caption = '0'
             Status.Appearance.Fill.Color = clRed
             Status.Appearance.Fill.ColorMirror = clNone
@@ -3630,11 +3661,13 @@ object RestMainForm: TRestMainForm
             Margins.Top = 1
             Margins.Bottom = 1
             Align = alTop
+            Appearance.PictureAlignment = taCenter
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
             Appearance.Font.Height = -9
             Appearance.Font.Name = 'Tahoma'
             Appearance.Font.Style = [fsBold]
+            Appearance.Layout = blPictureTop
             Status.Caption = '0'
             Status.Appearance.Fill.Color = clRed
             Status.Appearance.Fill.ColorMirror = clNone
@@ -3666,11 +3699,13 @@ object RestMainForm: TRestMainForm
             Margins.Top = 10
             Margins.Bottom = 1
             Align = alTop
+            Appearance.PictureAlignment = taCenter
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
             Appearance.Font.Height = -9
             Appearance.Font.Name = 'Tahoma'
             Appearance.Font.Style = [fsBold]
+            Appearance.Layout = blPictureTop
             Status.Caption = '0'
             Status.Appearance.Fill.Color = clRed
             Status.Appearance.Fill.ColorMirror = clNone
@@ -3702,11 +3737,13 @@ object RestMainForm: TRestMainForm
             Margins.Top = 10
             Margins.Bottom = 1
             Align = alTop
+            Appearance.PictureAlignment = taCenter
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
             Appearance.Font.Height = -9
             Appearance.Font.Name = 'Tahoma'
             Appearance.Font.Style = [fsBold]
+            Appearance.Layout = blPictureTop
             Status.Caption = '0'
             Status.Appearance.Fill.Color = clRed
             Status.Appearance.Fill.ColorMirror = clNone
@@ -3738,11 +3775,13 @@ object RestMainForm: TRestMainForm
             Margins.Top = 1
             Margins.Bottom = 1
             Align = alTop
+            Appearance.PictureAlignment = taCenter
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
             Appearance.Font.Height = -9
             Appearance.Font.Name = 'Tahoma'
             Appearance.Font.Style = [fsBold]
+            Appearance.Layout = blPictureTop
             Status.Caption = '0'
             Status.Appearance.Fill.Color = clRed
             Status.Appearance.Fill.ColorMirror = clNone
@@ -3774,11 +3813,13 @@ object RestMainForm: TRestMainForm
             Margins.Top = 1
             Margins.Bottom = 1
             Align = alTop
+            Appearance.PictureAlignment = taCenter
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
             Appearance.Font.Height = -9
             Appearance.Font.Name = 'Tahoma'
             Appearance.Font.Style = [fsBold]
+            Appearance.Layout = blPictureTop
             Status.Caption = '0'
             Status.Appearance.Fill.Color = clRed
             Status.Appearance.Fill.ColorMirror = clNone
@@ -3818,11 +3859,13 @@ object RestMainForm: TRestMainForm
             Margins.Bottom = 1
             Action = actKeyBoard
             Align = alTop
+            Appearance.PictureAlignment = taCenter
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
             Appearance.Font.Height = -9
             Appearance.Font.Name = 'Tahoma'
             Appearance.Font.Style = [fsBold]
+            Appearance.Layout = blPictureTop
             Status.Caption = '0'
             Status.Appearance.Fill.Color = clRed
             Status.Appearance.Fill.ColorMirror = clNone
@@ -3854,11 +3897,13 @@ object RestMainForm: TRestMainForm
             Margins.Bottom = 1
             Action = actCancel
             Align = alBottom
+            Appearance.PictureAlignment = taCenter
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
             Appearance.Font.Height = -9
             Appearance.Font.Name = 'Tahoma'
             Appearance.Font.Style = [fsBold]
+            Appearance.Layout = blPictureTop
             Status.Caption = '0'
             Status.Appearance.Fill.Color = clRed
             Status.Appearance.Fill.ColorMirror = clNone
@@ -3890,11 +3935,13 @@ object RestMainForm: TRestMainForm
             Margins.Bottom = 1
             Action = actOK
             Align = alBottom
+            Appearance.PictureAlignment = taCenter
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
             Appearance.Font.Height = -9
             Appearance.Font.Name = 'Tahoma'
             Appearance.Font.Style = [fsBold]
+            Appearance.Layout = blPictureTop
             Status.Caption = '0'
             Status.Appearance.Fill.Color = clRed
             Status.Appearance.Fill.ColorMirror = clNone
@@ -3927,11 +3974,13 @@ object RestMainForm: TRestMainForm
             Margins.Bottom = 1
             Action = actReturnGoodSum
             Align = alTop
+            Appearance.PictureAlignment = taCenter
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
             Appearance.Font.Height = -9
             Appearance.Font.Name = 'Tahoma'
             Appearance.Font.Style = [fsBold]
+            Appearance.Layout = blPictureTop
             Status.Caption = '0'
             Status.Appearance.Fill.Color = clRed
             Status.Appearance.Fill.ColorMirror = clNone
@@ -4290,7 +4339,7 @@ object RestMainForm: TRestMainForm
     SelectedItem.Font.Charset = DEFAULT_CHARSET
     SelectedItem.Font.Color = clWindowText
     SelectedItem.Font.Height = -19
-    SelectedItem.Font.Name = 'Times New Roman'
+    SelectedItem.Font.Name = 'Tahoma'
     SelectedItem.Font.Style = []
     SelectedItem.NotesFont.Charset = DEFAULT_CHARSET
     SelectedItem.NotesFont.Color = clWindowText
@@ -4331,7 +4380,7 @@ object RestMainForm: TRestMainForm
     SideBar.Font.Charset = DEFAULT_CHARSET
     SideBar.Font.Color = clWhite
     SideBar.Font.Height = -19
-    SideBar.Font.Name = 'Times New Roman'
+    SideBar.Font.Name = 'Tahoma'
     SideBar.Font.Style = [fsBold, fsItalic]
     SideBar.Image.Position = bpCenter
     SideBar.Background.Position = bpCenter
@@ -4341,7 +4390,7 @@ object RestMainForm: TRestMainForm
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clMenuText
     Font.Height = -19
-    Font.Name = 'Times New Roman'
+    Font.Name = 'Tahoma'
     Font.Style = []
     NotesFont.Charset = DEFAULT_CHARSET
     NotesFont.Color = clGray

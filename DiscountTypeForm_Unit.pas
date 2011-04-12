@@ -9,9 +9,8 @@ uses
 
 type
   TDiscountType = class(TBaseFrontForm)
-    memTableDiscount: TkbmMemTable;
     dsMain: TDataSource;
-    AdvPanel1: TAdvPanel;
+    pnlMain: TAdvPanel;
     DBLookupComboBox: TDBLookupComboBox;
     btnOK: TAdvSmoothButton;
     btnCancel: TAdvSmoothButton;
@@ -21,7 +20,7 @@ type
     procedure btnCancelClick(Sender: TObject);
   private
     FFrontBase: TFrontBase;
-    { Private declarations }
+    FMemTable: TkbmMemTable;
   public
     property FrontBase: TFrontBase read FFrontBase write FFrontBase;
   end;
@@ -35,16 +34,22 @@ implementation
 
 procedure TDiscountType.FormCreate(Sender: TObject);
 begin
-  memTableDiscount.FieldDefs.Add('ID', ftInteger, 0);
-  memTableDiscount.FieldDefs.Add('USR$NAME', ftString, 40);
-  memTableDiscount.CreateTable;
-  memTableDiscount.Open;
+  FMemTable := TkbmMemTable.Create(Self);
+  FMemTable.FieldDefs.Add('ID', ftInteger, 0);
+  FMemTable.FieldDefs.Add('USR$NAME', ftString, 40);
+  FMemTable.CreateTable;
+  FMemTable.Open;
+
+  dsMain.DataSet := FMemTable;
+
+  btnOK.Picture := FrontData.RestPictureContainer.FindPicture('tick');
+  btnCancel.Picture := FrontData.RestPictureContainer.FindPicture('cross');
 end;
 
 procedure TDiscountType.FormShow(Sender: TObject);
 begin
-  Assert(Assigned(FFrontBase), 'FrontBase not assigned');
-  FFrontBase.GetDiscountList(memTableDiscount);
+  if Assigned(FFrontBase) then
+    FFrontBase.GetDiscountList(FMemTable);
 end;
 
 procedure TDiscountType.btnOKClick(Sender: TObject);

@@ -16,6 +16,7 @@ type
     btnCancel: TAdvSmoothButton;
     btnAddGuest: TAdvSmoothButton;
     btnRemoveGuest: TAdvSmoothButton;
+    Bevel1: TBevel;
     procedure FormCreate(Sender: TObject);
     procedure btnRemoveGuestClick(Sender: TObject);
     procedure btnAddGuestClick(Sender: TObject);
@@ -41,8 +42,10 @@ begin
   //по умолчанию
   lblGuestCount.Caption := '1';
 
-  btnAddGuest.Picture := FrontData.RestPictureContainer.FindPicture('AddPicture');
-  btnRemoveGuest.Picture :=  FrontData.RestPictureContainer.FindPicture('RemovePicture');
+  btnAddGuest.Picture := FrontData.RestPictureContainer.FindPicture('add');
+  btnRemoveGuest.Picture :=  FrontData.RestPictureContainer.FindPicture('delete');
+  btnOK.Picture := FrontData.RestPictureContainer.FindPicture('tick');
+  btnCancel.Picture := FrontData.RestPictureContainer.FindPicture('cross');
 end;
 
 procedure TGuestForm.btnRemoveGuestClick(Sender: TObject);

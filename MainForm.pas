@@ -60,8 +60,8 @@ type
   //окно кассира для оплаты
   //окно просмотра залов
   //зал
-  TRestState = (Pass, OrderMenu, MenuInfo, ManagerPage, ManagerChooseOrder,
-    ManagerInfo, KassirInfo, HallsPage, HallInfo);
+  TRestState = (rsPass, rsOrderMenu, rsMenuInfo, rsManagerPage, rsManagerChooseOrder,
+    rsManagerInfo, rsKassirInfo, rsHallsPage, rsHallInfo);
 
   TRestMainForm = class(TBaseFrontForm)
     pnlMain: TPanel;
@@ -406,10 +406,14 @@ type
     procedure CreateHallButtonList;
     procedure AddHallButton;
     procedure RemoveHallButton;
+
+    // Инициализация фона зала и столов
     procedure CreateHall(const HallKey: Integer);
+    // Удаление фона зала и столов
+    procedure EraseHall;
+
     procedure HallButtonOnClick(Sender: TObject);
     procedure ChooseTableOnClick(Sender: TObject);
-    procedure RemoveTableButton;
     procedure RemoveChooseTable;
     procedure PopItemOnClick(Sender: TObject);
     procedure TableButtonOnClick(Sender: TObject);
@@ -501,11 +505,11 @@ begin
     begin
       FFrontBase.GetHallsInfo(FHallsTable);
       if FHallsTable.RecordCount > 0 then
-        RestFormState := HallsPage
+        RestFormState := rsHallsPage
       else
-        RestFormState := OrderMenu;
+        RestFormState := rsOrderMenu;
     end else
-      RestFormState := OrderMenu;
+      RestFormState := rsOrderMenu;
     FBaseFormState := FRestFormState;
   end else
   begin
@@ -554,7 +558,7 @@ begin
   FActiveHallButton := '';
 
   CreateDataSets;
-  RestFormState := Pass;
+  RestFormState := rsPass;
   try
     FFrontBase := TFrontBase.Create;
   except
@@ -593,13 +597,30 @@ begin
   btnDeletePosition.Picture := FrontData.RestPictureContainer.FindPicture('cancel');
   btnCutCheck.Picture := FrontData.RestPictureContainer.FindPicture('document_break');
   btnPreCheck.Picture := FrontData.RestPictureContainer.FindPicture('document_info');
-  btnModification.Picture := FrontData.RestPictureContainer.FindPicture('pencil');
+  btnModification.Picture := FrontData.RestPictureContainer.FindPicture('application_form_edit');
   btnKeyBoard.Picture := FrontData.RestPictureContainer.FindPicture('keyboard');
   btnDiscount.Picture := FrontData.RestPictureContainer.FindPicture('percent');
   btnPay.Picture := FrontData.RestPictureContainer.FindPicture('money');
-  btnDevide.Picture := FrontData.RestPictureContainer.FindPicture('calculator');
+  btnDevide.Picture := FrontData.RestPictureContainer.FindPicture('decimal');
   btnOK.Picture := FrontData.RestPictureContainer.FindPicture('tick');
   btnCancel3.Picture := FrontData.RestPictureContainer.FindPicture('cross');
+
+  btnExitWindows.Picture := FrontData.RestPictureContainer.FindPicture('cross');
+  btnRestartRest.Picture := FrontData.RestPictureContainer.FindPicture('update');
+  btnShowKeyBoard.Picture := FrontData.RestPictureContainer.FindPicture('keyboard');
+  btnAdminOptions.Picture := FrontData.RestPictureContainer.FindPicture('user');
+
+  btnShowKeyboard2.Picture := FrontData.RestPictureContainer.FindPicture('keyboard');
+  btnOK2.Picture := FrontData.RestPictureContainer.FindPicture('tick');
+  btnCancel1.Picture := FrontData.RestPictureContainer.FindPicture('cross');
+
+  btnCashForm.Picture := FrontData.RestPictureContainer.FindPicture('cash_register');
+  btnManagerInfo.Picture := FrontData.RestPictureContainer.FindPicture('coins');
+  btnKassa.Picture := FrontData.RestPictureContainer.FindPicture('master_card');
+  btnCancel2.Picture := FrontData.RestPictureContainer.FindPicture('cross');
+
+  btnExitManagerInfo.Picture := FrontData.RestPictureContainer.FindPicture('cross');
+  btnOKPass.Picture := FrontData.RestPictureContainer.FindPicture('tick');
 
   MenuOfficeStyler.SetComponentStyle(GetFrontStyle);
   mainTouchKeyBoard.SetComponentStyle(GetFrontStyle);
@@ -689,6 +710,16 @@ begin
     actPassEnterExecute(Sender)
   else
     inherited;
+end;
+
+procedure TRestMainForm.EraseHall;
+begin
+  // Удалим фон зала
+  imgHallBackground.Picture := nil;
+  // Удалим столы
+  FTableManager.ClearTables;
+  // Укажем что ни один зал не выбран, чтобы при следующем входе зал отрисовался заново
+  FActiveHallKey := -1;
 end;
 
 procedure TRestMainForm.CreateDataSets;
@@ -1162,16 +1193,25 @@ procedure TRestMainForm.CreateHall(const HallKey: Integer);
   end;
 
 begin
-  if FActiveHallKey <> HallKey then
+  if FRestFormState = rsHallsPage then
   begin
-    // Загрузим фон зала
+    if FActiveHallKey <> HallKey then
+    begin
+      // Загрузим фон зала
+      LoadHallBackGround(HallKey);
+      // Загрузить столы из датасета
+      FTableManager.LoadTables(HallKey);
+      FActiveHallKey := HallKey;
+    end;
+    // Обновим информацию о заказах по списку столов
+    FTableManager.RefreshOrderData;
+  end
+  else
+  begin
     LoadHallBackGround(HallKey);
-    // Загрузить столы из датасета
     FTableManager.LoadTables(HallKey);
-    FActiveHallKey := HallKey;
+    FActiveHallKey := -1;
   end;
-  // Обновим информацию о заказах по списку столов
-  FTableManager.RefreshOrderData;
 end;
 
 procedure TRestMainForm.CreateHallButtonList;
@@ -1187,7 +1227,7 @@ begin
 
       FHallsTable.Next;
     end;
-    if (FActiveHallButton <> '') and (FRestFormState = HallsPage) then
+    if (FActiveHallButton <> '') and (FRestFormState = rsHallsPage) then
     begin
       FButton := pnlHalls.FindComponent(FActiveHallButton);
       if Assigned(FButton) then
@@ -1200,9 +1240,9 @@ procedure TRestMainForm.CreateKassirPage;
 var
   FTempFormState: TRestState;
 begin
-  RestFormState := OrderMenu;
+  RestFormState := rsOrderMenu;
   FTempFormState := FPrevFormState;
-  RestFormState := KassirInfo;
+  RestFormState := rsKassirInfo;
   FPrevFormState := FTempFormState;
   CreateUserList;
 end;
@@ -1211,9 +1251,9 @@ procedure TRestMainForm.CreateManagerPage;
 var
   FTempFormState: TRestState;
 begin
-  RestFormState := OrderMenu;
+  RestFormState := rsOrderMenu;
   FTempFormState := FPrevFormState;
-  RestFormState := ManagerPage;
+  RestFormState := rsManagerPage;
   FPrevFormState := FTempFormState;
   CreateUserList;
 end;
@@ -1306,7 +1346,7 @@ begin
   begin
     if not Assigned(dsMain.DataSet) then
       dsMain.DataSet := FLineTable;
-    RestFormState := MenuInfo;
+    RestFormState := rsMenuInfo;
 
     FHeaderTable.Insert;
     FHeaderTable.FieldByName('NUMBER').AsString := FOrderNumber;
@@ -1362,7 +1402,7 @@ begin
   begin
     if not Assigned(dsMain.DataSet) then
       dsMain.DataSet := FLineTable;
-    RestFormState := MenuInfo;
+    RestFormState := rsMenuInfo;
 
     FHeaderTable.Insert;
     FHeaderTable.FieldByName('NUMBER').AsString := FOrderNumber;
@@ -1411,11 +1451,6 @@ procedure TRestMainForm.RemoveOrderButton;
 begin
   FOrderButtonList.Clear;
   FOrderButtonNumber := 1;
-end;
-
-procedure TRestMainForm.RemoveTableButton;
-begin
-  //FTableManager.Clear;
 end;
 
 procedure TRestMainForm.MenuButtonOnClick(Sender: TObject);
@@ -1485,7 +1520,7 @@ begin
 
     FActiveHallButton := FButton.Name;
 
-    if FRestFormState = HallInfo then
+    if FRestFormState = rsHallInfo then
     begin
       pcMenu.ActivePage := tsTablesDesigner;
       AddChooseTables(FButton.Tag);
@@ -1771,7 +1806,7 @@ begin
     dsMain.DataSet := nil;
     dsMain.DataSet := FLineTable;
   end;
-  RestFormState := MenuInfo;
+  RestFormState := rsMenuInfo;
   //если заказ закрыт, то оставляем отмену пречека, иначе просто пречек
   if FHeaderTable.FieldByName('usr$timecloseorder').IsNull then
     btnPreCheck.Action := actPreCheck
@@ -1813,45 +1848,45 @@ begin
   FSelectedButton := nil;
   FMenuSelectedButton := nil;
   case FRestFormState of
-    Pass:
+    rsPass:
       ;
 
-    OrderMenu, ManagerPage, ManagerChooseOrder, KassirInfo:
+    rsOrderMenu, rsManagerPage, rsManagerChooseOrder, rsKassirInfo:
       begin
         //переходим на форму с паролем
-        RestFormState := Pass;
+        RestFormState := rsPass;
         FLogManager.DoSimpleLog(GetCurrentUserInfo, ev_Exit);
       end;
 
-    HallsPage:
+    rsHallsPage:
       begin
         RemoveHallButton;
-        RemoveTableButton;
         RemoveChooseTable;
         FFrontBase.ClearCache;
 
-        RestFormState := Pass;
+        RestFormState := rsPass;
         FLogManager.DoSimpleLog(GetCurrentUserInfo, ev_Exit);
       end;
 
-    HallInfo:
+    rsHallInfo:
       begin
         if Touch_MessageBox('Внимание', 'Сохранить изменения?', MB_YESNO, mtConfirmation) = IDYES then
         begin
           SaveTablePositions;
           RemoveHallButton;
-          RemoveTableButton;
+          // Удалим зал
+          EraseHall;
           RemoveChooseTable;
           FFrontBase.ClearCache;
           dxfDesigner.EditControl := nil;
           dxfDesigner.Active := False;          
 
-          RestFormState := Pass;
+          RestFormState := rsPass;
           FLogManager.DoSimpleLog(GetCurrentUserInfo, ev_Exit);
         end;
       end;
 
-    ManagerInfo:
+    rsManagerInfo:
       begin
         dsHeaderInfo.DataSet := nil;
         dsLineInfo.DataSet := nil;
@@ -1861,7 +1896,7 @@ begin
         RestFormState := FBaseFormState;
       end;
 
-    MenuInfo:
+    rsMenuInfo:
       begin
         //сохраняем чек
         if Touch_MessageBox('Внимание', 'Закрыть заказ?', MB_YESNO, mtConfirmation) = IDYES then
@@ -1883,17 +1918,17 @@ begin
               end;
               FLogManager.DoOrderLog(GetCurrentUserInfo, GetCurrentOrderInfo, ev_SaveOrder);
               case FPrevFormState of
-                ManagerPage:
+                rsManagerPage:
                   CreateManagerPage;
 
-                KassirInfo:
+                rsKassirInfo:
                   CreateKassirPage;
 
-                HallsPage:
-                  RestFormState := HallsPage;
+                rsHallsPage:
+                  RestFormState := rsHallsPage;
 
                 else
-                  RestFormState := OrderMenu;
+                  RestFormState := rsOrderMenu;
               end;
             end;
           finally
@@ -1909,35 +1944,34 @@ begin
   FSelectedButton := nil;
   FMenuSelectedButton := nil;
   case FRestFormState of
-    Pass:
+    rsPass:
       ;
 
-    OrderMenu, ManagerChooseOrder:
+    rsOrderMenu, rsManagerChooseOrder:
       begin
-        RestFormState := Pass;
+        RestFormState := rsPass;
         FFrontBase.ClearCache;
         FLogManager.DoSimpleLog(GetCurrentUserInfo, ev_Exit);
       end;
 
-    KassirInfo, ManagerPage:
+    rsKassirInfo, rsManagerPage:
       begin
         RestFormState := FBaseFormState;
       end;
 
-    HallsPage, HallInfo:
+    rsHallsPage, rsHallInfo:
       begin
         RemoveHallButton;
-        RemoveTableButton;
         RemoveChooseTable;
         FFrontBase.ClearCache;
         dxfDesigner.EditControl := nil;
         dxfDesigner.Active := False;        
 
-        RestFormState := Pass;
+        RestFormState := rsPass;
         FLogManager.DoSimpleLog(GetCurrentUserInfo, ev_Exit);
       end;
 
-    ManagerInfo:
+    rsManagerInfo:
       begin
         dsHeaderInfo.DataSet := nil;
         dsLineInfo.DataSet := nil;
@@ -1946,11 +1980,11 @@ begin
         FSelectedButton := nil;
         FMenuSelectedButton := nil;
 
-        RestFormState := Pass;
+        RestFormState := rsPass;
         FLogManager.DoSimpleLog(GetCurrentUserInfo, ev_Exit);
       end;
 
-    MenuInfo:
+    rsMenuInfo:
       begin
         if FPayed or (Touch_MessageBox('Внимание', 'Выйти из заказа?', MB_YESNO, mtConfirmation) = IDYES) then
         begin
@@ -1960,38 +1994,38 @@ begin
             begin
               FLogManager.DoOrderLog(GetCurrentUserInfo, GetCurrentOrderInfo, ev_ExitOrder);
               case FPrevFormState of
-                ManagerPage:
+                rsManagerPage:
                   CreateManagerPage;
 
-                KassirInfo:
+                rsKassirInfo:
                   CreateKassirPage;
 
-                HallsPage:
+                rsHallsPage:
                   begin
                     if FLineTable.IsEmpty then
                       FFrontBase.DeleteOrder(FHeaderTable.FieldByName('ID').AsInteger);
-                    RestFormState := HallsPage;
+                    RestFormState := rsHallsPage;
                   end;
 
                 else
-                  RestFormState := OrderMenu;
+                  RestFormState := rsOrderMenu;
               end;
             end;
           end else
           begin
             FLogManager.DoOrderLog(GetCurrentUserInfo, GetCurrentOrderInfo, ev_ExitOrder);
             case FPrevFormState of
-              ManagerPage:
+              rsManagerPage:
                 CreateManagerPage;
 
-              KassirInfo:
+              rsKassirInfo:
                 CreateKassirPage;
 
-              HallsPage:
-                RestFormState := HallsPage;
+              rsHallsPage:
+                RestFormState := rsHallsPage;
 
               else
-                RestFormState := OrderMenu;
+                RestFormState := rsOrderMenu;
             end;
           end;
         end;
@@ -2007,7 +2041,7 @@ var
   S: String;
   ES: String;
 begin
-  if (not FLineTable.IsEmpty) and (RestFormState = MenuInfo) then
+  if (not FLineTable.IsEmpty) and (RestFormState = rsMenuInfo) then
   begin
     if not FLineTable.FieldByName('usr$mn_printdate').IsNull then
     begin
@@ -2100,7 +2134,7 @@ var
   FUserInfo: TUserInfo;
   FGoodInfo: TLogGoodInfo;
 begin
-  if (not FLineTable.IsEmpty) and (RestFormState = MenuInfo) then
+  if (not FLineTable.IsEmpty) and (RestFormState = rsMenuInfo) then
   begin
     Quantity := FLineTable.FieldByName('USR$QUANTITY').AsCurrency - 1;
     if (Quantity >= FLineTable.FieldByName('OLDQUANTITY').AsCurrency) and
@@ -2173,7 +2207,7 @@ var
   FUserInfo: TUserInfo;
   FGoodInfo: TLogGoodInfo;
 begin
-  if (not FLineTable.IsEmpty) and (RestFormState = MenuInfo) then
+  if (not FLineTable.IsEmpty) and (RestFormState = rsMenuInfo) then
   begin
     if (FLineTable.FieldByName('OLDQUANTITY').IsNull) and
       (FHeaderTable.FieldByName('USR$MN_PRINTDATE').IsNull)
@@ -2220,7 +2254,7 @@ end;
 
 procedure TRestMainForm.actManagerInfoExecute(Sender: TObject);
 begin
-  RestFormState := ManagerInfo;
+  RestFormState := rsManagerInfo;
 end;
 
 procedure TRestMainForm.actManagerInfoUpdate(Sender: TObject);
@@ -2237,7 +2271,7 @@ var
 begin
   S := '';
   ES := FLineTable.FieldByName('EXTRAMODIFY').AsString;
-  if (not FLineTable.IsEmpty) and (RestFormState = MenuInfo) then
+  if (not FLineTable.IsEmpty) and (RestFormState = rsMenuInfo) then
   begin
     GoodKey := FLineTable.FieldByName('usr$goodkey').AsInteger;
     if not FGoodDataSet.Locate('ID', GoodKey, []) then
@@ -2326,7 +2360,7 @@ begin
 
     //3. переход на форму менеджера
     FWithPreCheck := True;
-    RestFormState := ManagerChooseOrder;
+    RestFormState := rsManagerChooseOrder;
     CreateUserList;
 
     if not Assigned(FSplitForm) then
@@ -2431,6 +2465,7 @@ begin
     end;
   end;
 
+  // Скидка процентом
   if DiscountType = 1 then
   begin
     FUserInfo := FFrontBase.CheckUserPasswordWithForm;
@@ -2471,6 +2506,7 @@ begin
       end;
     end;
   end
+  // Скидка карточкой
   else if DiscountType = 2 then
   begin
     FLogManager.DoOrderLog(GetCurrentUserInfo, GetCurrentOrderInfo, ev_DiscountCard);
@@ -2564,13 +2600,13 @@ end;
 procedure TRestMainForm.SetFormState(const Value: TRestState);
 begin
   FPrevFormState := FRestFormState;
-  if (Value = KassirInfo) or (FPrevFormState = KassirInfo) then
+  if (Value = rsKassirInfo) or (FPrevFormState = rsKassirInfo) then
     FViewMode := True
   else
     FViewMode := False;
 
   case Value of
-    Pass:
+    rsPass:
       begin
         LockWindowUpdate(Handle);
         try
@@ -2604,14 +2640,15 @@ begin
           pnlMainGood.Visible := False;
           pnlChoose.Visible   := False;
           pnlExtraGoodGroup.Visible := False;
-          //imgHallBackground.Picture := nil;
           //5. установки кнопок
           FMenuButtonCount := 0;
 
+          {
           btnCashForm.Visible := False;
           btnAdminOptions.Visible := True;
           btnAllChecks.Visible := False;
           btnManagerInfo.Visible := False;
+          }
 
           FLastLeftButton := 18 + btnWidth {$IFDEF NEW_TABCONTROL} + 4 {$ENDIF};;
           FGroupLastLeftButton := btnFirstTop;
@@ -2670,7 +2707,7 @@ begin
         end;
       end;
 
-    OrderMenu:
+    rsOrderMenu:
       begin
         LockWindowUpdate(Handle);
         try
@@ -2690,17 +2727,18 @@ begin
           RemoveOrderButton;
           RemoveMenuButton;
           RemoveHallButton;
-          RemoveTableButton;
           RemoveChooseTable;
           //
           FTablesInfoTable.Close;
           FTablesInfoTable.CreateTable;
           FTablesInfoTable.Open;
           //
+          {
           btnCashForm.Visible := True;
           btnAdminOptions.Visible := False;
           btnAllChecks.Visible := True;
           btnManagerInfo.Visible := True;
+          }
 
           FLastLeftButton := 18 + btnWidth {$IFDEF NEW_TABCONTROL} + 4 {$ENDIF};
           FMenuLastLeftButton := {btnFirstTop} 2 {$IFDEF NEW_TABCONTROL} + 4 {$ENDIF};
@@ -2738,7 +2776,7 @@ begin
         end;
       end;
 
-    HallsPage:
+    rsHallsPage:
       begin
         LockWindowUpdate(Handle);
         try
@@ -2750,6 +2788,7 @@ begin
 
           pcMain.ActivePage := tsMain;
           pcOrder.ActivePage := tsTablePage;
+          // Панель управления слева
           pcExtraButton.ActivePage := tsOrderButton;
           pcMenu.ActivePage := tsHalls;
           pnlChoose.Visible := True;
@@ -2762,17 +2801,20 @@ begin
           RemoveOrderButton;
           RemoveMenuButton;
           RemoveHallButton;
-          RemoveTableButton;
+          // Удалить зал
+          EraseHall;
           RemoveChooseTable;
           //
           FTablesInfoTable.Close;
           FTablesInfoTable.CreateTable;
           FTablesInfoTable.Open;
           //
+          {
           btnCashForm.Visible := True;
           btnAdminOptions.Visible := False;
           btnAllChecks.Visible := True;
           btnManagerInfo.Visible := True;
+          }
 
           FLastLeftButton := 18 + btnWidth {$IFDEF NEW_TABCONTROL} + 4 {$ENDIF};
           FMenuLastLeftButton := {btnFirstTop} 2 {$IFDEF NEW_TABCONTROL} + 4 {$ENDIF};
@@ -2805,7 +2847,7 @@ begin
             // План зала
             CreateHall(FHallsTable.FieldByName('ID').AsInteger);
 
-            if FRestFormState = HallInfo then
+            if FRestFormState = rsHallInfo then
             begin
               pcMenu.ActivePage := tsTablesDesigner;
               AddChooseTables(FHallsTable.FieldByName('ID').AsInteger);
@@ -2827,7 +2869,8 @@ begin
         end;
       end;
 
-    HallInfo:
+    // Редактирование зала
+    rsHallInfo:
       begin
         LockWindowUpdate(Handle);
         try
@@ -2839,6 +2882,7 @@ begin
 
           pcMain.ActivePage := tsMain;
           pcOrder.ActivePage := tsTablePage;
+          // Панель управления слева
           pcExtraButton.ActivePage := tsEmpty;
           pcMenu.ActivePage := tsHalls;
           pnlChoose.Visible := True;
@@ -2853,17 +2897,20 @@ begin
           RemoveOrderButton;
           RemoveMenuButton;
           RemoveHallButton;
-          RemoveTableButton;
+          // Удалить зал
+          EraseHall;
           RemoveChooseTable;
           //
           FTablesInfoTable.Close;
           FTablesInfoTable.CreateTable;
           FTablesInfoTable.Open;
           //
+          {
           btnCashForm.Visible := True;
           btnAdminOptions.Visible := False;
           btnAllChecks.Visible := True;
           btnManagerInfo.Visible := True;
+          }
 
           FLastLeftButton := 18 + btnWidth {$IFDEF NEW_TABCONTROL} + 4 {$ENDIF};
           FMenuLastLeftButton := {btnFirstTop} 2 {$IFDEF NEW_TABCONTROL} + 4 {$ENDIF};
@@ -2901,17 +2948,17 @@ begin
         end;
       end;
 
-    MenuInfo:
+    rsMenuInfo:
       begin
         FRestFormState := Value;
 
         RemoveHallButton;
-        RemoveTableButton;
         RemoveChooseTable;
 
         pcMenu.ActivePage := tsMenu;
 
         pnlRight.Visible := True;
+        // Панель управления слева
         pcExtraButton.ActivePage := tsFunctionButton;
         pcOrder.ActivePage := tsOrderInfo;
         pnlChoose.Visible := True;
@@ -2919,10 +2966,11 @@ begin
         tmrTables.Enabled := False;
       end;
 
-    ManagerInfo:
+    rsManagerInfo:
       begin
         FRestFormState := Value;
         pcMain.ActivePage := tsManagerInfo;
+        // Панель управления слева
         pcExtraButton.ActivePage := tsManagerInfoButton;
         pnlRight.Visible := False;
         //1. создаем структуры шапки и позиции
@@ -2945,7 +2993,7 @@ begin
         ClearDisplay;
       end;
 
-    ManagerPage:
+    rsManagerPage:
       begin
         LockWindowUpdate(Handle);
         try
@@ -2959,13 +3007,16 @@ begin
 
           FRestFormState := Value;
           pcOrder.ActivePage := tsManagerPage;
+          // Панель управления слева
           pcExtraButton.ActivePage := tsEmpty;
+          btnOK2.Visible := False;
+          btnReturnGoodSum.Visible := False;
 
+          {
           btnCashForm.Visible := True;
           btnAdminOptions.Visible := False;
           btnAllChecks.Visible := True;
-          btnOK2.Visible := False;
-          btnReturnGoodSum.Visible := False;
+          }
 
           FUserFirstTop       := btnFirstTop;
           FUserLastLeftButton := btnFirstTop;
@@ -2990,7 +3041,7 @@ begin
         end;
       end;
 
-    ManagerChooseOrder:
+    rsManagerChooseOrder:
       begin
         LockWindowUpdate(Handle);
         try
@@ -3016,6 +3067,7 @@ begin
 
           FRestFormState := Value;
           pcOrder.ActivePage := tsManagerPage;
+          // Панель управления слева
           pcExtraButton.ActivePage := tsEmpty;
           btnOK2.Visible := False;
           btnReturnGoodSum.Visible := False;
@@ -3043,7 +3095,7 @@ begin
         end;
       end;
 
-    KassirInfo:
+    rsKassirInfo:
       begin
         LockWindowUpdate(Handle);
         try
@@ -3069,6 +3121,7 @@ begin
 
           FRestFormState := Value;
           pcOrder.ActivePage := tsManagerPage;
+          // Панель управления слева
           pcExtraButton.ActivePage := tsEmpty;
           btnOK2.Visible := False;
           btnReturnGoodSum.Visible := True;
@@ -3212,7 +3265,7 @@ begin
     FButton.Color := btnColor;
     FButton.Appearance.Font.Size := cn_ButtonFontSize;
     FButton.Parent := pnlUserOrders;
-    if (RestFormState = ManagerPage) or (RestFormState = KassirInfo) then
+    if (RestFormState = rsManagerPage) or (RestFormState = rsKassirInfo) then
       FButton.OnClick := OrderButtonOnClick
     else
       FButton.OnClick := SplitButtonOnClick;
@@ -3276,7 +3329,7 @@ begin
   if btnWithOutPrecheckOrders.Down then
   begin
     FState := RestFormState;
-    RestFormState := OrderMenu;
+    RestFormState := rsOrderMenu;
     FWithPreCheck := False;
     RestFormState := FState;
     CreateUserList;
@@ -3367,7 +3420,7 @@ var
   GoodKey: Integer;
   FGoodInfo: TLogGoodInfo;
 begin
-  if (not FLineTable.IsEmpty) and (RestFormState = MenuInfo) then
+  if (not FLineTable.IsEmpty) and (RestFormState = rsMenuInfo) then
   begin
     GoodKey := FLineTable.FieldByName('usr$goodkey').AsInteger;
     if FGoodDataSet.Locate('ID', GoodKey, []) then
@@ -3600,7 +3653,7 @@ begin
   if btnPrecheckOrders.Down then
   begin
     FState := RestFormState;
-    RestFormState := OrderMenu;
+    RestFormState := rsOrderMenu;
     FWithPreCheck := True;
     RestFormState := FState;//KassirInfo;
     CreateUserList;
@@ -3612,9 +3665,9 @@ var
   WithPreCheck: Boolean;
 begin
   WithPreCheck := not FWithPreCheck;
-  RestFormState := OrderMenu;
+  RestFormState := rsOrderMenu;
   FWithPreCheck := WithPreCheck;
-  RestFormState := KassirInfo;
+  RestFormState := rsKassirInfo;
   CreateUserList;
 end;
 
@@ -3765,7 +3818,7 @@ begin
       dsMain.DataSet := nil;
       dsMain.DataSet := FLineTable;
     end;
-    RestFormState := MenuInfo;
+    RestFormState := rsMenuInfo;
     //если заказ закрыт, то оставляем отмену пречека, иначе просто пречек
     if FHeaderTable.FieldByName('usr$timecloseorder').IsNull then
       btnPreCheck.Action := actPreCheck
@@ -3829,7 +3882,7 @@ begin
   if not Assigned(FFrontBase) then
     exit;
 
-  if (not FFrontBase.Options.NoPassword) and (FRestFormState = OrderMenu) then
+  if (not FFrontBase.Options.NoPassword) and (FRestFormState = rsOrderMenu) then
   begin
     if tmrClose.Tag = 10 then
       actCancel.Execute;
@@ -3843,7 +3896,7 @@ var
 begin
   LockWindowUpdate(Handle);
   try
-    if (FActiveHallButton <> '') and (FRestFormState = HallsPage) then
+    if (FActiveHallButton <> '') and (FRestFormState = rsHallsPage) then
     begin
       FButton := pnlHalls.FindComponent(FActiveHallButton);
       if Assigned(FButton) then
@@ -3864,15 +3917,15 @@ var
   S: String;
 begin
   case FRestFormState of
-    Pass:
+    rsPass:
       S := ' ' + DateToStr(Date) + ' ' + TimeToStr(Now);
 
-    OrderMenu, ManagerPage, ManagerChooseOrder,
-    ManagerInfo, KassirInfo, HallsPage, HallInfo:
+    rsOrderMenu, rsManagerPage, rsManagerChooseOrder,
+    rsManagerInfo, rsKassirInfo, rsHallsPage, rsHallInfo:
       S := ' ' + DateToStr(Date) + ' ' + TimeToStr(Now) + ' пользователь: ' +
         FFrontBase.UserName;
 
-    MenuInfo:
+    rsMenuInfo:
       begin
         S := ' ' + DateToStr(Date) + ' ' + TimeToStr(Now) + ' пользователь: ' +
           FFrontBase.UserName + ', дата создания заказа: ' +
@@ -4088,7 +4141,7 @@ begin
       FForm.ShowModal;
       // Редактор залов
       if FForm.ModalResult = mrOk then
-        RestFormState := HallInfo;
+        RestFormState := rsHallInfo;
     finally
       FForm.Free;
     end;

@@ -3,8 +3,8 @@ object ChooseDiscountCard: TChooseDiscountCard
   Top = 238
   BorderStyle = bsDialog
   Caption = #1057#1082#1080#1076#1082#1072
-  ClientHeight = 351
-  ClientWidth = 380
+  ClientHeight = 329
+  ClientWidth = 399
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -17,11 +17,11 @@ object ChooseDiscountCard: TChooseDiscountCard
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
-  object AdvPanel1: TAdvPanel
+  object pnlMain: TAdvPanel
     Left = 0
     Top = 0
-    Width = 380
-    Height = 351
+    Width = 399
+    Height = 329
     Align = alClient
     BevelOuter = bvNone
     Color = 16640730
@@ -55,17 +55,25 @@ object ChooseDiscountCard: TChooseDiscountCard
     StatusBar.ColorTo = 16374724
     StatusBar.GradientDirection = gdVertical
     Styler = FrontData.FrontPanelStyler
+    ExplicitWidth = 380
+    ExplicitHeight = 351
     FullHeight = 0
+    object Bevel1: TBevel
+      Left = 6
+      Top = 9
+      Width = 273
+      Height = 312
+    end
     object Label1: TLabel
       Left = 16
       Top = 19
-      Width = 40
+      Width = 39
       Height = 23
       Caption = #1050#1086#1076':'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
-      Font.Height = -21
-      Font.Name = 'Times New Roman'
+      Font.Height = -19
+      Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
     end
@@ -77,21 +85,21 @@ object ChooseDiscountCard: TChooseDiscountCard
       Caption = #1050#1083#1080#1077#1085#1090':'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
-      Font.Height = -21
-      Font.Name = 'Times New Roman'
+      Font.Height = -19
+      Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
     end
     object usrg_lblCustomer: TLabel
-      Left = 14
-      Top = 104
+      Left = 13
+      Top = 102
       Width = 228
       Height = 28
       AutoSize = False
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -19
-      Font.Name = 'Times New Roman'
+      Font.Name = 'Tahoma'
       Font.Style = [fsBold]
       ParentFont = False
       Transparent = True
@@ -105,8 +113,8 @@ object ChooseDiscountCard: TChooseDiscountCard
       Caption = #1057#1082#1080#1076#1082#1072', %:'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
-      Font.Height = -21
-      Font.Name = 'Times New Roman'
+      Font.Height = -19
+      Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
     end
@@ -119,7 +127,7 @@ object ChooseDiscountCard: TChooseDiscountCard
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -19
-      Font.Name = 'Times New Roman'
+      Font.Name = 'Tahoma'
       Font.Style = [fsBold]
       ParentFont = False
       Transparent = True
@@ -128,13 +136,13 @@ object ChooseDiscountCard: TChooseDiscountCard
     object Label4: TLabel
       Left = 16
       Top = 196
-      Width = 58
+      Width = 57
       Height = 23
       Caption = #1041#1086#1085#1091#1089':'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
-      Font.Height = -21
-      Font.Name = 'Times New Roman'
+      Font.Height = -19
+      Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
     end
@@ -147,7 +155,7 @@ object ChooseDiscountCard: TChooseDiscountCard
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -19
-      Font.Name = 'Times New Roman'
+      Font.Name = 'Tahoma'
       Font.Style = [fsBold]
       ParentFont = False
       Transparent = True
@@ -156,13 +164,13 @@ object ChooseDiscountCard: TChooseDiscountCard
     object Label5: TLabel
       Left = 16
       Top = 260
-      Width = 169
+      Width = 168
       Height = 23
       Caption = #1054#1087#1083#1072#1090#1080#1090#1100' '#1073#1086#1085#1091#1089#1086#1084':'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
-      Font.Height = -21
-      Font.Name = 'Times New Roman'
+      Font.Height = -19
+      Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
     end
@@ -176,7 +184,7 @@ object ChooseDiscountCard: TChooseDiscountCard
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -19
-      Font.Name = 'Times New Roman'
+      Font.Name = 'Tahoma'
       Font.Style = [fsBold]
       ParentFont = False
       Transparent = True
@@ -193,25 +201,27 @@ object ChooseDiscountCard: TChooseDiscountCard
       Ctl3D = False
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
-      Font.Height = -24
-      Font.Name = 'Webdings'
+      Font.Height = -19
+      Font.Name = 'Tahoma'
       Font.Style = [fsBold]
       ParentCtl3D = False
       ParentFont = False
-      PasswordChar = '='
+      PasswordChar = '*'
       TabOrder = 0
       OnKeyUp = usrg_lblCardCodeKeyUp
     end
     object btnChooseBonus: TAdvSmoothButton
-      Left = 196
-      Top = 279
+      Left = 200
+      Top = 258
       Width = 71
-      Height = 37
+      Height = 54
+      Appearance.PictureAlignment = taCenter
       Appearance.Font.Charset = DEFAULT_CHARSET
       Appearance.Font.Color = clWindowText
-      Appearance.Font.Height = -13
-      Appearance.Font.Name = 'Times New Roman'
+      Appearance.Font.Height = -11
+      Appearance.Font.Name = 'Tahoma'
       Appearance.Font.Style = [fsBold]
+      Appearance.Layout = blPictureTop
       Status.Caption = '0'
       Status.Appearance.Fill.Color = clRed
       Status.Appearance.Fill.ColorMirror = clNone
@@ -228,21 +238,24 @@ object ChooseDiscountCard: TChooseDiscountCard
       Bevel = False
       Caption = '...'
       Color = 15195349
+      DisabledColor = clBlack
       ParentFont = False
       TabOrder = 1
       Version = '1.6.9.0'
       OnClick = btnChooseBonusClick
     end
     object btnCancel: TAdvSmoothButton
-      Left = 277
-      Top = 84
-      Width = 92
-      Height = 37
+      Left = 285
+      Top = 69
+      Width = 110
+      Height = 54
+      Appearance.PictureAlignment = taCenter
       Appearance.Font.Charset = DEFAULT_CHARSET
       Appearance.Font.Color = clWindowText
-      Appearance.Font.Height = -13
-      Appearance.Font.Name = 'Times New Roman'
+      Appearance.Font.Height = -11
+      Appearance.Font.Name = 'Tahoma'
       Appearance.Font.Style = [fsBold]
+      Appearance.Layout = blPictureTop
       Status.Caption = '0'
       Status.Appearance.Fill.Color = clRed
       Status.Appearance.Fill.ColorMirror = clNone
@@ -259,21 +272,24 @@ object ChooseDiscountCard: TChooseDiscountCard
       Bevel = False
       Caption = #1054#1090#1084#1077#1085#1072
       Color = 15195349
+      DisabledColor = clBlack
       ParentFont = False
-      TabOrder = 2
+      TabOrder = 3
       Version = '1.6.9.0'
       OnClick = btnCancelClick
     end
     object btnOK: TAdvSmoothButton
-      Left = 277
-      Top = 41
-      Width = 92
-      Height = 37
+      Left = 285
+      Top = 9
+      Width = 110
+      Height = 54
+      Appearance.PictureAlignment = taCenter
       Appearance.Font.Charset = DEFAULT_CHARSET
       Appearance.Font.Color = clWindowText
-      Appearance.Font.Height = -13
-      Appearance.Font.Name = 'Times New Roman'
+      Appearance.Font.Height = -11
+      Appearance.Font.Name = 'Tahoma'
       Appearance.Font.Style = [fsBold]
+      Appearance.Layout = blPictureTop
       Status.Caption = '0'
       Status.Appearance.Fill.Color = clRed
       Status.Appearance.Fill.ColorMirror = clNone
@@ -290,21 +306,24 @@ object ChooseDiscountCard: TChooseDiscountCard
       Bevel = False
       Caption = #1054#1050
       Color = 15195349
+      DisabledColor = clBlack
       ParentFont = False
-      TabOrder = 3
+      TabOrder = 2
       Version = '1.6.9.0'
       OnClick = btnOKClick
     end
     object btnDelete: TAdvSmoothButton
-      Left = 277
-      Top = 129
-      Width = 92
-      Height = 37
+      Left = 285
+      Top = 267
+      Width = 110
+      Height = 54
+      Appearance.PictureAlignment = taCenter
       Appearance.Font.Charset = DEFAULT_CHARSET
       Appearance.Font.Color = clWindowText
-      Appearance.Font.Height = -13
-      Appearance.Font.Name = 'Times New Roman'
+      Appearance.Font.Height = -11
+      Appearance.Font.Name = 'Tahoma'
       Appearance.Font.Style = [fsBold]
+      Appearance.Layout = blPictureTop
       Status.Caption = '0'
       Status.Appearance.Fill.Color = clRed
       Status.Appearance.Fill.ColorMirror = clNone
@@ -321,30 +340,11 @@ object ChooseDiscountCard: TChooseDiscountCard
       Bevel = False
       Caption = #1059#1076#1072#1083#1080#1090#1100
       Color = 15195349
+      DisabledColor = clBlack
       ParentFont = False
       TabOrder = 4
       Version = '1.6.9.0'
       OnClick = btnDeleteClick
     end
-  end
-  object memTable: TkbmMemTable
-    DesignActivation = True
-    AttachedAutoRefresh = True
-    AttachMaxCount = 1
-    FieldDefs = <>
-    IndexDefs = <>
-    SortOptions = []
-    PersistentBackup = False
-    ProgressFlags = [mtpcLoad, mtpcSave, mtpcCopy]
-    LoadedCompletely = False
-    SavedCompletely = False
-    FilterOptions = []
-    Version = '6.30'
-    LanguageID = 0
-    SortID = 0
-    SubLanguageID = 1
-    LocaleID = 1024
-    Left = 176
-    Top = 200
   end
 end

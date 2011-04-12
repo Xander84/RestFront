@@ -161,6 +161,7 @@ object ModificationForm: TModificationForm
       Status.Appearance.Font.Style = []
       Bevel = False
       Color = 15195349
+      DisabledColor = clBlack
       ParentFont = False
       TabOrder = 0
       Version = '1.6.9.0'
@@ -191,6 +192,7 @@ object ModificationForm: TModificationForm
       Status.Appearance.Font.Style = []
       Bevel = False
       Color = 15195349
+      DisabledColor = clBlack
       ParentFont = False
       TabOrder = 1
       Version = '1.6.9.0'
@@ -221,6 +223,7 @@ object ModificationForm: TModificationForm
       Bevel = False
       Caption = #1042#1074#1077#1089#1090#1080' '#1084#1086#1076#1080#1092#1080#1082#1072#1090#1086#1088
       Color = 15195349
+      DisabledColor = clBlack
       ParentFont = False
       TabOrder = 2
       Version = '1.6.9.0'
@@ -253,6 +256,7 @@ object ModificationForm: TModificationForm
       Status.Appearance.Font.Style = []
       Bevel = False
       Color = 15195349
+      DisabledColor = clBlack
       ParentFont = False
       TabOrder = 3
       Version = '1.6.9.0'
@@ -284,6 +288,7 @@ object ModificationForm: TModificationForm
       Status.Appearance.Font.Style = []
       Bevel = False
       Color = 15195349
+      DisabledColor = clBlack
       ParentFont = False
       TabOrder = 4
       Version = '1.6.9.0'

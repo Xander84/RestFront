@@ -44,6 +44,9 @@ end;
 procedure TPercOrCard.FormCreate(Sender: TObject);
 begin
   FDiscountType := 0;
+
+  btnPercent.Picture := FrontData.RestPictureContainer.FindPicture('percent');
+  btnCard.Picture := FrontData.RestPictureContainer.FindPicture('master_card');
 end;
 
 end.
