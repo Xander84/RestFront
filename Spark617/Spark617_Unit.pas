@@ -12,6 +12,7 @@ type
     FFrontBase: TFrontBase;
     FDriverInit: Boolean;
     IsInit: Boolean;
+    FLastErr: Integer;
 
     function SetParams: Boolean;
     procedure ErrMessage(Err: Integer);
@@ -214,6 +215,7 @@ end;
 constructor TSpark617Register.Create(AOwner: TComponent);
 begin
   FDriverInit := True;
+  FLastErr := 0;
   try
     inherited Create(AOwner);
   except
@@ -695,10 +697,18 @@ begin
   Res := InitDevice;
   if Res <> 0 then
   begin
-    ErrMessage(Res);
+    if (Res = 20) and (FLastErr = 20) then
+      //Требуется снятие Z1-отчета (принтер заблокирован)
+    else
+      ErrMessage(Res);
+
+    if Res = 20 then
+      FLastErr := 20
+    else
+      FLastErr := 0;
     exit;
   end;
-
+  FLastErr := 0;
   Result := True;
 end;
 

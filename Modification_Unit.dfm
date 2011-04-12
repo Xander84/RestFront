@@ -202,7 +202,7 @@ object ModificationForm: TModificationForm
       Height = 47
       Appearance.Font.Charset = DEFAULT_CHARSET
       Appearance.Font.Color = clWindowText
-      Appearance.Font.Height = -19
+      Appearance.Font.Height = -13
       Appearance.Font.Name = 'Times New Roman'
       Appearance.Font.Style = []
       Status.Caption = '0'
