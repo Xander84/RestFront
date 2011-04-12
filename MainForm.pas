@@ -678,6 +678,11 @@ end;
 
 procedure TRestMainForm.edPasswordKeyPress(Sender: TObject; var Key: Char);
 begin
+  if (Key = 'æ') or (Key = 'Æ') then
+    Key := ';';
+  if (Key = ',') or (Key = '.') then
+    Key := '?';
+
   if Key = #13 then
     actPassEnterExecute(Sender)
   else
@@ -3700,7 +3705,7 @@ begin
 //    FRestTable.Tag := 0;
     Pt := FRestTable.ClientToScreen(Point(0, 0));
     FRestTable.PopupMenu.PopupComponent := FRestTable;
-    FRestTable.PopupMenu.Popup(Pt.X + 16, Pt.Y + 16);
+    FRestTable.PopupMenu.Popup(Pt.X + 64, Pt.Y + 32);
     exit;
   end;
 
