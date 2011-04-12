@@ -595,7 +595,7 @@ begin
   btnPreCheck.Picture := FrontData.RestPictureContainer.FindPicture('document_info');
   btnModification.Picture := FrontData.RestPictureContainer.FindPicture('pencil');
   btnKeyBoard.Picture := FrontData.RestPictureContainer.FindPicture('keyboard');
-  btnDiscount.Picture := FrontData.RestPictureContainer.FindPicture('chart_down');
+  btnDiscount.Picture := FrontData.RestPictureContainer.FindPicture('percent');
   btnPay.Picture := FrontData.RestPictureContainer.FindPicture('money');
   btnDevide.Picture := FrontData.RestPictureContainer.FindPicture('calculator');
   btnOK.Picture := FrontData.RestPictureContainer.FindPicture('tick');

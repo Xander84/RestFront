@@ -2683,8 +2683,6 @@ object RestMainForm: TRestMainForm
             ParentFont = False
             TabOrder = 0
             Version = '1.6.9.0'
-            ExplicitLeft = 4
-            ExplicitWidth = 72
           end
           object btnRestartRest: TAdvSmoothButton
             AlignWithMargins = True
@@ -2720,9 +2718,6 @@ object RestMainForm: TRestMainForm
             ParentFont = False
             TabOrder = 1
             Version = '1.6.9.0'
-            ExplicitLeft = 4
-            ExplicitTop = 56
-            ExplicitWidth = 72
           end
           object btnShowKeyBoard: TAdvSmoothButton
             AlignWithMargins = True
@@ -2759,9 +2754,6 @@ object RestMainForm: TRestMainForm
             TabOrder = 2
             TabStop = False
             Version = '1.6.9.0'
-            ExplicitLeft = 4
-            ExplicitTop = 112
-            ExplicitWidth = 72
           end
           object btnAdminOptions: TAdvSmoothButton
             AlignWithMargins = True
@@ -2797,9 +2789,6 @@ object RestMainForm: TRestMainForm
             ParentFont = False
             TabOrder = 3
             Version = '1.6.9.0'
-            ExplicitLeft = 4
-            ExplicitTop = 168
-            ExplicitWidth = 72
           end
         end
         object tsFunctionButton: TAdvTabSheet
@@ -2846,9 +2835,6 @@ object RestMainForm: TRestMainForm
             ParentFont = False
             TabOrder = 0
             Version = '1.6.9.0'
-            ExplicitLeft = 4
-            ExplicitTop = -3
-            ExplicitWidth = 72
           end
           object btnRemoveQuantity: TAdvSmoothButton
             AlignWithMargins = True
@@ -2887,8 +2873,6 @@ object RestMainForm: TRestMainForm
             ParentFont = False
             TabOrder = 1
             Version = '1.6.9.0'
-            ExplicitLeft = 4
-            ExplicitWidth = 72
           end
           object btnDeletePosition: TAdvSmoothButton
             AlignWithMargins = True
@@ -2926,8 +2910,6 @@ object RestMainForm: TRestMainForm
             ParentFont = False
             TabOrder = 2
             Version = '1.6.9.0'
-            ExplicitLeft = 4
-            ExplicitWidth = 72
           end
           object btnCutCheck: TAdvSmoothButton
             AlignWithMargins = True
@@ -2965,8 +2947,6 @@ object RestMainForm: TRestMainForm
             ParentFont = False
             TabOrder = 3
             Version = '1.6.9.0'
-            ExplicitLeft = 4
-            ExplicitWidth = 72
           end
           object btnPreCheck: TAdvSmoothButton
             AlignWithMargins = True
@@ -3004,8 +2984,6 @@ object RestMainForm: TRestMainForm
             ParentFont = False
             TabOrder = 4
             Version = '1.6.9.0'
-            ExplicitLeft = 4
-            ExplicitWidth = 72
           end
           object btnModification: TAdvSmoothButton
             AlignWithMargins = True
@@ -3020,7 +2998,7 @@ object RestMainForm: TRestMainForm
             Appearance.PictureAlignment = taCenter
             Appearance.Font.Charset = DEFAULT_CHARSET
             Appearance.Font.Color = clWindowText
-            Appearance.Font.Height = -9
+            Appearance.Font.Height = -8
             Appearance.Font.Name = 'Tahoma'
             Appearance.Font.Style = [fsBold]
             Appearance.Layout = blPictureTop
@@ -3043,8 +3021,6 @@ object RestMainForm: TRestMainForm
             ParentFont = False
             TabOrder = 5
             Version = '1.6.9.0'
-            ExplicitLeft = 4
-            ExplicitWidth = 72
           end
           object btnKeyBoard: TAdvSmoothButton
             AlignWithMargins = True
@@ -3083,7 +3059,6 @@ object RestMainForm: TRestMainForm
             TabOrder = 6
             TabStop = False
             Version = '1.6.9.0'
-            ExplicitWidth = 72
           end
           object btnDiscount: TAdvSmoothButton
             AlignWithMargins = True
@@ -3121,8 +3096,6 @@ object RestMainForm: TRestMainForm
             ParentFont = False
             TabOrder = 7
             Version = '1.6.9.0'
-            ExplicitLeft = 4
-            ExplicitWidth = 72
           end
           object btnPay: TAdvSmoothButton
             AlignWithMargins = True
@@ -3161,8 +3134,6 @@ object RestMainForm: TRestMainForm
             ParentFont = False
             TabOrder = 8
             Version = '1.6.9.0'
-            ExplicitLeft = 4
-            ExplicitWidth = 72
           end
           object btnDevide: TAdvSmoothButton
             AlignWithMargins = True
@@ -3200,8 +3171,6 @@ object RestMainForm: TRestMainForm
             ParentFont = False
             TabOrder = 9
             Version = '1.6.9.0'
-            ExplicitLeft = 4
-            ExplicitWidth = 72
           end
           object btnOK: TAdvSmoothButton
             AlignWithMargins = True
@@ -3239,9 +3208,6 @@ object RestMainForm: TRestMainForm
             ParentFont = False
             TabOrder = 10
             Version = '1.6.9.0'
-            ExplicitLeft = 5
-            ExplicitTop = 584
-            ExplicitWidth = 72
           end
           object btnCancel3: TAdvSmoothButton
             AlignWithMargins = True
@@ -3279,8 +3245,6 @@ object RestMainForm: TRestMainForm
             ParentFont = False
             TabOrder = 11
             Version = '1.6.9.0'
-            ExplicitLeft = 2
-            ExplicitTop = 643
           end
         end
         object tsOrderButton: TAdvTabSheet
@@ -3324,8 +3288,6 @@ object RestMainForm: TRestMainForm
             ParentFont = False
             TabOrder = 0
             Version = '1.6.9.0'
-            ExplicitLeft = 4
-            ExplicitWidth = 72
           end
           object btnAllChecks: TAdvSmoothButton
             AlignWithMargins = True
@@ -3361,7 +3323,6 @@ object RestMainForm: TRestMainForm
             ParentFont = False
             TabOrder = 1
             Version = '1.6.9.0'
-            ExplicitLeft = 1
           end
           object btnManagerInfo: TAdvSmoothButton
             AlignWithMargins = True
@@ -3397,8 +3358,6 @@ object RestMainForm: TRestMainForm
             ParentFont = False
             TabOrder = 2
             Version = '1.6.9.0'
-            ExplicitLeft = 1
-            ExplicitTop = 129
           end
           object btnKassa: TAdvSmoothButton
             AlignWithMargins = True
@@ -3434,8 +3393,6 @@ object RestMainForm: TRestMainForm
             ParentFont = False
             TabOrder = 3
             Version = '1.6.9.0'
-            ExplicitLeft = 1
-            ExplicitTop = 193
           end
           object btnCancel2: TAdvSmoothButton
             AlignWithMargins = True
@@ -3472,9 +3429,6 @@ object RestMainForm: TRestMainForm
             ParentFont = False
             TabOrder = 4
             Version = '1.6.9.0'
-            ExplicitLeft = 4
-            ExplicitTop = 640
-            ExplicitWidth = 72
           end
         end
         object tsManagerInfoButton: TAdvTabSheet
@@ -3505,8 +3459,6 @@ object RestMainForm: TRestMainForm
             Font.Style = []
             ParentFont = False
             TabOrder = 0
-            ExplicitLeft = 2
-            ExplicitTop = 8
           end
           object xDateEnd: TDateTimePicker
             AlignWithMargins = True
@@ -3524,8 +3476,6 @@ object RestMainForm: TRestMainForm
             Font.Style = []
             ParentFont = False
             TabOrder = 1
-            ExplicitLeft = 2
-            ExplicitTop = 47
           end
           object btnExitManagerInfo: TAdvSmoothButton
             AlignWithMargins = True
@@ -3562,9 +3512,6 @@ object RestMainForm: TRestMainForm
             TabOrder = 2
             Version = '1.6.9.0'
             OnClick = btnExitManagerInfoClick
-            ExplicitLeft = 4
-            ExplicitTop = 640
-            ExplicitWidth = 72
           end
           object btnWithPrecheck: TAdvSmoothButton
             AlignWithMargins = True
@@ -3601,8 +3548,6 @@ object RestMainForm: TRestMainForm
             TabOrder = 3
             Version = '1.6.9.0'
             OnClick = btnWithPrecheckClick
-            ExplicitTop = 142
-            ExplicitWidth = 72
           end
           object btnWithoutPrecheck: TAdvSmoothButton
             AlignWithMargins = True
@@ -3639,8 +3584,6 @@ object RestMainForm: TRestMainForm
             TabOrder = 4
             Version = '1.6.9.0'
             OnClick = btnWithoutPrecheckClick
-            ExplicitTop = 198
-            ExplicitWidth = 72
           end
           object btnPayed: TAdvSmoothButton
             AlignWithMargins = True
@@ -3677,8 +3620,6 @@ object RestMainForm: TRestMainForm
             TabOrder = 5
             Version = '1.6.9.0'
             OnClick = btnPayedClick
-            ExplicitTop = 254
-            ExplicitWidth = 72
           end
           object btnNotPayed: TAdvSmoothButton
             AlignWithMargins = True
@@ -3715,8 +3656,6 @@ object RestMainForm: TRestMainForm
             TabOrder = 6
             Version = '1.6.9.0'
             OnClick = btnNotPayedClick
-            ExplicitTop = 310
-            ExplicitWidth = 72
           end
           object btnAllChec: TAdvSmoothButton
             AlignWithMargins = True
@@ -3753,8 +3692,6 @@ object RestMainForm: TRestMainForm
             TabOrder = 7
             Version = '1.6.9.0'
             OnClick = btnAllChecClick
-            ExplicitTop = 86
-            ExplicitWidth = 72
           end
           object btnPrintIncomeReport: TAdvSmoothButton
             AlignWithMargins = True
@@ -3791,8 +3728,6 @@ object RestMainForm: TRestMainForm
             TabOrder = 8
             Version = '1.6.9.0'
             OnClick = btnPrintIncomeReportClick
-            ExplicitTop = 381
-            ExplicitWidth = 72
           end
           object btnCheckRegister: TAdvSmoothButton
             AlignWithMargins = True
@@ -3829,8 +3764,6 @@ object RestMainForm: TRestMainForm
             TabOrder = 9
             Version = '1.6.9.0'
             OnClick = btnCheckRegisterClick
-            ExplicitTop = 437
-            ExplicitWidth = 72
           end
           object btnPrintCopyCheck: TAdvSmoothButton
             AlignWithMargins = True
@@ -3867,8 +3800,6 @@ object RestMainForm: TRestMainForm
             TabOrder = 10
             Version = '1.6.9.0'
             OnClick = btnPrintCopyCheckClick
-            ExplicitTop = 493
-            ExplicitWidth = 72
           end
         end
         object tsEmpty: TAdvTabSheet
@@ -3912,8 +3843,6 @@ object RestMainForm: TRestMainForm
             TabOrder = 0
             TabStop = False
             Version = '1.6.9.0'
-            ExplicitLeft = 4
-            ExplicitWidth = 72
           end
           object btnCancel1: TAdvSmoothButton
             AlignWithMargins = True
@@ -3950,9 +3879,6 @@ object RestMainForm: TRestMainForm
             ParentFont = False
             TabOrder = 1
             Version = '1.6.9.0'
-            ExplicitLeft = 4
-            ExplicitTop = 640
-            ExplicitWidth = 72
           end
           object btnOK2: TAdvSmoothButton
             AlignWithMargins = True
@@ -3990,7 +3916,6 @@ object RestMainForm: TRestMainForm
             TabOrder = 2
             Visible = False
             Version = '1.6.9.0'
-            ExplicitTop = 548
           end
           object btnReturnGoodSum: TAdvSmoothButton
             AlignWithMargins = True
@@ -4093,7 +4018,7 @@ object RestMainForm: TRestMainForm
     end
     object actModification: TAction
       Category = 'menu'
-      Caption = #1052#1054#1044
+      Caption = #1052#1086#1076#1080#1092#1080#1082#1072#1090#1086#1088
       OnExecute = actModificationExecute
       OnUpdate = actModificationUpdate
     end
@@ -4104,24 +4029,24 @@ object RestMainForm: TRestMainForm
     end
     object actCutCheck: TAction
       Category = 'menu'
-      Caption = #1056#1072#1079#1076
+      Caption = #1056#1072#1079#1076#1077#1083#1080#1090#1100
       OnExecute = actCutCheckExecute
       OnUpdate = actCutCheckUpdate
     end
     object actPreCheck: TAction
       Category = 'menu'
-      Caption = #1055#1088#1077#1095#1077#1082
+      Caption = #1057#1095#1077#1090
       OnExecute = actPreCheckExecute
       OnUpdate = actPreCheckUpdate
     end
     object actCancelPreCheck: TAction
       Category = 'menu'
-      Caption = #1054#1090#1084'.'#1087#1088#1077#1095#1077#1082#1072
+      Caption = #1054#1090#1084#1077#1085#1080#1090#1100' '#1089#1095#1077#1090
       OnExecute = actCancelPreCheckExecute
     end
     object actDiscount: TAction
       Category = 'menu'
-      Caption = '%'
+      Caption = #1057#1082#1080#1076#1082#1072
       OnExecute = actDiscountExecute
       OnUpdate = actDiscountUpdate
     end
@@ -4140,7 +4065,7 @@ object RestMainForm: TRestMainForm
     end
     object actDevide: TAction
       Category = 'menu'
-      Caption = '0,000'
+      Caption = #1050#1086#1083#1080#1095#1077#1089#1090#1074#1086
       OnExecute = actDevideExecute
       OnUpdate = actDevideUpdate
     end
