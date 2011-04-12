@@ -941,7 +941,7 @@ begin
     FButton.OnClick := GoodButtonOnClick;
     FButton.Name := Format(btnGoodName, [FGoodButtonNumber]);
     FButton.Height := 80;//btnHeight;
-    FButton.Width  := 110; //btnHalfWidth;
+    FButton.Width  := 111; //btnHalfWidth;
 
     //проверяем, есть ли ещё место в ряду
     if (FGoodLastLeftButton + btnHalfWidth) > pnlGood.Width then
