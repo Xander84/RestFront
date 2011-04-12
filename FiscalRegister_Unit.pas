@@ -11,6 +11,11 @@ uses
   Создаёт нужный класс, далее работает с ним
 }
 
+const
+  Reg_Shtrih   = 0;
+  Reg_Merc     = 2;
+  Reg_Spark617 = 3;
+  Reg_Test     = 4;
 
 type
   TFiscalRegister = class(TObject)
@@ -107,28 +112,28 @@ begin
     end;
 
     case FiscalType of
-      0: //Штрих-ФР
+      Reg_Shtrih: //Штрих-ФР
       begin
         FFiscalRegister := TShtrihFR.Create(nil);
         FFiscalRegister.FrontBase := FFrontBase;
         FFiscalRegister.Init;
       end;
 
-      2: //Гепард
+      Reg_Merc: //Гепард
       begin
         FFiscalRegister := TMercuryRegister.Create(nil);
         FFiscalRegister.FrontBase := FFrontBase;
         FFiscalRegister.Init;
       end;
 
-      3: //Спарк 617 ТФ
+      Reg_Spark617: //Спарк 617 ТФ
       begin
         FFiscalRegister := TSpark617Register.Create(nil);
         FFiscalRegister.FrontBase := FFrontBase;
         FFiscalRegister.Init;
       end;
 
-      4: // для тестов
+      Reg_Test: // для тестов
       begin
         FFiscalRegister := TAbstractFiscalRegister.Create;
         FFiscalRegister.FrontBase := FFrontBase;
@@ -231,9 +236,14 @@ end;
 procedure TFiscalRegister.StartSession;
 begin
   InitFiscalRegister(FFrontBase.CashCode);
-  if FFrontBase.CashCode = 2 then
+  if FFrontBase.CashCode = Reg_Merc then
+  begin
     if Assigned(FFiscalRegister) then
       FFiscalRegister.OpenDay;
+  end else
+  if (FFrontBase.CashCode = Reg_Spark617) or (FFrontBase.CashCode = Reg_Shtrih) then
+    if Assigned(FFiscalRegister) then
+      FFiscalRegister.Init;
 end;
 
 end.

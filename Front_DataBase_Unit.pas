@@ -3994,7 +3994,7 @@ begin
     end;
 
     if CanClose then
-      if Touch_MessageBox('Внимание', 'Хотите закрыть день' + DateToStr(NewDate) + '?',
+      if Touch_MessageBox('Внимание', 'Хотите закрыть день ' + DateToStr(NewDate) + '?',
         MB_YESNO, mtConfirmation) = IDYES  then
       begin
         FUserInfo := CheckUserPasswordWithForm;
@@ -4078,7 +4078,7 @@ begin
       NewDate := Date;
     end;
 
-    if Touch_MessageBox('Внимание', 'Хотите открыть день' + DateToStr(NewDate) + '?',
+    if Touch_MessageBox('Внимание', 'Хотите открыть день ' + DateToStr(NewDate) + '?',
       MB_YESNO, mtConfirmation) = IDYES then
     begin
       FUserInfo := CheckUserPasswordWithForm;
