@@ -681,9 +681,10 @@ begin
         MemTable.FieldDefs.Add('NOWTIME', ftTime, 0);
         MemTable.FieldDefs.Add('COMPRESSEDON', ftString, 5);
         MemTable.FieldDefs.Add('RUSPAGE', ftString, 5);
+        MemTable.FieldDefs.Add('CUTPAGE', ftString, 15);
+        MemTable.FieldDefs.Add('DISKN', ftString, 60);
         MemTable.CreateTable;
         MemTable.Open;
-
 
         Query.First;
         while not Query.Eof do
@@ -700,6 +701,11 @@ begin
           MemTable.FieldbyName('NOWTIME').AsDateTime := Time;
           MemTable.FieldByName('COMPRESSEDON').AsVariant := ''; // 'chr(&H1D) + CHR(&H56) + CHR(&H01)
           MemTable.FieldByName('RUSPAGE').AsVariant := '';
+          if Query.FieldByName('surname').AsString <> '' then
+            MemTable.FieldByNAme('DISKN').AsString := 'Карточка:' + Query.FieldByName('cardnum').AsString +
+              #13#10 + Query.FieldByName('surname').AsString + ' ' +
+              Query.FieldByName('firstn').AsString + ' ' + Query.FieldByName('midle').AsString;
+
           MemTable.Post;
 
           Query.Next;
