@@ -30,7 +30,7 @@ object RestMainForm: TRestMainForm
       Top = 0
       Width = 934
       Height = 721
-      ActivePage = tsPassWord
+      ActivePage = tsMain
       ActiveFont.Charset = DEFAULT_CHARSET
       ActiveFont.Color = clWindowText
       ActiveFont.Height = -11
@@ -2284,7 +2284,7 @@ object RestMainForm: TRestMainForm
                     Appearance.Font.Height = -13
                     Appearance.Font.Name = 'Tahoma'
                     Appearance.Font.Style = [fsBold]
-                    Caption = #1041#1077#1079' '#1087#1088#1077#1076#1095#1077#1082#1072
+                    Caption = #1042#1089#1077' '#1079#1072#1082#1072#1079#1099
                     Version = '1.1.8.0'
                     Status.Caption = '0'
                     Status.Appearance.Fill.Color = clRed
@@ -2636,7 +2636,7 @@ object RestMainForm: TRestMainForm
         Top = 1
         Width = 80
         Height = 719
-        ActivePage = tsMainButton
+        ActivePage = tsOrderButton
         ActiveFont.Charset = DEFAULT_CHARSET
         ActiveFont.Color = clWindowText
         ActiveFont.Height = -11

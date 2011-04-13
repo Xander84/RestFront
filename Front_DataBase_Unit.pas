@@ -317,6 +317,8 @@ type
 
     procedure GetUserList(const UserList: TStrings);
     function GetUserOrders(const ContactKey: Integer; var MemTable: TkbmMemTable):Boolean; //Если -1 то возвращаем для текущего
+    function GetUserOrdersPrecheck(const ContactKey: Integer; const MemTable: TkbmMemTable;
+      const WithPrecheck: Boolean):Boolean;
     function GetOrdersInfo(const HeaderTable, LineTable: TkbmMemTable; const DateBegin, DateEnd: TDate;
       const WithPreCheck, WithOutPreCheck, Payed, NotPayed: Boolean): Boolean;
     function GetMenuList(var MemTable: TkbmMemTable): Boolean;
@@ -1968,6 +1970,99 @@ begin
        ' ORDER BY ' +
        '   U.USR$LOGICDATE, ' +
        '   U.USR$TIMEORDER ';
+      if ContactKey  > 0 then
+        FReadSQL.ParamByName('RespKey').AsInteger := ContactKey
+      else
+        FReadSQL.ParamByName('RespKey').AsInteger := FContactKey;
+
+      FReadSQL.ParamByName('OrderTypeKey').AsInteger := FOrderTypeKey;
+
+      FReadSQL.ExecQuery;
+      while not FReadSQL.EOF do
+      begin
+        MemTable.Append;
+        MemTable.FieldByName('TABLENAME').AsString := FReadSQL.FieldByName('NUMBER').AsString;
+        MemTable.FieldByName('GuestNumbers').AsInteger := FReadSQL.FieldByName('USR$GUESTCOUNT').ASInteger;
+        MemTable.FieldByName('OpenTime').ASDateTime := FReadSQL.FieldByName('USR$TIMEORDER').AsDateTime;
+        MemTable.FieldByName('Summ').AsCurrency := FReadSQL.FieldByName('USR$SUMNCUWITHDISCOUNT').AsCurrency;
+        MemTable.FieldByName('ID').AsInteger := FReadSQL.FieldByName('ID').AsInteger;
+        if FReadSQL.FieldByName('USR$PAY').ASInteger = 1 then
+          MemTable.FieldByName('Status').AsInteger := Integer(osOrderPayed)
+        else if not FReadSQL.FieldByName('USR$TIMECLOSEORDER').IsNull then
+          MemTable.FieldByName('Status').AsInteger := Integer(osOrderClose)
+        else
+          MemTable.FieldByName('Status').AsInteger := Integer(osOrderOpen);
+        MemTable.FieldByName('ISLOCKED').AsInteger := FReadSQL.FieldByName('USR$ISLOCKED').AsInteger;
+        MemTable.FieldByName('USR$COMPUTERNAME').AsString := FReadSQL.FieldByName('USR$COMPUTERNAME').AsString;
+        MemTable.Post;
+        FReadSQL.Next;
+      end;
+      Result := True;
+    except
+      Result := False;
+      raise;
+    end;
+  finally
+    FReadSQL.Close;
+  end;
+end;
+
+function TFrontBase.GetUserOrdersPrecheck(const ContactKey: Integer;
+  const MemTable: TkbmMemTable; const WithPrecheck: Boolean): Boolean;
+begin
+  FReadSQL.Close;
+  MemTable.Close;
+  MemTable.CreateTable;
+  MemTable.Open;
+  try
+    try
+      if not FReadSQL.Transaction.InTransaction then
+        FReadSQL.Transaction.StartTransaction;
+
+      FReadSQL.SQL.Text :=
+        ' SELECT  ' +
+        '   Z.ID, ' +
+        '   Z.NUMBER, ' +
+        '   U.USR$GUESTCOUNT, ' +
+        '   U.USR$LOGICDATE,  ' +
+        '   U.USR$PAY,   ' +
+        '   U.USR$TIMECLOSEORDER, ' +
+        '   U.USR$TIMEORDER, ' +
+        '   U.USR$VIP, ' +
+        '   U.USR$ISLOCKED, ' +
+        '   ( SELECT ' +
+        '     SUM ( L.USR$SUMNCUWITHDISCOUNT ) ' +
+        '   FROM ' +
+        '     USR$MN_ORDERLINE L ' +
+        '   WHERE ' +
+        '     L.MASTERKEY  =  Z.ID ' +
+        '        AND ' +
+        '      L.USR$CAUSEDELETEKEY + 0 IS NULL    ) AS USR$SUMNCUWITHDISCOUNT, ' +
+        '   Z.USR$MN_PRINTDATE, U.USR$COMPUTERNAME ' +
+        '  FROM ' +
+        '   GD_DOCUMENT Z ' +
+        '     JOIN ' +
+        '       USR$MN_ORDER U ' +
+        '     ON ' +
+        '       U.DOCUMENTKEY  =  Z.ID ' +
+        ' WHERE ' +
+        '   Z.DOCUMENTTYPEKEY  =  :OrderTypeKey ' +
+        '      AND ' +
+        '   Z.PARENT + 0 IS NULL ' +
+        '      AND ' +
+        '   USR$RESPKEY  =  :RespKey ' +
+        '      AND ' +
+        '   ( USR$PAY  <>  1 ) ' +
+        '      AND ' +
+        '   ( USR$VIP  <>  1 OR   USR$VIP IS NULL ) ';
+      if WithPrecheck then
+        FReadSQL.SQL.Text := FReadSQL.SQL.Text +
+           '  AND U.usr$timecloseorder IS NOT NULL ';
+
+      FReadSQL.SQL.Text := FReadSQL.SQL.Text +
+        ' ORDER BY ' +
+        '   U.USR$LOGICDATE, ' +
+        '   U.USR$TIMEORDER ';
       if ContactKey  > 0 then
         FReadSQL.ParamByName('RespKey').AsInteger := ContactKey
       else

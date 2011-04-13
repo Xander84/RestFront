@@ -3275,7 +3275,9 @@ begin
               //1. Отрисовываем кнопку
               AddUserButton(UserTable);
               //2. Смотрим для контакта список заказов
-              FFrontBase.GetUserOrders(UserTable.FieldByName('ID').AsInteger, OrderTable);
+//              FFrontBase.GetUserOrders(UserTable.FieldByName('ID').AsInteger, OrderTable);
+              FFrontBase.GetUserOrdersPrecheck(UserTable.FieldByName('ID').AsInteger,
+                OrderTable, FWithPreCheck);
               OrderTable.First;
               //3. Отрисовываем заказы
               FUserOrderLastTop := FUserLastTop;
