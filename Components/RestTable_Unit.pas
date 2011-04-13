@@ -162,6 +162,10 @@ begin
     if Assigned(Order) then
       Order.Free;
   FOrderList.Clear;
+
+  FRespKey := -1;
+  FOrderKey := -1;
+  FComputerName := '';
 end;
 
 constructor TRestTable.Create;

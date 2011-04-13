@@ -430,6 +430,9 @@ begin
           if Table.RespKey <> ibsql.FieldByName('USR$RESPKEY').AsInteger then
             Table.RespKey := ibsql.FieldByName('USR$RESPKEY').AsInteger;
 
+          if Table.ComputerName <> ibsql.FieldByName('usr$computername').AsString then
+            Table.ComputerName := ibsql.FieldByName('usr$computername').AsString;
+
           Order := Table.AddOrder(ibsql.FieldByName('DOCUMENTKEY').AsInteger,
             ibsql.FieldByName('NUMBER').AsString);
           Order.TimeCloseOrder := ibsql.FieldByName('usr$timecloseorder').AsDateTime;
