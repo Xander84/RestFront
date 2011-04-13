@@ -3818,6 +3818,9 @@ begin
   if dxfDesigner.Active then
     exit;
 
+  // Сбросим таймер выхода из окна зала
+  tmrClose.Tag := 1;
+
   CurrentRestTable := TRestTable(Sender);
 
   // Если активен режим смены стола
@@ -4014,7 +4017,13 @@ begin
   if (not FFrontBase.Options.NoPassword) and (FRestFormState in [rsOrderMenu, rsHallsPage]) then
   begin
     if tmrClose.Tag = 10 then
+    begin
+      // Для скрытия контекстного меню стола симулируем клик
+      PostMessage(Handle, WM_LBUTTONDOWN, MK_LBUTTON, 0);
+      PostMessage(Handle, WM_LBUTTONUP, MK_LBUTTON, 0);
+      // Запустим обработчик кнопки Отмена
       actCancel.Execute;
+    end;
     tmrClose.Tag := tmrClose.Tag + 1;
   end;
 end;
