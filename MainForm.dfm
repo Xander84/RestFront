@@ -1598,25 +1598,15 @@ object RestMainForm: TRestMainForm
               ImageIndex = 1
               TabColor = clBtnFace
               TabColorTo = clNone
-              object grScrollBar: TScrollBar
-                Left = 576
-                Top = 0
-                Width = 33
-                Height = 681
-                Align = alRight
-                Kind = sbVertical
-                Max = 1
-                PageSize = 0
-                TabOrder = 0
-              end
               object pnlOrderLeft: TPanel
                 Left = 0
                 Top = 0
-                Width = 576
+                Width = 609
                 Height = 681
                 Align = alClient
                 BevelOuter = bvNone
-                TabOrder = 1
+                TabOrder = 0
+                ExplicitWidth = 576
                 object DBGrMain: TDBGridEh
                   Left = 0
                   Top = 27
@@ -1742,14 +1732,15 @@ object RestMainForm: TRestMainForm
                 object pnlMainGood: TPanel
                   Left = 0
                   Top = 389
-                  Width = 576
+                  Width = 609
                   Height = 292
                   Align = alBottom
                   BevelOuter = bvNone
                   Color = 14986888
                   TabOrder = 1
+                  ExplicitWidth = 576
                   object Panel6: TAdvPanel
-                    Left = 526
+                    Left = 559
                     Top = 0
                     Width = 50
                     Height = 292
@@ -1792,6 +1783,7 @@ object RestMainForm: TRestMainForm
                     StatusBar.ColorTo = 16374724
                     StatusBar.GradientDirection = gdVertical
                     Styler = FrontData.FrontPanelStyler
+                    ExplicitLeft = 526
                     DesignSize = (
                       50
                       292)
@@ -1865,7 +1857,7 @@ object RestMainForm: TRestMainForm
                   object pnlGood: TAdvPanel
                     Left = 0
                     Top = 0
-                    Width = 526
+                    Width = 559
                     Height = 292
                     Align = alClient
                     BevelOuter = bvNone
@@ -1908,13 +1900,14 @@ object RestMainForm: TRestMainForm
                     StatusBar.GradientDirection = gdVertical
                     Styler = FrontData.FrontPanelStyler
                     Touch.GestureManager = gmFront
+                    ExplicitWidth = 526
                     FullHeight = 0
                   end
                 end
                 object pnlOrderInfo: TAdvPanel
                   Left = 0
                   Top = 0
-                  Width = 576
+                  Width = 609
                   Height = 27
                   Align = alTop
                   BevelOuter = bvNone
@@ -1949,6 +1942,7 @@ object RestMainForm: TRestMainForm
                   StatusBar.ColorTo = 16374724
                   StatusBar.GradientDirection = gdVertical
                   Styler = FrontData.FrontPanelStyler
+                  ExplicitWidth = 576
                   FullHeight = 40
                   object lblOrderInfoUserName: TLabel
                     AlignWithMargins = True
@@ -2014,6 +2008,19 @@ object RestMainForm: TRestMainForm
                     Transparent = True
                     ExplicitHeight = 23
                   end
+                end
+                object grScrollBar: TScrollBar
+                  Left = 576
+                  Top = 27
+                  Width = 33
+                  Height = 362
+                  Align = alRight
+                  Kind = sbVertical
+                  Max = 1
+                  PageSize = 0
+                  TabOrder = 3
+                  ExplicitTop = 0
+                  ExplicitHeight = 681
                 end
               end
             end
