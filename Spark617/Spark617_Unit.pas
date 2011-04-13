@@ -682,7 +682,7 @@ begin
 
   Result := False;
 
-  if FFrontBase.Options.PrintFiscalChek then
+  if not FFrontBase.Options.PrintFiscalChek then
     Res := SetAccessKey('000000')
   else
     Res := SetAccessKey('111111');

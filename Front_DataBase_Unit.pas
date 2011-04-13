@@ -311,6 +311,7 @@ type
     function CheckUserPassword(UserID: Integer; UserPassword: String): Integer; //Возвращает ID Группы -1 Если не нашло
     function LogIn(UserPassword: String): Boolean; //Возвращает ID Группы -1 Если не нашло
     function CheckUserPasswordWithForm: TUserInfo;
+    function CheckForSession: Boolean;
 
     function GetNextID: Integer;
 
@@ -4418,6 +4419,56 @@ begin
   except
     on E: Exception do
       Touch_MessageBox('Внимание', 'Ошибка ' + E.Message, MB_OK, mtError);
+  end;
+end;
+
+function TFrontBase.CheckForSession: Boolean;
+var
+  FSQL: TIBSQL;
+begin
+  Result := True;
+  if not Options.UseCurrentDate then
+  begin
+    FSQL := TIBSQL.Create(nil);
+    FSQL.Transaction := ReadTransaction;
+    try
+      FSQL.Close;
+      FSQL.SQL.Text :=
+        '  select first(1) ' +
+        '  op.usr$logicdate as LDate, usr$open, usr$off ' +
+        '  from ' +
+        '  usr$mn_options op ' +
+        '  order by 1 desc ';
+      FSQL.ExecQuery;
+
+      if (IsMainCash) and ((UserKey and Options.KassaGroupMask) <> 0) then
+      begin
+         if (FSQL.FieldByName('usr$open').AsCurrency = 0) or (FSQL.FieldByName('usr$off').AsCurrency = 1) then
+           Touch_MessageBox('Внимание', 'Смена не открыта! Попросите менеджера открыть смену!',
+             MB_OK, mtWarning)
+         else begin
+           Result := True;
+           exit;
+         end;
+      end;
+      //  не открыта смена
+      if (FSQL.FieldByName('usr$open').AsCurrency = 0) then
+      begin
+        Touch_MessageBox('Внимание', 'Смена не открыта! Попросите менеджера открыть смену!',
+          MB_OK, mtWarning);
+        exit;
+      end;
+      // уже закрыта смена
+      if (FSQL.FieldByName('usr$off').AsCurrency = 1) then
+      begin
+        Touch_MessageBox('Внимание', 'Ваш менеджер уже закрыл смену!',
+          MB_OK, mtWarning);
+        exit;
+      end;
+      FSQL.Close;
+    finally
+      FSQL.Free;
+    end;
   end;
 end;
 

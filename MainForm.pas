@@ -498,6 +498,10 @@ begin
   //Проверка введёного пароля
   if FFrontBase.LogIn(edPassword.Text) then
   begin
+    if (not FFrontBase.CheckForSession) and not (FFrontBase.IsMainCash
+      and ((FFrontBase.UserKey and FFrontBase.Options.KassaGroupMask) <> 0)) then
+    exit;
+
     FLogManager.DoSimpleLog(GetCurrentUserInfo, ev_LogIn);
     if Assigned(TouchKeyBoard) then
       TouchKeyBoard.Hide;
@@ -1299,6 +1303,10 @@ var
   FGuestCount: Integer;
 begin
   ClearDisplay;
+
+  if not FFrontBase.CheckForSession then
+    exit;
+
 { TODO : Проверка на Max кол-во гостей }
   if (FFrontBase.UserKey and FFrontBase.Options.ManagerGroupMask) = 0 then
   begin
@@ -1767,6 +1775,9 @@ var
   FUserInfo: TUserInfo;
   FButton: TButton;
 begin
+  if not FFrontBase.CheckForSession then
+    exit;
+
   FButton := TButton(Sender);
   //сначала ставим флаг, что редактируем набор данных
   if not FOrderDataSet.Locate('ID', FButton.Tag, []) then
@@ -1844,6 +1855,8 @@ var
   OrderKey: Integer;
   PrinterName: String;
   PrnGrid: Integer;
+  FSQL: TIBSQL;
+  FPrinted: Boolean;
 begin
   FSelectedButton := nil;
   FMenuSelectedButton := nil;
@@ -1909,12 +1922,53 @@ begin
             begin
               if FFrontBase.Options.LastPrintOrder <> OrderKey then
               begin
-                if FFrontBase.GetServiceCheckOptions(OrderKey, PrinterName, PrnGrid) then
-                  if FReport.PrintServiceCheck(1, PrnGrid, OrderKey, PrinterName) then
+                FPrinted := False;
+                FSQL := TIBSQL.Create(nil);
+                FSQL.Transaction := FFrontBase.ReadTransaction;
+                try
+                  FSQL.SQL.Text :=
+                    'select ' +
+                    '  DISTINCT   ' +
+                    '  IIF(setprn.usr$concatchecks = 0, prn.id, null) as prngrid, prn.usr$divide,  ' +
+                    '  setprn.usr$printername, setprn.usr$printerid, o.documentkey, setprn.USR$DOSPRINTER  ' +
+                    'from   ' +
+                    '  usr$mn_order o  ' +
+                    '  join usr$mn_orderline l on o.documentkey = l.masterkey  ' +
+                    '  join gd_document doc on doc.id = l.documentkey and doc.usr$mn_printdate is null  ' +
+                    '  join gd_good g on g.id = l.usr$goodkey  ' +
+                    '  join usr$mn_prngroup prn on prn.id = g.usr$prngroupkey  ' +
+                    '  join usr$mn_prngroupset setprn on setprn.usr$prngroup = prn.id  ' +
+                    'where o.documentkey = :docid  ' +
+                    ' and setprn.usr$computername = :comp   ' +
+                    ' and setprn.usr$kassa = 0   ' +
+                    'order by  ' +
+                    '  setprn.usr$printername, prn.id  ';
+                  FSQL.ParamByName('docid').AsInteger := OrderKey;
+                  FSQL.ParamByName('comp').AsString := FFrontBase.GetLocalComputerName;
+                  FSQL.ExecQuery;
+                  while not FSQL.Eof do
+                  begin
+                    FReport.PrintServiceCheck(1, FSQL.FieldByName('prngrid').AsInteger, OrderKey,
+                      FSQL.FieldByName('usr$printername').AsString);
+                    FPrinted := True;
+                    FSQL.Next;
+                  end;
+                  if FPrinted then
                   begin
                     FFrontBase.SavePrintDate(OrderKey);
                     FFrontBase.CloseModifyTable(FModificationDataSet, Now);
                   end;
+
+                  FSQL.Close;
+                finally
+                  FSQL.Free;
+                end;
+                {if FFrontBase.GetServiceCheckOptions(OrderKey, PrinterName, PrnGrid) then
+                  if FReport.PrintServiceCheck(1, PrnGrid, OrderKey, PrinterName) then
+                  begin
+                    FFrontBase.SavePrintDate(OrderKey);
+                    FFrontBase.CloseModifyTable(FModificationDataSet, Now);
+                  end;}
               end;
               FLogManager.DoOrderLog(GetCurrentUserInfo, GetCurrentOrderInfo, ev_SaveOrder);
               case FPrevFormState of
@@ -2331,8 +2385,9 @@ end;
 
 procedure TRestMainForm.actKeyBoardExecute(Sender: TObject);
 begin
-  TouchKeyBoard.Show;
-  TouchKeyBoard.Keyboard.SetComponentStyle(GetFrontStyle);
+//  TouchKeyBoard.Show;
+//  TouchKeyBoard.Keyboard.SetComponentStyle(GetFrontStyle);
+  WinExec('osk.exe', 1);
 end;
 
 procedure TRestMainForm.actCutCheckExecute(Sender: TObject);
@@ -3717,6 +3772,9 @@ var
   FSQL: TIBSQL;
   Item: TMenuItem;
 begin
+  if not FFrontBase.CheckForSession then
+    exit;
+
   if dxfDesigner.Active then
     exit;
 
