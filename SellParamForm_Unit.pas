@@ -372,41 +372,46 @@ begin
   Ev := TouchKeyBoard.OnKeyClick;
   TouchKeyBoard.OnKeyClick := nil;
   DBAdvGrMain.Enabled := False;
+  btnPay.Enabled := False;
   try
-    FFrontBase.Display.Payed;
-    if Assigned(FFiscalRegiter) then
-    begin
-      FInBrowse := True;
-      try
-        if FNoFiscalPayment then
-          FFiscalRegiter.InitFiscalRegister(4)
-        else
-          FFiscalRegiter.InitFiscalRegister(FFrontBase.CashCode);
-        FFiscalRegiter.OpenDrawer;
-        if FFiscalRegiter.PrintCheck(Doc, DocLine, dsPayLine, FSums) then
-        begin
-          if FFrontBase.Options.PrintCopyCheck then
+    try
+      FFrontBase.Display.Payed;
+      if Assigned(FFiscalRegiter) then
+      begin
+        FInBrowse := True;
+        try
+          if FNoFiscalPayment then
+            FFiscalRegiter.InitFiscalRegister(4)
+          else
+            FFiscalRegiter.InitFiscalRegister(FFrontBase.CashCode);
+          FFiscalRegiter.OpenDrawer;
+          if FFiscalRegiter.PrintCheck(Doc, DocLine, dsPayLine, FSums) then
           begin
-            FReport := TRestReport.Create(Self);
-            FReport.FrontBase := FFrontBase;
-            try
-              FReport.PrintAfterSalePreCheck(FDoc.FieldByName('ID').AsInteger, FSums);
-            finally
-              FReport.Free;
+            if FFrontBase.Options.PrintCopyCheck then
+            begin
+              FReport := TRestReport.Create(Self);
+              FReport.FrontBase := FFrontBase;
+              try
+                FReport.PrintAfterSalePreCheck(FDoc.FieldByName('ID').AsInteger, FSums);
+              finally
+                FReport.Free;
+              end;
             end;
-          end;
 
-          Self.ModalResult := mrOk;
+            Self.ModalResult := mrOk;
+          end;
+        finally
+          FInBrowse := False;
         end;
-      finally
-        FInBrowse := False;
-      end;
-    end else
-      Touch_MessageBox('Внимание', 'Для данной рабочей станции не указан кассовый терминал!', MB_OK, mtWarning);
+      end else
+        Touch_MessageBox('Внимание', 'Для данной рабочей станции не указан кассовый терминал!', MB_OK, mtWarning);
+    except
+      btnPay.Enabled := True;
+      TouchKeyBoard.OnKeyClick := Ev;
+      DBAdvGrMain.Enabled := True;
+    end;
   finally
     FPrinting := False;
-    TouchKeyBoard.OnKeyClick := Ev;
-    DBAdvGrMain.Enabled := True;
   end;
 end;
 
