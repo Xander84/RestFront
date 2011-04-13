@@ -75,6 +75,12 @@ end;
 procedure TPersonalCardForm.usrg_lblCardCodeKeyUp(Sender: TObject;
   var Key: Word; Shift: TShiftState);
 begin
+ { TODO : Вынести в отдельную ф-цию }
+  if (Key = 'ж') or (Key = 'Ж') then
+    Key := ';';
+  if (Key = ',') or (Key = '.') then
+    Key := '?';
+
   if (Key = VK_RETURN) then
   begin
     if FFrontBase.GetPersonalCardInfo(FHeaderTable, usrg_lblCardCode.Text, FPersonalCardID) then

@@ -165,6 +165,11 @@ end;
 procedure TChooseDiscountCard.usrg_lblCardCodeKeyUp(Sender: TObject;
   var Key: Word; Shift: TShiftState);
 begin
+  if (Key = 'æ') or (Key = 'Æ') then
+    Key := ';';
+  if (Key = ',') or (Key = '.') then
+    Key := '?';
+
   if (Key = VK_RETURN) then
   begin
     if FFrontBase.GetDiscountCardInfo(FDataTable, 0, FFrontBase.GetLogicDate, usrg_lblCardCode.Text) then
