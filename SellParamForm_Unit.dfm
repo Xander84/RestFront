@@ -56,7 +56,7 @@ object SellParamForm: TSellParamForm
     Styler = FrontData.FrontPanelStyler
     FullHeight = 0
     object lblToPay: TLabel
-      Left = 624
+      Left = 627
       Top = 17
       Width = 152
       Height = 33
@@ -65,16 +65,16 @@ object SellParamForm: TSellParamForm
       Color = clWindow
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
-      Font.Height = -27
-      Font.Name = 'Times New Roman'
-      Font.Style = []
+      Font.Height = -24
+      Font.Name = 'Tahoma'
+      Font.Style = [fsBold]
       ParentColor = False
       ParentFont = False
       Transparent = True
     end
     object lblChange: TLabel
-      Left = 624
-      Top = 320
+      Left = 627
+      Top = 317
       Width = 152
       Height = 33
       Alignment = taRightJustify
@@ -82,9 +82,9 @@ object SellParamForm: TSellParamForm
       Color = clWindow
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
-      Font.Height = -27
-      Font.Name = 'Times New Roman'
-      Font.Style = []
+      Font.Height = -24
+      Font.Name = 'Tahoma'
+      Font.Style = [fsBold]
       ParentColor = False
       ParentFont = False
       Transparent = True
@@ -92,14 +92,14 @@ object SellParamForm: TSellParamForm
     object Label1: TLabel
       Left = 519
       Top = 17
-      Width = 102
-      Height = 31
+      Width = 105
+      Height = 29
       Caption = #1082' '#1086#1087#1083#1072#1090#1077':'
       Color = clWindow
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
-      Font.Height = -27
-      Font.Name = 'Times New Roman'
+      Font.Height = -24
+      Font.Name = 'Tahoma'
       Font.Style = []
       ParentColor = False
       ParentFont = False
@@ -107,15 +107,15 @@ object SellParamForm: TSellParamForm
     end
     object Label2: TLabel
       Left = 552
-      Top = 320
-      Width = 69
-      Height = 31
+      Top = 317
+      Width = 71
+      Height = 29
       Caption = #1089#1076#1072#1095#1072':'
       Color = clWindow
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
-      Font.Height = -27
-      Font.Name = 'Times New Roman'
+      Font.Height = -24
+      Font.Name = 'Tahoma'
       Font.Style = []
       ParentColor = False
       ParentFont = False
@@ -316,8 +316,8 @@ object SellParamForm: TSellParamForm
       Action = actPay
       Appearance.Font.Charset = DEFAULT_CHARSET
       Appearance.Font.Color = clWindowText
-      Appearance.Font.Height = -19
-      Appearance.Font.Name = 'Times New Roman'
+      Appearance.Font.Height = -13
+      Appearance.Font.Name = 'Tahoma'
       Appearance.Font.Style = [fsBold]
       Status.Caption = '0'
       Status.Appearance.Fill.Color = clRed
@@ -334,6 +334,7 @@ object SellParamForm: TSellParamForm
       Status.Appearance.Font.Style = []
       Bevel = False
       Color = 15195349
+      DisabledColor = clBlack
       ParentFont = False
       TabOrder = 2
       Version = '1.6.9.0'
@@ -346,8 +347,8 @@ object SellParamForm: TSellParamForm
       Action = actCancel
       Appearance.Font.Charset = DEFAULT_CHARSET
       Appearance.Font.Color = clWindowText
-      Appearance.Font.Height = -19
-      Appearance.Font.Name = 'Times New Roman'
+      Appearance.Font.Height = -13
+      Appearance.Font.Name = 'Tahoma'
       Appearance.Font.Style = [fsBold]
       Status.Caption = '0'
       Status.Appearance.Fill.Color = clRed
@@ -364,6 +365,7 @@ object SellParamForm: TSellParamForm
       Status.Appearance.Font.Style = []
       Bevel = False
       Color = 15195349
+      DisabledColor = clBlack
       ParentFont = False
       TabOrder = 3
       Version = '1.6.9.0'
@@ -381,8 +383,8 @@ object SellParamForm: TSellParamForm
       BevelColorDown = 11196927
       Appearance.Font.Charset = DEFAULT_CHARSET
       Appearance.Font.Color = clWindowText
-      Appearance.Font.Height = -19
-      Appearance.Font.Name = 'Times New Roman'
+      Appearance.Font.Height = -16
+      Appearance.Font.Name = 'Tahoma'
       Appearance.Font.Style = []
       Version = '1.1.8.0'
       Status.Caption = '0'
@@ -404,8 +406,8 @@ object SellParamForm: TSellParamForm
       TabOrder = 4
     end
     object btnCreditlPay: TAdvSmoothToggleButton
-      Left = 307
-      Top = 117
+      Left = 306
+      Top = 182
       Width = 174
       Height = 59
       Color = 15195349
@@ -416,8 +418,8 @@ object SellParamForm: TSellParamForm
       BevelColorDown = 11196927
       Appearance.Font.Charset = DEFAULT_CHARSET
       Appearance.Font.Color = clWindowText
-      Appearance.Font.Height = -19
-      Appearance.Font.Name = 'Times New Roman'
+      Appearance.Font.Height = -16
+      Appearance.Font.Name = 'Tahoma'
       Appearance.Font.Style = []
       Version = '1.1.8.0'
       Status.Caption = '0'
@@ -439,8 +441,8 @@ object SellParamForm: TSellParamForm
       TabOrder = 5
     end
     object btnCardPay: TAdvSmoothToggleButton
-      Left = 307
-      Top = 182
+      Left = 306
+      Top = 117
       Width = 174
       Height = 59
       Color = 15195349
@@ -451,8 +453,8 @@ object SellParamForm: TSellParamForm
       BevelColorDown = 11196927
       Appearance.Font.Charset = DEFAULT_CHARSET
       Appearance.Font.Color = clWindowText
-      Appearance.Font.Height = -19
-      Appearance.Font.Name = 'Times New Roman'
+      Appearance.Font.Height = -16
+      Appearance.Font.Name = 'Tahoma'
       Appearance.Font.Style = []
       Version = '1.1.8.0'
       Status.Caption = '0'
@@ -481,8 +483,8 @@ object SellParamForm: TSellParamForm
       Action = actDeletePay
       Appearance.Font.Charset = DEFAULT_CHARSET
       Appearance.Font.Color = clWindowText
-      Appearance.Font.Height = -19
-      Appearance.Font.Name = 'Times New Roman'
+      Appearance.Font.Height = -16
+      Appearance.Font.Name = 'Tahoma'
       Appearance.Font.Style = []
       Status.Caption = '0'
       Status.Appearance.Fill.Color = clRed
@@ -499,6 +501,7 @@ object SellParamForm: TSellParamForm
       Status.Appearance.Font.Style = []
       BevelColor = clSilver
       Color = 15195349
+      DisabledColor = clBlack
       ParentFont = False
       TabOrder = 7
       Version = '1.6.9.0'
@@ -724,8 +727,8 @@ object SellParamForm: TSellParamForm
       BevelColorDown = 11196927
       Appearance.Font.Charset = DEFAULT_CHARSET
       Appearance.Font.Color = clWindowText
-      Appearance.Font.Height = -19
-      Appearance.Font.Name = 'Times New Roman'
+      Appearance.Font.Height = -16
+      Appearance.Font.Name = 'Tahoma'
       Appearance.Font.Style = []
       Version = '1.1.8.0'
       Status.Caption = '0'
