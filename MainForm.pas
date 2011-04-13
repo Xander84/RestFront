@@ -1625,6 +1625,7 @@ begin
     FLineTable.FieldByName('LINEKEY').AsInteger := FLineID;
     FLineTable.FieldByName('STATEFIELD').AsInteger := cn_StateInsert;
     FLineTable.FieldByName('usr$quantity').AsInteger := 1;
+    FLineTable.FieldByName('CREATIONDATE').AsDateTime := FFrontBase.GetServerDateTime;
     FLineTable.Post;
 
     Inc(FLineID);
@@ -2140,6 +2141,7 @@ begin
         FLineTable.FieldByName('LINEKEY').AsInteger := FLineID;
         FLineTable.FieldByName('STATEFIELD').AsInteger := cn_StateInsert;
         FLineTable.FieldByName('usr$quantity').AsInteger := 1;
+        FLineTable.FieldByName('CREATIONDATE').AsDateTime := FFrontBase.GetServerDateTime;
         FLineTable.Post;
 
         Inc(FLineID);
@@ -4199,7 +4201,8 @@ begin
       FFrontBase.GetDiscount(FHeaderTable.FieldByName('USR$DISCOUNTKEY').AsInteger,
         DataSet.FieldByName('usr$goodkey').AsInteger,
         FHeaderTable.FieldByName('usr$logicdate').AsDateTime,
-        DataSet.FieldByName('usr$persdiscount').AsCurrency);
+        DataSet.FieldByName('usr$persdiscount').AsCurrency,
+        DataSet.FieldByName('creationdate').AsDateTime);
 //  else
 //    DataSet.FieldByName('USR$PERSDISCOUNT').AsCurrency := 0;
 

@@ -332,14 +332,15 @@ end;
 procedure TSplitOrder.OnBeforePostLeftLine(DataSet: TDataSet);
 begin
   //1. Проверяем на скидку
-  if FLeftDoc.FieldByName('USR$DISCOUNTKEY').AsInteger > 0 then
+//  if FLeftDoc.FieldByName('USR$DISCOUNTKEY').AsInteger > 0 then
     DataSet.FieldByName('USR$PERSDISCOUNT').AsCurrency :=
       FFrontBase.GetDiscount(FLeftDoc.FieldByName('USR$DISCOUNTKEY').AsInteger,
         DataSet.FieldByName('usr$goodkey').AsInteger,
         FLeftDoc.FieldByName('usr$logicdate').AsDateTime,
-        DataSet.FieldByName('usr$persdiscount').AsCurrency)
-  else
-    DataSet.FieldByName('USR$PERSDISCOUNT').AsCurrency := 0;
+        DataSet.FieldByName('usr$persdiscount').AsCurrency,
+        DataSet.FieldByName('creationdate').AsDateTime);
+//  else
+//    DataSet.FieldByName('USR$PERSDISCOUNT').AsCurrency := 0;
 
 { TODO : Двойной бонус? }
   if DataSet.FieldByName('STATEFIELD').AsInteger = 0 then
@@ -369,14 +370,15 @@ end;
 procedure TSplitOrder.OnBeforePostRightLine(DataSet: TDataSet);
 begin
   //1. Проверяем на скидку
-  if FRightDoc.FieldByName('USR$DISCOUNTKEY').AsInteger > 0 then
+//  if FRightDoc.FieldByName('USR$DISCOUNTKEY').AsInteger > 0 then
     DataSet.FieldByName('USR$PERSDISCOUNT').AsCurrency :=
       FFrontBase.GetDiscount(FRightDoc.FieldByName('USR$DISCOUNTKEY').AsInteger,
         DataSet.FieldByName('usr$goodkey').AsInteger,
         FRightDoc.FieldByName('usr$logicdate').AsDateTime,
-        DataSet.FieldByName('usr$persdiscount').AsCurrency)
-  else
-    DataSet.FieldByName('USR$PERSDISCOUNT').AsCurrency := 0;
+        DataSet.FieldByName('usr$persdiscount').AsCurrency,
+        DataSet.FieldByName('creationdate').AsDateTime);
+//  else
+//    DataSet.FieldByName('USR$PERSDISCOUNT').AsCurrency := 0;
 
 { TODO : Двойной бонус? }
   if DataSet.FieldByName('STATEFIELD').AsInteger = 0 then

@@ -141,6 +141,7 @@ const
     '  doc.editiondate,                                         '+
     '  doc.editorkey,                                           '+
     '  doc.number,                                              '+
+    '  doc.creationdate,                                        '+
     '  doc.usr$mn_printdate,                                    '+
     '  ol.usr$quantity,                                         '+
     '  ol.usr$costncu,                                          '+
@@ -166,6 +167,7 @@ const
     '  doc.editiondate,                                         '+
     '  doc.editorkey,                                           '+
     '  doc.number,                                              '+
+    '  doc.creationdate,                                        '+
     '  doc.usr$mn_printdate,                                    '+
     '  ol.usr$quantity,                                         '+
     '  ol.usr$costncu,                                          '+
@@ -314,6 +316,7 @@ type
     function CheckForSession: Boolean;
 
     function GetNextID: Integer;
+    function GetServerDateTime: TDateTime;
 
     procedure GetUserList(const UserList: TStrings);
     function GetUserOrders(const ContactKey: Integer; var MemTable: TkbmMemTable):Boolean; //Если -1 то возвращаем для текущего
@@ -358,7 +361,7 @@ type
     function CheckCountOrderByResp(const RespID: Integer): Boolean;
 
     function GetDiscount(const DiscKey, GoodKey: Integer;
-      DocDate: TDateTime; PersDiscount: Currency): Currency;
+      DocDate: TDateTime; PersDiscount: Currency; LineTime: TTime): Currency;
     function GetDiscountList(var MemTable: TkbmMemTable): Boolean;
     function GetDiscountCardInfo(var MemTable: TkbmMemTable; const CardID: Integer; LDate: TDateTime; Pass: String): Boolean;
     function CalcBonusSum(const DataSet: TDataSet; FLine: TkbmMemTable; var Bonus: Boolean; var PercDisc: Currency): Boolean;
@@ -523,6 +526,7 @@ begin
   DS.FieldDefs.Add('PARENT', ftInteger, 0);
   DS.FieldDefs.Add('EXTRAMODIFY', ftString, 60);
   DS.FieldDefs.Add('USR$COMPUTERNAME', ftString, 20);
+  DS.FieldDefs.Add('creationdate', ftTimeStamp, 0);
   DS.CreateTable;
 end;
 
@@ -3255,7 +3259,7 @@ begin
 end;
 
 function TFrontBase.GetDiscount(const DiscKey, GoodKey: Integer;
-  DocDate: TDateTime; PersDiscount: Currency): Currency;
+  DocDate: TDateTime; PersDiscount: Currency; LineTime: TTime): Currency;
 begin
   Result := 0;
 
@@ -3267,11 +3271,12 @@ begin
 
       FReadSQL.SQL.Text :=
         'SELECT G.DISCOUNT ' +
-        'FROM USR$MN_P_GETDISCOUNT(:disckey, :goodkey, :docdate, :persdiscount) G ';
+        'FROM USR$MN_P_GETDISCOUNT(:disckey, :goodkey, :docdate, :persdiscount, :linetime) G ';
       FReadSQL.ParamByName('disckey').AsInteger := DiscKey;
       FReadSQL.ParamByName('goodkey').AsInteger := GoodKey;
       FReadSQL.ParamByName('docdate').AsDateTime := DocDate;
       FReadSQL.ParamByName('persdiscount').AsCurrency := PersDiscount;
+      FReadSQL.ParamByName('LineTime').AsTime := LineTime;
       FReadSQL.ExecQuery;
       if not FReadSQL.Eof then
         Result := FReadSQL.FieldByName('DISCOUNT').AsCurrency;
@@ -3703,6 +3708,22 @@ begin
     end;
   finally
     FReadSQL.Close;
+  end;
+end;
+
+function TFrontBase.GetServerDateTime: TDateTime;
+var
+  IBSQL: TIBSQL;
+begin
+  IBSQL := TIBSQL.Create(nil);
+  try
+    IBSQL.Transaction := ReadTransaction;
+    IBSQL.SQL.Text := ' SELECT CURRENT_TIMESTAMP AS DT FROM RDB$DATABASE ';
+    IBSQL.ExecQuery;
+    Result := IBSQL.FieldByName('DT').AsDateTime;
+    IBSQL.Close;
+  finally
+    IBSQL.Free;
   end;
 end;
 
