@@ -4432,6 +4432,7 @@ begin
     FSQL := TIBSQL.Create(nil);
     FSQL.Transaction := ReadTransaction;
     try
+      Result := False;
       FSQL.Close;
       FSQL.SQL.Text :=
         '  select first(1) ' +
