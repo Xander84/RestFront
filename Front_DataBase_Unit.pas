@@ -1518,6 +1518,7 @@ begin
           LineTable.FieldByName('LINEKEY').AsInteger := FReadSQL.FieldByName('id').Value;
           LineTable.FieldByName('STATEFIELD').AsInteger := 0;
           LineTable.FieldByName('EXTRAMODIFY').AsString := FReadSQL.FieldByName('usr$extramodify').AsString;
+          LineTable.FieldByName('CREATIONDATE').AsDateTime := FReadSQL.FieldByName('CREATIONDATE').AsDateTime;
           ES := LineTable.FieldByName('EXTRAMODIFY').AsString;
           LineTable.Post;
 
