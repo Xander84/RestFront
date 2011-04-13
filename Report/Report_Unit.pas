@@ -443,7 +443,10 @@ begin
       FReport.Variables.AddVariable(cn_RestParam, 'PARAM0', '''' + DateToStr(DateBegin) + '''');
       FReport.Variables.AddVariable(cn_RestParam, 'PARAM1', '''' + DateToStr(DateEnd) + '''');
       if FReport.PrepareReport then
-        FReport.ShowPreparedReport;
+      begin
+        InitReportParams(FReport, PrinterName);
+        FReport.Print;
+      end;
 
     finally
       FrxDBDataset.Free;
