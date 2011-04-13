@@ -76,10 +76,10 @@ procedure TPersonalCardForm.usrg_lblCardCodeKeyUp(Sender: TObject;
   var Key: Word; Shift: TShiftState);
 begin
  { TODO : Вынести в отдельную ф-цию }
-  if (Key = 'ж') or (Key = 'Ж') then
-    Key := ';';
-  if (Key = ',') or (Key = '.') then
-    Key := '?';
+  if (Chr(Key) = 'ж') or (Chr(Key) = 'Ж') then
+    Key := Ord(';');
+  if (Chr(Key) = ',') or (Chr(Key) = '.') then
+    Key := Ord('?');
 
   if (Key = VK_RETURN) then
   begin

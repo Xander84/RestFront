@@ -165,10 +165,10 @@ end;
 procedure TChooseDiscountCard.usrg_lblCardCodeKeyUp(Sender: TObject;
   var Key: Word; Shift: TShiftState);
 begin
-  if (Key = 'æ') or (Key = 'Æ') then
-    Key := ';';
-  if (Key = ',') or (Key = '.') then
-    Key := '?';
+  if (Chr(Key) = 'æ') or (Chr(Key) = 'Æ') then
+    Key := Ord(';');
+  if (Chr(Key) = ',') or (Chr(Key) = '.') then
+    Key := Ord('?');
 
   if (Key = VK_RETURN) then
   begin
