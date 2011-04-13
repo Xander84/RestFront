@@ -4194,7 +4194,7 @@ object RestMainForm: TRestMainForm
   end
   object tmrClose: TTimer
     Tag = 1
-    Interval = 10000
+    Interval = 3000
     OnTimer = tmrCloseTimer
     Left = 368
     Top = 64

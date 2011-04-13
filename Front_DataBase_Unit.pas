@@ -4451,20 +4451,24 @@ begin
            Result := True;
            exit;
          end;
-      end;
-      //  не открыта смена
-      if (FSQL.FieldByName('usr$open').AsCurrency = 0) then
+      end
+      else
       begin
-        Touch_MessageBox('Внимание', 'Смена не открыта! Попросите менеджера открыть смену!',
-          MB_OK, mtWarning);
-        exit;
-      end;
-      // уже закрыта смена
-      if (FSQL.FieldByName('usr$off').AsCurrency = 1) then
-      begin
-        Touch_MessageBox('Внимание', 'Ваш менеджер уже закрыл смену!',
-          MB_OK, mtWarning);
-        exit;
+        //  не открыта смена
+        if (FSQL.FieldByName('usr$open').AsCurrency = 0) then
+        begin
+          Touch_MessageBox('Внимание', 'Смена не открыта! Попросите менеджера открыть смену!',
+            MB_OK, mtWarning);
+          exit;
+        end;
+        // уже закрыта смена
+        if (FSQL.FieldByName('usr$off').AsCurrency = 1) then
+        begin
+          Touch_MessageBox('Внимание', 'Ваш менеджер уже закрыл смену!',
+            MB_OK, mtWarning);
+          exit;
+        end;
+        Result := True;
       end;
       FSQL.Close;
     finally

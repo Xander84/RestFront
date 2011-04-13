@@ -3941,7 +3941,7 @@ begin
   if not Assigned(FFrontBase) then
     exit;
 
-  if (not FFrontBase.Options.NoPassword) and (FRestFormState = rsOrderMenu) then
+  if (not FFrontBase.Options.NoPassword) and (FRestFormState in [rsOrderMenu, rsHallsPage]) then
   begin
     if tmrClose.Tag = 10 then
       actCancel.Execute;
