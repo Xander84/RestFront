@@ -92,8 +92,6 @@ type
     actScrollDown: TAction;
     pnlGoodGroup: TAdvPanel;
     Panel4: TAdvPanel;
-    pnlMainGood: TPanel;
-    Panel6: TAdvPanel;
     actGoodUp: TAction;
     actGoodDown: TAction;
     actOK: TAction;
@@ -123,7 +121,6 @@ type
     actUsersRight: TAction;
     actExitWindows: TAction;
     actRestartRest: TAction;
-    pnlGood: TAdvPanel;
     btnBackToMenu: TAdvSmoothButton;
     btnNewOrder: TAdvSmoothButton;
     TouchKeyBoard: TAdvSmoothPopupTouchKeyBoard;
@@ -142,8 +139,6 @@ type
     btnScrollUp: TAdvSmoothButton;
     btnExitWindows: TAdvSmoothButton;
     btnRestartRest: TAdvSmoothButton;
-    btnGoodUp: TAdvSmoothButton;
-    btnGoodDown: TAdvSmoothButton;
     actCashForm: TAction;
     btnUsersDown: TAdvSmoothButton;
     btnUsersUp: TAdvSmoothButton;
@@ -195,7 +190,6 @@ type
     btnOK2: TAdvSmoothButton;
     tablePopupMenu: TAdvPopupMenu;
     MenuOfficeStyler: TAdvMenuOfficeStyler;
-    DBGrMain: TDBGridEh;
     grScrollBar: TScrollBar;
     tsTablesDesigner: TAdvTabSheet;
     pnlDesignerTables: TAdvPanel;
@@ -210,6 +204,17 @@ type
     actReturnGoodSum: TAction;
     btnOK: TAdvSmoothButton;
     btnCancel3: TAdvSmoothButton;
+    pnlOrderLeft: TPanel;
+    DBGrMain: TDBGridEh;
+    pnlMainGood: TPanel;
+    Panel6: TAdvPanel;
+    btnGoodUp: TAdvSmoothButton;
+    btnGoodDown: TAdvSmoothButton;
+    pnlGood: TAdvPanel;
+    pnlOrderInfo: TAdvPanel;
+    lblOrderInfoUserName: TLabel;
+    lblOrderInfoTableNumberLabel: TLabel;
+    lblOrderInfoTableNumber: TLabel;
 
     //Проверка введёного пароля
     procedure actPassEnterExecute(Sender: TObject);
@@ -380,6 +385,7 @@ type
     FMenuKey: Integer;
     FActiveHallButton: String;
     FActiveHallKey: Integer;
+    FActiveRestTable: TRestTable;
     //Указатель на нажатую кнопку
     FSelectedButton: TObject;
     FMenuSelectedButton: TObject;
@@ -649,6 +655,7 @@ begin
   FTableManager.TableButtonPopupMenu := tablePopupMenu;
 
   FActiveHallKey := -1;
+  FActiveRestTable := nil;
 end;
 
 procedure TRestMainForm.FormDestroy(Sender: TObject);
@@ -3020,6 +3027,10 @@ begin
         pnlChoose.Visible := True;
         FPayed := False;
         tmrTables.Enabled := False;
+        // Информация о заказе
+        lblOrderInfoUserName.Caption := FFrontBase.GetNameWaiterOnID(FFrontBase.ContactKey, true, false);
+        if Assigned(FActiveRestTable) then
+          lblOrderInfoTableNumber.Caption := FActiveRestTable.Number;
       end;
 
     rsManagerInfo:
@@ -3898,6 +3909,7 @@ var
 begin
   inherited;
   FButton := TRestTable(TAdvPopupMenu(Sender).PopupComponent);
+  FActiveRestTable := FButton;
 
   if FButton.Tag = 0 then
   begin
