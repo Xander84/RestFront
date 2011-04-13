@@ -30,9 +30,8 @@ type
     procedure FormShow(Sender: TObject);
     procedure btnCancelClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
-    procedure usrg_lblCardCodeKeyUp(Sender: TObject; var Key: Word;
-      Shift: TShiftState);
     procedure btnOKClick(Sender: TObject);
+    procedure usrg_lblCardCodeKeyPress(Sender: TObject; var Key: Char);
   private
     FFrontBase: TFrontBase;
     FHeaderTable: TkbmMemTable;
@@ -56,7 +55,7 @@ var
 implementation
 
 uses
-  DevideForm_Unit;
+  DevideForm_Unit, TouchMessageBoxForm_Unit;
 
 {$R *.dfm}
 
@@ -93,8 +92,7 @@ end;
 
 procedure TChooseDiscountCard.btnDeleteClick(Sender: TObject);
 begin
-  if MessageBox(Application.Handle, 'Удалить скидку?',
-    'Внимание', MB_YESNO) = IDYES then
+  if Touch_MessageBox('Внимание', 'Удалить скидку?', MB_YESNO, mtConfirmation) = IDYES then
   begin
     if FHeaderTable.State = dsBrowse then
       FHeaderTable.Edit;
@@ -162,15 +160,15 @@ begin
   btnDelete.Picture := FrontData.RestPictureContainer.FindPicture('cancel');
 end;
 
-procedure TChooseDiscountCard.usrg_lblCardCodeKeyUp(Sender: TObject;
-  var Key: Word; Shift: TShiftState);
+procedure TChooseDiscountCard.usrg_lblCardCodeKeyPress(Sender: TObject;
+  var Key: Char);
 begin
-  if (Chr(Key) = 'ж') or (Chr(Key) = 'Ж') then
-    Key := Ord(';');
-  if (Chr(Key) = ',') or (Chr(Key) = '.') then
-    Key := Ord('?');
+  if (Key = 'ж') or (Key = 'Ж') then
+    Key := ';';
+  if (Key = ',') or (Key = '.') then
+    Key := '?';
 
-  if (Key = VK_RETURN) then
+  if (Key = #13) then
   begin
     if FFrontBase.GetDiscountCardInfo(FDataTable, 0, FFrontBase.GetLogicDate, usrg_lblCardCode.Text) then
     begin

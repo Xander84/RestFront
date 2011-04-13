@@ -206,7 +206,7 @@ object ChooseDiscountCard: TChooseDiscountCard
       ParentFont = False
       PasswordChar = '*'
       TabOrder = 0
-      OnKeyUp = usrg_lblCardCodeKeyUp
+      OnKeyPress = usrg_lblCardCodeKeyPress
     end
     object btnChooseBonus: TAdvSmoothButton
       Left = 200
