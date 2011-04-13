@@ -3907,7 +3907,7 @@ procedure TRestMainForm.tablePopupMenuPopup(Sender: TObject);
 var
   FButton: TRestTable;
   Item: TMenuItem;
-  OrderKey: Integer;
+  Order: TrfOrder;
 begin
   inherited;
   FButton := TRestTable(TAdvPopupMenu(Sender).PopupComponent);
@@ -3933,14 +3933,14 @@ begin
     tablePopupMenu.Items.Add(Item);
   end;
 
-  for OrderKey in FButton.OrderList.Keys do
+  for Order in FButton.OrderList do
   begin
     //если заказ не свой или не менеджер, то не добавляем меню
     if (FFrontBase.ContactKey = FButton.RespKey) or ((FFrontBase.UserKey and FFrontBase.Options.ManagerGroupMask) <> 0) then
     begin
       Item  := TMenuItem.Create(tablePopupMenu);
-      Item.Tag := OrderKey;
-      Item.Caption := 'Заказ ' + FButton.OrderList.Items[OrderKey].Number;
+      Item.Tag := Order.ID;
+      Item.Caption := 'Заказ ' + Order.Number;
       Item.OnClick := OrderButtonOnClick;
       tablePopupMenu.Items.Add(Item);
     end;

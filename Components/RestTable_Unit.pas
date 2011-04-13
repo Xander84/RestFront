@@ -40,7 +40,7 @@ type
     FRespKey: Integer;
     FIsLocked: Boolean;
     FComputerName: String;
-    FOrderList: TDictionary<Integer, TrfOrder>;
+    FOrderList: TList<TrfOrder>;
     FRespName: String;
     FNeedToInsert: Boolean;
 
@@ -94,7 +94,7 @@ type
     property OrderKey: Integer read FOrderKey write SetOrderKey;
     property RespKey: Integer read FRespKey write SetRespKey;
     property OrderCount: Integer read GetOrderCount;
-    property OrderList: TDictionary<Integer, TrfOrder>read FOrderList;
+    property OrderList: TList<TrfOrder>read FOrderList;
     property RespName: String read FRespName write SetRespName;
     property NeedToInsert: Boolean read FNeedToInsert write FNeedToInsert;
 
@@ -126,7 +126,7 @@ procedure Register;
 implementation
 
 uses
-  FrontData_Unit, AdvGDIP, rfTableManager_unit;
+  FrontData_Unit, AdvGDIP, rfTableManager_unit, Generics.Defaults;
 
 const
   POS_MULTIPLIER = 100;
@@ -151,14 +151,21 @@ end;
 function TRestTable.AddOrder(const AID: Integer; const ANumber: String): TrfOrder;
 begin
   Result := TrfOrder.Create(AID, ANumber);
-  FOrderList.Add(AID, Result);
+  FOrderList.Add(Result);
+  FOrderList.Sort(
+    TComparer<TrfOrder>.Construct(
+      function (const L, R: TrfOrder): integer
+      begin
+        Result := L.ID - R.ID;
+      end
+    ));
 end;
 
 procedure TRestTable.ClearOrders;
 var
   Order: TrfOrder;
 begin
-  for Order in FOrderList.Values do
+  for Order in FOrderList do
     if Assigned(Order) then
       Order.Free;
   FOrderList.Clear;
@@ -178,7 +185,7 @@ begin
   // ѕо умолчанию стол обладает пустым состо€нием, никакого значка не рисуетс€
   FTableCondition := TRestTableCondition.rtcUnknown;
   // —писок заказов дл€ этого стола
-  FOrderList := TDictionary<Integer, TrfOrder>.Create();
+  FOrderList := TList<TrfOrder>.Create();
 
   Flat := True;
   Tag := 1;
@@ -193,10 +200,14 @@ begin
 end;
 
 function TRestTable.GetOrder(const AOrderKey: Integer): TrfOrder;
+var
+  Order: TrfOrder;
 begin
   Result := nil;
-  if FOrderList.ContainsKey(AOrderKey) then
-    Result := FOrderList.Items[AOrderKey];
+
+  for Order in FOrderList do
+    if Order.ID = AOrderKey then
+      Result := Order;
 end;
 
 function TRestTable.GetOrderCount: Integer;
@@ -266,7 +277,7 @@ begin
     else
     begin
       // ѕроверим есть ли пречек
-      for Order in FOrderList.Values do
+      for Order in FOrderList do
         if Order.TimeCloseOrder <> 0 then
         begin
           FTableCondition := TRestTableCondition.rtcPreCheck;
