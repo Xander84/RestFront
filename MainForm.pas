@@ -2392,6 +2392,7 @@ begin
         Order.TimeCloseOrder := Now;
 
       SaveCheck;
+      FPayed := True;
       actCancel.Execute;
     end;
     FLogManager.DoOrderLog(GetCurrentUserInfo, GetCurrentOrderInfo, ev_PrintPreCheck);
