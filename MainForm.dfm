@@ -3563,7 +3563,7 @@ object RestMainForm: TRestMainForm
             TabOrder = 4
             Version = '1.6.9.0'
           end
-          object AdvSmoothToggleButton1: TAdvSmoothToggleButton
+          object btnSwapTable: TAdvSmoothToggleButton
             AlignWithMargins = True
             Left = 3
             Top = 274

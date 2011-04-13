@@ -216,7 +216,7 @@ type
     lblOrderInfoTableNumber: TLabel;
     btnKassa: TAdvSmoothButton;
     actSwapTable: TAction;
-    AdvSmoothToggleButton1: TAdvSmoothToggleButton;
+    btnSwapTable: TAdvSmoothToggleButton;
 
     //Проверка введёного пароля
     procedure actPassEnterExecute(Sender: TObject);
@@ -392,6 +392,8 @@ type
     FSelectedButton: TObject;
     FMenuSelectedButton: TObject;
 
+    FSwapTableFrom, FSwapTableTo: TRestTable;
+
     FRestFormState: TRestState;
     FPrevFormState: TRestState;
     FBaseFormState: TRestState;
@@ -414,6 +416,8 @@ type
     procedure CreateHallButtonList;
     procedure AddHallButton;
     procedure RemoveHallButton;
+    // Действия перед установкой нового режима окна
+    procedure BeforeRestFormStateChanged;
 
     // Инициализация фона зала и столов
     procedure CreateHall(const HallKey: Integer);
@@ -554,6 +558,24 @@ begin
   {$ENDIF}
   btnNewOrder.Width := btnWidth;
   btnNewOrder.Height := btnHeight;
+
+  // Скрываем заголовки табов
+  tsMain.TabVisible := False;
+  tsPassWord.TabVisible := False;
+  tsMainButton.TabVisible := False;
+  tsFunctionButton.TabVisible := False;
+  tsOrderButton.TabVisible := False;
+  tsMenu.TabVisible := False;
+  tsManagerPage.TabVisible := False;
+  tsTablePage.TabVisible := False;
+  tsEmpty.TabVisible := False;
+  tsGroup.TabVisible := False;
+  tsOrderInfo.TabVisible := False;
+  tsUserOrder.TabVisible := False;
+  tsManagerInfo.TabVisible := False;
+  tsManagerInfoButton.TabVisible := False;
+  tsHalls.TabVisible := False;
+  tsTablesDesigner.TabVisible := False;
 
   //начальные даные
   FMenuButtonList  := TObjectList.Create;
@@ -2664,8 +2686,13 @@ end;
 
 procedure TRestMainForm.SetFormState(const Value: TRestState);
 begin
+  // Сохраним предыдущий режим окна
   FPrevFormState := FRestFormState;
-  if (Value = rsKassirInfo) or (FPrevFormState = rsKassirInfo) then
+  FRestFormState := Value;
+  // Выполним необходимые действия перед установкой нового режима окна
+  BeforeRestFormStateChanged;
+
+  if (FRestFormState = rsKassirInfo) or (FPrevFormState = rsKassirInfo) then
     FViewMode := True
   else
     FViewMode := False;
@@ -2675,24 +2702,6 @@ begin
       begin
         LockWindowUpdate(Handle);
         try
-          FRestFormState := Value;
-          //1.Скрываем заголовки
-          tsMain.TabVisible     := False;
-          tsPassWord.TabVisible := False;
-          tsMainButton.TabVisible := False;
-          tsFunctionButton.TabVisible := False;
-          tsOrderButton.TabVisible := False;
-          tsMenu.TabVisible := False;
-          tsManagerPage.TabVisible := False;
-          tsTablePage.TabVisible := False;
-          tsEmpty.TabVisible := False;
-          tsGroup.TabVisible := False;
-          tsOrderInfo.TabVisible := False;
-          tsUserOrder.TabVisible := False;
-          tsManagerInfo.TabVisible := False;
-          tsManagerInfoButton.TabVisible := False;
-          tsHalls.TabVisible := False;
-          tsTablesDesigner.TabVisible := False;
           //2.Становимся на окно с пассом
           pcMain.ActivePage := tsPassWord;
           pcMenu.ActivePage := tsMenu;
@@ -2707,13 +2716,6 @@ begin
           pnlExtraGoodGroup.Visible := False;
           //5. установки кнопок
           FMenuButtonCount := 0;
-
-          {
-          btnCashForm.Visible := False;
-          btnAdminOptions.Visible := True;
-          btnAllChecks.Visible := False;
-          btnManagerInfo.Visible := False;
-          }
 
           FLastLeftButton := 18 + btnWidth {$IFDEF NEW_TABCONTROL} + 4 {$ENDIF};;
           FGroupLastLeftButton := btnFirstTop;
@@ -2776,8 +2778,6 @@ begin
       begin
         LockWindowUpdate(Handle);
         try
-          FRestFormState := Value;
-
           pcMain.ActivePage := tsMain;
           pcOrder.ActivePage := tsUserOrder;
           pcExtraButton.ActivePage := tsOrderButton;
@@ -2798,12 +2798,6 @@ begin
           FTablesInfoTable.CreateTable;
           FTablesInfoTable.Open;
           //
-          {
-          btnCashForm.Visible := True;
-          btnAdminOptions.Visible := False;
-          btnAllChecks.Visible := True;
-          btnManagerInfo.Visible := True;
-          }
 
           FLastLeftButton := 18 + btnWidth {$IFDEF NEW_TABCONTROL} + 4 {$ENDIF};
           FMenuLastLeftButton := {btnFirstTop} 2 {$IFDEF NEW_TABCONTROL} + 4 {$ENDIF};
@@ -2845,8 +2839,6 @@ begin
       begin
         LockWindowUpdate(Handle);
         try
-          FRestFormState := Value;
-
           FHallButtonNumber := 1;
           FHallLastTop := -(btnHeight);
           FTableChooseLastTop := -(btnHeight);
@@ -2874,12 +2866,6 @@ begin
           FTablesInfoTable.CreateTable;
           FTablesInfoTable.Open;
           //
-          {
-          btnCashForm.Visible := True;
-          btnAdminOptions.Visible := False;
-          btnAllChecks.Visible := True;
-          btnManagerInfo.Visible := True;
-          }
 
           FLastLeftButton := 18 + btnWidth {$IFDEF NEW_TABCONTROL} + 4 {$ENDIF};
           FMenuLastLeftButton := {btnFirstTop} 2 {$IFDEF NEW_TABCONTROL} + 4 {$ENDIF};
@@ -2939,8 +2925,6 @@ begin
       begin
         LockWindowUpdate(Handle);
         try
-          FRestFormState := Value;
-
           FHallButtonNumber := 1;
           FHallLastTop := -(btnHeight);
           FTableChooseLastTop := -(btnHeight);
@@ -2970,12 +2954,6 @@ begin
           FTablesInfoTable.CreateTable;
           FTablesInfoTable.Open;
           //
-          {
-          btnCashForm.Visible := True;
-          btnAdminOptions.Visible := False;
-          btnAllChecks.Visible := True;
-          btnManagerInfo.Visible := True;
-          }
 
           FLastLeftButton := 18 + btnWidth {$IFDEF NEW_TABCONTROL} + 4 {$ENDIF};
           FMenuLastLeftButton := {btnFirstTop} 2 {$IFDEF NEW_TABCONTROL} + 4 {$ENDIF};
@@ -3015,8 +2993,6 @@ begin
 
     rsMenuInfo:
       begin
-        FRestFormState := Value;
-
         RemoveHallButton;
         RemoveChooseTable;
 
@@ -3037,7 +3013,6 @@ begin
 
     rsManagerInfo:
       begin
-        FRestFormState := Value;
         pcMain.ActivePage := tsManagerInfo;
         // Панель управления слева
         pcExtraButton.ActivePage := tsManagerInfoButton;
@@ -3074,18 +3049,11 @@ begin
           btnWithOutPrecheckOrders.Visible := False;
           FWithPreCheck := False;
 
-          FRestFormState := Value;
           pcOrder.ActivePage := tsManagerPage;
           // Панель управления слева
           pcExtraButton.ActivePage := tsEmpty;
           btnOK2.Visible := False;
           btnReturnGoodSum.Visible := False;
-
-          {
-          btnCashForm.Visible := True;
-          btnAdminOptions.Visible := False;
-          btnAllChecks.Visible := True;
-          }
 
           FUserFirstTop       := btnFirstTop;
           FUserLastLeftButton := btnFirstTop;
@@ -3134,7 +3102,6 @@ begin
             btnPrecheckOrders.Down := False;
           end;
 
-          FRestFormState := Value;
           pcOrder.ActivePage := tsManagerPage;
           // Панель управления слева
           pcExtraButton.ActivePage := tsEmpty;
@@ -3188,7 +3155,6 @@ begin
             btnPrecheckOrders.Down := False;
           end;
 
-          FRestFormState := Value;
           pcOrder.ActivePage := tsManagerPage;
           // Панель управления слева
           pcExtraButton.ActivePage := tsEmpty;
@@ -3448,6 +3414,16 @@ begin
   FHeaderInfoTable.First;
   if DBGrInfoHeader.CanFocus then
     DBGrInfoHeader.SetFocus;
+end;
+
+procedure TRestMainForm.BeforeRestFormStateChanged;
+begin
+  if FPrevFormState = rsHallInfo then
+  begin
+    // Очистим переменные используемые для смены стола
+    FSwapTableFrom := nil;
+    FSwapTableTo := nil;
+  end;
 end;
 
 procedure TRestMainForm.RemoveUserOrderButton;
@@ -3781,7 +3757,7 @@ procedure TRestMainForm.TableButtonOnClick(Sender: TObject);
 var
   FOrderKey: Integer;
   FUserInfo: TUserInfo;
-  FRestTable: TRestTable;
+  CurrentRestTable: TRestTable;
   Pt: TPoint;
   RespKey: Integer;
   FSQL: TIBSQL;
@@ -3793,114 +3769,144 @@ begin
   if dxfDesigner.Active then
     exit;
 
-  FRestTable := TRestTable(Sender);
-  FOrderKey := FRestTable.OrderKey;
-  //Проверить на кол-во заказов и сразу построить pop-up список
-{  FSQL := TIBSQL.Create(nil);
-  FSQL.Transaction := FFrontBase.ReadTransaction;
-  try
-    tablePopupMenu.Items.Clear;
-    FRestTable.OrderList.Clear;
-    if not FSQL.Transaction.InTransaction then
-      FSQL.Transaction.StartTransaction;
+  CurrentRestTable := TRestTable(Sender);
 
-    FSQL.SQL.Text := 'SELECT T.*, U.USR$RESPKEY, U.DOCUMENTKEY, U.USR$COMPUTERNAME, DOC.NUMBER, CON.NAME ' +
-      'FROM USR$MN_TABLE T ' +
-      'JOIN USR$MN_ORDER U ON (U.USR$TABLEKEY = T.ID AND U.USR$PAY <> 1) ' +
-      'LEFT JOIN GD_DOCUMENT DOC ON DOC.ID = U.DOCUMENTKEY ' +
-      'LEFT JOIN GD_CONTACT CON ON CON.ID = U.USR$RESPKEY ' +
-      'WHERE T.ID = :ID ' +
-      'ORDER BY U.DOCUMENTKEY, DOC.NUMBER ';
-    FSQL.ParamByName('ID').AsInteger := FRestTable.ID;
-    FSQL.ExecQuery;
-    while not FSQL.Eof do
+  // Если активен режим смены стола
+  if btnSwapTable.Down then
+  begin
+    // Если первый стол выделен
+    if Assigned(FSwapTableFrom) then
     begin
-      FOrderKey := FSQL.FieldByName('DOCUMENTKEY').AsInteger;
-      if FRestTable.OrderKey <> FOrderKey then
-        FRestTable.OrderKey := FOrderKey;
-
-      RespKey := FSQL.FieldByName('USR$RESPKEY').AsInteger;
-      if FRestTable.RespKey <> RespKey then
-        FRestTable.RespKey := RespKey;
-
-      FRestTable.OrderList.Add(FSQL.FieldByName('DOCUMENTKEY').AsInteger,
-        FSQL.FieldByName('NUMBER').AsString);
-      //если заказ не свой или не менеджер, то не добавляем меню
-      if (FFrontBase.ContactKey = RespKey) or
-        ((FFrontBase.UserKey and FFrontBase.Options.ManagerGroupMask) <> 0) then
+      // Если второй стол выделен
+      if Assigned(FSwapTableTo) then
       begin
-        Item  := TMenuItem.Create(tablePopupMenu);
-        Item.Tag := FSQL.FieldByName('DOCUMENTKEY').AsInteger;
-        Item.Caption := 'Заказ ' + FSQL.FieldByName('NUMBER').AsString;
-        Item.OnClick := OrderButtonOnClick;
-        tablePopupMenu.Items.Add(Item);
+
+        FSwapTableFrom := nil;
+        FSwapTableTo := nil;
+        btnSwapTable.Down := false;
+      end
+      else
+      begin
+        // Выделим второй стол
+        FSwapTableTo := TRestTable(Sender);
       end;
-      FSQL.Next;
-    end;
-    FSQL.Close;
-  finally
-    FSQL.Free;
-  end;     }
-
-  if True{FRestTable.OrderCount > 1} then
-  begin
-//    FRestTable.Tag := 0;
-    Pt := FRestTable.ClientToScreen(Point(0, 0));
-    FRestTable.PopupMenu.PopupComponent := FRestTable;
-    FRestTable.PopupMenu.Popup(Pt.X + 64, Pt.Y + 32);
-    exit;
-  end;
-
-  if FOrderKey > 0 then
-  begin
-    if FFrontBase.OrderIsLocked(FOrderKey) then
+    end
+    else
     begin
-      if FFrontBase.GetLocalComputerName <> FRestTable.ComputerName then
+      // Выделим первый стол
+      FSwapTableFrom := TRestTable(Sender);
+    end;
+  end
+  else
+  begin
+    FOrderKey := CurrentRestTable.OrderKey;
+    //Проверить на кол-во заказов и сразу построить pop-up список
+  {  FSQL := TIBSQL.Create(nil);
+    FSQL.Transaction := FFrontBase.ReadTransaction;
+    try
+      tablePopupMenu.Items.Clear;
+      FRestTable.OrderList.Clear;
+      if not FSQL.Transaction.InTransaction then
+        FSQL.Transaction.StartTransaction;
+
+      FSQL.SQL.Text := 'SELECT T.*, U.USR$RESPKEY, U.DOCUMENTKEY, U.USR$COMPUTERNAME, DOC.NUMBER, CON.NAME ' +
+        'FROM USR$MN_TABLE T ' +
+        'JOIN USR$MN_ORDER U ON (U.USR$TABLEKEY = T.ID AND U.USR$PAY <> 1) ' +
+        'LEFT JOIN GD_DOCUMENT DOC ON DOC.ID = U.DOCUMENTKEY ' +
+        'LEFT JOIN GD_CONTACT CON ON CON.ID = U.USR$RESPKEY ' +
+        'WHERE T.ID = :ID ' +
+        'ORDER BY U.DOCUMENTKEY, DOC.NUMBER ';
+      FSQL.ParamByName('ID').AsInteger := FRestTable.ID;
+      FSQL.ExecQuery;
+      while not FSQL.Eof do
       begin
-        Touch_MessageBox('Внимание', 'Заказ редактируется на другом рабочем месте!', MB_OK, mtWarning);
-        exit;
-      end else
-      if Touch_MessageBox('Внимание', 'Заказ редактируется. Продолжить?', MB_YESNO, mtConfirmation) = IDYES then
-      begin
-        FUserInfo := FFrontBase.CheckUserPasswordWithForm;
-        if FUserInfo.CheckedUserPassword then
+        FOrderKey := FSQL.FieldByName('DOCUMENTKEY').AsInteger;
+        if FRestTable.OrderKey <> FOrderKey then
+          FRestTable.OrderKey := FOrderKey;
+
+        RespKey := FSQL.FieldByName('USR$RESPKEY').AsInteger;
+        if FRestTable.RespKey <> RespKey then
+          FRestTable.RespKey := RespKey;
+
+        FRestTable.OrderList.Add(FSQL.FieldByName('DOCUMENTKEY').AsInteger,
+          FSQL.FieldByName('NUMBER').AsString);
+        //если заказ не свой или не менеджер, то не добавляем меню
+        if (FFrontBase.ContactKey = RespKey) or
+          ((FFrontBase.UserKey and FFrontBase.Options.ManagerGroupMask) <> 0) then
         begin
-          if (FUserInfo.UserInGroup and FFrontBase.Options.ManagerGroupMask) = 0 then
+          Item  := TMenuItem.Create(tablePopupMenu);
+          Item.Tag := FSQL.FieldByName('DOCUMENTKEY').AsInteger;
+          Item.Caption := 'Заказ ' + FSQL.FieldByName('NUMBER').AsString;
+          Item.OnClick := OrderButtonOnClick;
+          tablePopupMenu.Items.Add(Item);
+        end;
+        FSQL.Next;
+      end;
+      FSQL.Close;
+    finally
+      FSQL.Free;
+    end;     }
+
+    if True{FRestTable.OrderCount > 1} then
+    begin
+  //    FRestTable.Tag := 0;
+      Pt := CurrentRestTable.ClientToScreen(Point(0, 0));
+      CurrentRestTable.PopupMenu.PopupComponent := CurrentRestTable;
+      CurrentRestTable.PopupMenu.Popup(Pt.X + 64, Pt.Y + 32);
+      exit;
+    end;
+
+    if FOrderKey > 0 then
+    begin
+      if FFrontBase.OrderIsLocked(FOrderKey) then
+      begin
+        if FFrontBase.GetLocalComputerName <> CurrentRestTable.ComputerName then
+        begin
+          Touch_MessageBox('Внимание', 'Заказ редактируется на другом рабочем месте!', MB_OK, mtWarning);
+          exit;
+        end else
+        if Touch_MessageBox('Внимание', 'Заказ редактируется. Продолжить?', MB_YESNO, mtConfirmation) = IDYES then
+        begin
+          FUserInfo := FFrontBase.CheckUserPasswordWithForm;
+          if FUserInfo.CheckedUserPassword then
           begin
-            Touch_MessageBox('Внимание', cn_dontManagerPermission, MB_OK, mtWarning);
+            if (FUserInfo.UserInGroup and FFrontBase.Options.ManagerGroupMask) = 0 then
+            begin
+              Touch_MessageBox('Внимание', cn_dontManagerPermission, MB_OK, mtWarning);
+              exit;
+            end;
+          end else
             exit;
-          end;
         end else
           exit;
-      end else
-        exit;
-    end;
-
-    if FRestTable.RespKey <> FFrontBase.ContactKey then
-      if (FFrontBase.UserKey and FFrontBase.Options.ManagerGroupMask) = 0 then
-      begin
-        Touch_MessageBox('Внимание', cn_dontManagerPermission, MB_OK, mtWarning);
-        exit;
       end;
 
-    FFrontBase.GetOrder(FHeaderTable, FLineTable, FModificationDataSet, FOrderKey);
-    FFrontBase.LockUserOrder(FOrderKey);
-    if not Assigned(dsMain.DataSet) then
-      dsMain.DataSet := FLineTable
-    else begin
-      // для обнулений значений в гриде
-      dsMain.DataSet := nil;
-      dsMain.DataSet := FLineTable;
-    end;
-    RestFormState := rsMenuInfo;
-    //если заказ закрыт, то оставляем отмену пречека, иначе просто пречек
-    if FHeaderTable.FieldByName('usr$timecloseorder').IsNull then
-      btnPreCheck.Action := actPreCheck
-    else
-      btnPreCheck.Action := actCancelPreCheck;
-      FLogManager.DoOrderLog(GetCurrentUserInfo, GetCurrentOrderInfo, ev_EnterOrder);
-  end else
-    CreateNewTableOrder(FRestTable);
+      if CurrentRestTable.RespKey <> FFrontBase.ContactKey then
+        if (FFrontBase.UserKey and FFrontBase.Options.ManagerGroupMask) = 0 then
+        begin
+          Touch_MessageBox('Внимание', cn_dontManagerPermission, MB_OK, mtWarning);
+          exit;
+        end;
+
+      FFrontBase.GetOrder(FHeaderTable, FLineTable, FModificationDataSet, FOrderKey);
+      FFrontBase.LockUserOrder(FOrderKey);
+      if not Assigned(dsMain.DataSet) then
+        dsMain.DataSet := FLineTable
+      else begin
+        // для обнулений значений в гриде
+        dsMain.DataSet := nil;
+        dsMain.DataSet := FLineTable;
+      end;
+      RestFormState := rsMenuInfo;
+      //если заказ закрыт, то оставляем отмену пречека, иначе просто пречек
+      if FHeaderTable.FieldByName('usr$timecloseorder').IsNull then
+        btnPreCheck.Action := actPreCheck
+      else
+        btnPreCheck.Action := actCancelPreCheck;
+        FLogManager.DoOrderLog(GetCurrentUserInfo, GetCurrentOrderInfo, ev_EnterOrder);
+    end else
+      CreateNewTableOrder(CurrentRestTable);
+  end;
 end;
 
 procedure TRestMainForm.tablePopupMenuPopup(Sender: TObject);
