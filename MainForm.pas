@@ -1383,7 +1383,6 @@ begin
   begin
     if not Assigned(dsMain.DataSet) then
       dsMain.DataSet := FLineTable;
-    RestFormState := rsMenuInfo;
 
     FHeaderTable.Insert;
     FHeaderTable.FieldByName('NUMBER').AsString := FOrderNumber;
@@ -1393,6 +1392,8 @@ begin
       FHeaderTable.FieldByName('USR$TABLEKEY').AsInteger := TableKey;
     FHeaderTable.FieldByName('USR$COMPUTERNAME').AsString := FFrontBase.GetLocalComputerName;
     FHeaderTable.Post;
+
+    RestFormState := rsMenuInfo;
   end;
   FLogManager.DoSimpleEvent(ev_CreateNewOrder);
 end;
