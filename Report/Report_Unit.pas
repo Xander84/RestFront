@@ -879,26 +879,14 @@ begin
           while i <= Query.FieldCount - 1 do
           begin
             MemTable.Fields[i].AsString := Query.Fields[I].AsString;
-            if Query.FieldByName('documentkey').AsInteger = Linekey then
-            begin
-              MemTable.FieldbyName('goodname').AsString := EndBold + '    ' +
-                Query.FieldByName('modifyname').AsString;
-              MemTable.FieldbyName('prngroupname').AsString := DOUBLESIZE +
-                Query.FieldByName('prngroupname').AsString + ENDDOUBLESIZE;
-            end else
-            begin
-              if (AnsiUpperCase(Query.Fields[I].FieldName) = 'GOODNAME') then
-                MemTable.Fields[I].AsString := Bold + Query.Fields[I].AsString
-              else if (AnsiUpperCase(Query.Fields[i].FieldName) = 'PRNGROUPNAME')
-                or (AnsiUpperCase(Query.Fields[i].FieldName) = 'NUM') or (AnsiUpperCase(Query.Fields[i].FieldName) = 'CONNAME')
-              then
-                MemTable.Fields[i].AsString := DOUBLESIZE + Copy(Query.Fields[I].AsString, 1, 16) + ENDDOUBLESIZE
-              else
-                MemTable.Fields[i].AsString := Query.Fields[I].AsString;
-            end;
             Inc(I);
           end;
 
+          if Query.FieldByName('documentkey').AsInteger = Linekey then
+          begin
+            MemTable.FieldbyName('goodname').AsString := Query.FieldByName('modifyname').AsString;
+            MemTable.FieldbyName('Q').Clear;
+          end;
           if (Query.FieldByName('documentkey').AsInteger <> Linekey) and
             (Query.FieldByName('modifyname').AsString <> '')
           then
@@ -916,8 +904,8 @@ begin
                 MemTable.Fields[I].AsString := Query.Fields[I].AsString;
                 Inc(I);
               end;
-              MemTable.FieldbyName('GOODNAME').AsString := EndBold + '    ' + Query.FieldByName('modifyname').AsString;
-              MemTable.FieldbyName('prngroupname').AsString := DOUBLESIZE + Query.FieldByName('prngroupname').AsString + ENDDOUBLESIZE;
+              MemTable.FieldbyName('GOODNAME').AsString := Query.FieldByName('modifyname').AsString;
+              MemTable.FieldbyName('Q').Clear;
             end;
 
           if (Query.FieldByName('documentkey').AsInteger <> Linekey) and
@@ -937,8 +925,8 @@ begin
                 MemTable.Fields[I].AsString := Query.Fields[I].AsString;
                 Inc(I);
               end;
-              MemTable.FieldbyName('GOODNAME').AsString := EndBold + '     *** ' + Query.FieldByName('extramodify').AsString + ' *** ';
-              MemTable.FieldbyName('prngroupname').AsString := DOUBLESIZE + Query.FieldByName('prngroupname').AsString + ENDDOUBLESIZE;
+              MemTable.FieldbyName('GOODNAME').AsString := ' *** ' + Query.FieldByName('extramodify').AsString + ' *** ';
+              MemTable.FieldbyName('Q').Clear;
             end;
 
           Linekey := Query.FieldByName('documentkey').AsInteger;
