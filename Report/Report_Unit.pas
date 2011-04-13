@@ -480,6 +480,7 @@ begin
           '  comp.name compname,  ' +
           '  o.usr$guestcount guest, ' +
           '  con.name conname, o.usr$timeorder as open1,  ' +
+          '  current_time as time1, ' +
           '  ol.documentkey,                              ' +
           '  g.alias, g.name as goodname,                 ' +
           '  prngr.usr$name as prngroupname,              ' +

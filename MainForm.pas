@@ -3682,7 +3682,8 @@ begin
   begin
     Params.Font.Color := clGreen;
     Params.Font.Style := [fsBold];
-  end;
+  end else
+    Params.Font.Color := clGrayText;
 end;
 
 procedure TRestMainForm.DBGrInfoHeaderAdvDrawDataCell(Sender: TCustomDBGridEh;
@@ -3714,7 +3715,8 @@ begin
   begin
     Params.Font.Color := clGreen;
     Params.Font.Style := [fsBold];
-  end;
+  end else
+    Params.Font.Color := clGrayText;
 end;
 
 procedure TRestMainForm.DBGrMainColumns2GetCellParams(Sender: TObject;
@@ -3724,7 +3726,8 @@ begin
   begin
     Params.Font.Color := clGreen;
     Params.Font.Style := [fsBold];
-  end;
+  end else
+    Params.Font.Color := clGrayText;
 end;
 
 procedure TRestMainForm.DBGrMainColumns3GetCellParams(Sender: TObject;
@@ -3734,7 +3737,8 @@ begin
   begin
     Params.Font.Color := clGreen;
     Params.Font.Style := [fsBold];
-  end;
+  end else
+    Params.Font.Color := clGrayText;
 end;
 
 procedure TRestMainForm.btnPrecheckOrdersClick(Sender: TObject);

@@ -42,8 +42,8 @@ type
 // настройки для гридов
 const
   cn_FontSize = 16;
-  cn_EvenRowColor = clInfoBk;
-  cn_OddRowColor = clGradientActiveCaption;
+  cn_EvenRowColor = TColor($00ECFFFF);//clInfoBk;
+  cn_OddRowColor = TColor($00F8E6D6);//clGradientActiveCaption;
   cn_FontType = 'Tahoma';
   DATA_DIR = '..\data';
   APP_DATA_FILENAME = 'data.ini';
