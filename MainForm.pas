@@ -196,7 +196,6 @@ type
     tablePopupMenu: TAdvPopupMenu;
     MenuOfficeStyler: TAdvMenuOfficeStyler;
     DBGrMain: TDBGridEh;
-    grScrollBar: TScrollBar;
     tsTablesDesigner: TAdvTabSheet;
     pnlDesignerTables: TAdvPanel;
     tmrTables: TTimer;
@@ -217,6 +216,7 @@ type
     lblOrderInfoTableNumber: TLabel;
     actSwapTable: TAction;
     btnSwapTable: TAdvSmoothToggleButton;
+    grScrollBar: TScrollBar;
 
     //Проверка введёного пароля
     procedure actPassEnterExecute(Sender: TObject);
@@ -1393,6 +1393,7 @@ begin
     FHeaderTable.FieldByName('USR$COMPUTERNAME').AsString := FFrontBase.GetLocalComputerName;
     FHeaderTable.Post;
 
+    btnPreCheck.Action := actPreCheck;
     RestFormState := rsMenuInfo;
   end;
   FLogManager.DoSimpleEvent(ev_CreateNewOrder);
@@ -1450,6 +1451,7 @@ begin
     FHeaderTable.FieldByName('USR$COMPUTERNAME').AsString := FFrontBase.GetLocalComputerName;
     FHeaderTable.Post;
 
+    btnPreCheck.Action := actPreCheck;
     RestFormState := rsMenuInfo;
 
     SaveCheck;
