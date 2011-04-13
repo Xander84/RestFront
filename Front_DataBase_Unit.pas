@@ -336,6 +336,7 @@ type
     function UnLockUserOrder(const OrderKey: Integer): Boolean;
 
     function GetPayKindType(const MemTable: TkbmMemTable; const PayType: Integer; IsPlCard: Integer = 0): Boolean;
+    procedure GetPaymentsCount(var CardCount, NoCashCount, PercCardCount: Integer);
 
     function CreateNewOrder(const HeaderTable, LineTable, ModifyTable: TkbmMemTable; out OrderKey: Integer): Boolean;
     function SaveAndReloadOrder(const HeaderTable, LineTable, ModifyTable: TkbmMemTable; OrderKey: Integer): Boolean;
@@ -2456,6 +2457,35 @@ begin
   end;
 end;
 
+procedure TFrontBase.GetPaymentsCount(var CardCount, NoCashCount,
+  PercCardCount: Integer);
+begin
+  FReadSQL.Close;
+
+  CardCount := 0;
+  NoCashCount := 0;
+  PercCardCount := 0;
+  try
+    try
+      if not FReadSQL.Transaction.InTransaction then
+        FReadSQL.Transaction.StartTransaction;
+
+      FReadSQL.SQL.Text :=
+        'SELECT C.*, T.USR$NOFISCAL FROM USR$MN_PERSONALCARD C ' +
+        'JOIN USR$MN_KINDTYPE T ON 1 = 1 ' +
+        'WHERE T.ID = :ID AND C.USR$CODE = :pass ';
+//      FReadSQL.ParamByName('pass').AsString := Pass;
+//      FReadSQL.ParamByName('ID').AsInteger := PersonalCardID;
+      FReadSQL.ExecQuery;
+
+    except
+      raise;
+    end;
+  finally
+    FReadSQL.Close;
+  end;
+end;
+
 function TFrontBase.GetPersonalCardInfo(const MemTable: TkbmMemTable;
   const Pass: String; const PersonalCardID: Integer): Boolean;
 begin
@@ -3547,7 +3577,8 @@ begin
       '  setprn.usr$printername as printername,  ' +
       '  '' *** '' || m.usr$name || '' ***'' as modifyname,  ' +
       '  ol.documentkey as documentkey, ' +
-      '  ol.usr$quantity as q           ' +
+      '  ol.usr$quantity as q,           ' +
+      '  ol.usr$extramodify as extramodify ' +
       'from                             ' +
       '  gd_document doc                ' +
       '  join usr$mn_order o on doc.id = o.documentkey and doc.id = :docid  ' +

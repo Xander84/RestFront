@@ -92,6 +92,8 @@ type
     actScrollDown: TAction;
     pnlGoodGroup: TAdvPanel;
     Panel4: TAdvPanel;
+    pnlMainGood: TPanel;
+    Panel6: TAdvPanel;
     actGoodUp: TAction;
     actGoodDown: TAction;
     actOK: TAction;
@@ -121,6 +123,7 @@ type
     actUsersRight: TAction;
     actExitWindows: TAction;
     actRestartRest: TAction;
+    pnlGood: TAdvPanel;
     btnBackToMenu: TAdvSmoothButton;
     btnNewOrder: TAdvSmoothButton;
     TouchKeyBoard: TAdvSmoothPopupTouchKeyBoard;
@@ -139,6 +142,8 @@ type
     btnScrollUp: TAdvSmoothButton;
     btnExitWindows: TAdvSmoothButton;
     btnRestartRest: TAdvSmoothButton;
+    btnGoodUp: TAdvSmoothButton;
+    btnGoodDown: TAdvSmoothButton;
     actCashForm: TAction;
     btnUsersDown: TAdvSmoothButton;
     btnUsersUp: TAdvSmoothButton;
@@ -173,6 +178,7 @@ type
     lblResp: TLabel;
     tsEmpty: TAdvTabSheet;
     actKassirInfo: TAction;
+    btnKassa: TAdvSmoothButton;
     btnPrintIncomeReport: TAdvSmoothButton;
     tmrClose: TTimer;
     tsTablePage: TAdvTabSheet;
@@ -189,6 +195,7 @@ type
     btnOK2: TAdvSmoothButton;
     tablePopupMenu: TAdvPopupMenu;
     MenuOfficeStyler: TAdvMenuOfficeStyler;
+    DBGrMain: TDBGridEh;
     grScrollBar: TScrollBar;
     tsTablesDesigner: TAdvTabSheet;
     pnlDesignerTables: TAdvPanel;
@@ -303,7 +310,6 @@ type
     procedure tmrTimeTimer(Sender: TObject);
     procedure btnPrintCopyCheckClick(Sender: TObject);
     procedure actReturnGoodSumExecute(Sender: TObject);
-    procedure actSwapTableExecute(Sender: TObject);
   private
     //Компонент обращения к БД
     FFrontBase: TFrontBase;
@@ -1440,6 +1446,7 @@ begin
   begin
     if not Assigned(dsMain.DataSet) then
       dsMain.DataSet := FLineTable;
+    RestFormState := rsMenuInfo;
 
     FHeaderTable.Insert;
     FHeaderTable.FieldByName('NUMBER').AsString := FOrderNumber;
@@ -1449,8 +1456,6 @@ begin
       FHeaderTable.FieldByName('USR$TABLEKEY').AsInteger := Table.ID;
     FHeaderTable.FieldByName('USR$COMPUTERNAME').AsString := FFrontBase.GetLocalComputerName;
     FHeaderTable.Post;
-
-    RestFormState := rsMenuInfo;
 
     SaveCheck;
   end;
@@ -2460,11 +2465,55 @@ end;
 procedure TRestMainForm.actPreCheckExecute(Sender: TObject);
 var
   Order: TrfOrder;
+  FSQL: TIBSQL;
+  FPrinted: Boolean;
 begin
   if FHeaderTable.FieldByName('usr$timecloseorder').IsNull then
   begin
     ClearDisplay;
     SaveCheck;
+
+    FPrinted := False;
+    FSQL := TIBSQL.Create(nil);
+    FSQL.Transaction := FFrontBase.ReadTransaction;
+    try
+      FSQL.SQL.Text :=
+        'select ' +
+        '  DISTINCT   ' +
+        '  IIF(setprn.usr$concatchecks = 0, prn.id, null) as prngrid, prn.usr$divide,  ' +
+        '  setprn.usr$printername, setprn.usr$printerid, o.documentkey, setprn.USR$DOSPRINTER  ' +
+        'from   ' +
+        '  usr$mn_order o  ' +
+        '  join usr$mn_orderline l on o.documentkey = l.masterkey  ' +
+        '  join gd_document doc on doc.id = l.documentkey and doc.usr$mn_printdate is null  ' +
+        '  join gd_good g on g.id = l.usr$goodkey  ' +
+        '  join usr$mn_prngroup prn on prn.id = g.usr$prngroupkey  ' +
+        '  join usr$mn_prngroupset setprn on setprn.usr$prngroup = prn.id  ' +
+        'where o.documentkey = :docid  ' +
+        ' and setprn.usr$computername = :comp   ' +
+        ' and setprn.usr$kassa = 0   ' +
+        'order by  ' +
+        '  setprn.usr$printername, prn.id  ';
+      FSQL.ParamByName('docid').AsInteger := FHeaderTable.FieldByName('ID').AsInteger;
+      FSQL.ParamByName('comp').AsString := FFrontBase.GetLocalComputerName;
+      FSQL.ExecQuery;
+      while not FSQL.Eof do
+      begin
+        FReport.PrintServiceCheck(1, FSQL.FieldByName('prngrid').AsInteger, FHeaderTable.FieldByName('ID').AsInteger,
+          FSQL.FieldByName('usr$printername').AsString);
+        FPrinted := True;
+        FSQL.Next;
+      end;
+      if FPrinted then
+      begin
+        FFrontBase.SavePrintDate(FHeaderTable.FieldByName('ID').AsInteger);
+        FFrontBase.CloseModifyTable(FModificationDataSet, Now);
+      end;
+
+      FSQL.Close;
+    finally
+      FSQL.Free;
+    end;
 
     if FReport.PrintPreCheck(1, FHeaderTable.FieldByName('ID').AsInteger) then
     begin
@@ -3005,10 +3054,6 @@ begin
         pnlChoose.Visible := True;
         FPayed := False;
         tmrTables.Enabled := False;
-        // Информация о заказе
-        lblOrderInfoUserName.Caption := FFrontBase.GetNameWaiterOnID(FFrontBase.ContactKey, true, false);
-        if not FHeaderTable.Eof then
-          lblOrderInfoTableNumber.Caption := FHeaderTable.FieldByName('number').AsString;
       end;
 
     rsManagerInfo:
@@ -3913,7 +3958,7 @@ procedure TRestMainForm.tablePopupMenuPopup(Sender: TObject);
 var
   FButton: TRestTable;
   Item: TMenuItem;
-  Order: TrfOrder;
+  OrderKey: Integer;
 begin
   inherited;
   FButton := TRestTable(TAdvPopupMenu(Sender).PopupComponent);
@@ -3939,14 +3984,14 @@ begin
     tablePopupMenu.Items.Add(Item);
   end;
 
-  for Order in FButton.OrderList do
+  for OrderKey in FButton.OrderList.Keys do
   begin
     //если заказ не свой или не менеджер, то не добавляем меню
     if (FFrontBase.ContactKey = FButton.RespKey) or ((FFrontBase.UserKey and FFrontBase.Options.ManagerGroupMask) <> 0) then
     begin
       Item  := TMenuItem.Create(tablePopupMenu);
-      Item.Tag := Order.ID;
-      Item.Caption := 'Заказ ' + Order.Number;
+      Item.Tag := OrderKey;
+      Item.Caption := 'Заказ ' + FButton.OrderList.Items[OrderKey].Number;
       Item.OnClick := OrderButtonOnClick;
       tablePopupMenu.Items.Add(Item);
     end;
@@ -4344,12 +4389,6 @@ begin
       actScrollUp.Enabled := (FGroupFirstTop > 8)
   else
     actScrollUp.Enabled := (FGroupFirstTop > 8);
-end;
-
-procedure TRestMainForm.actSwapTableExecute(Sender: TObject);
-begin
-  inherited;
-  //
 end;
 
 procedure TRestMainForm.actScrollDownUpdate(Sender: TObject);

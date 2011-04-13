@@ -186,8 +186,10 @@ var
   FReport: Tgs_fr4SingleReport;
   Str: TStream;
   BaseQueryList: TgsQueryList;
-  Header, Sells: TgsDataSet;
+  Header{, Sells}: TgsDataSet;
   FrxDBDataset, FrxDBDataset1: TfrxDBDataset;
+  MemTable: TkbmMemTable;
+  I: Integer;
 begin
   Assert(Assigned(FFrontBase), 'FrontBase not assigned');
 
@@ -205,10 +207,12 @@ begin
     Str := TMemoryStream.Create;
     FrxDBDataset := TfrxDBDataset.Create(nil);
     FrxDBDataset1 := TfrxDBDataset.Create(nil);
+    MemTable := TkbmMemTable.Create(nil);
+    MemTable.Name := 'HEADER';
     try
-      Header := BaseQueryList.Query[BaseQueryList.Add('Header', False)];
+      Header := BaseQueryList.Query[BaseQueryList.Add('Header2', False)];
       Header.SQL :=
-        '  SELECT comp.name compname, comp.address compadr, comp.city compcity, ' +
+ {       '  SELECT comp.name compname, comp.address compadr, comp.city compcity, ' +
         '  g.alias a, cat.usr$name categ, g.name goodname, ol.usr$costncu C, ' +
         '  con.name conname, o.usr$logicdate docdate, doc.number docnum, ' +
         '  o.usr$guestcount guest, o.usr$timeorder open1, o.usr$timecloseorder close1, ' +
@@ -235,11 +239,76 @@ begin
         '  o.usr$guestcount, o.usr$timeorder, o.usr$timecloseorder, ' +
         '  o.usr$cash, usr$sysnum, cat.usr$name ' +
         '  having Sum(ol.usr$quantity) > 0 ' +
-        '  order by cat.usr$name ';
+        '  order by cat.usr$name '; }
+      '  SELECT comp.name compname, comp.address compadr, comp.city compcity,  ' +
+      '  g.alias a, g.name goodname, ol.usr$costncu C, ' +
+      '  con.name conname, doc.documentdate as docdate, doc.number docnum, ' +
+      '  o.usr$guestcount guest, o.usr$timeorder as open1, current_time as close1, ' +
+      '  o.usr$cash cash, d.usr$surname as surname, d.usr$middlename midle, d.usr$firstname firstn, d.USR$cardnum cardnum, ' +
+      '  SUM(ol.usr$sumncu) S, ' +
+      '  SUM(ol.usr$sumncuwithdiscount) SWD, ' +
+      '  SUM(ol.usr$sumdiscount) SD, ' +
+      '  Sum(ol.usr$quantity) q  ' +
+      '  FROM gd_document doc  ' +
+      '  JOIN usr$mn_order o ON o.documentkey = doc.id ' +
+      '    AND doc.id = :dockey ' +
+      '  JOIN usr$mn_orderline ol on ol.masterkey = o.documentkey  ' +
+      '  JOIN gd_good g ON g.id = ol.usr$goodkey  ' +
+      '  LEFT JOIN gd_contact comp ON comp.id = doc.companykey  ' +
+      '  LEFT JOIN usr$mn_p_getcontact_department(usr$respkey) cd ON 0 = 0  ' +
+      '  LEFT JOIN gd_contact con ON con.id = cd.peoplekey ' +
+      '  LEFT JOIN gd_contact dept ON dept.id = cd.departmentkey  ' +
+      '  left join usr$mn_discountcard d on d.id = o.usr$disccardkey ' +
+      '  where ol.usr$causedeletekey + 0 is null ' +
+      '  GROUP BY ' +
+      '  comp.name, comp.address, comp.city, ' +
+      '  g.name, g.alias, ol.usr$costncu, ' +
+      '  con.name, doc.documentdate, doc.number,  ' +
+      '  o.usr$guestcount, o.usr$timeorder, o.usr$timecloseorder, ' +
+      '  o.usr$cash, d.usr$surname, d.usr$middlename, d.usr$firstname, d.USR$cardnum  ' +
+      '  having Sum(ol.usr$quantity) > 0 ';
+
       Header.ParamByName('dockey').AsInteger := DocID;
       Header.Open;
 
-      Sells := BaseQueryList.Query[BaseQueryList.Add('Sells', True)];
+
+
+        MemTable.CreateTableAs(Header.DataSet, [mtcpoStructure]);
+        MemTable.FieldDefs.Add('NOW', ftDate, 0);
+        MemTable.FieldDefs.Add('NOWTIME', ftTime, 0);
+        MemTable.FieldDefs.Add('COMPRESSEDON', ftString, 5);
+        MemTable.FieldDefs.Add('RUSPAGE', ftString, 5);
+        MemTable.FieldDefs.Add('CUTPAGE', ftString, 15);
+        MemTable.FieldDefs.Add('DISKN', ftString, 60);
+        MemTable.CreateTable;
+        MemTable.Open;
+
+        Header.First;
+        while not Header.Eof do
+        begin
+          MemTable.Append;
+          I := 0;
+          while I <= Header.FieldCount - 1 do
+          begin
+            MemTable.Fields[I].AsString := Header.Fields[I].AsString;
+            Inc(I);
+          end;
+
+          MemTable.FieldbyName('NOW').AsDateTime := Date;
+          MemTable.FieldbyName('NOWTIME').AsDateTime := Time;
+          MemTable.FieldByName('COMPRESSEDON').AsVariant := ''; // 'chr(&H1D) + CHR(&H56) + CHR(&H01)
+          MemTable.FieldByName('RUSPAGE').AsVariant := '';
+          if Header.FieldByName('surname').AsString <> '' then
+            MemTable.FieldByNAme('DISKN').AsString := 'Карточка:' + Header.FieldByName('cardnum').AsString +
+              #13#10 + Header.FieldByName('surname').AsString + ' ' +
+              Header.FieldByName('firstn').AsString + ' ' + Header.FieldByName('midle').AsString;
+
+          MemTable.Post;
+
+          Header.Next;
+        end;
+
+ {     Sells := BaseQueryList.Query[BaseQueryList.Add('Sells', True)];
       Sells.AddField('PayType1', 'ftString', 15, False);
       Sells.AddField('PaySum1', 'ftString', 15, False);
       Sells.AddField('ChangeSum', 'ftString', 15, False);
@@ -278,14 +347,14 @@ begin
           Sells.FieldByName('NOWTIME').AsDateTime := Now;
           Sells.Post;
         end;
-      end;
+      end;      }
 
 
       FrxDBDataset.Name := Header.DataSet.Name;
       FrxDBDataset.DataSet := TDataSet(Header.DataSet);
 
-      FrxDBDataset1.Name := Sells.DataSet.Name;
-      FrxDBDataset1.DataSet := TDataSet(Sells.DataSet);
+      FrxDBDataset1.Name := MemTable.Name;
+      FrxDBDataset1.DataSet := TDataSet(MemTable);
 
       FReport.DataSets.Add(FrxDBDataset);
       FReport.DataSets.Add(FrxDBDataset1);
@@ -308,6 +377,7 @@ begin
       end;
 
     finally
+      MemTable.Free;
       FrxDBDataset.Free;
       FrxDBDataset1.Free;
       Str.Free;
@@ -843,6 +913,27 @@ begin
                 Inc(I);
               end;
               MemTable.FieldbyName('GOODNAME').AsString := EndBold + '    ' + Query.FieldByName('modifyname').AsString;
+              MemTable.FieldbyName('prngroupname').AsString := DOUBLESIZE + Query.FieldByName('prngroupname').AsString + ENDDOUBLESIZE;
+            end;
+
+          if (Query.FieldByName('documentkey').AsInteger <> Linekey) and
+            (Query.FieldByName('extramodify').AsString <> '')
+          then
+            begin
+              MemTable.FieldByName('modifyname').AsString := '';
+              MemTable.FieldbyName('TIME').AsdateTime := Time;
+              MemTable.FieldByNAme('COMPRESSEDON').AsVariant := ''; // 'chr(&H1D) + CHR(&H56) + CHR(&H01)
+              MemTable.FieldByNAme('RESET').AsVariant := ''; //'chr(&H1B) + CHR(&H40)
+              MemTable.FieldByNAme('BELL').AsVariant := ''; //'chr(&H1B) + CHR(&H70) + "0" + CHR(0) + chr(0)
+              MemTable.Post;
+              MemTable.Append;
+              I := 0;
+              while I <= Query.FieldCount - 1 do
+              begin
+                MemTable.Fields[I].AsString := Query.Fields[I].AsString;
+                Inc(I);
+              end;
+              MemTable.FieldbyName('GOODNAME').AsString := EndBold + '     *** ' + Query.FieldByName('extramodify').AsString + ' *** ';
               MemTable.FieldbyName('prngroupname').AsString := DOUBLESIZE + Query.FieldByName('prngroupname').AsString + ENDDOUBLESIZE;
             end;
 
