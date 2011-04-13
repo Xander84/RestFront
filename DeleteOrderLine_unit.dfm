@@ -4,7 +4,7 @@ object DeleteOrderLine: TDeleteOrderLine
   BorderIcons = []
   BorderStyle = bsSingle
   Caption = #1042#1099#1073#1086#1088' '#1087#1088#1080#1095#1080#1085#1099' '#1091#1076#1072#1083#1077#1085#1080#1103
-  ClientHeight = 320
+  ClientHeight = 336
   ClientWidth = 469
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -22,7 +22,7 @@ object DeleteOrderLine: TDeleteOrderLine
     Left = 0
     Top = 0
     Width = 469
-    Height = 47
+    Height = 60
     Align = alTop
     BevelOuter = bvNone
     Color = 16640730
@@ -59,20 +59,22 @@ object DeleteOrderLine: TDeleteOrderLine
     FullHeight = 41
     object Label1: TLabel
       Left = 15
-      Top = 8
+      Top = 14
       Width = 141
       Height = 31
       Caption = #1050#1086#1083#1080#1095#1077#1089#1090#1074#1086':'
+      Color = 16640730
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -27
       Font.Name = 'Times New Roman'
       Font.Style = []
+      ParentColor = False
       ParentFont = False
     end
     object lblQuantity: TLabel
       Left = 167
-      Top = 8
+      Top = 14
       Width = 98
       Height = 31
       Alignment = taCenter
@@ -85,10 +87,10 @@ object DeleteOrderLine: TDeleteOrderLine
       ParentFont = False
     end
     object btnAddQuantity: TAdvSmoothButton
-      Left = 288
-      Top = 2
+      Left = 296
+      Top = 3
       Width = 73
-      Height = 42
+      Height = 54
       Appearance.PictureAlignment = taCenter
       Appearance.Font.Charset = DEFAULT_CHARSET
       Appearance.Font.Color = clWindowText
@@ -110,16 +112,17 @@ object DeleteOrderLine: TDeleteOrderLine
       Status.Appearance.Font.Style = []
       Bevel = False
       Color = 15195349
+      DisabledColor = clBlack
       ParentFont = False
       TabOrder = 0
       Version = '1.6.9.0'
       OnClick = btnAddQuantityClick
     end
     object btnRemoveQuantity: TAdvSmoothButton
-      Left = 376
-      Top = 2
+      Left = 389
+      Top = 3
       Width = 73
-      Height = 42
+      Height = 54
       Appearance.PictureAlignment = taCenter
       Appearance.Font.Charset = DEFAULT_CHARSET
       Appearance.Font.Color = clWindowText
@@ -141,6 +144,7 @@ object DeleteOrderLine: TDeleteOrderLine
       Status.Appearance.Font.Style = []
       Bevel = False
       Color = 15195349
+      DisabledColor = clBlack
       ParentFont = False
       TabOrder = 1
       Version = '1.6.9.0'
@@ -149,9 +153,9 @@ object DeleteOrderLine: TDeleteOrderLine
   end
   object pnlBottom: TAdvPanel
     Left = 0
-    Top = 272
+    Top = 276
     Width = 469
-    Height = 48
+    Height = 60
     Align = alBottom
     BevelOuter = bvNone
     Color = 16640730
@@ -185,18 +189,21 @@ object DeleteOrderLine: TDeleteOrderLine
     StatusBar.ColorTo = 16374724
     StatusBar.GradientDirection = gdVertical
     Styler = FrontData.FrontPanelStyler
+    ExplicitTop = 277
     FullHeight = 48
     object btnOK: TAdvSmoothButton
       Left = 8
       Top = 4
       Width = 186
-      Height = 40
+      Height = 54
       Action = actOK
+      Appearance.PictureAlignment = taCenter
       Appearance.Font.Charset = DEFAULT_CHARSET
       Appearance.Font.Color = clWindowText
-      Appearance.Font.Height = -19
-      Appearance.Font.Name = 'Times New Roman'
+      Appearance.Font.Height = -13
+      Appearance.Font.Name = 'Tahoma'
       Appearance.Font.Style = [fsBold]
+      Appearance.Layout = blPictureTop
       Status.Caption = '0'
       Status.Appearance.Fill.Color = clRed
       Status.Appearance.Fill.ColorMirror = clNone
@@ -212,6 +219,7 @@ object DeleteOrderLine: TDeleteOrderLine
       Status.Appearance.Font.Style = []
       Bevel = False
       Color = 15195349
+      DisabledColor = clBlack
       ParentFont = False
       TabOrder = 0
       Version = '1.6.9.0'
@@ -220,12 +228,14 @@ object DeleteOrderLine: TDeleteOrderLine
       Left = 276
       Top = 4
       Width = 186
-      Height = 40
+      Height = 54
+      Appearance.PictureAlignment = taCenter
       Appearance.Font.Charset = DEFAULT_CHARSET
       Appearance.Font.Color = clWindowText
-      Appearance.Font.Height = -19
-      Appearance.Font.Name = 'Times New Roman'
+      Appearance.Font.Height = -13
+      Appearance.Font.Name = 'Tahoma'
       Appearance.Font.Style = [fsBold]
+      Appearance.Layout = blPictureTop
       Status.Caption = '0'
       Status.Appearance.Fill.Color = clRed
       Status.Appearance.Fill.ColorMirror = clNone
@@ -242,6 +252,7 @@ object DeleteOrderLine: TDeleteOrderLine
       Bevel = False
       Caption = #1054#1090#1084#1077#1085#1072
       Color = 15195349
+      DisabledColor = clBlack
       ParentFont = False
       TabOrder = 1
       Version = '1.6.9.0'
@@ -250,9 +261,9 @@ object DeleteOrderLine: TDeleteOrderLine
   end
   object pnlMain: TAdvPanel
     Left = 0
-    Top = 47
+    Top = 60
     Width = 469
-    Height = 225
+    Height = 216
     Align = alClient
     BevelOuter = bvNone
     Color = 16640730
@@ -286,6 +297,8 @@ object DeleteOrderLine: TDeleteOrderLine
     StatusBar.ColorTo = 16374724
     StatusBar.GradientDirection = gdVertical
     Styler = FrontData.FrontPanelStyler
+    ExplicitTop = 47
+    ExplicitHeight = 225
     FullHeight = 231
   end
   object ActionList1: TActionList

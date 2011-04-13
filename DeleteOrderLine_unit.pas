@@ -79,8 +79,10 @@ begin
     if FFrontBase.GetCauseDeleteList(DeleteCauseList) then
       CreateDeleteClauseButtonList;
 
-  btnAddQuantity.Picture := FrontData.RestPictureContainer.FindPicture('AddPicture');
-  btnRemoveQuantity.Picture := FrontData.RestPictureContainer.FindPicture('RemovePicture');
+  btnAddQuantity.Picture := FrontData.RestPictureContainer.FindPicture('add');
+  btnRemoveQuantity.Picture := FrontData.RestPictureContainer.FindPicture('delete');
+  btnOK.Picture := FrontData.RestPictureContainer.FindPicture('tick');
+  btnCancel.Picture := FrontData.RestPictureContainer.FindPicture('cross');
 end;
 
 procedure TDeleteOrderLine.FormCloseQuery(Sender: TObject;

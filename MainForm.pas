@@ -173,7 +173,6 @@ type
     lblResp: TLabel;
     tsEmpty: TAdvTabSheet;
     actKassirInfo: TAction;
-    btnKassa: TAdvSmoothButton;
     btnPrintIncomeReport: TAdvSmoothButton;
     tmrClose: TTimer;
     tsTablePage: TAdvTabSheet;
@@ -215,6 +214,9 @@ type
     lblOrderInfoUserName: TLabel;
     lblOrderInfoTableNumberLabel: TLabel;
     lblOrderInfoTableNumber: TLabel;
+    btnKassa: TAdvSmoothButton;
+    actSwapTable: TAction;
+    AdvSmoothToggleButton1: TAdvSmoothToggleButton;
 
     //Проверка введёного пароля
     procedure actPassEnterExecute(Sender: TObject);
@@ -301,6 +303,7 @@ type
     procedure tmrTimeTimer(Sender: TObject);
     procedure btnPrintCopyCheckClick(Sender: TObject);
     procedure actReturnGoodSumExecute(Sender: TObject);
+    procedure actSwapTableExecute(Sender: TObject);
   private
     //Компонент обращения к БД
     FFrontBase: TFrontBase;
@@ -385,7 +388,6 @@ type
     FMenuKey: Integer;
     FActiveHallButton: String;
     FActiveHallKey: Integer;
-    FActiveRestTable: TRestTable;
     //Указатель на нажатую кнопку
     FSelectedButton: TObject;
     FMenuSelectedButton: TObject;
@@ -655,7 +657,6 @@ begin
   FTableManager.TableButtonPopupMenu := tablePopupMenu;
 
   FActiveHallKey := -1;
-  FActiveRestTable := nil;
 end;
 
 procedure TRestMainForm.FormDestroy(Sender: TObject);
@@ -1417,7 +1418,6 @@ begin
   begin
     if not Assigned(dsMain.DataSet) then
       dsMain.DataSet := FLineTable;
-    RestFormState := rsMenuInfo;
 
     FHeaderTable.Insert;
     FHeaderTable.FieldByName('NUMBER').AsString := FOrderNumber;
@@ -1427,6 +1427,8 @@ begin
       FHeaderTable.FieldByName('USR$TABLEKEY').AsInteger := Table.ID;
     FHeaderTable.FieldByName('USR$COMPUTERNAME').AsString := FFrontBase.GetLocalComputerName;
     FHeaderTable.Post;
+
+    RestFormState := rsMenuInfo;
 
     SaveCheck;
   end;
@@ -3029,8 +3031,8 @@ begin
         tmrTables.Enabled := False;
         // Информация о заказе
         lblOrderInfoUserName.Caption := FFrontBase.GetNameWaiterOnID(FFrontBase.ContactKey, true, false);
-        if Assigned(FActiveRestTable) then
-          lblOrderInfoTableNumber.Caption := FActiveRestTable.Number;
+        if not FHeaderTable.Eof then
+          lblOrderInfoTableNumber.Caption := FHeaderTable.FieldByName('number').AsString;
       end;
 
     rsManagerInfo:
@@ -3909,7 +3911,6 @@ var
 begin
   inherited;
   FButton := TRestTable(TAdvPopupMenu(Sender).PopupComponent);
-  FActiveRestTable := FButton;
 
   if FButton.Tag = 0 then
   begin
@@ -4337,6 +4338,12 @@ begin
       actScrollUp.Enabled := (FGroupFirstTop > 8)
   else
     actScrollUp.Enabled := (FGroupFirstTop > 8);
+end;
+
+procedure TRestMainForm.actSwapTableExecute(Sender: TObject);
+begin
+  inherited;
+  //
 end;
 
 procedure TRestMainForm.actScrollDownUpdate(Sender: TObject);
