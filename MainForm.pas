@@ -1439,7 +1439,6 @@ begin
   begin
     if not Assigned(dsMain.DataSet) then
       dsMain.DataSet := FLineTable;
-    RestFormState := rsMenuInfo;
 
     FHeaderTable.Insert;
     FHeaderTable.FieldByName('NUMBER').AsString := FOrderNumber;
@@ -1449,6 +1448,8 @@ begin
       FHeaderTable.FieldByName('USR$TABLEKEY').AsInteger := Table.ID;
     FHeaderTable.FieldByName('USR$COMPUTERNAME').AsString := FFrontBase.GetLocalComputerName;
     FHeaderTable.Post;
+
+    RestFormState := rsMenuInfo;
 
     SaveCheck;
   end;
@@ -3047,6 +3048,11 @@ begin
         pnlChoose.Visible := True;
         FPayed := False;
         tmrTables.Enabled := False;
+
+        // Информация о заказе
+        lblOrderInfoUserName.Caption := FFrontBase.GetNameWaiterOnID(FFrontBase.ContactKey, true, false);
+        if not FHeaderTable.Eof then
+          lblOrderInfoTableNumber.Caption := FHeaderTable.FieldByName('number').AsString;
       end;
 
     rsManagerInfo:
