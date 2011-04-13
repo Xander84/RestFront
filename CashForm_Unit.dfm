@@ -86,7 +86,7 @@ object CashForm: TCashForm
     end
     object btnStartSession: TAdvSmoothButton
       Left = 14
-      Top = 54
+      Top = 422
       Width = 296
       Height = 40
       Action = actStartSession
@@ -112,11 +112,12 @@ object CashForm: TCashForm
       Color = 15195349
       ParentFont = False
       TabOrder = 1
+      Visible = False
       Version = '1.6.9.0'
     end
     object btnReportWithoutCleaning: TAdvSmoothButton
       Left = 14
-      Top = 100
+      Top = 54
       Width = 296
       Height = 40
       Action = actReportWithoutCleaning
@@ -146,7 +147,7 @@ object CashForm: TCashForm
     end
     object btnReportWithCleaning: TAdvSmoothButton
       Left = 14
-      Top = 146
+      Top = 113
       Width = 296
       Height = 40
       Action = actReportWithCleaning
@@ -207,7 +208,7 @@ object CashForm: TCashForm
     end
     object btnEndDay: TAdvSmoothButton
       Left = 14
-      Top = 192
+      Top = 159
       Width = 296
       Height = 40
       Action = actEndDay
@@ -237,7 +238,7 @@ object CashForm: TCashForm
     end
     object btnMoneyIN: TAdvSmoothButton
       Left = 14
-      Top = 238
+      Top = 220
       Width = 296
       Height = 40
       Action = actMoneyIN
@@ -267,7 +268,7 @@ object CashForm: TCashForm
     end
     object btnMoneyOUT: TAdvSmoothButton
       Left = 14
-      Top = 284
+      Top = 266
       Width = 296
       Height = 40
       Action = actMoneyOUT
