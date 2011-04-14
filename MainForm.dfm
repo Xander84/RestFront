@@ -11,10 +11,12 @@ object RestMainForm: TRestMainForm
   Font.Height = -11
   Font.Name = 'MS Sans Serif'
   Font.Style = []
+  KeyPreview = True
   OldCreateOrder = False
   Position = poDesktopCenter
   OnCreate = FormCreate
   OnDestroy = FormDestroy
+  OnKeyDown = FormKeyDown
   PixelsPerInch = 96
   TextHeight = 13
   object pnlMain: TPanel
@@ -30,7 +32,7 @@ object RestMainForm: TRestMainForm
       Top = 0
       Width = 934
       Height = 721
-      ActivePage = tsManagerInfo
+      ActivePage = tsPassWord
       ActiveFont.Charset = DEFAULT_CHARSET
       ActiveFont.Color = clWindowText
       ActiveFont.Height = -11

@@ -307,6 +307,7 @@ type
     procedure actReturnGoodSumExecute(Sender: TObject);
     procedure btnPrintBiilsCopyClick(Sender: TObject);
     procedure btnRealizationReportClick(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     //Компонент обращения к БД
     FFrontBase: TFrontBase;
@@ -734,6 +735,17 @@ begin
 
   // Менеджер столов зала
   FTableManager.Free;
+end;
+
+procedure TRestMainForm.FormKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if (RestFormState = rsPass) and (not edPassword.Focused) and
+    (edPassword.CanFocus) then
+  begin
+    edPassword.SetFocus;
+    PostMessage(edPassword.Handle, WM_KEYUP, Key, 0)
+  end;
 end;
 
 procedure TRestMainForm.edPasswordKeyPress(Sender: TObject; var Key: Char);
