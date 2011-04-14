@@ -73,6 +73,9 @@ type
       const PrinterName: String): Boolean;
     procedure PrintIncomeReport(const DateBegin, DateEnd: TDate);
     procedure PrintCheckRegister(const DateBegin, DateEnd: TDate);
+    procedure PrintCheckRegisterEmpl(const DateBegin, DateEnd: TDate; EmplKey, RespKey: Integer);
+    procedure PrintCopyChecks(const DateBegin, DateEnd: TDate);
+    procedure PrintRealization(const DateBegin, DateEnd: TDate);
     function EditTemplate(const ID: Integer): Boolean;
 
     property FrontBase: TFrontBase read FFrontBase write FFrontBase;
@@ -457,6 +460,300 @@ begin
   end;
 end;
 
+procedure TRestReport.PrintCheckRegisterEmpl(const DateBegin, DateEnd: TDate;
+  EmplKey, RespKey: Integer);
+var
+  PrinterName: String;
+  FReport: Tgs_fr4SingleReport;
+  Str: TStream;
+  BaseQueryList: TgsQueryList;
+  Header1, Buh: TgsDataSet;
+  FrxDBDataset, FrxDBDataset1, FrxDBDataset2: TfrxDBDataset;
+  MemTable: TkbmMemTable;
+  DocDate: TDate;
+  NomPP, DocKey, I: Integer;
+begin
+  Assert(Assigned(FFrontBase), 'FrontBase not assigned');
+
+  BaseQueryList := FrontData.BaseQueryList;
+  BaseQueryList.Clear;
+  PrinterName := FFrontBase.GetPrinterName;
+  FReport := Tgs_fr4SingleReport.Create(nil);
+  try
+    Str := TMemoryStream.Create;
+    FrxDBDataset := TfrxDBDataset.Create(nil);
+    FrxDBDataset1 := TfrxDBDataset.Create(nil);
+    FrxDBDataset2 := TfrxDBDataset.Create(nil);
+    MemTable := TkbmMemTable.Create(nil);
+    MemTable.Name := 'HEADER';
+    try
+      Buh := BaseQueryList.Query[BaseQueryList.Add('Buh', False)];
+      Buh.SQL :=
+        'select ' +
+        '  con.name, p.rank ' +
+        'from ' +
+        '  gd_contact con ' +
+        '  left join gd_people p on con.id = p.contactkey ' +
+        'where ' +
+        '  id = :id ';
+      Buh.ParamByName('ID').AsInteger := EmplKey;
+      Buh.Open;
+
+      Header1 := BaseQueryList.Query[BaseQueryList.Add('Header1', False)];
+      Header1.SQL :=
+        'SELECT w.name, w.id, doc.documentdate, o.usr$timecloseorder, o.documentkey, sum(ol.usr$sumncuwithdiscount) sumcheck ' +
+        ' ' +
+        'FROM usr$mn_order o ' +
+        '  left join usr$mn_orderline ol on o.documentkey = ol.masterkey ' +
+        '  left join gd_contact w on w.id = o.usr$respkey ' +
+        '  left join gd_document doc on o.documentkey = doc.id ' +
+        'WHERE ' +
+        '  o.usr$logicdate >= :begindate  ' +
+        '  and o.usr$logicdate <= :enddate  ' +
+        '  and o.usr$pay = 1 ' +
+        '  and o.usr$respkey = :respkey ' +
+        'GROUP BY 1, 2, 3, 4, 5  ' +
+        'ORDER BY ' +
+        'doc.documentdate, o.usr$timecloseorder, w.name, o.documentkey ';
+      Header1.ParamByName('begindate').AsDate := DateBegin;
+      Header1.ParamByName('enddate').AsDate := DateEnd;
+      Header1.ParamByName('respkey').AsInteger := RespKey;
+      Header1.Open;
+
+      MemTable.CreateTableAs(Header1.DataSet, [mtcpoStructure]);
+      MemTable.FieldDefs.Add('NomPP', ftInteger, 0);
+      MemTable.FieldDefs.Add('CompanyName', ftString, 255);
+      MemTable.CreateTable;
+      MemTable.Open;
+
+      DocDate := EncodeDate(2000, 1, 1);
+      NomPP := 1;
+      DocKey := -1;
+      Header1.First;
+      while not Header1.Eof do
+      begin
+        MemTable.Append;
+        MemTable.FieldbyName('CompanyName').AsString := FFrontBase.Options.CheckLine1 +
+          ' ' + FFrontBase.Options.CheckLine2 + ' ' +
+          FFrontBase.Options.CheckLine3 + ' ' + FFrontBase.Options.CheckLine4;
+        I := 0;
+        while I <= Header1.FieldCount - 1 do
+        begin
+          MemTable.Fields[I].AsString := Header1.Fields[I].AsString;
+          Inc(I);
+        end;
+        if DocKey <> MemTable.FieldbyName('documentkey').AsInteger then
+        begin
+          DocKey := MemTable.FieldbyName('documentkey').AsInteger;
+          Inc(NomPP);
+        end;
+        if DocDate <> MemTable.FieldbyName('documentdate').AsDateTime then
+        begin
+          DocDate := MemTable.FieldbyName('documentdate').AsDateTime;
+          NomPP := 1;
+        end;
+        MemTable.FieldbyName('NomPP').AsInteger := NomPP;
+        MemTable.Post;
+
+        Header1.Next;
+      end;
+      MemTable.SortFields := 'documentdate;NAME;nompp';
+      MemTable.IndexFieldNames := 'documentdate;NAME;nompp';
+
+      FrxDBDataset.Name := Buh.DataSet.Name;
+      FrxDBDataset.DataSet := TDataSet(Buh.DataSet);
+      FrxDBDataset1.Name := Header1.DataSet.Name;
+      FrxDBDataset1.DataSet := TDataSet(Header1.DataSet);
+      FrxDBDataset2.Name := MemTable.Name;
+      FrxDBDataset2.DataSet := TDataSet(MemTable);
+
+      FReport.DataSets.Add(FrxDBDataset);
+      FReport.DataSets.Add(FrxDBDataset1);
+      FReport.DataSets.Add(FrxDBDataset2);
+      FReport.EnabledDataSets.Add(FrxDBDataset);
+      FReport.EnabledDataSets.Add(FrxDBDataset1);
+      FReport.EnabledDataSets.Add(FrxDBDataset2);
+
+      GetTemplateStreamByRuid(147733800, 1604829035, Str);
+      if Str.Size > 0 then
+      begin
+        Str.Position := 0;
+        FReport.LoadFromStream(Str);
+      end;
+
+      FReport.Variables.Clear;
+      FReport.Variables[' ' + cn_RestParam] := Null;
+      FReport.Variables.AddVariable(cn_RestParam, 'PARAM0', '''' + DateToStr(DateBegin) + '''');
+      FReport.Variables.AddVariable(cn_RestParam, 'PARAM1', '''' + DateToStr(DateEnd) + '''');
+      if FReport.PrepareReport then
+      begin
+        InitReportParams(FReport, PrinterName);
+        FReport.Print;
+      end;
+    finally
+      FrxDBDataset.Free;
+      FrxDBDataset1.Free;
+      FrxDBDataset2.Free;
+      Str.Free;
+      MemTable.Free;
+    end;
+  finally
+    FReport.Free;
+  end;
+end;
+
+procedure TRestReport.PrintCopyChecks(const DateBegin, DateEnd: TDate);
+var
+  PrinterName: String;
+  FReport: Tgs_fr4SingleReport;
+  Str: TStream;
+  BaseQueryList: TgsQueryList;
+  Header1: TgsDataSet;
+  FrxDBDataset, FrxDBDataset1: TfrxDBDataset;
+  MemTable: TkbmMemTable;
+  NomPP, DocKey, I: Integer;
+  DocDate: TDateTime;
+begin
+  Assert(Assigned(FFrontBase), 'FrontBase not assigned');
+
+  BaseQueryList := FrontData.BaseQueryList;
+  BaseQueryList.Clear;
+  if PrinterName = '' then
+  begin
+    Touch_MessageBox('Внимание', 'Для данной рабочей станции не указан пречековый принтер!', MB_OK, mtWarning);
+    exit;
+  end;
+  FReport := Tgs_fr4SingleReport.Create(nil);
+  try
+    Str := TMemoryStream.Create;
+    FrxDBDataset := TfrxDBDataset.Create(nil);
+    FrxDBDataset1 := TfrxDBDataset.Create(nil);
+    MemTable := TkbmMemTable.Create(nil);
+    MemTable.Name := 'HEADER';
+    try
+      Header1 := BaseQueryList.Query[BaseQueryList.Add('Header1', False)];
+      Header1.SQL :=
+        '  select ' +
+        '    comp.name as compname, ' +
+        '    comp.address as compadr, ' +
+        '    comp.city compcity, ' +
+        '    g.name as goodname, ' +
+        '    ol.usr$costncu as c, ' +
+        '    con.name as conname, ' +
+        '    doc.id, doc.documentdate as docdate, doc.number as docnum, ' +
+        '    o.usr$guestcount as guest, o.usr$timeorder as open1, ' +
+        '    o.usr$timecloseorder as close1, ' +
+        '    o.usr$cash as cash, ' +
+        '    d.usr$surname as surname, ' +
+        '    d.usr$middlename as midle, ' +
+        '    d.usr$firstname as firstn, ' +
+        '    d.usr$cardnum as cardnum, ' +
+        '    sum(ol.usr$sumncu) s,  ' +
+        '    sum(ol.usr$sumncuwithdiscount) swd,  ' +
+        '    sum(ol.usr$sumdiscount) sd, ' +
+        '    sum(ol.usr$quantity) q ' +
+        '  from  ' +
+        '    usr$mn_order o ' +
+        '    left join gd_document doc on o.documentkey = doc.id ' +
+        '    left join usr$mn_orderline ol on ol.masterkey = o.documentkey ' +
+        '    left join gd_good g on g.id = ol.usr$goodkey  ' +
+        '    left join gd_contact comp on comp.id = doc.companykey ' +
+        '    left join gd_contact con on con.id = o.usr$respkey  ' +
+        '    left join usr$mn_discountcard d on d.id = o.usr$disccardkey ' +
+        '  where ' +
+        '    ol.usr$causedeletekey + 0 is null  ' +
+        '    and o.usr$logicdate >= :BeginDate  ' +
+        '    and o.usr$logicdate <= :EndDate and o.usr$pay = 1 ' +
+        '  group by  ' +
+        '    1, 2, 3, 4, 5, 6, 7, 8, ' +
+        '    9, 10, 11, 12, 13, 14, 15, 16, 17 ' +
+        '  having  ' +
+        '    sum(ol.usr$quantity) > 0  ' +
+        '  order by ' +
+        '    doc.documentdate, o.usr$timecloseorder, doc.id ';
+      Header1.ParamByName('begindate').AsDate := DateBegin;
+      Header1.ParamByName('enddate').AsDate := DateEnd;
+      Header1.Open;
+
+      MemTable.CreateTableAs(Header1.DataSet, [mtcpoStructure]);
+      MemTable.FieldDefs.Add('NomPP', ftInteger, 0);
+      MemTable.FieldDefs.Add('DISKN', ftString, 60);
+      MemTable.CreateTable;
+      MemTable.Open;
+
+      DocDate := EncodeDate(2000, 1, 1);
+      NomPP := 1;
+      DocKey := -1;
+      Header1.First;
+      while not Header1.Eof do
+      begin
+        I := 0;
+        MemTable.Append;
+        while I <= Header1.FieldCount - 1 do
+        begin
+          MemTable.Fields[I].AsString := Header1.Fields[I].AsString;
+          Inc(I);
+        end;
+
+        if DocKey <> MemTable.FieldbyName('ID').AsInteger then
+        begin
+          DocKey := MemTable.FieldbyName('ID').AsInteger;
+          Inc(NomPP);
+        end;
+        if DocDate <> MemTable.FieldbyName('docdate').AsDateTime then
+        begin
+          DocDate := MemTable.FieldbyName('docdate').AsDateTime;
+          NomPP := 1;
+        end;
+        MemTable.FieldbyName('NomPP').AsInteger := NomPP;
+        if Header1.FieldByName('surname').AsString <> '' then
+        begin
+          MemTable.FieldByNAme('DISKN').AsString := 'Карточка:' + Header1.FieldByName('cardnum').AsString +
+            #13#10 + Header1.FieldByName('surname').AsString + ' ' +
+            Header1.FieldByName('firstn').AsString + ' ' + Header1.FieldByName('midle').AsString;
+        end;
+        MemTable.Post;
+
+        Header1.Next;
+      end;
+
+      FrxDBDataset.Name := Header1.DataSet.Name;
+      FrxDBDataset.DataSet := TDataSet(Header1);
+      FrxDBDataset1.Name := MemTable.Name;
+      FrxDBDataset1.DataSet := TDataSet(MemTable);
+
+      FReport.DataSets.Add(FrxDBDataset);
+      FReport.DataSets.Add(FrxDBDataset1);
+      FReport.EnabledDataSets.Add(FrxDBDataset);
+      FReport.EnabledDataSets.Add(FrxDBDataset1);
+
+      GetTemplateStreamByRuid(147744649, 1650037404, Str);
+      if Str.Size > 0 then
+      begin
+        Str.Position := 0;
+        FReport.LoadFromStream(Str);
+      end;
+
+      FReport.Variables.Clear;
+      FReport.Variables[' ' + cn_RestParam] := Null;
+      FReport.Variables.AddVariable(cn_RestParam, 'PARAM0', '''' + DateToStr(DateBegin) + '''');
+      FReport.Variables.AddVariable(cn_RestParam, 'PARAM1', '''' + DateToStr(DateEnd) + '''');
+      if FReport.PrepareReport then
+      begin
+        InitReportParams(FReport, PrinterName);
+        FReport.Print;
+      end;
+    finally
+      FrxDBDataset.Free;
+      FrxDBDataset1.Free;
+      Str.Free;
+      MemTable.Free;
+    end;
+  finally
+    FReport.Free;
+  end;
+end;
+
 function TRestReport.PrintDeleteServiceCheck(const ReportType, PrnGrID,
   DocumentKey, MasterKey: Integer; const PrinterName: String): Boolean;
 var
@@ -818,6 +1115,98 @@ begin
       Query.Free;
       MemTable.Free;
       TfrxDBDataset2.Free;
+    end;
+  finally
+    FReport.Free;
+  end;
+end;
+
+procedure TRestReport.PrintRealization(const DateBegin, DateEnd: TDate);
+var
+  PrinterName: String;
+  FReport: Tgs_fr4SingleReport;
+  Str: TStream;
+  BaseQueryList: TgsQueryList;
+  Header1, Header: TgsDataSet;
+  FrxDBDataset, FrxDBDataset1: TfrxDBDataset;
+  NomPP, DocKey, I: Integer;
+  DocDate: TDateTime;
+begin
+  Assert(Assigned(FFrontBase), 'FrontBase not assigned');
+
+  BaseQueryList := FrontData.BaseQueryList;
+  BaseQueryList.Clear;
+  if PrinterName = '' then
+  begin
+    Touch_MessageBox('Внимание', 'Для данной рабочей станции не указан пречековый принтер!', MB_OK, mtWarning);
+    exit;
+  end;
+  FReport := Tgs_fr4SingleReport.Create(nil);
+  try
+    Str := TMemoryStream.Create;
+    FrxDBDataset := TfrxDBDataset.Create(nil);
+    FrxDBDataset1 := TfrxDBDataset.Create(nil);
+    try
+      Header1 := BaseQueryList.Query[BaseQueryList.Add('Report', False)];
+      Header1.SQL :=
+        'select ' +
+        '   pt.usr$name , ' +
+        '   con.name as groupname, ' +
+        '   sum(rc.summ) as ss  ' +
+        'from ' +
+        '  usr$mn_p_cashreport_kassa(:begindate, :enddate) rc ' +
+        '  left join  usr$mn_order o on rc.orderkey = o.documentkey ' +
+        '  left join usr$mn_kindtype kt on rc.kindtypekey = kt.id ' +
+        '  left join usr$inv_paytype pt on pt.id = kt.usr$paytypekey ' +
+        '  left join usr$mn_category c on c.id = rc.categorykey ' +
+        '  left join gd_contact con on con.id = rc.depotkey ' +
+        'group by ' +
+        '  1, 2 ' +
+        '  order by 1,2 ';
+      Header1.ParamByName('begindate').AsDate := DateBegin;
+      Header1.ParamByName('enddate').AsDate := DateEnd;
+      Header1.Open;
+
+      Header := BaseQueryList.Query[BaseQueryList.Add('Header', True)];
+      Header.AddField('FromDAte', 'ftDate', 0, False);
+      Header.AddField('ToDAte', 'ftDate', 0, False);
+      Header.Open;
+
+      Header.Append;
+      Header.FieldByName('FromDAte').AsDateTime := DateBegin;
+      Header.FieldByName('ToDAte').AsDateTime := DateEnd;
+      Header.Post;
+
+      FrxDBDataset.Name := Header1.DataSet.Name;
+      FrxDBDataset.DataSet := Header1.DataSet;
+      FrxDBDataset1.Name := Header.DataSet.Name;;
+      FrxDBDataset1.DataSet := Header.DataSet;
+
+      FReport.DataSets.Add(FrxDBDataset);
+      FReport.DataSets.Add(FrxDBDataset1);
+      FReport.EnabledDataSets.Add(FrxDBDataset);
+      FReport.EnabledDataSets.Add(FrxDBDataset1);
+
+      GetTemplateStreamByRuid(147744656, 1650037404, Str);
+      if Str.Size > 0 then
+      begin
+        Str.Position := 0;
+        FReport.LoadFromStream(Str);
+      end;
+
+      FReport.Variables.Clear;
+      FReport.Variables[' ' + cn_RestParam] := Null;
+      FReport.Variables.AddVariable(cn_RestParam, 'PARAM0', '''' + DateToStr(DateBegin) + '''');
+      FReport.Variables.AddVariable(cn_RestParam, 'PARAM1', '''' + DateToStr(DateEnd) + '''');
+      if FReport.PrepareReport then
+      begin
+        InitReportParams(FReport, PrinterName);
+        FReport.Print;
+      end;
+    finally
+      FrxDBDataset.Free;
+      FrxDBDataset1.Free;
+      Str.Free;
     end;
   finally
     FReport.Free;

@@ -45,7 +45,8 @@ uses
   fs_iQueryListRTTI in 'Report\fs_iQueryListRTTI.pas',
   PersonalCardForm_Unit in 'PersonalCardForm_Unit.pas' {PersonalCardForm},
   TouchMessageBoxForm_Unit in 'TouchMessageBoxForm_Unit.pas' {TTouchMessageBox},
-  ReturneyMoneyForm_Unit in 'ReturneyMoneyForm_Unit.pas' {ReturnMoneyForm};
+  ReturneyMoneyForm_Unit in 'ReturneyMoneyForm_Unit.pas' {ReturnMoneyForm},
+  ChooseEmplFrom_Unit in 'ChooseEmplFrom_Unit.pas' {ChooseEmpl};
 
 {$R *.res}
 

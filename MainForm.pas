@@ -217,6 +217,8 @@ type
     actSwapTable: TAction;
     btnSwapTable: TAdvSmoothToggleButton;
     grScrollBar: TScrollBar;
+    btnPrintBiilsCopy: TAdvSmoothButton;
+    btnRealizationReport: TAdvSmoothButton;
 
     //Проверка введёного пароля
     procedure actPassEnterExecute(Sender: TObject);
@@ -303,6 +305,8 @@ type
     procedure tmrTimeTimer(Sender: TObject);
     procedure btnPrintCopyCheckClick(Sender: TObject);
     procedure actReturnGoodSumExecute(Sender: TObject);
+    procedure btnPrintBiilsCopyClick(Sender: TObject);
+    procedure btnRealizationReportClick(Sender: TObject);
   private
     //Компонент обращения к БД
     FFrontBase: TFrontBase;
@@ -497,7 +501,7 @@ uses
   ChooseDiscountCardForm_Unit, EditReportForm_Unit,
   GDIPPictureContainer, IB, GDIPFill, CashForm_Unit, IBSQL,
   TouchMessageBoxForm_Unit, Base_FiscalRegister_unit,
-  ReturneyMoneyForm_Unit;
+  ReturneyMoneyForm_Unit, ChooseEmplFrom_Unit;
 
 
 {$R *.dfm}
@@ -3489,8 +3493,23 @@ begin
 end;
 
 procedure TRestMainForm.btnCheckRegisterClick(Sender: TObject);
+var
+  FForm: TChooseEmpl;
 begin
-  FReport.PrintCheckRegister(xDateBegin.Date, xDateEnd.Date);
+//  FReport.PrintCheckRegister(xDateBegin.Date, xDateEnd.Date);
+  FForm := TChooseEmpl.Create(nil);
+  try
+    FForm.FrontBase := FFrontBase;
+    FForm.FillEmployees;
+    FForm.ShowModal;
+    if FForm.ModalResult = mrOk then
+    begin
+      FReport.PrintCheckRegisterEmpl(xDateBegin.Date, xDateEnd.Date, FForm.EmplKey,
+        FForm.RespKey);
+    end;
+  finally
+    FForm.Free;
+  end;
 end;
 
 procedure TRestMainForm.btnWithPrecheckClick(Sender: TObject);
@@ -3879,6 +3898,11 @@ begin
   CreateUserList;
 end;
 
+procedure TRestMainForm.btnPrintBiilsCopyClick(Sender: TObject);
+begin
+  FReport.PrintCopyChecks(xDateBegin.Date, xDateEnd.Date);
+end;
+
 procedure TRestMainForm.btnPrintCopyCheckClick(Sender: TObject);
 var
   FSum: TSaleSums;
@@ -3897,6 +3921,11 @@ end;
 procedure TRestMainForm.btnPrintIncomeReportClick(Sender: TObject);
 begin
   FReport.PrintIncomeReport(xDateBegin.Date, xDateEnd.Date);
+end;
+
+procedure TRestMainForm.btnRealizationReportClick(Sender: TObject);
+begin
+  FReport.PrintRealization(xDateBegin.Date, xDateEnd.Date);
 end;
 
 procedure TRestMainForm.SplitButtonOnClick(Sender: TObject);

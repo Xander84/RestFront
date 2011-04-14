@@ -757,7 +757,9 @@ const
     '          usr$timecloseorder = :usr$timecloseorder, ' +
     '          usr$pay = :usr$pay,                  ' +
     '          usr$computername = :usr$computername,' +
-    '          USR$ISLOCKED = 0                     ' +
+    '          USR$ISLOCKED = 0,                     ' +
+    '          usr$sysnum = :usr$sysnum,            ' +
+    '          usr$register = :usr$register         ' +
     '      where (documentkey = :documentkey)       ';
 
   UpdateOrderLine =
@@ -875,6 +877,8 @@ begin
           updOrder.ParamByName('documentkey').AsInteger := HeaderTable.FieldByName('ID').AsInteger;
           updOrder.ParamByName('usr$pay').AsInteger := HeaderTable.FieldByName('usr$pay').AsInteger;
           updOrder.ParamByName('usr$computername').AsString := GetLocalComputerName;
+          updOrder.ParamByName('usr$sysnum').AsInteger := HeaderTable.FieldByName('usr$sysnum').AsInteger;
+          updOrder.ParamByName('usr$register').AsString := HeaderTable.FieldByName('usr$register').AsString;
           updOrder.ExecQuery;
 
           updDoc.Close;

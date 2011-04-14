@@ -3,7 +3,7 @@
 			<ProjectGuid>{7CADC0FD-2C01-4916-B437-46C5A3B772AD}</ProjectGuid>
 			<MainSource>RestFront.dpr</MainSource>
 			<Base>True</Base>
-			<Config Condition="'$(Config)'==''">Debug</Config>
+			<Config Condition="'$(Config)'==''">Release</Config>
 			<Platform>Win32</Platform>
 			<AppType>Application</AppType>
 			<FrameworkType>VCL</FrameworkType>
@@ -145,6 +145,9 @@
 			</DCCReference>
 			<DCCReference Include="ReturneyMoneyForm_Unit.pas">
 				<Form>ReturnMoneyForm</Form>
+			</DCCReference>
+			<DCCReference Include="ChooseEmplFrom_Unit.pas">
+				<Form>ChooseEmpl</Form>
 			</DCCReference>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
