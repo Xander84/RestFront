@@ -1892,119 +1892,229 @@ var
   FSQL: TIBSQL;
   FPrinted: Boolean;
 begin
-  FSelectedButton := nil;
-  FMenuSelectedButton := nil;
-  case FRestFormState of
-    rsPass:
-      ;
+  IsActionRun := True;
+  btnOk.Enabled := False;
+  btnCancel3.Enabled := False;
+  try
+    FSelectedButton := nil;
+    FMenuSelectedButton := nil;
+    case FRestFormState of
+      rsPass:
+        ;
 
-    rsOrderMenu, rsManagerPage, rsManagerChooseOrder, rsKassirInfo:
-      begin
-        //переходим на форму с паролем
-        RestFormState := rsPass;
-        FLogManager.DoSimpleLog(GetCurrentUserInfo, ev_Exit);
-      end;
-
-    rsHallsPage:
-      begin
-        RemoveHallButton;
-        RemoveChooseTable;
-        FFrontBase.ClearCache;
-
-        RestFormState := rsPass;
-        FLogManager.DoSimpleLog(GetCurrentUserInfo, ev_Exit);
-      end;
-
-    rsHallInfo:
-      begin
-        if Touch_MessageBox('Внимание', 'Сохранить изменения?', MB_YESNO, mtConfirmation) = IDYES then
+      rsOrderMenu, rsManagerPage, rsManagerChooseOrder, rsKassirInfo:
         begin
-          SaveTablePositions;
+          //переходим на форму с паролем
+          RestFormState := rsPass;
+          FLogManager.DoSimpleLog(GetCurrentUserInfo, ev_Exit);
+        end;
+
+      rsHallsPage:
+        begin
           RemoveHallButton;
-          // Удалим зал
-          EraseHall;
           RemoveChooseTable;
           FFrontBase.ClearCache;
-          dxfDesigner.EditControl := nil;
-          dxfDesigner.Active := False;          
 
           RestFormState := rsPass;
           FLogManager.DoSimpleLog(GetCurrentUserInfo, ev_Exit);
         end;
-      end;
 
-    rsManagerInfo:
-      begin
-        dsHeaderInfo.DataSet := nil;
-        dsLineInfo.DataSet := nil;
-        FHeaderInfoTable.Close;
-        FLineInfoTable.Close;
-
-        RestFormState := FBaseFormState;
-      end;
-
-    rsMenuInfo:
-      begin
-        //сохраняем чек
-        if Touch_MessageBox('Внимание', 'Закрыть заказ?', MB_YESNO, mtConfirmation) = IDYES then
+      rsHallInfo:
         begin
-          DBGrMain.DataSource := nil;
+          if Touch_MessageBox('Внимание', 'Сохранить изменения?', MB_YESNO, mtConfirmation) = IDYES then
+          begin
+            SaveTablePositions;
+            RemoveHallButton;
+            // Удалим зал
+            EraseHall;
+            RemoveChooseTable;
+            FFrontBase.ClearCache;
+            dxfDesigner.EditControl := nil;
+            dxfDesigner.Active := False;
+
+            RestFormState := rsPass;
+            FLogManager.DoSimpleLog(GetCurrentUserInfo, ev_Exit);
+          end;
+        end;
+
+      rsManagerInfo:
+        begin
+          dsHeaderInfo.DataSet := nil;
+          dsLineInfo.DataSet := nil;
+          FHeaderInfoTable.Close;
+          FLineInfoTable.Close;
+
+          RestFormState := FBaseFormState;
+        end;
+
+      rsMenuInfo:
+        begin
+          //сохраняем чек
+          if Touch_MessageBox('Внимание', 'Закрыть заказ?', MB_YESNO, mtConfirmation) = IDYES then
+          begin
+            DBGrMain.DataSource := nil;
+            FSelectedButton := nil;
+            FMenuSelectedButton := nil;
+            try
+              if FFrontBase.CreateNewOrder(FHeaderTable, FLineTable, FModificationDataSet, OrderKey) then
+              begin
+                if FFrontBase.Options.LastPrintOrder <> OrderKey then
+                begin
+                  FPrinted := False;
+                  FSQL := TIBSQL.Create(nil);
+                  FSQL.Transaction := FFrontBase.ReadTransaction;
+                  try
+                    FSQL.SQL.Text :=
+                      'select ' +
+                      '  DISTINCT   ' +
+                      '  IIF(setprn.usr$concatchecks = 0, prn.id, null) as prngrid, prn.usr$divide,  ' +
+                      '  setprn.usr$printername, setprn.usr$printerid, o.documentkey, setprn.USR$DOSPRINTER  ' +
+                      'from   ' +
+                      '  usr$mn_order o  ' +
+                      '  join usr$mn_orderline l on o.documentkey = l.masterkey  ' +
+                      '  join gd_document doc on doc.id = l.documentkey and doc.usr$mn_printdate is null  ' +
+                      '  join gd_good g on g.id = l.usr$goodkey  ' +
+                      '  join usr$mn_prngroup prn on prn.id = g.usr$prngroupkey  ' +
+                      '  join usr$mn_prngroupset setprn on setprn.usr$prngroup = prn.id  ' +
+                      'where o.documentkey = :docid  ' +
+                      ' and setprn.usr$computername = :comp   ' +
+                      ' and setprn.usr$kassa = 0   ' +
+                      'order by  ' +
+                      '  setprn.usr$printername, prn.id  ';
+                    FSQL.ParamByName('docid').AsInteger := OrderKey;
+                    FSQL.ParamByName('comp').AsString := FFrontBase.GetLocalComputerName;
+                    FSQL.ExecQuery;
+                    while not FSQL.Eof do
+                    begin
+                      FReport.PrintServiceCheck(1, FSQL.FieldByName('prngrid').AsInteger, OrderKey,
+                        FSQL.FieldByName('usr$printername').AsString);
+                      FPrinted := True;
+                      FSQL.Next;
+                    end;
+                    if FPrinted then
+                    begin
+                      FFrontBase.SavePrintDate(OrderKey);
+                      FFrontBase.CloseModifyTable(FModificationDataSet, Now);
+                    end;
+
+                    FSQL.Close;
+                  finally
+                    FSQL.Free;
+                  end;
+                  {if FFrontBase.GetServiceCheckOptions(OrderKey, PrinterName, PrnGrid) then
+                    if FReport.PrintServiceCheck(1, PrnGrid, OrderKey, PrinterName) then
+                    begin
+                      FFrontBase.SavePrintDate(OrderKey);
+                      FFrontBase.CloseModifyTable(FModificationDataSet, Now);
+                    end;}
+                end;
+                FLogManager.DoOrderLog(GetCurrentUserInfo, GetCurrentOrderInfo, ev_SaveOrder);
+                case FPrevFormState of
+                  rsManagerPage:
+                    CreateManagerPage;
+
+                  rsKassirInfo:
+                    CreateKassirPage;
+
+                  rsHallsPage:
+                    RestFormState := rsHallsPage;
+
+                  else
+                    RestFormState := rsOrderMenu;
+                end;
+              end;
+            finally
+              DBGrMain.DataSource := dsMain;
+            end;
+          end;
+        end;
+    end;
+  finally
+    IsActionRun := False;
+    btnOk.Enabled := True;
+    btnCancel3.Enabled := True;
+  end;
+end;
+
+procedure TRestMainForm.actCancelExecute(Sender: TObject);
+begin
+  IsActionRun := True;
+  btnOk.Enabled := False;
+  btnCancel3.Enabled := False;
+  try
+    FSelectedButton := nil;
+    FMenuSelectedButton := nil;
+    case FRestFormState of
+      rsPass:
+        ;
+
+      rsOrderMenu, rsManagerChooseOrder:
+        begin
+          RestFormState := rsPass;
+          FFrontBase.ClearCache;
+          FLogManager.DoSimpleLog(GetCurrentUserInfo, ev_Exit);
+        end;
+
+      rsKassirInfo, rsManagerPage:
+        begin
+          RestFormState := FBaseFormState;
+        end;
+
+      rsHallsPage, rsHallInfo:
+        begin
+          RemoveHallButton;
+          RemoveChooseTable;
+          FFrontBase.ClearCache;
+          dxfDesigner.EditControl := nil;
+          dxfDesigner.Active := False;
+
+          RestFormState := rsPass;
+          FLogManager.DoSimpleLog(GetCurrentUserInfo, ev_Exit);
+        end;
+
+      rsManagerInfo:
+        begin
+          dsHeaderInfo.DataSet := nil;
+          dsLineInfo.DataSet := nil;
+          FHeaderInfoTable.Close;
+          FLineInfoTable.Close;
           FSelectedButton := nil;
           FMenuSelectedButton := nil;
-          try
-            if FFrontBase.CreateNewOrder(FHeaderTable, FLineTable, FModificationDataSet, OrderKey) then
-            begin
-              if FFrontBase.Options.LastPrintOrder <> OrderKey then
-              begin
-                FPrinted := False;
-                FSQL := TIBSQL.Create(nil);
-                FSQL.Transaction := FFrontBase.ReadTransaction;
-                try
-                  FSQL.SQL.Text :=
-                    'select ' +
-                    '  DISTINCT   ' +
-                    '  IIF(setprn.usr$concatchecks = 0, prn.id, null) as prngrid, prn.usr$divide,  ' +
-                    '  setprn.usr$printername, setprn.usr$printerid, o.documentkey, setprn.USR$DOSPRINTER  ' +
-                    'from   ' +
-                    '  usr$mn_order o  ' +
-                    '  join usr$mn_orderline l on o.documentkey = l.masterkey  ' +
-                    '  join gd_document doc on doc.id = l.documentkey and doc.usr$mn_printdate is null  ' +
-                    '  join gd_good g on g.id = l.usr$goodkey  ' +
-                    '  join usr$mn_prngroup prn on prn.id = g.usr$prngroupkey  ' +
-                    '  join usr$mn_prngroupset setprn on setprn.usr$prngroup = prn.id  ' +
-                    'where o.documentkey = :docid  ' +
-                    ' and setprn.usr$computername = :comp   ' +
-                    ' and setprn.usr$kassa = 0   ' +
-                    'order by  ' +
-                    '  setprn.usr$printername, prn.id  ';
-                  FSQL.ParamByName('docid').AsInteger := OrderKey;
-                  FSQL.ParamByName('comp').AsString := FFrontBase.GetLocalComputerName;
-                  FSQL.ExecQuery;
-                  while not FSQL.Eof do
-                  begin
-                    FReport.PrintServiceCheck(1, FSQL.FieldByName('prngrid').AsInteger, OrderKey,
-                      FSQL.FieldByName('usr$printername').AsString);
-                    FPrinted := True;
-                    FSQL.Next;
-                  end;
-                  if FPrinted then
-                  begin
-                    FFrontBase.SavePrintDate(OrderKey);
-                    FFrontBase.CloseModifyTable(FModificationDataSet, Now);
-                  end;
 
-                  FSQL.Close;
-                finally
-                  FSQL.Free;
+          RestFormState := rsPass;
+          FLogManager.DoSimpleLog(GetCurrentUserInfo, ev_Exit);
+        end;
+
+      rsMenuInfo:
+        begin
+          if FPayed or (Touch_MessageBox('Внимание', 'Выйти из заказа?', MB_YESNO, mtConfirmation) = IDYES) then
+          begin
+            if not FHeaderTable.IsEmpty then
+            begin
+              if FFrontBase.UnLockUserOrder(FHeaderTable.FieldByName('ID').AsInteger) then
+              begin
+                FLogManager.DoOrderLog(GetCurrentUserInfo, GetCurrentOrderInfo, ev_ExitOrder);
+                case FPrevFormState of
+                  rsManagerPage:
+                    CreateManagerPage;
+
+                  rsKassirInfo:
+                    CreateKassirPage;
+
+                  rsHallsPage:
+                    begin
+                      if FLineTable.IsEmpty then
+                        FFrontBase.DeleteOrder(FHeaderTable.FieldByName('ID').AsInteger);
+                      RestFormState := rsHallsPage;
+                    end;
+
+                  else
+                    RestFormState := rsOrderMenu;
                 end;
-                {if FFrontBase.GetServiceCheckOptions(OrderKey, PrinterName, PrnGrid) then
-                  if FReport.PrintServiceCheck(1, PrnGrid, OrderKey, PrinterName) then
-                  begin
-                    FFrontBase.SavePrintDate(OrderKey);
-                    FFrontBase.CloseModifyTable(FModificationDataSet, Now);
-                  end;}
               end;
-              FLogManager.DoOrderLog(GetCurrentUserInfo, GetCurrentOrderInfo, ev_SaveOrder);
+            end else
+            begin
+              FLogManager.DoOrderLog(GetCurrentUserInfo, GetCurrentOrderInfo, ev_ExitOrder);
               case FPrevFormState of
                 rsManagerPage:
                   CreateManagerPage;
@@ -2019,105 +2129,13 @@ begin
                   RestFormState := rsOrderMenu;
               end;
             end;
-          finally
-            DBGrMain.DataSource := dsMain;
           end;
         end;
-      end;
-  end;
-end;
-
-procedure TRestMainForm.actCancelExecute(Sender: TObject);
-begin
-  FSelectedButton := nil;
-  FMenuSelectedButton := nil;
-  case FRestFormState of
-    rsPass:
-      ;
-
-    rsOrderMenu, rsManagerChooseOrder:
-      begin
-        RestFormState := rsPass;
-        FFrontBase.ClearCache;
-        FLogManager.DoSimpleLog(GetCurrentUserInfo, ev_Exit);
-      end;
-
-    rsKassirInfo, rsManagerPage:
-      begin
-        RestFormState := FBaseFormState;
-      end;
-
-    rsHallsPage, rsHallInfo:
-      begin
-        RemoveHallButton;
-        RemoveChooseTable;
-        FFrontBase.ClearCache;
-        dxfDesigner.EditControl := nil;
-        dxfDesigner.Active := False;        
-
-        RestFormState := rsPass;
-        FLogManager.DoSimpleLog(GetCurrentUserInfo, ev_Exit);
-      end;
-
-    rsManagerInfo:
-      begin
-        dsHeaderInfo.DataSet := nil;
-        dsLineInfo.DataSet := nil;
-        FHeaderInfoTable.Close;
-        FLineInfoTable.Close;
-        FSelectedButton := nil;
-        FMenuSelectedButton := nil;
-
-        RestFormState := rsPass;
-        FLogManager.DoSimpleLog(GetCurrentUserInfo, ev_Exit);
-      end;
-
-    rsMenuInfo:
-      begin
-        if FPayed or (Touch_MessageBox('Внимание', 'Выйти из заказа?', MB_YESNO, mtConfirmation) = IDYES) then
-        begin
-          if not FHeaderTable.IsEmpty then
-          begin
-            if FFrontBase.UnLockUserOrder(FHeaderTable.FieldByName('ID').AsInteger) then
-            begin
-              FLogManager.DoOrderLog(GetCurrentUserInfo, GetCurrentOrderInfo, ev_ExitOrder);
-              case FPrevFormState of
-                rsManagerPage:
-                  CreateManagerPage;
-
-                rsKassirInfo:
-                  CreateKassirPage;
-
-                rsHallsPage:
-                  begin
-                    if FLineTable.IsEmpty then
-                      FFrontBase.DeleteOrder(FHeaderTable.FieldByName('ID').AsInteger);
-                    RestFormState := rsHallsPage;
-                  end;
-
-                else
-                  RestFormState := rsOrderMenu;
-              end;
-            end;
-          end else
-          begin
-            FLogManager.DoOrderLog(GetCurrentUserInfo, GetCurrentOrderInfo, ev_ExitOrder);
-            case FPrevFormState of
-              rsManagerPage:
-                CreateManagerPage;
-
-              rsKassirInfo:
-                CreateKassirPage;
-
-              rsHallsPage:
-                RestFormState := rsHallsPage;
-
-              else
-                RestFormState := rsOrderMenu;
-            end;
-          end;
-        end;
-      end;
+    end;
+  finally
+    IsActionRun := False;
+    btnOk.Enabled := True;
+    btnCancel3.Enabled := True;
   end;
 end;
 
@@ -2129,90 +2147,99 @@ var
   S: String;
   ES: String;
 begin
-  if (not FLineTable.IsEmpty) and (RestFormState = rsMenuInfo) then
-  begin
-    if not FLineTable.FieldByName('usr$mn_printdate').IsNull then
+  IsActionRun := True;
+  btnOk.Enabled := False;
+  btnCancel3.Enabled := False;
+  try
+    if (not FLineTable.IsEmpty) and (RestFormState = rsMenuInfo) then
     begin
-      GoodKey := FLineTable.FieldByName('usr$goodkey').AsInteger;
-      if not FGoodDataSet.Locate('ID', GoodKey, []) then
-        FFrontBase.GetGoodByID(FGoodDataSet, GoodKey);
-
-      if FGoodDataSet.Locate('ID', GoodKey, []) then
+      if not FLineTable.FieldByName('usr$mn_printdate').IsNull then
       begin
-        FLineTable.Append;
-        FLineTable.FieldByName('LINEKEY').AsInteger := FLineID;
-        FLineTable.FieldByName('STATEFIELD').AsInteger := cn_StateInsert;
-        FLineTable.FieldByName('usr$quantity').AsInteger := 1;
-        FLineTable.FieldByName('CREATIONDATE').AsDateTime := FFrontBase.GetServerDateTime;
-        FLineTable.Post;
+        GoodKey := FLineTable.FieldByName('usr$goodkey').AsInteger;
+        if not FGoodDataSet.Locate('ID', GoodKey, []) then
+          FFrontBase.GetGoodByID(FGoodDataSet, GoodKey);
 
-        Inc(FLineID);
-        //проверяем сначала на модификаторы
-        if FGoodDataSet.FieldByName('ISNEEDMODIFY').AsInteger = 1 then
+        if FGoodDataSet.Locate('ID', GoodKey, []) then
         begin
-          FForm := TModificationForm.CreateWithFrontBase(nil, FFrontBase);
-          try
-            FForm.GoodKey := GoodKey;
-            FForm.LineModifyTable := FModificationDataSet;
-            FForm.ShowModal;
-            if FForm.ModalResult = mrOK then
-            begin
-              FModificationDataSet.First;
-              while not FModificationDataSet.Eof do
+          FLineTable.Append;
+          FLineTable.FieldByName('LINEKEY').AsInteger := FLineID;
+          FLineTable.FieldByName('STATEFIELD').AsInteger := cn_StateInsert;
+          FLineTable.FieldByName('usr$quantity').AsInteger := 1;
+          FLineTable.FieldByName('CREATIONDATE').AsDateTime := FFrontBase.GetServerDateTime;
+          FLineTable.Post;
+
+          Inc(FLineID);
+          //проверяем сначала на модификаторы
+          if FGoodDataSet.FieldByName('ISNEEDMODIFY').AsInteger = 1 then
+          begin
+            FForm := TModificationForm.CreateWithFrontBase(nil, FFrontBase);
+            try
+              FForm.GoodKey := GoodKey;
+              FForm.LineModifyTable := FModificationDataSet;
+              FForm.ShowModal;
+              if FForm.ModalResult = mrOK then
               begin
-                if S > '' then
-                  S := S + ', ';
-                S := S + FModificationDataSet.FieldByName('NAME').AsString;
-                FModificationDataSet.Next;
+                FModificationDataSet.First;
+                while not FModificationDataSet.Eof do
+                begin
+                  if S > '' then
+                    S := S + ', ';
+                  S := S + FModificationDataSet.FieldByName('NAME').AsString;
+                  FModificationDataSet.Next;
+                end;
+                ES := FForm.ExtraModifyString;
+                if ES <> '' then
+                begin
+                  if S = '' then
+                    S := ES
+                  else
+                    S := S + ', ' + ES;
+                end;
               end;
-              ES := FForm.ExtraModifyString;
-              if ES <> '' then
-              begin
-                if S = '' then
-                  S := ES
-                else
-                  S := S + ', ' + ES;
-              end;
+            finally
+              FForm.Free;
             end;
-          finally
-            FForm.Free;
           end;
+          FLineTable.Edit;
+          FLineTable.FieldByName('usr$goodkey').AsInteger := GoodKey;
+          FLineTable.FieldByName('GOODNAME').AsString := FGoodDataSet.FieldByName('NAME').AsString;
+          FLineTable.FieldByName('usr$quantity').AsInteger := 1;
+          FLineTable.FieldByName('usr$costncu').AsCurrency := FGoodDataSet.FieldByName('COST').AsCurrency;
+          FLineTable.FieldByName('MODIFYSTRING').AsString := S;
+          FLineTable.FieldByName('EXTRAMODIFY').AsString := ES;
+          FLineTable.FieldByName('USR$COMPUTERNAME').AsString := FFrontBase.GetLocalComputerName;
+          FLineTable.Post;
+
+          FGoodInfo.GoodID := GoodKey;
+          FGoodInfo.GoodName := FLineTable.FieldByName('GOODNAME').AsString;
+          FGoodInfo.Quantity := 1;
+          FGoodInfo.Sum := FGoodDataSet.FieldByName('COST').AsCurrency;
+          FLogManager.DoOrderGoodLog(GetCurrentUserInfo, GetCurrentOrderInfo, FGoodInfo, ev_AddGoodToOrder);
+          WritePos(FLineTable);
         end;
+      end else
+      begin
         FLineTable.Edit;
-        FLineTable.FieldByName('usr$goodkey').AsInteger := GoodKey;
-        FLineTable.FieldByName('GOODNAME').AsString := FGoodDataSet.FieldByName('NAME').AsString;
-        FLineTable.FieldByName('usr$quantity').AsInteger := 1;
-        FLineTable.FieldByName('usr$costncu').AsCurrency := FGoodDataSet.FieldByName('COST').AsCurrency;
-        FLineTable.FieldByName('MODIFYSTRING').AsString := S;
-        FLineTable.FieldByName('EXTRAMODIFY').AsString := ES;
-        FLineTable.FieldByName('USR$COMPUTERNAME').AsString := FFrontBase.GetLocalComputerName;
+        FLineTable.FieldByName('USR$QUANTITY').AsCurrency :=
+          FLineTable.FieldByName('USR$QUANTITY').AsCurrency + 1;
+        if FLineTable.FieldByName('STATEFIELD').AsInteger = cn_StateNothing then
+          FLineTable.FieldByName('STATEFIELD').AsInteger := cn_StateUpdate;
         FLineTable.Post;
 
-        FGoodInfo.GoodID := GoodKey;
+        FGoodInfo.GoodID := FLineTable.FieldByName('usr$goodkey').AsInteger;
         FGoodInfo.GoodName := FLineTable.FieldByName('GOODNAME').AsString;
-        FGoodInfo.Quantity := 1;
-        FGoodInfo.Sum := FGoodDataSet.FieldByName('COST').AsCurrency;
-        FLogManager.DoOrderGoodLog(GetCurrentUserInfo, GetCurrentOrderInfo, FGoodInfo, ev_AddGoodToOrder);
+        FGoodInfo.Quantity := FLineTable.FieldByName('USR$QUANTITY').AsCurrency;
+        FLogManager.DoOrderGoodLog(GetCurrentUserInfo, GetCurrentOrderInfo, FGoodInfo, ev_AddQuantity);
+
         WritePos(FLineTable);
       end;
-    end else
-    begin
-      FLineTable.Edit;
-      FLineTable.FieldByName('USR$QUANTITY').AsCurrency :=
-        FLineTable.FieldByName('USR$QUANTITY').AsCurrency + 1;
-      if FLineTable.FieldByName('STATEFIELD').AsInteger = cn_StateNothing then
-        FLineTable.FieldByName('STATEFIELD').AsInteger := cn_StateUpdate;
-      FLineTable.Post;
-
-      FGoodInfo.GoodID := FLineTable.FieldByName('usr$goodkey').AsInteger;
-      FGoodInfo.GoodName := FLineTable.FieldByName('GOODNAME').AsString;
-      FGoodInfo.Quantity := FLineTable.FieldByName('USR$QUANTITY').AsCurrency;
-      FLogManager.DoOrderGoodLog(GetCurrentUserInfo, GetCurrentOrderInfo, FGoodInfo, ev_AddQuantity);
-
-      WritePos(FLineTable);
     end;
+    SaveAllOrder;
+  finally
+    IsActionRun := False;
+    btnOk.Enabled := True;
+    btnCancel3.Enabled := True;
   end;
-  SaveAllOrder;
 end;
 
 procedure TRestMainForm.actRemoveQuantityExecute(Sender: TObject);
@@ -2223,70 +2250,79 @@ var
   FUserInfo: TUserInfo;
   FGoodInfo: TLogGoodInfo;
 begin
-  if (not FLineTable.IsEmpty) and (RestFormState = rsMenuInfo) then
-  begin
-    Quantity := FLineTable.FieldByName('USR$QUANTITY').AsCurrency - 1;
-    if (Quantity >= FLineTable.FieldByName('OLDQUANTITY').AsCurrency) and
-      (FHeaderTable.FieldByName('USR$MN_PRINTDATE').IsNull) then
+  IsActionRun := True;
+  btnOk.Enabled := False;
+  btnCancel3.Enabled := False;
+  try
+    if (not FLineTable.IsEmpty) and (RestFormState = rsMenuInfo) then
     begin
-      FGoodInfo.GoodID := FLineTable.FieldByName('usr$goodkey').AsInteger;
-      FGoodInfo.GoodName := FLineTable.FieldByName('GOODNAME').AsString;
-      FGoodInfo.Quantity := Quantity;
-      if Quantity > 0 then
+      Quantity := FLineTable.FieldByName('USR$QUANTITY').AsCurrency - 1;
+      if (Quantity >= FLineTable.FieldByName('OLDQUANTITY').AsCurrency) and
+        (FHeaderTable.FieldByName('USR$MN_PRINTDATE').IsNull) then
       begin
-        FLineTable.Edit;
-        FLineTable.FieldByName('USR$QUANTITY').AsCurrency := Quantity;
-        if FLineTable.FieldByName('STATEFIELD').AsInteger = cn_StateNothing then
-          FLineTable.FieldByName('STATEFIELD').AsInteger := cn_StateUpdate;
-        FLineTable.Post;
-      end else
-      begin
-        if Touch_MessageBox('Внимание', 'Удалить позицию?', MB_YESNO, mtConfirmation) = IDYES then
-          FLineTable.Delete;
-      end;
-
-      FLogManager.DoOrderGoodLog(GetCurrentUserInfo, GetCurrentOrderInfo, FGoodInfo, ev_RemoveQuantity);
-
-      WritePos(FLineTable);
-      //update grid footer
-      DBGrMain.SumList.RecalcAll;
-    end else
-    begin
-      //удалять может только пользователь с правами менеджера
-      FUserInfo := FFrontBase.CheckUserPasswordWithForm;
-      if FUserInfo.CheckedUserPassword then
-      begin
-        if (FUserInfo.UserInGroup and FFrontBase.Options.ManagerGroupMask) = 0 then
+        FGoodInfo.GoodID := FLineTable.FieldByName('usr$goodkey').AsInteger;
+        FGoodInfo.GoodName := FLineTable.FieldByName('GOODNAME').AsString;
+        FGoodInfo.Quantity := Quantity;
+        if Quantity > 0 then
         begin
-          Touch_MessageBox('Внимание', cn_dontManagerPermission, MB_OK, mtWarning);
-          exit;
+          FLineTable.Edit;
+          FLineTable.FieldByName('USR$QUANTITY').AsCurrency := Quantity;
+          if FLineTable.FieldByName('STATEFIELD').AsInteger = cn_StateNothing then
+            FLineTable.FieldByName('STATEFIELD').AsInteger := cn_StateUpdate;
+          FLineTable.Post;
+        end else
+        begin
+          if Touch_MessageBox('Внимание', 'Удалить позицию?', MB_YESNO, mtConfirmation) = IDYES then
+            FLineTable.Delete;
         end;
 
-        FDeleteForm := TDeleteOrderLine.CreateWithFrontBase(nil, FFrontBase);
-        try
-          FDeleteForm.Quantity := FLineTable.FieldByName('USR$QUANTITY').AsCurrency;
-          FDeleteForm.ShowModal;
-          if FDeleteForm.ModalResult = mrOK then
+        FLogManager.DoOrderGoodLog(GetCurrentUserInfo, GetCurrentOrderInfo, FGoodInfo, ev_RemoveQuantity);
+
+        WritePos(FLineTable);
+        //update grid footer
+        DBGrMain.SumList.RecalcAll;
+      end else
+      begin
+        //удалять может только пользователь с правами менеджера
+        FUserInfo := FFrontBase.CheckUserPasswordWithForm;
+        if FUserInfo.CheckedUserPassword then
+        begin
+          if (FUserInfo.UserInGroup and FFrontBase.Options.ManagerGroupMask) = 0 then
           begin
-            Amount := FDeleteForm.RemoveQuantity;
-            FFrontBase.SaveOrderLog(FFrontBase.ContactKey, FUserInfo.UserKey,
-              FHeaderTable.FieldByName('ID').AsInteger, FLineTable.FieldByName('ID').AsInteger, 3);
-
-            FGoodInfo.GoodID := FLineTable.FieldByName('usr$goodkey').AsInteger;
-            FGoodInfo.GoodName := FLineTable.FieldByName('GOODNAME').AsString;
-            FGoodInfo.Quantity := Amount;
-            FLogManager.DoOrderGoodLog(GetUserInfo(FUserInfo), GetCurrentOrderInfo, FGoodInfo, ev_RemoveGood);
-
-            DeleteOrderLine(Amount, FDeleteForm.DeleteClauseID);
-            WritePos(FLineTable);
+            Touch_MessageBox('Внимание', cn_dontManagerPermission, MB_OK, mtWarning);
+            exit;
           end;
-        finally
-          FDeleteForm.Free;
+
+          FDeleteForm := TDeleteOrderLine.CreateWithFrontBase(nil, FFrontBase);
+          try
+            FDeleteForm.Quantity := FLineTable.FieldByName('USR$QUANTITY').AsCurrency;
+            FDeleteForm.ShowModal;
+            if FDeleteForm.ModalResult = mrOK then
+            begin
+              Amount := FDeleteForm.RemoveQuantity;
+              FFrontBase.SaveOrderLog(FFrontBase.ContactKey, FUserInfo.UserKey,
+                FHeaderTable.FieldByName('ID').AsInteger, FLineTable.FieldByName('ID').AsInteger, 3);
+
+              FGoodInfo.GoodID := FLineTable.FieldByName('usr$goodkey').AsInteger;
+              FGoodInfo.GoodName := FLineTable.FieldByName('GOODNAME').AsString;
+              FGoodInfo.Quantity := Amount;
+              FLogManager.DoOrderGoodLog(GetUserInfo(FUserInfo), GetCurrentOrderInfo, FGoodInfo, ev_RemoveGood);
+
+              DeleteOrderLine(Amount, FDeleteForm.DeleteClauseID);
+              WritePos(FLineTable);
+            end;
+          finally
+            FDeleteForm.Free;
+          end;
         end;
       end;
     end;
+    SaveAllOrder;
+  finally
+    IsActionRun := False;
+    btnOk.Enabled := True;
+    btnCancel3.Enabled := True;
   end;
-  SaveAllOrder;
 end;
 
 procedure TRestMainForm.actDeletePositionExecute(Sender: TObject);
@@ -2296,49 +2332,58 @@ var
   FUserInfo: TUserInfo;
   FGoodInfo: TLogGoodInfo;
 begin
-  if (not FLineTable.IsEmpty) and (RestFormState = rsMenuInfo) then
-  begin
-    if (FLineTable.FieldByName('OLDQUANTITY').IsNull) and
-      (FHeaderTable.FieldByName('USR$MN_PRINTDATE').IsNull)
-    then
-      FLineTable.Delete
-
-    else
+  IsActionRun := True;
+  btnOk.Enabled := False;
+  btnCancel3.Enabled := False;
+  try
+    if (not FLineTable.IsEmpty) and (RestFormState = rsMenuInfo) then
     begin
-      //удалять может только пользователь с правами менеджера
-      FUserInfo := FFrontBase.CheckUserPasswordWithForm;
-      if FUserInfo.CheckedUserPassword then
+      if (FLineTable.FieldByName('OLDQUANTITY').IsNull) and
+        (FHeaderTable.FieldByName('USR$MN_PRINTDATE').IsNull)
+      then
+        FLineTable.Delete
+
+      else
       begin
-        if (FUserInfo.UserInGroup and FFrontBase.Options.ManagerGroupMask) = 0 then
+        //удалять может только пользователь с правами менеджера
+        FUserInfo := FFrontBase.CheckUserPasswordWithForm;
+        if FUserInfo.CheckedUserPassword then
         begin
-          Touch_MessageBox('Внимание', cn_dontManagerPermission, MB_OK, mtWarning);
-          exit;
-        end;
-        FDeleteForm := TDeleteOrderLine.CreateWithFrontBase(nil, FFrontBase);
-        try
-          FDeleteForm.Quantity := FLineTable.FieldByName('USR$QUANTITY').AsCurrency;
-          FDeleteForm.ShowModal;
-          if FDeleteForm.ModalResult = mrOK then
+          if (FUserInfo.UserInGroup and FFrontBase.Options.ManagerGroupMask) = 0 then
           begin
-            Amount := FDeleteForm.RemoveQuantity;
-            FFrontBase.SaveOrderLog(FFrontBase.ContactKey, FUserInfo.UserKey,
-              FHeaderTable.FieldByName('ID').AsInteger, FLineTable.FieldByName('ID').AsInteger, 3);
-
-            FGoodInfo.GoodID := FLineTable.FieldByName('usr$goodkey').AsInteger;
-            FGoodInfo.GoodName := FLineTable.FieldByName('GOODNAME').AsString;
-            FGoodInfo.Quantity := Amount;
-            FLogManager.DoOrderGoodLog(GetUserInfo(FUserInfo), GetCurrentOrderInfo, FGoodInfo, ev_RemoveGood);
-
-            DeleteOrderLine(Amount, FDeleteForm.DeleteClauseID);
-            WritePos(FLineTable);
+            Touch_MessageBox('Внимание', cn_dontManagerPermission, MB_OK, mtWarning);
+            exit;
           end;
-        finally
-          FDeleteForm.Free;
+          FDeleteForm := TDeleteOrderLine.CreateWithFrontBase(nil, FFrontBase);
+          try
+            FDeleteForm.Quantity := FLineTable.FieldByName('USR$QUANTITY').AsCurrency;
+            FDeleteForm.ShowModal;
+            if FDeleteForm.ModalResult = mrOK then
+            begin
+              Amount := FDeleteForm.RemoveQuantity;
+              FFrontBase.SaveOrderLog(FFrontBase.ContactKey, FUserInfo.UserKey,
+                FHeaderTable.FieldByName('ID').AsInteger, FLineTable.FieldByName('ID').AsInteger, 3);
+
+              FGoodInfo.GoodID := FLineTable.FieldByName('usr$goodkey').AsInteger;
+              FGoodInfo.GoodName := FLineTable.FieldByName('GOODNAME').AsString;
+              FGoodInfo.Quantity := Amount;
+              FLogManager.DoOrderGoodLog(GetUserInfo(FUserInfo), GetCurrentOrderInfo, FGoodInfo, ev_RemoveGood);
+
+              DeleteOrderLine(Amount, FDeleteForm.DeleteClauseID);
+              WritePos(FLineTable);
+            end;
+          finally
+            FDeleteForm.Free;
+          end;
         end;
       end;
     end;
+    SaveAllOrder;
+  finally
+    IsActionRun := False;
+    btnOk.Enabled := True;
+    btnCancel3.Enabled := True;
   end;
-  SaveAllOrder;
 end;
 
 procedure TRestMainForm.actManagerInfoExecute(Sender: TObject);
@@ -2358,63 +2403,72 @@ var
   S, ES: String;
   FGoodInfo: TLogGoodInfo;
 begin
-  S := '';
-  ES := FLineTable.FieldByName('EXTRAMODIFY').AsString;
-  if (not FLineTable.IsEmpty) and (RestFormState = rsMenuInfo) then
-  begin
-    GoodKey := FLineTable.FieldByName('usr$goodkey').AsInteger;
-    if not FGoodDataSet.Locate('ID', GoodKey, []) then
-      FFrontBase.GetGoodByID(FGoodDataSet, GoodKey);
-
-    if FGoodDataSet.Locate('ID', GoodKey, []) then
+  IsActionRun := True;
+  btnOk.Enabled := False;
+  btnCancel3.Enabled := False;
+  try
+    S := '';
+    ES := FLineTable.FieldByName('EXTRAMODIFY').AsString;
+    if (not FLineTable.IsEmpty) and (RestFormState = rsMenuInfo) then
     begin
-      if FGoodDataSet.FieldByName('MODIFYGROUPKEY').AsInteger <> 0 then
+      GoodKey := FLineTable.FieldByName('usr$goodkey').AsInteger;
+      if not FGoodDataSet.Locate('ID', GoodKey, []) then
+        FFrontBase.GetGoodByID(FGoodDataSet, GoodKey);
+
+      if FGoodDataSet.Locate('ID', GoodKey, []) then
       begin
-        FForm := TModificationForm.CreateWithFrontBase(nil, FFrontBase);
-        try
-          FForm.ModifyGroupKey := FGoodDataSet.FieldByName('MODIFYGROUPKEY').AsInteger;
-          FForm.LineModifyTable := FModificationDataSet;
-          FForm.GoodName := FGoodDataSet.FieldByName('NAME').AsString;
-          if ES <> '' then
-            FForm.ExtraModifyString := ES;
-          FForm.ShowModal;
-          if FForm.ModalResult = mrOK then
-          begin
-            FModificationDataSet.First;
-            while not FModificationDataSet.Eof do
-            begin
-              if S > '' then
-                S := S + ', ';
-              S := S + FModificationDataSet.FieldByName('NAME').AsString;
-              FModificationDataSet.Next;
-            end;
-
-            ES := FForm.ExtraModifyString;
+        if FGoodDataSet.FieldByName('MODIFYGROUPKEY').AsInteger <> 0 then
+        begin
+          FForm := TModificationForm.CreateWithFrontBase(nil, FFrontBase);
+          try
+            FForm.ModifyGroupKey := FGoodDataSet.FieldByName('MODIFYGROUPKEY').AsInteger;
+            FForm.LineModifyTable := FModificationDataSet;
+            FForm.GoodName := FGoodDataSet.FieldByName('NAME').AsString;
             if ES <> '' then
+              FForm.ExtraModifyString := ES;
+            FForm.ShowModal;
+            if FForm.ModalResult = mrOK then
             begin
-              if S = '' then
-                S := ES
-              else
-                S := S + ', ' + ES;
+              FModificationDataSet.First;
+              while not FModificationDataSet.Eof do
+              begin
+                if S > '' then
+                  S := S + ', ';
+                S := S + FModificationDataSet.FieldByName('NAME').AsString;
+                FModificationDataSet.Next;
+              end;
+
+              ES := FForm.ExtraModifyString;
+              if ES <> '' then
+              begin
+                if S = '' then
+                  S := ES
+                else
+                  S := S + ', ' + ES;
+              end;
+
+              FLineTable.Edit;
+              FLineTable.FieldByName('MODIFYSTRING').AsString := S;
+              FLineTable.FieldByName('EXTRAMODIFY').AsString := ES;
+              if FLineTable.FieldByName('STATEFIELD').AsInteger = cn_StateNothing then
+                FLineTable.FieldByName('STATEFIELD').AsInteger := cn_StateUpdate;
+              FLineTable.Post;
+
+              FGoodInfo.GoodID := GoodKey;
+              FGoodInfo.GoodName := FLineTable.FieldByName('GOODNAME').AsString;
+              FLogManager.DoOrderGoodLog(GetCurrentUserInfo, GetCurrentOrderInfo,
+                FGoodInfo, ev_ModifyGood);
             end;
-
-            FLineTable.Edit;
-            FLineTable.FieldByName('MODIFYSTRING').AsString := S;
-            FLineTable.FieldByName('EXTRAMODIFY').AsString := ES;
-            if FLineTable.FieldByName('STATEFIELD').AsInteger = cn_StateNothing then
-              FLineTable.FieldByName('STATEFIELD').AsInteger := cn_StateUpdate;
-            FLineTable.Post;
-
-            FGoodInfo.GoodID := GoodKey;
-            FGoodInfo.GoodName := FLineTable.FieldByName('GOODNAME').AsString;
-            FLogManager.DoOrderGoodLog(GetCurrentUserInfo, GetCurrentOrderInfo,
-              FGoodInfo, ev_ModifyGood);
+          finally
+            FForm.Free;
           end;
-        finally
-          FForm.Free;
         end;
       end;
     end;
+  finally
+    IsActionRun := False;
+    btnOk.Enabled := True;
+    btnCancel3.Enabled := True;
   end;
 end;
 
@@ -2430,35 +2484,44 @@ var
   FUserInfo: TUserInfo;
   MainOrderKey: Integer;
 begin
-  //1. Проверяем пароль менеджера
-  FUserInfo := FFrontBase.CheckUserPasswordWithForm;
-  if FUserInfo.CheckedUserPassword then
-  begin
-    if (FUserInfo.UserInGroup and FFrontBase.Options.ManagerGroupMask) = 0 then
+  IsActionRun := True;
+  btnOk.Enabled := False;
+  btnCancel3.Enabled := False;
+  try
+    //1. Проверяем пароль менеджера
+    FUserInfo := FFrontBase.CheckUserPasswordWithForm;
+    if FUserInfo.CheckedUserPassword then
     begin
-      Touch_MessageBox('Внимание', cn_dontManagerPermission, MB_OK, mtWarning);
-      exit;
-    end;
-    FLogManager.DoOrderLog(GetUserInfo(FUserInfo), GetCurrentOrderInfo, ev_DevideOrder);
-    //2. сохраняем заказ, получаем его ID
-    DBGrMain.DataSource := nil;
-    try
-      FFrontBase.CreateNewOrder(FHeaderTable, FLineTable, FModificationDataSet, MainOrderKey);
-    finally
-      DBGrMain.DataSource := dsMain;
-    end;
+      if (FUserInfo.UserInGroup and FFrontBase.Options.ManagerGroupMask) = 0 then
+      begin
+        Touch_MessageBox('Внимание', cn_dontManagerPermission, MB_OK, mtWarning);
+        exit;
+      end;
+      FLogManager.DoOrderLog(GetUserInfo(FUserInfo), GetCurrentOrderInfo, ev_DevideOrder);
+      //2. сохраняем заказ, получаем его ID
+      DBGrMain.DataSource := nil;
+      try
+        FFrontBase.CreateNewOrder(FHeaderTable, FLineTable, FModificationDataSet, MainOrderKey);
+      finally
+        DBGrMain.DataSource := dsMain;
+      end;
 
-    //3. переход на форму менеджера
-    FWithPreCheck := True;
-    RestFormState := rsManagerChooseOrder;
-    CreateUserList;
+      //3. переход на форму менеджера
+      FWithPreCheck := True;
+      RestFormState := rsManagerChooseOrder;
+      CreateUserList;
 
-    if not Assigned(FSplitForm) then
-      FSplitForm := TSplitOrder.Create(nil);
-    FSplitForm.MainOrderKey := MainOrderKey;
-    FSplitForm.ManagerKey := FUserInfo.UserKey;
+      if not Assigned(FSplitForm) then
+        FSplitForm := TSplitOrder.Create(nil);
+      FSplitForm.MainOrderKey := MainOrderKey;
+      FSplitForm.ManagerKey := FUserInfo.UserKey;
+    end;
+    SaveAllOrder;
+  finally
+    IsActionRun := False;
+    btnOk.Enabled := True;
+    btnCancel3.Enabled := True;
   end;
-  SaveAllOrder;
 end;
 
 procedure TRestMainForm.actPreCheckExecute(Sender: TObject);
@@ -2467,71 +2530,80 @@ var
   FSQL: TIBSQL;
   FPrinted: Boolean;
 begin
-  if FHeaderTable.FieldByName('usr$timecloseorder').IsNull then
-  begin
-    ClearDisplay;
-    SaveCheck;
-
-    FPrinted := False;
-    FSQL := TIBSQL.Create(nil);
-    FSQL.Transaction := FFrontBase.ReadTransaction;
-    try
-      FSQL.SQL.Text :=
-        'select ' +
-        '  DISTINCT   ' +
-        '  IIF(setprn.usr$concatchecks = 0, prn.id, null) as prngrid, prn.usr$divide,  ' +
-        '  setprn.usr$printername, setprn.usr$printerid, o.documentkey, setprn.USR$DOSPRINTER  ' +
-        'from   ' +
-        '  usr$mn_order o  ' +
-        '  join usr$mn_orderline l on o.documentkey = l.masterkey  ' +
-        '  join gd_document doc on doc.id = l.documentkey and doc.usr$mn_printdate is null  ' +
-        '  join gd_good g on g.id = l.usr$goodkey  ' +
-        '  join usr$mn_prngroup prn on prn.id = g.usr$prngroupkey  ' +
-        '  join usr$mn_prngroupset setprn on setprn.usr$prngroup = prn.id  ' +
-        'where o.documentkey = :docid  ' +
-        ' and setprn.usr$computername = :comp   ' +
-        ' and setprn.usr$kassa = 0   ' +
-        'order by  ' +
-        '  setprn.usr$printername, prn.id  ';
-      FSQL.ParamByName('docid').AsInteger := FHeaderTable.FieldByName('ID').AsInteger;
-      FSQL.ParamByName('comp').AsString := FFrontBase.GetLocalComputerName;
-      FSQL.ExecQuery;
-      while not FSQL.Eof do
-      begin
-        FReport.PrintServiceCheck(1, FSQL.FieldByName('prngrid').AsInteger, FHeaderTable.FieldByName('ID').AsInteger,
-          FSQL.FieldByName('usr$printername').AsString);
-        FPrinted := True;
-        FSQL.Next;
-      end;
-      if FPrinted then
-      begin
-        FFrontBase.SavePrintDate(FHeaderTable.FieldByName('ID').AsInteger);
-        FFrontBase.CloseModifyTable(FModificationDataSet, Now);
-      end;
-
-      FSQL.Close;
-    finally
-      FSQL.Free;
-    end;
-
-    if FReport.PrintPreCheck(1, FHeaderTable.FieldByName('ID').AsInteger) then
+  IsActionRun := True;
+  btnOk.Enabled := False;
+  btnCancel3.Enabled := False;
+  try
+    if FHeaderTable.FieldByName('usr$timecloseorder').IsNull then
     begin
-      if FHeaderTable.State = dsBrowse then
-        FHeaderTable.Edit;
-      FHeaderTable.FieldByName('usr$timecloseorder').AsDateTime := Now;
-      // Укажем в заказе стола что был распечатен пречек
-      Order := FTableManager.GetOrder(FHeaderTable.FieldByName('usr$tablekey').AsInteger,
-        FHeaderTable.FieldByName('ID').AsInteger);
-      if Assigned(Order) then
-        Order.TimeCloseOrder := Now;
-
+      ClearDisplay;
       SaveCheck;
-      FPayed := True;
-      actCancel.Execute;
-    end;
-    FLogManager.DoOrderLog(GetCurrentUserInfo, GetCurrentOrderInfo, ev_PrintPreCheck);
-  end else
-    Touch_MessageBox('Внимание', 'Пречек уже был распечатан!', MB_OK, mtWarning);
+
+      FPrinted := False;
+      FSQL := TIBSQL.Create(nil);
+      FSQL.Transaction := FFrontBase.ReadTransaction;
+      try
+        FSQL.SQL.Text :=
+          'select ' +
+          '  DISTINCT   ' +
+          '  IIF(setprn.usr$concatchecks = 0, prn.id, null) as prngrid, prn.usr$divide,  ' +
+          '  setprn.usr$printername, setprn.usr$printerid, o.documentkey, setprn.USR$DOSPRINTER  ' +
+          'from   ' +
+          '  usr$mn_order o  ' +
+          '  join usr$mn_orderline l on o.documentkey = l.masterkey  ' +
+          '  join gd_document doc on doc.id = l.documentkey and doc.usr$mn_printdate is null  ' +
+          '  join gd_good g on g.id = l.usr$goodkey  ' +
+          '  join usr$mn_prngroup prn on prn.id = g.usr$prngroupkey  ' +
+          '  join usr$mn_prngroupset setprn on setprn.usr$prngroup = prn.id  ' +
+          'where o.documentkey = :docid  ' +
+          ' and setprn.usr$computername = :comp   ' +
+          ' and setprn.usr$kassa = 0   ' +
+          'order by  ' +
+          '  setprn.usr$printername, prn.id  ';
+        FSQL.ParamByName('docid').AsInteger := FHeaderTable.FieldByName('ID').AsInteger;
+        FSQL.ParamByName('comp').AsString := FFrontBase.GetLocalComputerName;
+        FSQL.ExecQuery;
+        while not FSQL.Eof do
+        begin
+          FReport.PrintServiceCheck(1, FSQL.FieldByName('prngrid').AsInteger, FHeaderTable.FieldByName('ID').AsInteger,
+            FSQL.FieldByName('usr$printername').AsString);
+          FPrinted := True;
+          FSQL.Next;
+        end;
+        if FPrinted then
+        begin
+          FFrontBase.SavePrintDate(FHeaderTable.FieldByName('ID').AsInteger);
+          FFrontBase.CloseModifyTable(FModificationDataSet, Now);
+        end;
+
+        FSQL.Close;
+      finally
+        FSQL.Free;
+      end;
+
+      if FReport.PrintPreCheck(1, FHeaderTable.FieldByName('ID').AsInteger) then
+      begin
+        if FHeaderTable.State = dsBrowse then
+          FHeaderTable.Edit;
+        FHeaderTable.FieldByName('usr$timecloseorder').AsDateTime := Now;
+        // Укажем в заказе стола что был распечатен пречек
+        Order := FTableManager.GetOrder(FHeaderTable.FieldByName('usr$tablekey').AsInteger,
+          FHeaderTable.FieldByName('ID').AsInteger);
+        if Assigned(Order) then
+          Order.TimeCloseOrder := Now;
+
+        SaveCheck;
+        FPayed := True;
+        actCancel.Execute;
+      end;
+      FLogManager.DoOrderLog(GetCurrentUserInfo, GetCurrentOrderInfo, ev_PrintPreCheck);
+    end else
+      Touch_MessageBox('Внимание', 'Пречек уже был распечатан!', MB_OK, mtWarning);
+  finally
+    IsActionRun := False;
+    btnOk.Enabled := True;
+    btnCancel3.Enabled := True;
+  end;
 end;
 
 procedure TRestMainForm.actCancelPreCheckExecute(Sender: TObject);
@@ -2539,33 +2611,42 @@ var
   FUserInfo: TUserInfo;
   Order: TrfOrder;
 begin
-  FUserInfo := FFrontBase.CheckUserPasswordWithForm;
-  if FUserInfo.CheckedUserPassword then
-  begin
-    if (FUserInfo.UserInGroup and FFrontBase.Options.ManagerGroupMask) <> 0 then
+  IsActionRun := True;
+  btnOk.Enabled := False;
+  btnCancel3.Enabled := False;
+  try
+    FUserInfo := FFrontBase.CheckUserPasswordWithForm;
+    if FUserInfo.CheckedUserPassword then
     begin
-      if FFrontBase.OrderIsPayed(FHeaderTable.FieldByName('ID').AsInteger) then
-        Touch_MessageBox('Внимание', 'Этот заказ уже был оплачен', MB_OK, mtWarning)
-      else begin
-        FHeaderTable.Edit;
-        FHeaderTable.FieldByName('usr$timecloseorder').Clear;
-        FHeaderTable.Post;
+      if (FUserInfo.UserInGroup and FFrontBase.Options.ManagerGroupMask) <> 0 then
+      begin
+        if FFrontBase.OrderIsPayed(FHeaderTable.FieldByName('ID').AsInteger) then
+          Touch_MessageBox('Внимание', 'Этот заказ уже был оплачен', MB_OK, mtWarning)
+        else begin
+          FHeaderTable.Edit;
+          FHeaderTable.FieldByName('usr$timecloseorder').Clear;
+          FHeaderTable.Post;
 
-        // Укажем в заказе стола что пречек был отменен
-        Order := FTableManager.GetOrder(FHeaderTable.FieldByName('usr$tablekey').AsInteger,
-          FHeaderTable.FieldByName('ID').AsInteger);
-        if Assigned(Order) then
-          Order.TimeCloseOrder := 0;
-      end;
-      SaveCheck;
+          // Укажем в заказе стола что пречек был отменен
+          Order := FTableManager.GetOrder(FHeaderTable.FieldByName('usr$tablekey').AsInteger,
+            FHeaderTable.FieldByName('ID').AsInteger);
+          if Assigned(Order) then
+            Order.TimeCloseOrder := 0;
+        end;
+        SaveCheck;
 
-      FFrontBase.SaveOrderLog(FFrontBase.ContactKey, FUserInfo.UserKey,
-        FHeaderTable.FieldByName('ID').AsInteger, 0, 1);
-      btnPreCheck.Action := actPreCheck;
+        FFrontBase.SaveOrderLog(FFrontBase.ContactKey, FUserInfo.UserKey,
+          FHeaderTable.FieldByName('ID').AsInteger, 0, 1);
+        btnPreCheck.Action := actPreCheck;
 
-      FLogManager.DoOrderLog(GetUserInfo(FUserInfo), GetCurrentOrderInfo, ev_CancelPreCheck);
-    end else
-      Touch_MessageBox('Внимание', cn_dontManagerPermission, MB_OK, mtWarning);
+        FLogManager.DoOrderLog(GetUserInfo(FUserInfo), GetCurrentOrderInfo, ev_CancelPreCheck);
+      end else
+        Touch_MessageBox('Внимание', cn_dontManagerPermission, MB_OK, mtWarning);
+    end;
+  finally
+    IsActionRun := False;
+    btnOk.Enabled := True;
+    btnCancel3.Enabled := True;
   end;
 end;
 
@@ -2578,110 +2659,119 @@ var
   DiscountKey: Integer;
   FChooseDiscountForm: TChooseDiscountCard;
 begin
-  DiscountType := FFrontBase.Options.DiscountType;
-  if DiscountType = 0 then
-    exit;
-{
-  '0 'Нет скидок
-  '1 'Процент
-  '2 'Карточка
-  '3 'Процент + Карточка
-}
-  if DiscountType = 3 then
-  begin
-    FSelectForm := TPercOrCard.Create(nil);
-    try
-      FSelectForm.ShowModal;
-      if FSelectForm.ModalResult = mrOK then
-        DiscountType := FSelectForm.DiscountType;
-
-    finally
-      FSelectForm.Free;
-    end;
-  end;
-
-  // Скидка процентом
-  if DiscountType = 1 then
-  begin
-    FUserInfo := FFrontBase.CheckUserPasswordWithForm;
-    if FUserInfo.CheckedUserPassword then
+  IsActionRun := True;
+  btnOk.Enabled := False;
+  btnCancel3.Enabled := False;
+  try
+    DiscountType := FFrontBase.Options.DiscountType;
+    if DiscountType = 0 then
+      exit;
+  {
+    '0 'Нет скидок
+    '1 'Процент
+    '2 'Карточка
+    '3 'Процент + Карточка
+  }
+    if DiscountType = 3 then
     begin
-      if (FUserInfo.UserInGroup and FFrontBase.Options.ManagerGroupMask) <> 0 then
-      begin
-        FLogManager.DoOrderLog(GetUserInfo(FUserInfo), GetCurrentOrderInfo, ev_DiscountPercent);
-        FDiscountTypeForm := TDiscountType.Create(nil);
-        try
-          FDiscountTypeForm.FrontBase := FFrontBase;
-          FDiscountTypeForm.ShowModal;
-          if FDiscountTypeForm.ModalResult = mrOK then
-          begin
-            if FDiscountTypeForm.DBLookupComboBox.KeyValue = Null then
-              DiscountKey := 0
-            else
-              DiscountKey := FDiscountTypeForm.DBLookupComboBox.KeyValue;
+      FSelectForm := TPercOrCard.Create(nil);
+      try
+        FSelectForm.ShowModal;
+        if FSelectForm.ModalResult = mrOK then
+          DiscountType := FSelectForm.DiscountType;
 
-            if DiscountKey > 0 then
-            begin
-              if FHeaderTable.State = dsBrowse then
-                FHeaderTable.Edit;
-
-              FHeaderTable.FieldByName('USR$DISCCARDKEY').Clear;
-              FHeaderTable.FieldByName('USR$DISCOUNTKEY').AsInteger := DiscountKey;
-              FHeaderTable.FieldByName('USR$USERDISCKEY').AsInteger := FUserInfo.UserKey;
-              FHeaderTable.Post;
-            end;
-          end;
-        finally
-          FDiscountTypeForm.Free;
-        end;
-      end
-      else begin
-        Touch_MessageBox('Внимание', cn_dontManagerPermission, MB_OK, mtWarning);
-        exit;
+      finally
+        FSelectForm.Free;
       end;
     end;
-  end
-  // Скидка карточкой
-  else if DiscountType = 2 then
-  begin
-    FLogManager.DoOrderLog(GetCurrentUserInfo, GetCurrentOrderInfo, ev_DiscountCard);
-    FChooseDiscountForm := TChooseDiscountCard.Create(nil);
-    try
-      FChooseDiscountForm.UserID := FFrontBase.ContactKey;
-      FChooseDiscountForm.FrontBase := FFrontBase;
-      FChooseDiscountForm.HeaderTable := FHeaderTable;
-      FChooseDiscountForm.Diskid := FHeaderTable.FieldByName('USR$DISCOUNTKEY').AsInteger;
-      FChooseDiscountForm.Cardid := FHeaderTable.FieldByName('USR$DISCCARDKEY').AsInteger;
-      FChooseDiscountForm.ShowModal;
-      if FChooseDiscountForm.ModalResult = mrOK then
-        if FChooseDiscountForm.Cardid > 0 then
+
+    // Скидка процентом
+    if DiscountType = 1 then
+    begin
+      FUserInfo := FFrontBase.CheckUserPasswordWithForm;
+      if FUserInfo.CheckedUserPassword then
+      begin
+        if (FUserInfo.UserInGroup and FFrontBase.Options.ManagerGroupMask) <> 0 then
         begin
-          if FHeaderTable.State = dsBrowse then
-            FHeaderTable.Edit;
+          FLogManager.DoOrderLog(GetUserInfo(FUserInfo), GetCurrentOrderInfo, ev_DiscountPercent);
+          FDiscountTypeForm := TDiscountType.Create(nil);
+          try
+            FDiscountTypeForm.FrontBase := FFrontBase;
+            FDiscountTypeForm.ShowModal;
+            if FDiscountTypeForm.ModalResult = mrOK then
+            begin
+              if FDiscountTypeForm.DBLookupComboBox.KeyValue = Null then
+                DiscountKey := 0
+              else
+                DiscountKey := FDiscountTypeForm.DBLookupComboBox.KeyValue;
 
-          FHeaderTable.FieldByName('USR$DISCCARDKEY').AsInteger := FChooseDiscountForm.Cardid;
-          FHeaderTable.FieldByName('USR$DISCOUNTKEY').AsInteger := FChooseDiscountForm.Diskid;
-          FHeaderTable.FieldByName('USR$USERDISCKEY').AsInteger := FFrontBase.ContactKey;
+              if DiscountKey > 0 then
+              begin
+                if FHeaderTable.State = dsBrowse then
+                  FHeaderTable.Edit;
 
-          if Trim(FChooseDiscountForm.usrg_lbBonusPay.Caption) > '' then
-            FHeaderTable.FieldByName('USR$BONUSSUM').AsCurrency := StrToCurr(FChooseDiscountForm.usrg_lbBonusPay.Caption)
-          else
-            FHeaderTable.FieldByName('USR$BONUSSUM').Clear;
-
-          FHeaderTable.Post;
-        end else
-        begin
-          if FHeaderTable.State = dsBrowse then
-            FHeaderTable.Edit;
-
-          FHeaderTable.FieldByName('USR$DISCCARDKEY').Clear;
-          FHeaderTable.FieldByName('USR$DISCOUNTKEY').Clear;
-          FHeaderTable.FieldByName('USR$USERDISCKEY').Clear;
-          FHeaderTable.Post;
+                FHeaderTable.FieldByName('USR$DISCCARDKEY').Clear;
+                FHeaderTable.FieldByName('USR$DISCOUNTKEY').AsInteger := DiscountKey;
+                FHeaderTable.FieldByName('USR$USERDISCKEY').AsInteger := FUserInfo.UserKey;
+                FHeaderTable.Post;
+              end;
+            end;
+          finally
+            FDiscountTypeForm.Free;
+          end;
+        end
+        else begin
+          Touch_MessageBox('Внимание', cn_dontManagerPermission, MB_OK, mtWarning);
+          exit;
         end;
-    finally
-      FChooseDiscountForm.Free;
+      end;
+    end
+    // Скидка карточкой
+    else if DiscountType = 2 then
+    begin
+      FLogManager.DoOrderLog(GetCurrentUserInfo, GetCurrentOrderInfo, ev_DiscountCard);
+      FChooseDiscountForm := TChooseDiscountCard.Create(nil);
+      try
+        FChooseDiscountForm.UserID := FFrontBase.ContactKey;
+        FChooseDiscountForm.FrontBase := FFrontBase;
+        FChooseDiscountForm.HeaderTable := FHeaderTable;
+        FChooseDiscountForm.Diskid := FHeaderTable.FieldByName('USR$DISCOUNTKEY').AsInteger;
+        FChooseDiscountForm.Cardid := FHeaderTable.FieldByName('USR$DISCCARDKEY').AsInteger;
+        FChooseDiscountForm.ShowModal;
+        if FChooseDiscountForm.ModalResult = mrOK then
+          if FChooseDiscountForm.Cardid > 0 then
+          begin
+            if FHeaderTable.State = dsBrowse then
+              FHeaderTable.Edit;
+
+            FHeaderTable.FieldByName('USR$DISCCARDKEY').AsInteger := FChooseDiscountForm.Cardid;
+            FHeaderTable.FieldByName('USR$DISCOUNTKEY').AsInteger := FChooseDiscountForm.Diskid;
+            FHeaderTable.FieldByName('USR$USERDISCKEY').AsInteger := FFrontBase.ContactKey;
+
+            if Trim(FChooseDiscountForm.usrg_lbBonusPay.Caption) > '' then
+              FHeaderTable.FieldByName('USR$BONUSSUM').AsCurrency := StrToCurr(FChooseDiscountForm.usrg_lbBonusPay.Caption)
+            else
+              FHeaderTable.FieldByName('USR$BONUSSUM').Clear;
+
+            FHeaderTable.Post;
+          end else
+          begin
+            if FHeaderTable.State = dsBrowse then
+              FHeaderTable.Edit;
+
+            FHeaderTable.FieldByName('USR$DISCCARDKEY').Clear;
+            FHeaderTable.FieldByName('USR$DISCOUNTKEY').Clear;
+            FHeaderTable.FieldByName('USR$USERDISCKEY').Clear;
+            FHeaderTable.Post;
+          end;
+      finally
+        FChooseDiscountForm.Free;
+      end;
     end;
+  finally
+    IsActionRun := False;
+    btnOk.Enabled := True;
+    btnCancel3.Enabled := True;
   end;
 end;
 
@@ -2690,6 +2780,10 @@ var
   FForm: TSellParamForm;
   SumToPay: Currency;
 begin
+  IsActionRun := True;
+  btnOk.Enabled := False;
+  btnCancel3.Enabled := False;
+  try
   if FFrontBase.CashCode <> -1 then
   begin
     SaveCheck;
@@ -2730,6 +2824,11 @@ begin
     end;
   end else
     Touch_MessageBox('Внимание', 'Для данной рабочей станции не указан кассовый терминал!', MB_OK, mtWarning);
+  finally
+    IsActionRun := False;
+    btnOk.Enabled := True;
+    btnCancel3.Enabled := True;
+  end;
 end;
 
 procedure TRestMainForm.SetFormState(const Value: TRestState);
@@ -3516,50 +3615,59 @@ var
   GoodKey: Integer;
   FGoodInfo: TLogGoodInfo;
 begin
-  if (not FLineTable.IsEmpty) and (RestFormState = rsMenuInfo) then
-  begin
-    GoodKey := FLineTable.FieldByName('usr$goodkey').AsInteger;
-    if FGoodDataSet.Locate('ID', GoodKey, []) then
+  IsActionRun := True;
+  btnOk.Enabled := False;
+  btnCancel3.Enabled := False;
+  try
+    if (not FLineTable.IsEmpty) and (RestFormState = rsMenuInfo) then
     begin
-//      if FGoodDataSet.FieldByName('BEDIVIDE').AsInteger = 1 then
-//      begin
-        FForm := TDevideForm.Create(nil);
-        FForm.LabelCaption := 'Количество';
-        FForm.CanDevided := (FGoodDataSet.FieldByName('BEDIVIDE').AsInteger = 1);
-        try
-          FForm.ShowModal;
-          if FForm.ModalResult = mrOK then
-          begin
-            try
-              if StrToCurr(FForm.Number) > 0 then
-              begin
-                FLineTable.Edit;
-                FLineTable.FieldByName('usr$quantity').AsCurrency := StrToCurr(FForm.Number);
-                FLineTable.Post;
+      GoodKey := FLineTable.FieldByName('usr$goodkey').AsInteger;
+      if FGoodDataSet.Locate('ID', GoodKey, []) then
+      begin
+  //      if FGoodDataSet.FieldByName('BEDIVIDE').AsInteger = 1 then
+  //      begin
+          FForm := TDevideForm.Create(nil);
+          FForm.LabelCaption := 'Количество';
+          FForm.CanDevided := (FGoodDataSet.FieldByName('BEDIVIDE').AsInteger = 1);
+          try
+            FForm.ShowModal;
+            if FForm.ModalResult = mrOK then
+            begin
+              try
+                if StrToCurr(FForm.Number) > 0 then
+                begin
+                  FLineTable.Edit;
+                  FLineTable.FieldByName('usr$quantity').AsCurrency := StrToCurr(FForm.Number);
+                  FLineTable.Post;
 
-                FGoodInfo.GoodID := GoodKey;
-                FGoodInfo.GoodName := FLineTable.FieldByName('GOODNAME').AsString;
-                FGoodInfo.Quantity := FLineTable.FieldByName('usr$quantity').AsCurrency;
-                FLogManager.DoOrderGoodLog(GetCurrentUserInfo, GetCurrentOrderInfo,
-                  FGoodInfo, ev_DevideQuantityGood);
-              end;
-            except
-              on E: Exception do
-              begin
-                if E is EConvertError then
-                  Touch_MessageBox('Внимание', 'Введено неверное число', MB_OK, mtWarning)
-                else
-                  Touch_MessageBox('Внимание', 'Ошибка ' + E.Message, MB_OK, mtError);
+                  FGoodInfo.GoodID := GoodKey;
+                  FGoodInfo.GoodName := FLineTable.FieldByName('GOODNAME').AsString;
+                  FGoodInfo.Quantity := FLineTable.FieldByName('usr$quantity').AsCurrency;
+                  FLogManager.DoOrderGoodLog(GetCurrentUserInfo, GetCurrentOrderInfo,
+                    FGoodInfo, ev_DevideQuantityGood);
+                end;
+              except
+                on E: Exception do
+                begin
+                  if E is EConvertError then
+                    Touch_MessageBox('Внимание', 'Введено неверное число', MB_OK, mtWarning)
+                  else
+                    Touch_MessageBox('Внимание', 'Ошибка ' + E.Message, MB_OK, mtError);
+                end;
               end;
             end;
+          finally
+            FForm.Free;
           end;
-        finally
-          FForm.Free;
-        end;
-//      end;
+  //      end;
+      end;
     end;
+    SaveAllOrder;
+  finally
+    IsActionRun := False;
+    btnOk.Enabled := True;
+    btnCancel3.Enabled := True;
   end;
-  SaveAllOrder;
 end;
 
 procedure TRestMainForm.WritePos(DataSet: TDataSet);
@@ -4256,13 +4364,14 @@ end;
 procedure TRestMainForm.actModificationUpdate(Sender: TObject);
 begin
   actModification.Enabled := FHeaderTable.FieldByName('usr$timecloseorder').IsNull
-    and not FViewMode;
+    and (not FViewMode) and (not IsActionRun);
 end;
 
 procedure TRestMainForm.actAddQuantityUpdate(Sender: TObject);
 begin
   actAddQuantity.Enabled := FHeaderTable.FieldByName('usr$timecloseorder').IsNull
-    {and FLineTable.FieldByName('usr$mn_printdate').IsNull} and not FViewMode;
+    {and FLineTable.FieldByName('usr$mn_printdate').IsNull} and (not FViewMode)
+    and (not IsActionRun);
 end;
 
 procedure TRestMainForm.actAdminOptionsExecute(Sender: TObject);
@@ -4317,43 +4426,44 @@ end;
 procedure TRestMainForm.actRemoveQuantityUpdate(Sender: TObject);
 begin
   actRemoveQuantity.Enabled := FHeaderTable.FieldByName('usr$timecloseorder').IsNull
-    and not FViewMode;
+    and (not FViewMode) and (not IsActionRun);
 end;
 
 procedure TRestMainForm.actDeletePositionUpdate(Sender: TObject);
 begin
   actDeletePosition.Enabled := FHeaderTable.FieldByName('usr$timecloseorder').IsNull
-    and not FViewMode;
+    and (not FViewMode) and (not IsActionRun);
 end;
 
 procedure TRestMainForm.actCutCheckUpdate(Sender: TObject);
 begin
   actCutCheck.Enabled := FHeaderTable.FieldByName('usr$timecloseorder').IsNull
-    and not FViewMode;
+    and (not FViewMode) and (not IsActionRun);
 end;
 
 procedure TRestMainForm.actPreCheckUpdate(Sender: TObject);
 begin
   actPreCheck.Enabled := FHeaderTable.FieldByName('usr$timecloseorder').IsNull
-    and not FViewMode;
+    and (not FViewMode) and (not IsActionRun);
 end;
 
 procedure TRestMainForm.actDiscountUpdate(Sender: TObject);
 begin
   actDiscount.Enabled := FHeaderTable.FieldByName('usr$timecloseorder').IsNull
-    and not FViewMode;
+    and (not FViewMode) and (not IsActionRun);
 end;
 
 procedure TRestMainForm.actDevideUpdate(Sender: TObject);
 begin
   actDevide.Enabled := FLineTable.FieldByName('usr$mn_printdate').IsNull
-    and not FViewMode;
+    and (not FViewMode) and (not IsActionRun);
 end;
 
 procedure TRestMainForm.actPayUpdate(Sender: TObject);
 begin
   actPay.Enabled := (not FLineTable.IsEmpty)
-    and ((FFrontBase.UserKey and FFrontBase.Options.KassaGroupMask) <> 0);
+    and ((FFrontBase.UserKey and FFrontBase.Options.KassaGroupMask) <> 0)
+    and (not IsActionRun);
 end;
 
 procedure TRestMainForm.OnAfterPost(DataSet: TDataSet);

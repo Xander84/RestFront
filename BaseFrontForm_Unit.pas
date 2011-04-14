@@ -12,9 +12,11 @@ type
     AdvFormStyler: TAdvFormStyler;
   protected
     FFrontBase: TFrontBase;
+    FIsActionRun: Boolean;
   public
     procedure AfterConstruction; override;
     property FrontBase: TFrontBase read FFrontBase write FFrontBase;
+    property IsActionRun: Boolean read FIsActionRun write FIsActionRun;
   end;
 
 var
@@ -32,6 +34,7 @@ var
 begin
   inherited;
 
+  FIsActionRun := False;
   Color := FrontData.PanelColorTo;
   AdvFormStyler.Style := GetFrontStyle;
   for I := 0 to ComponentCount - 1 do

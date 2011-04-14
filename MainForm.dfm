@@ -30,7 +30,7 @@ object RestMainForm: TRestMainForm
       Top = 0
       Width = 934
       Height = 721
-      ActivePage = tsMain
+      ActivePage = tsPassWord
       ActiveFont.Charset = DEFAULT_CHARSET
       ActiveFont.Color = clWindowText
       ActiveFont.Height = -11
@@ -1606,7 +1606,6 @@ object RestMainForm: TRestMainForm
                 Align = alClient
                 BevelOuter = bvNone
                 TabOrder = 0
-                ExplicitWidth = 576
                 object DBGrMain: TDBGridEh
                   Left = 0
                   Top = 27
@@ -1738,7 +1737,6 @@ object RestMainForm: TRestMainForm
                   BevelOuter = bvNone
                   Color = 14986888
                   TabOrder = 1
-                  ExplicitWidth = 576
                   object Panel6: TAdvPanel
                     Left = 559
                     Top = 0
@@ -1783,7 +1781,6 @@ object RestMainForm: TRestMainForm
                     StatusBar.ColorTo = 16374724
                     StatusBar.GradientDirection = gdVertical
                     Styler = FrontData.FrontPanelStyler
-                    ExplicitLeft = 526
                     DesignSize = (
                       50
                       292)
@@ -1900,7 +1897,6 @@ object RestMainForm: TRestMainForm
                     StatusBar.GradientDirection = gdVertical
                     Styler = FrontData.FrontPanelStyler
                     Touch.GestureManager = gmFront
-                    ExplicitWidth = 526
                     FullHeight = 0
                   end
                 end
@@ -1942,7 +1938,6 @@ object RestMainForm: TRestMainForm
                   StatusBar.ColorTo = 16374724
                   StatusBar.GradientDirection = gdVertical
                   Styler = FrontData.FrontPanelStyler
-                  ExplicitWidth = 576
                   FullHeight = 40
                   object lblOrderInfoUserName: TLabel
                     AlignWithMargins = True
@@ -2019,8 +2014,6 @@ object RestMainForm: TRestMainForm
                   Max = 1
                   PageSize = 0
                   TabOrder = 3
-                  ExplicitTop = 0
-                  ExplicitHeight = 681
                 end
               end
             end
@@ -2756,7 +2749,7 @@ object RestMainForm: TRestMainForm
         Top = 1
         Width = 80
         Height = 719
-        ActivePage = tsOrderButton
+        ActivePage = tsFunctionButton
         ActiveFont.Charset = DEFAULT_CHARSET
         ActiveFont.Color = clWindowText
         ActiveFont.Height = -11
