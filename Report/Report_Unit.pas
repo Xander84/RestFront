@@ -243,7 +243,7 @@ begin
       '  SELECT comp.name compname, comp.address compadr, comp.city compcity,  ' +
       '  g.alias a, g.name goodname, ol.usr$costncu C, ' +
       '  con.name conname, doc.documentdate as docdate, doc.number docnum, ' +
-      '  o.usr$guestcount guest, o.usr$timeorder as open1, current_time as close1, ' +
+      '  o.usr$guestcount guest, o.usr$timeorder as open1, current_time as close1, current_timestamp as date1, ' +
       '  o.usr$cash cash, d.usr$surname as surname, d.usr$middlename midle, d.usr$firstname firstn, d.USR$cardnum cardnum, ' +
       '  SUM(ol.usr$sumncu) S, ' +
       '  SUM(ol.usr$sumncuwithdiscount) SWD, ' +
@@ -264,7 +264,7 @@ begin
       '  comp.name, comp.address, comp.city, ' +
       '  g.name, g.alias, ol.usr$costncu, ' +
       '  con.name, doc.documentdate, doc.number,  ' +
-      '  o.usr$guestcount, o.usr$timeorder, o.usr$timecloseorder, ' +
+      '  o.usr$guestcount, o.usr$timeorder, o.usr$timecloseorder, 13, ' +
       '  o.usr$cash, d.usr$surname, d.usr$middlename, d.usr$firstname, d.USR$cardnum  ' +
       '  having Sum(ol.usr$quantity) > 0 ';
 
@@ -294,8 +294,8 @@ begin
             Inc(I);
           end;
 
-          MemTable.FieldbyName('NOW').AsDateTime := Date;
-          MemTable.FieldbyName('NOWTIME').AsDateTime := Time;
+          MemTable.FieldbyName('NOW').AsDateTime := Header.FieldByName('date1').AsDateTime;;
+          MemTable.FieldbyName('NOWTIME').AsDateTime := Header.FieldByName('close1').AsDateTime;
           MemTable.FieldByName('COMPRESSEDON').AsVariant := ''; // 'chr(&H1D) + CHR(&H56) + CHR(&H01)
           MemTable.FieldByName('RUSPAGE').AsVariant := '';
           if Header.FieldByName('surname').AsString <> '' then
@@ -771,8 +771,8 @@ begin
             Inc(I);
           end;
 
-          MemTable.FieldbyName('NOW').AsDateTime := Date;
-          MemTable.FieldbyName('NOWTIME').AsDateTime := Time;
+          MemTable.FieldbyName('NOW').AsDateTime := Query.FieldByName('date1').AsDateTime;;
+          MemTable.FieldbyName('NOWTIME').AsDateTime := Query.FieldByName('close1').AsDateTime;
           MemTable.FieldByName('COMPRESSEDON').AsVariant := ''; // 'chr(&H1D) + CHR(&H56) + CHR(&H01)
           MemTable.FieldByName('RUSPAGE').AsVariant := '';
           if Query.FieldByName('surname').AsString <> '' then
@@ -892,7 +892,7 @@ begin
           then
             begin
               MemTable.FieldByName('modifyname').AsString := '';
-              MemTable.FieldbyName('TIME').AsdateTime := Time;
+              MemTable.FieldbyName('TIME').AsdateTime := Query.FieldByName('time1').AsDateTime;
               MemTable.FieldByNAme('COMPRESSEDON').AsVariant := ''; // 'chr(&H1D) + CHR(&H56) + CHR(&H01)
               MemTable.FieldByNAme('RESET').AsVariant := ''; //'chr(&H1B) + CHR(&H40)
               MemTable.FieldByNAme('BELL').AsVariant := ''; //'chr(&H1B) + CHR(&H70) + "0" + CHR(0) + chr(0)
@@ -913,7 +913,7 @@ begin
           then
             begin
               MemTable.FieldByName('modifyname').AsString := '';
-              MemTable.FieldbyName('TIME').AsdateTime := Time;
+              MemTable.FieldbyName('TIME').AsdateTime := Query.FieldByName('time1').AsDateTime;;
               MemTable.FieldByNAme('COMPRESSEDON').AsVariant := ''; // 'chr(&H1D) + CHR(&H56) + CHR(&H01)
               MemTable.FieldByNAme('RESET').AsVariant := ''; //'chr(&H1B) + CHR(&H40)
               MemTable.FieldByNAme('BELL').AsVariant := ''; //'chr(&H1B) + CHR(&H70) + "0" + CHR(0) + chr(0)
@@ -930,7 +930,7 @@ begin
             end;
 
           Linekey := Query.FieldByName('documentkey').AsInteger;
-          MemTable.FieldbyName('TIME').AsdateTime := Time;
+          MemTable.FieldbyName('TIME').AsdateTime := Query.FieldByName('time1').AsDateTime;;
           MemTable.FieldByNAme('COMPRESSEDON').AsVariant := ''; // 'chr(&H1D) + CHR(&H56) + CHR(&H01)
           MemTable.FieldByNAme('RESET').AsVariant := ''; //'chr(&H1B) + CHR(&H40)
           MemTable.FieldByNAme('BELL').AsVariant := ''; //'chr(&H1B) + CHR(&H70) + "0" + CHR(0) + chr(0)

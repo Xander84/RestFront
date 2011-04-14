@@ -3584,7 +3584,8 @@ begin
       '  '' *** '' || m.usr$name || '' ***'' as modifyname,  ' +
       '  ol.documentkey as documentkey, ' +
       '  ol.usr$quantity as q,           ' +
-      '  ol.usr$extramodify as extramodify ' +
+      '  ol.usr$extramodify as extramodify, ' +
+      '  current_time as time1          ' +
       'from                             ' +
       '  gd_document doc                ' +
       '  join usr$mn_order o on doc.id = o.documentkey and doc.id = :docid  ' +
@@ -3910,7 +3911,7 @@ begin
       '  SELECT comp.name compname, comp.address compadr, comp.city compcity,  ' +
       '  g.alias a, g.name goodname, ol.usr$costncu C, ' +
       '  con.name conname, doc.documentdate as docdate, doc.number docnum, ' +
-      '  o.usr$guestcount guest, o.usr$timeorder as open1, current_time as close1, ' +
+      '  o.usr$guestcount guest, o.usr$timeorder as open1, current_time as close1, current_timestamp as date1, ' +
       '  o.usr$cash cash, d.usr$surname as surname, d.usr$middlename midle, d.usr$firstname firstn, d.USR$cardnum cardnum, ' +
       '  SUM(ol.usr$sumncu) S, ' +
       '  SUM(ol.usr$sumncuwithdiscount) SWD, ' +
@@ -3931,7 +3932,7 @@ begin
       '  comp.name, comp.address, comp.city, ' +
       '  g.name, g.alias, ol.usr$costncu, ' +
       '  con.name, doc.documentdate, doc.number,  ' +
-      '  o.usr$guestcount, o.usr$timeorder, o.usr$timecloseorder, ' +
+      '  o.usr$guestcount, o.usr$timeorder, o.usr$timecloseorder, 13, ' +
       '  o.usr$cash, d.usr$surname, d.usr$middlename, d.usr$firstname, d.USR$cardnum  ' +
       '  having Sum(ol.usr$quantity) > 0 ';
     Query.ParamByName('dockey').AsInteger := DocID;
