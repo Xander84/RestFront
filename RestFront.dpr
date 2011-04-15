@@ -57,7 +57,6 @@ var
   ApplicationEventsHandler: TApplicationEventsHandler;
   FApplicationEvents: TApplicationEvents;
   hMutex: THandle;
-
 begin
   ApplicationEventsHandler := TApplicationEventsHandler.Create;
   try
@@ -68,7 +67,9 @@ begin
     if GetLastError = ERROR_ALREADY_EXISTS then
     begin
       CloseHandle(hMutex);
-//      exit;
+      {$IFNDEF DEBUG}
+      Exit;
+      {$ENDIF}
     end;
 
     Application.Initialize;
