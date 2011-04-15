@@ -1439,59 +1439,64 @@ var
   FOrderNumber: String;
   FGuestCount: Integer;
 begin
-  ClearDisplay;
-  { TODO : Проверка на Max кол-во гостей }
-  if (FFrontBase.UserKey and FFrontBase.Options.ManagerGroupMask) = 0 then
-  begin
-    if FFrontBase.CheckCountOrderByResp(FFrontBase.ContactKey) then
+  SetCloseTimerActive(False);
+  try
+    ClearDisplay;
+    { TODO : Проверка на Max кол-во гостей }
+    if (FFrontBase.UserKey and FFrontBase.Options.ManagerGroupMask) = 0 then
     begin
-      Touch_MessageBox('Внимание', 'Превышено максимально возможное число открытых заказов!', MB_OK, mtWarning);
-      exit;
-    end;
-  end;
-
-  FFrontBase.GetOrder(FHeaderTable, FLineTable, FModificationDataSet, -1);
-  FOrderNumber := Table.Number + '.' + IntToStr(Table.OrderCount + 1);
-
-  if FOrderNumber = '' then
-    exit;
-
-  if FFrontBase.Options.MinGuestCount < 0 then
-    FGuestCount := 1
-  else
-  begin
-    FGuestForm := TGuestForm.Create(nil);
-    try
-      FGuestForm.ShowModal;
-      if FGuestForm.ModalResult = mrOK then
-        FGuestCount := FGuestForm.GuestCount
-      else
+      if FFrontBase.CheckCountOrderByResp(FFrontBase.ContactKey) then
+      begin
+        Touch_MessageBox('Внимание', 'Превышено максимально возможное число открытых заказов!', MB_OK, mtWarning);
         exit;
-    finally
-      FGuestForm.Free;
+      end;
     end;
+
+    FFrontBase.GetOrder(FHeaderTable, FLineTable, FModificationDataSet, -1);
+    FOrderNumber := Table.Number + '.' + IntToStr(Table.OrderCount + 1);
+
+    if FOrderNumber = '' then
+      exit;
+
+    if FFrontBase.Options.MinGuestCount < 0 then
+      FGuestCount := 1
+    else
+    begin
+      FGuestForm := TGuestForm.Create(nil);
+      try
+        FGuestForm.ShowModal;
+        if FGuestForm.ModalResult = mrOK then
+          FGuestCount := FGuestForm.GuestCount
+        else
+          exit;
+      finally
+        FGuestForm.Free;
+      end;
+    end;
+
+    if (FGuestCount >= FFrontBase.Options.MinGuestCount) then
+    begin
+      if not Assigned(dsMain.DataSet) then
+        dsMain.DataSet := FLineTable;
+
+      FHeaderTable.Insert;
+      FHeaderTable.FieldByName('NUMBER').AsString := FOrderNumber;
+      FHeaderTable.FieldByName('USR$GUESTCOUNT').AsInteger := FGuestCount;
+      FHeaderTable.FieldByName('USR$TIMEORDER').Value := Time;
+      if Table.ID > 0 then
+        FHeaderTable.FieldByName('USR$TABLEKEY').AsInteger := Table.ID;
+      FHeaderTable.FieldByName('USR$COMPUTERNAME').AsString := FFrontBase.GetLocalComputerName;
+      FHeaderTable.Post;
+
+      btnPreCheck.Action := actPreCheck;
+      RestFormState := rsMenuInfo;
+
+      SaveCheck;
+    end;
+    FLogManager.DoSimpleEvent(ev_CreateNewOrder);
+  finally
+    SetCloseTimerActive(not FFrontBase.Options.NoPassword);
   end;
-
-  if (FGuestCount >= FFrontBase.Options.MinGuestCount) then
-  begin
-    if not Assigned(dsMain.DataSet) then
-      dsMain.DataSet := FLineTable;
-
-    FHeaderTable.Insert;
-    FHeaderTable.FieldByName('NUMBER').AsString := FOrderNumber;
-    FHeaderTable.FieldByName('USR$GUESTCOUNT').AsInteger := FGuestCount;
-    FHeaderTable.FieldByName('USR$TIMEORDER').Value := Time;
-    if Table.ID > 0 then
-      FHeaderTable.FieldByName('USR$TABLEKEY').AsInteger := Table.ID;
-    FHeaderTable.FieldByName('USR$COMPUTERNAME').AsString := FFrontBase.GetLocalComputerName;
-    FHeaderTable.Post;
-
-    btnPreCheck.Action := actPreCheck;
-    RestFormState := rsMenuInfo;
-
-    SaveCheck;
-  end;
-  FLogManager.DoSimpleEvent(ev_CreateNewOrder);
 end;
 
 procedure TRestMainForm.RemoveChooseTable;
@@ -2770,6 +2775,7 @@ begin
         exit;
 
       FForm := TSellParamForm.CreateWithFrontBase(nil, FFrontBase);
+      SetCloseTimerActive(false);
       try
         FForm.FiscalRegistry := FFiscal;
         FForm.Doc := FHeaderTable;
@@ -2784,6 +2790,7 @@ begin
           actCancel.Execute;
         end;
       finally
+        SetCloseTimerActive(not FFrontBase.Options.NoPassword);
         FForm.Free;
       end;
     end
@@ -3458,6 +3465,7 @@ var
 begin
 //  FReport.PrintCheckRegister(xDateBegin.Date, xDateEnd.Date);
   FForm := TChooseEmpl.Create(nil);
+  SetCloseTimerActive(False);
   try
     FForm.FrontBase := FFrontBase;
     FForm.FillEmployees;
@@ -3468,6 +3476,7 @@ begin
         FForm.RespKey);
     end;
   finally
+    SetCloseTimerActive(not FFrontBase.Options.NoPassword);
     FForm.Free;
   end;
 end;
@@ -4069,7 +4078,8 @@ begin
   if not Assigned(FFrontBase) then
     exit;
 
-  if (not FFrontBase.Options.NoPassword) and (FRestFormState in [rsOrderMenu, rsHallsPage]) then
+  if (not FFrontBase.Options.NoPassword)
+    and (FRestFormState in [rsOrderMenu, rsHallsPage, rsManagerPage, rsManagerInfo, rsKassirInfo]) then
   begin
     if tmrClose.Tag = 10 then
     begin
@@ -4077,7 +4087,8 @@ begin
       PostMessage(Handle, WM_LBUTTONDOWN, MK_LBUTTON, 0);
       PostMessage(Handle, WM_LBUTTONUP, MK_LBUTTON, 0);
       // Запустим обработчик кнопки Отмена
-      actCancel.Execute;
+      //actCancel.Execute;
+      RestFormState := rsPass;
     end;
     tmrClose.Tag := tmrClose.Tag + 1;
   end;
@@ -4415,9 +4426,7 @@ begin
     try
       FForm.ShowModal;
     finally
-      // Включим таймер выхода из зала
-      if FRestFormState = rsHallsPage then
-        SetCloseTimerActive(not FFrontBase.Options.NoPassword);
+      SetCloseTimerActive(not FFrontBase.Options.NoPassword);
     end;
   finally
     FForm.Free;

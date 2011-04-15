@@ -1428,7 +1428,6 @@ var
   S, ES: String;
   BPost, APost: TDataSetNotifyEvent;
 begin
-  Result := False;
   HeaderTable.Close;
   HeaderTable.CreateTable;
   HeaderTable.Open;

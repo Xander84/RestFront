@@ -132,9 +132,6 @@ begin
 end;
 
 procedure TrfTableManager.DropTable(ATable: TRestTable);
-var
-  ibsql: TIBSQL;
-  WriteTransaction: TIBTransaction;
 begin
   // Созраним ИД стола в список на удаление из БД
   FToDeleteList.Add(ATable.ID);
@@ -161,6 +158,7 @@ function TrfTableManager.GetOrder(const ATableKey, AOrderKey: Integer): TrfOrder
 var
   Table: TRestTable;
 begin
+  Result := nil;
   Table := GetTable(ATableKey);
   if Assigned(Table) then
     Result := Table.GetOrder(AOrderKey);
