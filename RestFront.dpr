@@ -43,6 +43,7 @@ uses
   rp_dlgViewResult_unit in 'Report\rp_dlgViewResult_unit.pas' {dlgViewResult},
   rp_frmGrid_unit in 'Report\rp_frmGrid_unit.pas' {frmGrid: TFrame},
   fs_iQueryListRTTI in 'Report\fs_iQueryListRTTI.pas',
+  rfTableManager_unit in 'rfTableManager_unit.pas',
   PersonalCardForm_Unit in 'PersonalCardForm_Unit.pas' {PersonalCardForm},
   TouchMessageBoxForm_Unit in 'TouchMessageBoxForm_Unit.pas' {TTouchMessageBox},
   ReturneyMoneyForm_Unit in 'ReturneyMoneyForm_Unit.pas' {ReturnMoneyForm},

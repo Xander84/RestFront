@@ -84,7 +84,7 @@ begin
   // Список картинок для состояний столов
   FConditionImageDictionary := TDictionary<TRestTableCondition,TAdvGDIPPicture>.Create;
 
-  // Загрузим изобрадения
+  // Загрузим изображения
   LoadImages;
 end;
 
