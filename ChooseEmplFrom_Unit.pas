@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, ExtCtrls, AdvPanel, Front_DataBase_Unit,
-  FrontData_Unit, BaseFrontForm_Unit, IBSQL, AdvSmoothButton;
+  FrontData_Unit, BaseFrontForm_Unit, AdvSmoothButton, AdvCombo;
 
 type
   TChooseEmpl = class(TBaseFrontForm)
@@ -17,6 +17,8 @@ type
     pnlBottom: TAdvPanel;
     btnOK: TAdvSmoothButton;
     btnCancel: TAdvSmoothButton;
+    procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
   private
     function GetEmplkey: Integer;
     function GetRespKey: Integer;
@@ -27,75 +29,80 @@ type
     property EmplKey: Integer read GetEmplkey;
   end;
 
-var
-  ChooseEmpl: TChooseEmpl;
-
 implementation
 
 {$R *.dfm}
 
+uses
+  Generics.Collections, rfUser_unit;
+
 { TChooseEmpl }
+
+procedure TChooseEmpl.FormCreate(Sender: TObject);
+begin
+  inherited;
+
+  btnOK.Picture := FrontData.RestPictureContainer.FindPicture('tick');
+  btnCancel.Picture := FrontData.RestPictureContainer.FindPicture('cross');
+end;
+
+procedure TChooseEmpl.FormDestroy(Sender: TObject);
+var
+  I: Integer;
+begin
+  // Уничтожая объекты в cbEmplName мы одновременно уничтожаем их и в cbResp
+  //  т.к. они одинаковы
+  for I := 0 to cbEmplName.Items.Count - 1 do
+    if Assigned(cbEmplName.Items.Objects[I]) then
+      cbEmplName.Items.Objects[I].Free;
+  inherited;
+end;
 
 procedure TChooseEmpl.FillEmployees;
 var
-  FSQL: TIBSQL;
+  User: TrfUser;
+  UserList: TList<TrfUser>;
 begin
   Assert(FFrontBase <> nil, 'FrontBase not asigned');
 
-  FSQL := TIBSQL.Create(nil);
+  UserList := TList<TrfUser>.Create;
   try
-    cbEmplName.Items.NameValueSeparator := '=';
-    FSQL.Transaction := FFrontBase.ReadTransaction;
-    FSQL.SQL.Text :=
-      ' select    ' +
-      '   distinct  ' +
-      '   u.contactkey,    ' +
-      '   con.name as fullname ' +
-      ' from    ' +
-      '   gd_user u    ' +
-      '   join gd_contact con on con.id = u.contactkey    ' +
-      ' where  ' +
-      '   u.disabled <> 1    ' +
-      '   and u.usr$mn_isfrontuser = 1 ';
-    FSQL.ExecQuery;
-    while not FSQL.Eof do
+    // Получим список пользователей фронта
+    FFrontBase.GetWaiterList(UserList);
+    for User in UserList do
     begin
-//      cbEmplName.AddItem(FSQL.FieldByName('fullname').AsString + '=' +
-//        FSQL.FieldByName('contactkey').AsString, nil);
-
-      cbEmplName.AddItem(FSQL.FieldByName('fullname').AsString,
-        TObject(FSQL.FieldByName('contactkey').AsInteger));
-
-
-      cbResp.AddItem(FSQL.FieldByName('fullname').AsString,
-        TObject(FSQL.FieldByName('contactkey').AsInteger));
-//      cbResp.AddItem(FSQL.FieldByName('fullname').AsString + '=' +
-//        FSQL.FieldByName('contactkey').AsString, nil);
-
-
-      FSQL.Next;
+      cbEmplName.AddItem(User.Name, User);
+      cbResp.AddItem(User.Name, User);
     end;
     cbEmplName.ItemIndex := 0;
     cbResp.ItemIndex := 0;
-
-    FSQL.Close;
   finally
-    FSQL.Free;
+    FreeAndNil(UserList);
   end;
 end;
 
 function TChooseEmpl.GetEmplkey: Integer;
 begin
   Result := 0;
-  if cbEmplName.Items.Count > 0 then
-    Result := Integer(cbEmplName.Items.Objects[cbEmplName.ItemIndex]);
+  // Если выбран объект-пользователь
+  if (cbEmplName.ItemIndex > -1)
+    and Assigned(cbEmplName.Items.Objects[cbEmplName.ItemIndex])
+    and (cbEmplName.Items.Objects[cbEmplName.ItemIndex] is TrfUser) then
+  begin
+    Result := TrfUser(cbEmplName.Items.Objects[cbEmplName.ItemIndex]).ID;
+  end;
 end;
 
 function TChooseEmpl.GetRespKey: Integer;
 begin
   Result := 0;
-  if cbResp.Items.Count > 0 then
-    Result := Integer(cbResp.Items.Objects[cbResp.ItemIndex]);
+  // Если выбран объект-пользователь
+  if (cbResp.ItemIndex > -1)
+    and Assigned(cbResp.Items.Objects[cbResp.ItemIndex])
+    and (cbResp.Items.Objects[cbResp.ItemIndex] is TrfUser) then
+  begin
+    Result := TrfUser(cbResp.Items.Objects[cbResp.ItemIndex]).ID;
+  end;
 end;
 
 end.
