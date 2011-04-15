@@ -991,7 +991,7 @@ begin
       // FButton.TableName := IBSQL.FieldByName('USR$NAME').AsString;
       FButton.HallKey := HallKey;
       // Изображение стола
-      FButton.pngimage := FTableManager.GetImageForType(FButton.TableTypeKey);
+      FButton.Graphic := FTableManager.GetImageForType(FButton.TableTypeKey);
 
       FButton.Height := btnHeight;
 {$IFNDEF DEBUG}

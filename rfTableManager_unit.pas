@@ -126,7 +126,7 @@ begin
   Result.RelativeWidth := ADesignerTable.RelativeWidth;
   Result.RelativeHeight := ADesignerTable.RelativeHeight;
   // »зображение стола
-  Result.pngimage := ADesignerTable.pngimage;
+  Result.Graphic := ADesignerTable.Graphic;
 
   FTablesList.Add(Result);
 end;
@@ -277,7 +277,7 @@ begin
           NewTable.PopupMenu := TableButtonPopupMenu;
 
         // ѕрисвоение изображени€ стола из списка изображений типов столов
-        NewTable.pngimage := GetImageForType(NewTable.TableTypeKey);
+        NewTable.Graphic := GetImageForType(NewTable.TableTypeKey);
 
         FTablesList.Add(NewTable);
         ibsql.Next;

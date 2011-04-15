@@ -4,25 +4,32 @@ interface
 
 uses
   SysUtils, Classes, Controls, Graphics, Messages,
-  PngSpeedButton, pngimage, Buttons, Generics.Collections, Types,
+  pngimage, Buttons, Generics.Collections, Types,
   Windows, Menus, rfOrder_unit;
 
 type
-  TRestTableCondition = (rtcUnknown, rtcFree, rtcFreeOther, rtcOccupied, rtcOccupiedOther, rtcPreCheck);
+  TRestTableCondition = (
+    rtcUnknown,
+    rtcFree,
+    rtcFreeOther,
+    rtcOccupied,
+    rtcOccupiedOther,
+    rtcPreCheck);
 
-  TRestTable = class(TPngSpeedButton)
+  TRestTable = class(TGraphicControl)
   private
-    FNumber: String;
+    { Свойства отображения стола }
     FPosX: Double;
     FPosY: Double;
     FRelativeWidth: Double;
     FRelativeHeight: Double;
     FChecked: Boolean;
+    { Изображение стола (ссылка на изображение в глобальном списке) }
+    FGraphic: TGraphic;
 
-    // Состояние стола
-    FTableConditionList: TList<TRestTableCondition>;
-
+    { Бизнес-свойства стола }
     FID: Integer;
+    FNumber: String;
     FOrderKey: Integer;
     FIsLocked: Boolean;
     FComputerName: String;
@@ -32,32 +39,35 @@ type
     FHallKey: Integer;
     FTableTypeKey: Integer;
     FMainTableKey: Integer;
+    { Состояние стола }
+    FTableConditionList: TList<TRestTableCondition>;
 
+    { Менеджер столов (все столы находятся в общем списке менеджера) }
     FManager: TObject;
 
     procedure SetPosX(const Value: Double);
     procedure SetPosY(const Value: Double);
-    procedure SetHallKey(const Value: Integer);
-    procedure SetTableType(const Value: Integer);
-
-    procedure SetMainTableKey(const Value: Integer);
-    procedure SetID(const Value: Integer);
     function GetPosX: Double;
     function GetPosY: Double;
+    procedure SetRelativeHeight(const Value: Double);
+    procedure SetRelativeWidth(const Value: Double);
+    function GetRelativeHeight: Double;
+    function GetRelativeWidth: Double;
+    procedure SetChecked(const Value: Boolean);
+
+    procedure SetID(const Value: Integer);
+    procedure SetHallKey(const Value: Integer);
+    procedure SetTableType(const Value: Integer);
+    procedure SetMainTableKey(const Value: Integer);
     procedure SetOrderKey(const Value: Integer);
     procedure SetIsLocked(const Value: Boolean);
     procedure SetNumber(const Value: String);
     procedure SetComputerName(const Value: String);
-    function GetOrderCount: Integer;
+    procedure SetRespName(const Value: String);
+    function GetRespKey: Integer;
 
     procedure WMContextMenu(var Message: TWMContextMenu); message WM_CONTEXTMENU;
-    procedure SetRespName(const Value: String);
-    function GetRelativeHeight: Double;
-    function GetRelativeWidth: Double;
-    procedure SetRelativeHeight(const Value: Double);
-    procedure SetRelativeWidth(const Value: Double);
-    procedure SetChecked(const Value: Boolean);
-    function GetRespKey: Integer;
+    function GetOrderCount: Integer;
   protected
     procedure Paint; override;
     procedure DrawTableCondition;
@@ -65,10 +75,14 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
+    { Обновить состояние стола относительно переданного контакта }
     procedure RefreshTableCondition(const AContactKey: Integer);
+    { Добавить заказ }
     function AddOrder(const AID: Integer; const ANumber: String): TrfOrder; overload;
     function AddOrder(AOrder: TrfOrder): TrfOrder; overload;
+    { Получить заказ по ИД }
     function GetOrder(const AOrderKey: Integer): TrfOrder;
+    { Уничтожить все объекты заказов и очистить список }
     procedure ClearOrders;
 
     procedure SetTableCondition(const Value: TRestTableCondition);
@@ -86,21 +100,25 @@ type
     property OrderKey: Integer read FOrderKey write SetOrderKey;
     property RespKey: Integer read GetRespKey;
     property OrderCount: Integer read GetOrderCount;
+    // номер стола
+    property Number: String read FNumber write SetNumber;
     property OrderList: TList<TrfOrder>read FOrderList;
     property RespName: String read FRespName write SetRespName;
     property NeedToInsert: Boolean read FNeedToInsert write FNeedToInsert;
 
-    property Checked: Boolean read FChecked write SetChecked;
-
     property TableConditionList: TList<TRestTableCondition> read FTableConditionList;
     property Manager: TObject read FManager write FManager;
+
+    property Graphic: TGraphic read FGraphic write FGraphic;
+
+    property OnClick;
+    property PopupMenu;
   published
-    // номер стола
-    property Number: String read FNumber write SetNumber;
     property PosX: Double read GetPosX write SetPosX;
     property PosY: Double read GetPosY write SetPosY;
     property RelativeWidth: Double read GetRelativeWidth write SetRelativeWidth;
     property RelativeHeight: Double read GetRelativeHeight write SetRelativeHeight;
+    property Checked: Boolean read FChecked write SetChecked;
   end;
 
   TChooseTable = class(TRestTable)
@@ -125,6 +143,7 @@ uses
 const
   POS_MULTIPLIER = 100;
   MARK_MARGIN = 2;
+  IMAGE_MARGIN = 6;
 
 procedure Register;
 begin
@@ -136,6 +155,7 @@ end;
 constructor TRestTable.Create;
 begin
   inherited Create(AOwner);
+
   FTableTypeKey := -1;
   FID := -1;
   FRespName := '';
@@ -144,11 +164,10 @@ begin
   FTableConditionList := TList<TRestTableCondition>.Create;
   // Список заказов для этого стола
   FOrderList := TList<TrfOrder>.Create();
-  FChecked := false;
 
-  Flat := True;
   Tag := 1;
-  Font.Style := [fsBold];
+  Self.Canvas.Font.Style := [fsBold];
+  FChecked := false;
 end;
 
 destructor TRestTable.Destroy;
@@ -260,6 +279,9 @@ begin
 
   // Родительская отрисовка
   inherited;
+  // Изображение стола
+  if FGraphic is TPngImage then
+    TPngImage(FGraphic).Draw(ImgCanvas, Rect(IMAGE_MARGIN, IMAGE_MARGIN, Self.Width - IMAGE_MARGIN, Self.Height - IMAGE_MARGIN));
 
   // Рисуем номер стола
   ImgCanvas.Brush.Style := bsClear;
