@@ -55,15 +55,16 @@ type
     procedure CreateWnd;
     end; }
 
-  // окно с паролем
-  // окно с со заказами
-  // редактирование заказа
-  // окно менеджера
-  // окно менеджера для разделения
-  // окно кассира для оплаты
-  // окно просмотра залов
-  // зал
-  TRestState = (rsPass, rsOrderMenu, rsMenuInfo, rsManagerPage, rsManagerChooseOrder, rsManagerInfo, rsKassirInfo, rsHallsPage, rsHallInfo);
+  TRestState = (
+    rsPass,                    // окно с паролем
+    rsOrderMenu,               // окно с заказами
+    rsMenuInfo,                // редактирование заказа
+    rsManagerPage,             // окно менеджера
+    rsManagerChooseOrder,      // окно менеджера для разделения
+    rsManagerInfo,             //
+    rsKassirInfo,              // окно кассира для оплаты
+    rsHallsPage,               // окно просмотра залов
+    rsHallEdit);               // редактирование зала
 
   TRestMainForm = class(TBaseFrontForm)
     pnlMain: TPanel;
@@ -429,6 +430,8 @@ type
 
     procedure SwapTable(const ATableFrom, ATableTo: TRestTable);
     procedure SetCloseTimerActive(const AIsActive: Boolean);
+
+    function GetServerDateTime: TDateTime;
 
     // Инициализация фона зала и столов
     procedure CreateHall(const HallKey: Integer);
@@ -1593,7 +1596,7 @@ begin
 
     FActiveHallButton := FButton.Name;
 
-    if FRestFormState = rsHallInfo then
+    if FRestFormState = rsHallEdit then
     begin
       pcMenu.ActivePage := tsTablesDesigner;
       AddChooseTables(FButton.Tag);
@@ -1625,6 +1628,11 @@ function TRestMainForm.GetCurrentUserInfo: TLogUserInfo;
 begin
   Result.UserID := FFrontBase.ContactKey;
   Result.UserName := FFrontBase.UserName;
+end;
+
+function TRestMainForm.GetServerDateTime: TDateTime;
+begin
+  Result := Now + FServerTimeLag;
 end;
 
 function TRestMainForm.GetUserInfo(const UserInfo: TUserInfo): TLogUserInfo;
@@ -1953,7 +1961,7 @@ begin
           FLogManager.DoSimpleLog(GetCurrentUserInfo, ev_Exit);
         end;
 
-      rsHallInfo:
+      rsHallEdit:
         begin
           if Touch_MessageBox('Внимание', 'Сохранить изменения?', MB_YESNO, mtConfirmation) = IDYES then
           begin
@@ -2020,7 +2028,7 @@ begin
                     if FPrinted then
                     begin
                       FFrontBase.SavePrintDate(OrderKey);
-                      FFrontBase.CloseModifyTable(FModificationDataSet, Now);
+                      FFrontBase.CloseModifyTable(FModificationDataSet, GetServerDateTime);
                     end;
 
                     FSQL.Close;
@@ -2031,7 +2039,7 @@ begin
                     if FReport.PrintServiceCheck(1, PrnGrid, OrderKey, PrinterName) then
                     begin
                     FFrontBase.SavePrintDate(OrderKey);
-                    FFrontBase.CloseModifyTable(FModificationDataSet, Now);
+                    FFrontBase.CloseModifyTable(FModificationDataSet, GetServerDateTime);
                     end; }
                 end;
                 FLogManager.DoOrderLog(GetCurrentUserInfo, GetCurrentOrderInfo, ev_SaveOrder);
@@ -2086,7 +2094,7 @@ begin
           RestFormState := FBaseFormState;
         end;
 
-      rsHallsPage, rsHallInfo:
+      rsHallsPage, rsHallEdit:
         begin
           RemoveHallButton;
           RemoveChooseTable;
@@ -2589,7 +2597,7 @@ begin
         if FPrinted then
         begin
           FFrontBase.SavePrintDate(FHeaderTable.FieldByName('ID').AsInteger);
-          FFrontBase.CloseModifyTable(FModificationDataSet, Now);
+          FFrontBase.CloseModifyTable(FModificationDataSet, GetServerDateTime);
         end;
 
         FSQL.Close;
@@ -2601,11 +2609,11 @@ begin
       begin
         if FHeaderTable.State = dsBrowse then
           FHeaderTable.Edit;
-        FHeaderTable.FieldByName('usr$timecloseorder').AsDateTime := Now;
+        FHeaderTable.FieldByName('usr$timecloseorder').AsDateTime := GetServerDateTime;
         // Укажем в заказе стола что был распечатен пречек
         Order := FTableManager.GetOrder(FHeaderTable.FieldByName('usr$tablekey').AsInteger, FHeaderTable.FieldByName('ID').AsInteger);
         if Assigned(Order) then
-          Order.TimeCloseOrder := Now;
+          Order.TimeCloseOrder := FHeaderTable.FieldByName('usr$timecloseorder').AsDateTime;
 
         SaveCheck;
         FPayed := True;
@@ -3070,7 +3078,7 @@ begin
             // План зала
             CreateHall(FHallsTable.FieldByName('ID').AsInteger);
 
-            if FRestFormState = rsHallInfo then
+            if FRestFormState = rsHallEdit then
             begin
               pcMenu.ActivePage := tsTablesDesigner;
               AddChooseTables(FHallsTable.FieldByName('ID').AsInteger);
@@ -3095,7 +3103,7 @@ begin
       end;
 
     // Редактирование зала
-    rsHallInfo:
+    rsHallEdit:
       begin
         LockWindowUpdate(Handle);
         try
@@ -3198,8 +3206,8 @@ begin
         if not Assigned(FLineInfoTable) then
           FLineInfoTable := TkbmMemTable.Create(nil);
         // 2. проставить начальное значение кнопок выбора
-        xDateBegin.Date := Now;
-        xDateEnd.Date := Now;
+        xDateBegin.Date := GetServerDateTime;
+        xDateEnd.Date := GetServerDateTime;
         // 3. загрузить данные
         FFrontBase.GetOrdersInfo(FHeaderInfoTable, FLineInfoTable, xDateBegin.Date, xDateEnd.Date, False, False, False, False);
 
@@ -4067,42 +4075,44 @@ end;
 
 procedure TRestMainForm.tablePopupMenuPopup(Sender: TObject);
 var
-  FButton: TRestTable;
+  Table: TRestTable;
   Item: TMenuItem;
   Order: TrfOrder;
 begin
   inherited;
-  FButton := TRestTable(TAdvPopupMenu(Sender).PopupComponent);
+  Table := TRestTable(TAdvPopupMenu(Sender).PopupComponent);
+  // Обновим информацию по текущему столу
+  FTableManager.RefreshOrderData(Table);
 
-  if FButton.Tag = 0 then
+  if Table.Tag = 0 then
   begin
-    FButton.Tag := 1;
-    if (tablePopupMenu.Items.Count = 0) and (FButton.OrderList.Count > 0) then
-      Touch_MessageBox('Внимание', 'Стол занят ' + FFrontBase.GetNameWaiterOnID(FButton.RespKey, True, False), MB_OK, mtWarning);
+    Table.Tag := 1;
+    if (tablePopupMenu.Items.Count = 0) and (Table.OrderList.Count > 0) then
+      Touch_MessageBox('Внимание', 'Стол занят ' + FFrontBase.GetNameWaiterOnID(Table.RespKey, True, False), MB_OK, mtWarning);
     exit;
   end;
 
   tablePopupMenu.Items.Clear;
-  if FButton.OrderList.Count = 0 then
+  if Table.OrderList.Count = 0 then
   begin
-    CreateNewTableOrder(FButton);
+    CreateNewTableOrder(Table);
     exit;
   end;
   // Пункт меню для нового заказа
-  if (FButton.RespKey <= 0) or (FButton.RespKey = FFrontBase.ContactKey) or
+  if (Table.RespKey <= 0) or (Table.RespKey = FFrontBase.ContactKey) or
     ((FFrontBase.UserKey and FFrontBase.Options.ManagerGroupMask) <> 0) then
   begin
     Item := TMenuItem.Create(tablePopupMenu);
     Item.Caption := 'Новый заказ';
     Item.OnClick := PopItemOnClick;
-    Item.Tag := FButton.ID;
+    Item.Tag := Table.ID;
     tablePopupMenu.Items.Add(Item);
   end;
 
-  for Order in FButton.OrderList do
+  for Order in Table.OrderList do
   begin
     // если заказ не свой или не менеджер, то не добавляем меню
-    if (FFrontBase.ContactKey = FButton.RespKey) or ((FFrontBase.UserKey and FFrontBase.Options.ManagerGroupMask) <> 0) then
+    if (FFrontBase.ContactKey = Table.RespKey) or ((FFrontBase.UserKey and FFrontBase.Options.ManagerGroupMask) <> 0) then
     begin
       Item := TMenuItem.Create(tablePopupMenu);
       Item.Tag := Order.ID;
@@ -4112,8 +4122,8 @@ begin
     end;
   end;
 
-  if (tablePopupMenu.Items.Count = 0) and (FButton.OrderList.Count > 0) then
-    Touch_MessageBox('Внимание', 'Стол занят ' + FFrontBase.GetNameWaiterOnID(FButton.RespKey, True, False), MB_OK, mtWarning);
+  if (tablePopupMenu.Items.Count = 0) and (Table.OrderList.Count > 0) then
+    Touch_MessageBox('Внимание', 'Стол занят ' + FFrontBase.GetNameWaiterOnID(Table.RespKey, True, False), MB_OK, mtWarning);
 end;
 
 procedure TRestMainForm.tmrCloseTimer(Sender: TObject);
@@ -4121,7 +4131,8 @@ begin
   if not Assigned(FFrontBase) then
     exit;
 
-  if (not FFrontBase.Options.NoPassword) and (FRestFormState in [rsOrderMenu, rsHallsPage]) then
+  if (not FFrontBase.Options.NoPassword)
+    and (FRestFormState in [rsOrderMenu, rsHallsPage, rsManagerPage, rsManagerInfo, rsKassirInfo]) then
   begin
     if tmrClose.Tag = 10 then
     begin
@@ -4163,14 +4174,14 @@ var
 begin
   case FRestFormState of
     rsPass:
-      S := ' ' + DateToStr(Date) + ' ' + TimeToStr(Now + FServerTimeLag);
+      S := ' ' + DateToStr(Date) + ' ' + TimeToStr(GetServerDateTime);
 
-    rsOrderMenu, rsManagerPage, rsManagerChooseOrder, rsManagerInfo, rsKassirInfo, rsHallsPage, rsHallInfo:
-      S := ' ' + DateToStr(Date) + ' ' + TimeToStr(Now + FServerTimeLag) + ' пользователь: ' + FFrontBase.UserName;
+    rsOrderMenu, rsManagerPage, rsManagerChooseOrder, rsManagerInfo, rsKassirInfo, rsHallsPage, rsHallEdit:
+      S := ' ' + DateToStr(Date) + ' ' + TimeToStr(GetServerDateTime) + ' пользователь: ' + FFrontBase.UserName;
 
     rsMenuInfo:
       begin
-        S := ' ' + DateToStr(Date) + ' ' + TimeToStr(Now + FServerTimeLag) + ' пользователь: ' + FFrontBase.UserName + ', дата создания заказа: ' +
+        S := ' ' + DateToStr(Date) + ' ' + TimeToStr(GetServerDateTime) + ' пользователь: ' + FFrontBase.UserName + ', дата создания заказа: ' +
           FHeaderTable.FieldByName('creationdate').AsString;
         if FLineTable.FieldByName('usr$mn_printdate').AsString <> '' then
           S := S + ', дата печати: ' + FLineTable.FieldByName('usr$mn_printdate').AsString;
@@ -4374,7 +4385,7 @@ begin
       FForm.ShowModal;
       // Редактор залов
       if FForm.ModalResult = mrOK then
-        RestFormState := rsHallInfo;
+        RestFormState := rsHallEdit;
     finally
       FForm.Free;
     end;

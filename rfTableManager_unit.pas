@@ -30,7 +30,7 @@ type
     { Загрузить столы из датасета }
     procedure LoadTables(const HallKey: Integer);
     { Обновить информацию о заказах на столах }
-    procedure RefreshOrderData;
+    procedure RefreshOrderData(const ATable: TRestTable = nil);
     { Сохранить столы в БД }
     procedure SaveTables;
     { Очистить список столов }
@@ -385,11 +385,40 @@ begin
   end;
 end;
 
-procedure TrfTableManager.RefreshOrderData;
+procedure TrfTableManager.RefreshOrderData(const ATable: TRestTable = nil);
 var
   ibsql: TIBSQL;
   Table: TRestTable;
   Order: TrfOrder;
+
+  procedure RefreshSingleTable(CurTable: TRestTable);
+  begin
+    // Если не было заказов на столе и нет в запросе, то не будем перерисовывать
+    if (CurTable.OrderList.Count <> 0) or (not ibsql.Eof) then
+    begin
+      // Удалим все заказы на столе
+      CurTable.ClearOrders;
+      while not ibsql.Eof do
+      begin
+        if CurTable.OrderKey <> ibsql.FieldByName('DOCUMENTKEY').AsInteger then
+          CurTable.OrderKey := ibsql.FieldByName('DOCUMENTKEY').AsInteger;
+
+        if CurTable.ComputerName <> ibsql.FieldByName('usr$computername').AsString then
+          CurTable.ComputerName := ibsql.FieldByName('usr$computername').AsString;
+
+        // Добавим заказ в список заказов стола
+        Order := CurTable.AddOrder(ibsql.FieldByName('DOCUMENTKEY').AsInteger,
+          ibsql.FieldByName('NUMBER').AsString);
+        Order.TimeCloseOrder := ibsql.FieldByName('usr$timecloseorder').AsDateTime;
+        Order.ResponsibleKey := ibsql.FieldByName('usr$respkey').AsInteger;
+
+        ibsql.Next;
+      end;
+    end;
+    // Обновим состояние стола
+    CurTable.RefreshTableCondition(FDataBase.ContactKey);
+  end;
+
 begin
   ibsql := TIBSQL.Create(nil);
   try
@@ -411,38 +440,24 @@ begin
       ' WHERE ' +
       '   t.id = :id ';
 
-    // Пройдем по всем столам и обновим заказы для них
-    for Table in FTablesList do
+    // Обновлять переданный стол, или все столы
+    if Assigned(ATable) then
     begin
-      ibsql.ParamByName('id').AsInteger := Table.ID;
+      ibsql.ParamByName('id').AsInteger := ATable.ID;
       ibsql.ExecQuery;
-
-      // Если не было заказов на столе и нет в запросе, то не будем перерисовывать
-      if (Table.OrderList.Count <> 0) or (not ibsql.Eof) then
-      begin
-        // Удалим все заказы на столе
-        Table.ClearOrders;
-        while not ibsql.Eof do
-        begin
-          if Table.OrderKey <> ibsql.FieldByName('DOCUMENTKEY').AsInteger then
-            Table.OrderKey := ibsql.FieldByName('DOCUMENTKEY').AsInteger;
-
-          if Table.ComputerName <> ibsql.FieldByName('usr$computername').AsString then
-            Table.ComputerName := ibsql.FieldByName('usr$computername').AsString;
-
-          // Добавим заказ в список заказов стола
-          Order := Table.AddOrder(ibsql.FieldByName('DOCUMENTKEY').AsInteger,
-            ibsql.FieldByName('NUMBER').AsString);
-          Order.TimeCloseOrder := ibsql.FieldByName('usr$timecloseorder').AsDateTime;
-          Order.ResponsibleKey := ibsql.FieldByName('usr$respkey').AsInteger;
-
-          ibsql.Next;
-        end;
-      end;
-      // Обновим состояние стола
-      Table.RefreshTableCondition(FDataBase.ContactKey);
-
+      RefreshSingleTable(ATable);
       ibsql.Close;
+    end
+    else
+    begin
+      // Пройдем по всем столам и обновим заказы для них
+      for Table in FTablesList do
+      begin
+        ibsql.ParamByName('id').AsInteger := Table.ID;
+        ibsql.ExecQuery;
+        RefreshSingleTable(Table);
+        ibsql.Close;
+      end;
     end;
   finally
     FreeAndNil(ibsql);
