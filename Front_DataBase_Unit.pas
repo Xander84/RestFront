@@ -327,11 +327,11 @@ type
 
     function GetOrdersInfo(const HeaderTable, LineTable: TkbmMemTable; const DateBegin, DateEnd: TDate;
       const WithPreCheck, WithOutPreCheck, Payed, NotPayed: Boolean): Boolean;
-    function GetMenuList(var MemTable: TkbmMemTable): Boolean;
-    function GetGroupList(var MemTable: TkbmMemTable; const MenuKey: Integer): Boolean;
-    function GetGoodList(var MemTable: TkbmMemTable; const MenuKey, GroupKey: Integer): Boolean;
-    function GetGoodByID(var MemTable: TkbmMemTable; const GoodKey: Integer): Boolean;
-    function GetPopularGoodList(var MemTable: TkbmMemTable): Boolean;
+    function GetMenuList(const MemTable: TkbmMemTable): Boolean;
+    function GetGroupList(const MemTable: TkbmMemTable; const MenuKey: Integer): Boolean;
+    function GetGoodList(const MemTable: TkbmMemTable; const MenuKey, GroupKey: Integer): Boolean;
+    function GetGoodByID(const MemTable: TkbmMemTable; const GoodKey: Integer): Boolean;
+    function GetPopularGoodList(const MemTable: TkbmMemTable): Boolean;
     procedure DeleteOrder(const ID: Integer);
 
     procedure GetHallsInfo(const MemTable: TkbmMemTable);
@@ -347,19 +347,19 @@ type
     function CreateNewOrder(const HeaderTable, LineTable, ModifyTable: TkbmMemTable; out OrderKey: Integer): Boolean;
     function SaveAndReloadOrder(const HeaderTable, LineTable, ModifyTable: TkbmMemTable; OrderKey: Integer): Boolean;
     function GetOrder(const HeaderTable, LineTable, ModifyTable: TkbmMemTable; OrderKey: Integer): Boolean; // Если OrderKey = -1 то новый заказ
-    function CloseModifyTable(const ModifyTable: TkbmMemTable; const CloseTime: TTime): Boolean;
+    function CloseModifyTable(const ModifyTable: TkbmMemTable): Boolean;
     //оплачен или нет
     function OrderIsPayed(const ID: Integer): Boolean;
     function OrderIsLocked(const ID: Integer): Boolean;
     //причины списания
-    function GetCauseDeleteList(var MemTable: TkbmMemTable): Boolean;
+    function GetCauseDeleteList(const MemTable: TkbmMemTable): Boolean;
     { Список всех пользователей фронта }
     procedure GetWaiterList(AOrderList: TList<TrfUser>);
     { Список всех пользователей фронта у которых на данный момент есть заказы }
     procedure GetActiveWaiterList(AOrderList: TList<TrfUser>; const WithPrecheck: Boolean);
     function GetLogicDate: TDateTime;
 
-    function GetModificationList(var MemTable: TkbmMemTable; const GoodKey: Integer; const ModifyGroupKey: Integer): Boolean;
+    function GetModificationList(const MemTable: TkbmMemTable; const GoodKey: Integer; const ModifyGroupKey: Integer): Boolean;
 
     function GetIDByRUID(const XID: Integer; const DBID: Integer): Integer;
     function GetRUIDRecByXID(const XID, DBID: TID): TRUIDRec;
@@ -368,14 +368,14 @@ type
 
     function GetDiscount(const DiscKey, GoodKey: Integer;
       DocDate: TDateTime; PersDiscount: Currency; LineTime: TTime): Currency;
-    function GetDiscountList(var MemTable: TkbmMemTable): Boolean;
-    function GetDiscountCardInfo(var MemTable: TkbmMemTable; const CardID: Integer; LDate: TDateTime; Pass: String): Boolean;
+    function GetDiscountList(const MemTable: TkbmMemTable): Boolean;
+    function GetDiscountCardInfo(const MemTable: TkbmMemTable; const CardID: Integer; LDate: TDateTime; Pass: String): Boolean;
     function CalcBonusSum(const DataSet: TDataSet; FLine: TkbmMemTable; var Bonus: Boolean; var PercDisc: Currency): Boolean;
     function GetPersonalCardInfo(const MemTable: TkbmMemTable;
       const Pass: String; const PersonalCardID: Integer): Boolean;
     //список подразделений компании
-    function GetDepartmentList(var MemTable: TkbmMemTable): Boolean;
-    function GetUserGroupList(var MemTable: TkbmMemTable): Boolean;
+    function GetDepartmentList(const MemTable: TkbmMemTable): Boolean;
+    function GetUserGroupList(const MemTable: TkbmMemTable): Boolean;
     function AddUser(var EmplTable, GroupListTable: TkbmMemTable): Boolean;
     //работа с оборудованием
     procedure InitDisplay;
@@ -396,10 +396,10 @@ type
     function SaveOrderLog(const WaiterKey, ManagerKey, OrderKey, OrderLineKey, Operation: Integer): Boolean;
 
     //reports
-    function GetServiceCheckQuery(var Query: TIBQuery; const PrnGrID, DocID: Integer; const PrinterName: String): Boolean;
-    function GetServiceCheckOptions(const DocID: Integer; out PrinterName: String; out PrnGrid: Integer): Boolean;
+    function GetServiceCheckQuery(const Query: TIBQuery; const PrnGrID, DocID: Integer; const PrinterName: String): Boolean;
+//    function GetServiceCheckOptions(const DocID: Integer; out PrinterName: String; out PrnGrid: Integer): Boolean;
     function SavePrintDate(const ID: Integer): Boolean;
-    function GetPreCheckQuery(var Query: TIBQuery; const DocID: Integer): Boolean;
+    function GetPreCheckQuery(const Query: TIBQuery; const DocID: Integer): Boolean;
     function GetDeleteServiceCheckOptions(const DocID, MasterKey: Integer; out PrinterName: String;
       out PrnGrid: Integer): Boolean;
     function GetReportList(var MemTable: TkbmMemTable): Boolean;
@@ -658,7 +658,7 @@ const
     '     :parent,               ' +
     '     :documenttypekey,      ' +
     '     :number,               ' +
-    '     :documentdate,         ' +
+    '     current_date,          ' +
     '     -1,                    ' +
     '     -1,                    ' +
     '     -1,                    ' +
@@ -694,7 +694,7 @@ const
     '       :documentkey,            ' +
     '       :usr$respkey,            ' +
     '       :usr$guestcount,         ' +
-    '       :usr$timeorder,          ' +
+    '       current_time,            ' +
     '       :usr$timecloseorder,     ' +
     '       :usr$logicdate,          ' +
     '       :usr$discountncu,        ' +
@@ -901,7 +901,6 @@ begin
           InsDoc.ParamByName('PARENT').AsVariant := '';
           InsDoc.ParamByName('documenttypekey').AsInteger := FOrderTypeKey;
           InsDoc.ParamByName('NUMBER').AsString := HeaderTable.FieldByName('NUMBER').AsString;
-          InsDoc.ParamByName('documentdate').AsDateTime := Date;
           InsDoc.ParamByName('companykey').AsInteger := FCompanyKey;
           InsDoc.ParamByName('creatorkey').AsInteger := FContactKey;
           InsDoc.ParamByName('editorkey').AsInteger := FContactKey;
@@ -910,7 +909,6 @@ begin
 
           InsOrder.ParamByName('usr$respkey').Value := FContactKey;
           InsOrder.ParamByName('usr$guestcount').AsInteger := HeaderTable.FieldByName('usr$guestcount').AsInteger;
-          InsOrder.ParamByName('usr$timeorder').AsTime := Time;
           InsOrder.ParamByName('usr$logicdate').AsDate := GetLogicDate;
           InsOrder.ParamByName('usr$discountncu').AsCurrency := HeaderTable.FieldByName('usr$discountncu').AsCurrency;
           InsOrder.ParamByName('usr$disccardkey').Value := HeaderTable.FieldByName('usr$disccardkey').Value;
@@ -953,7 +951,6 @@ begin
               InsDoc.ParamByName('PARENT').AsInteger := MasterID;
               InsDoc.ParamByName('documenttypekey').AsInteger := FOrderTypeKey;
               InsDoc.ParamByName('NUMBER').AsString := HeaderTable.FieldByName('NUMBER').AsString;
-              InsDoc.ParamByName('documentdate').AsDateTime := Date;
               InsDoc.ParamByName('companykey').AsInteger := FCompanyKey;
               InsDoc.ParamByName('creatorkey').AsInteger := FContactKey;
               InsDoc.ParamByName('editorkey').AsInteger := FContactKey;
@@ -1156,8 +1153,7 @@ begin
     ;
 end;
 
-function TFrontBase.GetCauseDeleteList(
-  var MemTable: TkbmMemTable): Boolean;
+function TFrontBase.GetCauseDeleteList(const MemTable: TkbmMemTable): Boolean;
 begin
   FReadSQL.Close;
   MemTable.Close;
@@ -1198,7 +1194,7 @@ begin
     Result := 1;
 end;
 
-function TFrontBase.GetGoodByID(var MemTable: TkbmMemTable;
+function TFrontBase.GetGoodByID(const MemTable: TkbmMemTable;
   const GoodKey: Integer): Boolean;
 var
   FSQL: TIBSQL;
@@ -1252,7 +1248,7 @@ begin
   end;
 end;
 
-function TFrontBase.GetGoodList(var MemTable: TkbmMemTable;
+function TFrontBase.GetGoodList(const MemTable: TkbmMemTable;
   const MenuKey, GroupKey: Integer): Boolean;
 var
   FSQL: TIBSQL;
@@ -1298,7 +1294,7 @@ begin
   end;
 end;
 
-function TFrontBase.GetPopularGoodList(var MemTable: TkbmMemTable): Boolean;
+function TFrontBase.GetPopularGoodList(const MemTable: TkbmMemTable): Boolean;
 var
   FSQL: TIBSQL;
 begin
@@ -1343,7 +1339,7 @@ begin
   end;
 end;
 
-function TFrontBase.GetGroupList(var MemTable: TkbmMemTable; const MenuKey: Integer): Boolean;
+function TFrontBase.GetGroupList(const MemTable: TkbmMemTable; const MenuKey: Integer): Boolean;
 begin
   Result := False;
   FReadSQL.Close;
@@ -1375,7 +1371,7 @@ begin
   end;
 end;
 
-function TFrontBase.GetMenuList(var MemTable: TkbmMemTable): Boolean;
+function TFrontBase.GetMenuList(const MemTable: TkbmMemTable): Boolean;
 var
   LogicDate: TDateTime;
 begin
@@ -2391,7 +2387,7 @@ begin
   end;
 end;
 
-function TFrontBase.GetModificationList(var MemTable: TkbmMemTable;
+function TFrontBase.GetModificationList(const MemTable: TkbmMemTable;
   const GoodKey, ModifyGroupKey: Integer): Boolean;
 begin
   FReadSQL.Close;
@@ -2578,8 +2574,6 @@ begin
         'SELECT C.*, T.USR$NOFISCAL FROM USR$MN_PERSONALCARD C ' +
         'JOIN USR$MN_KINDTYPE T ON 1 = 1 ' +
         'WHERE T.ID = :ID AND C.USR$CODE = :pass ';
-//      FReadSQL.ParamByName('pass').AsString := Pass;
-//      FReadSQL.ParamByName('ID').AsInteger := PersonalCardID;
       FReadSQL.ExecQuery;
 
     except
@@ -3114,8 +3108,7 @@ begin
 //  FGoodHashList.Clear;
 end;
 
-function TFrontBase.CloseModifyTable(const ModifyTable: TkbmMemTable;
-  const CloseTime: TTime): Boolean;
+function TFrontBase.CloseModifyTable(const ModifyTable: TkbmMemTable): Boolean;
 var
   FSQL: TIBSQL;
 
@@ -3388,7 +3381,7 @@ begin
   end;
 end;
 
-function TFrontBase.GetDiscountList(var MemTable: TkbmMemTable): Boolean;
+function TFrontBase.GetDiscountList(const MemTable: TkbmMemTable): Boolean;
 begin
   FReadSQL.Close;
   MemTable.Close;
@@ -3420,7 +3413,7 @@ begin
 end;
 
 function TFrontBase.GetDiscountCardInfo(
-  var MemTable: TkbmMemTable; const CardID: Integer; LDate: TDateTime; Pass: String): Boolean;
+  const MemTable: TkbmMemTable; const CardID: Integer; LDate: TDateTime; Pass: String): Boolean;
 begin
   FReadSQL.Close;
   MemTable.Close;
@@ -3661,7 +3654,7 @@ begin
   end;
 end;
 
-function TFrontBase.GetServiceCheckQuery(var Query: TIBQuery;
+function TFrontBase.GetServiceCheckQuery(const Query: TIBQuery;
   const PrnGrID, DocID: Integer; const PrinterName: String): Boolean;
 var
   S: String;
@@ -3861,7 +3854,7 @@ begin
   end;
 end;
 
-function TFrontBase.GetServiceCheckOptions(const DocID: Integer;
+{function TFrontBase.GetServiceCheckOptions(const DocID: Integer;
   out PrinterName: String; out PrnGrid: Integer): Boolean;
 begin
   Result := False;
@@ -3904,7 +3897,7 @@ begin
   finally
     FReadSQL.Close;
   end;
-end;
+end;   }
 
 function TFrontBase.SaveReportTemplate(const Stream: TStream;
   const ID: Integer): Boolean;
@@ -4000,7 +3993,7 @@ begin
   end;
 end;
 
-function TFrontBase.GetPreCheckQuery(var Query: TIBQuery;
+function TFrontBase.GetPreCheckQuery(const Query: TIBQuery;
   const DocID: Integer): Boolean;
 begin
   Result := False;
@@ -4044,7 +4037,7 @@ begin
   end;
 end;
 
-function TFrontBase.GetUserGroupList(var MemTable: TkbmMemTable): Boolean;
+function TFrontBase.GetUserGroupList(const MemTable: TkbmMemTable): Boolean;
 var
   ID: Integer;
 begin
@@ -4085,7 +4078,7 @@ begin
   end;
 end;
 
-function TFrontBase.GetDepartmentList(var MemTable: TkbmMemTable): Boolean;
+function TFrontBase.GetDepartmentList(const MemTable: TkbmMemTable): Boolean;
 begin
   Result := False;
   try

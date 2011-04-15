@@ -2007,7 +2007,7 @@ begin
                   if FReport.ServiceCheckOptions(OrderKey) then
                   begin
                     FFrontBase.SavePrintDate(OrderKey);
-                    FFrontBase.CloseModifyTable(FModificationDataSet, GetServerDateTime);
+                    FFrontBase.CloseModifyTable(FModificationDataSet);
                   end;
                 end;
                 FLogManager.DoOrderLog(GetCurrentUserInfo, GetCurrentOrderInfo, ev_SaveOrder);
@@ -2541,7 +2541,7 @@ begin
       if FReport.ServiceCheckOptions(FHeaderTable.FieldByName('ID').AsInteger) then
       begin
         FFrontBase.SavePrintDate(FHeaderTable.FieldByName('ID').AsInteger);
-        FFrontBase.CloseModifyTable(FModificationDataSet, GetServerDateTime);
+        FFrontBase.CloseModifyTable(FModificationDataSet);
       end;
 
       if FReport.PrintPreCheck(1, FHeaderTable.FieldByName('ID').AsInteger) then
@@ -2755,7 +2755,7 @@ begin
       if FReport.ServiceCheckOptions(FHeaderTable.FieldByName('ID').AsInteger) then
       begin
         FFrontBase.SavePrintDate(FHeaderTable.FieldByName('ID').AsInteger);
-        FFrontBase.CloseModifyTable(FModificationDataSet, GetServerDateTime);
+        FFrontBase.CloseModifyTable(FModificationDataSet);
       end;
       SumToPay := 0;
       FLineTable.DisableControls;
@@ -4565,12 +4565,13 @@ end;
 procedure TRestMainForm.actScrollDownUpdate(Sender: TObject);
 begin
   if pcMenu.ActivePage = tsMenu then
+  begin
     if FMenuButtonCount > 6 then
       actScrollDown.Enabled := (FMenuLastTop + btnHeight > pnlMenu.Height)
     else
       actScrollDown.Enabled := (FGroupLastTop + btnHeight > pnlExtraGoodGroup.Height)
-    else
-      actScrollDown.Enabled := (FGroupLastTop + btnHeight > pnlGoodGroup.Height);
+  end else
+    actScrollDown.Enabled := (FGroupLastTop + btnHeight > pnlGoodGroup.Height);
 end;
 
 end.
