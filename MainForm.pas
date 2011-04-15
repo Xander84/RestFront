@@ -19,6 +19,10 @@ uses
 const
   btnHeight = 65;
   btnWidth = 140;
+  BTN_USERORDER_HEIGHT = 65;
+  BTN_USERORDER_WIDTH = 90;
+  BTN_USERORDER_MARGIN = 0;
+
   btnHalfWidth = 102;
   btnLongWidth = 215;
   btnNewLong = 155;
@@ -393,8 +397,10 @@ type
     // Указатель на нажатую кнопку
     FSelectedButton: TObject;
     FMenuSelectedButton: TObject;
-
+    { Переменная используется в режиме смена столов, для хранения стола с которого перемещается заказ }
     FSwapTableFrom: TRestTable;
+
+    FServerTimeLag: Extended;
 
     FRestFormState: TRestState;
     FPrevFormState: TRestState;
@@ -681,6 +687,8 @@ begin
   FTableManager.TableButtonPopupMenu := tablePopupMenu;
 
   FActiveHallKey := -1;
+  // Получим разницу локального времени и серверного
+  FServerTimeLag := FFrontBase.GetServerDateTime - Now;
 end;
 
 procedure TRestMainForm.FormDestroy(Sender: TObject);
@@ -3466,14 +3474,14 @@ begin
     else
       FButton.OnClick := SplitButtonOnClick;
     FButton.Name := Format(btnUserOrderName, [FUserOrderButtonNumber]);
-    FButton.Height := btnHeight;
-    FButton.Width := btnWidth;
+    FButton.Height := BTN_USERORDER_HEIGHT;
+    FButton.Width := BTN_USERORDER_WIDTH;
 
     FButton.Left := FUserOrderLastLeftButton;
     FButton.Top := FUserOrderLastTop;
 
     FButton.Tag := MemTable.FieldByName('ID').AsInteger;
-    FButton.Caption := Format('№ %s', [MemTable.FieldByName('TableName').AsString]);
+    FButton.Caption := MemTable.FieldByName('TableName').AsString;
     FButton.Status.Caption := MemTable.FieldByName('Summ').AsString;
     FButton.Status.Visible := True;
     FButton.Status.Appearance.Font.Size := cn_ButtonSmallFontSize;
@@ -3486,7 +3494,7 @@ begin
     FButton.Appearance.EndUpdate;
   end;
 
-  FUserOrderLastLeftButton := FUserOrderLastLeftButton + btnWidth + 8 { 10 } ;
+  FUserOrderLastLeftButton := FUserOrderLastLeftButton + FButton.Width + BTN_USERORDER_MARGIN;
 
   FUsersOrderButtonList.Add(FButton);
   Inc(FUserOrderButtonNumber);
@@ -4155,14 +4163,14 @@ var
 begin
   case FRestFormState of
     rsPass:
-      S := ' ' + DateToStr(Date) + ' ' + TimeToStr(Now);
+      S := ' ' + DateToStr(Date) + ' ' + TimeToStr(Now + FServerTimeLag);
 
     rsOrderMenu, rsManagerPage, rsManagerChooseOrder, rsManagerInfo, rsKassirInfo, rsHallsPage, rsHallInfo:
-      S := ' ' + DateToStr(Date) + ' ' + TimeToStr(Now) + ' пользователь: ' + FFrontBase.UserName;
+      S := ' ' + DateToStr(Date) + ' ' + TimeToStr(Now + FServerTimeLag) + ' пользователь: ' + FFrontBase.UserName;
 
     rsMenuInfo:
       begin
-        S := ' ' + DateToStr(Date) + ' ' + TimeToStr(Now) + ' пользователь: ' + FFrontBase.UserName + ', дата создания заказа: ' +
+        S := ' ' + DateToStr(Date) + ' ' + TimeToStr(Now + FServerTimeLag) + ' пользователь: ' + FFrontBase.UserName + ', дата создания заказа: ' +
           FHeaderTable.FieldByName('creationdate').AsString;
         if FLineTable.FieldByName('usr$mn_printdate').AsString <> '' then
           S := S + ', дата печати: ' + FLineTable.FieldByName('usr$mn_printdate').AsString;
