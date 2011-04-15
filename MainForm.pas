@@ -1913,8 +1913,8 @@ end;
 procedure TRestMainForm.actOKExecute(Sender: TObject);
 var
   OrderKey: Integer;
-  PrinterName: String;
-  PrnGrid: Integer;
+//  PrinterName: String;
+//  PrnGrid: Integer;
   FSQL: TIBSQL;
   FPrinted: Boolean;
 begin
@@ -4013,13 +4013,8 @@ end;
 
 procedure TRestMainForm.TableButtonOnClick(Sender: TObject);
 var
-  FOrderKey: Integer;
-  FUserInfo: TUserInfo;
   CurrentRestTable: TRestTable;
   Pt: TPoint;
-  RespKey: Integer;
-  FSQL: TIBSQL;
-  Item: TMenuItem;
 begin
   if not FFrontBase.CheckForSession then
     exit;
@@ -4056,117 +4051,9 @@ begin
   end
   else
   begin
-    FOrderKey := CurrentRestTable.OrderKey;
-    // Проверить на кол-во заказов и сразу построить pop-up список
-    { FSQL := TIBSQL.Create(nil);
-      FSQL.Transaction := FFrontBase.ReadTransaction;
-      try
-      tablePopupMenu.Items.Clear;
-      FRestTable.OrderList.Clear;
-      if not FSQL.Transaction.InTransaction then
-      FSQL.Transaction.StartTransaction;
-
-      FSQL.SQL.Text := 'SELECT T.*, U.USR$RESPKEY, U.DOCUMENTKEY, U.USR$COMPUTERNAME, DOC.NUMBER, CON.NAME ' +
-      'FROM USR$MN_TABLE T ' +
-      'JOIN USR$MN_ORDER U ON (U.USR$TABLEKEY = T.ID AND U.USR$PAY <> 1) ' +
-      'LEFT JOIN GD_DOCUMENT DOC ON DOC.ID = U.DOCUMENTKEY ' +
-      'LEFT JOIN GD_CONTACT CON ON CON.ID = U.USR$RESPKEY ' +
-      'WHERE T.ID = :ID ' +
-      'ORDER BY U.DOCUMENTKEY, DOC.NUMBER ';
-      FSQL.ParamByName('ID').AsInteger := FRestTable.ID;
-      FSQL.ExecQuery;
-      while not FSQL.Eof do
-      begin
-      FOrderKey := FSQL.FieldByName('DOCUMENTKEY').AsInteger;
-      if FRestTable.OrderKey <> FOrderKey then
-      FRestTable.OrderKey := FOrderKey;
-
-      RespKey := FSQL.FieldByName('USR$RESPKEY').AsInteger;
-      if FRestTable.RespKey <> RespKey then
-      FRestTable.RespKey := RespKey;
-
-      FRestTable.OrderList.Add(FSQL.FieldByName('DOCUMENTKEY').AsInteger,
-      FSQL.FieldByName('NUMBER').AsString);
-      //если заказ не свой или не менеджер, то не добавляем меню
-      if (FFrontBase.ContactKey = RespKey) or
-      ((FFrontBase.UserKey and FFrontBase.Options.ManagerGroupMask) <> 0) then
-      begin
-      Item  := TMenuItem.Create(tablePopupMenu);
-      Item.Tag := FSQL.FieldByName('DOCUMENTKEY').AsInteger;
-      Item.Caption := 'Заказ ' + FSQL.FieldByName('NUMBER').AsString;
-      Item.OnClick := OrderButtonOnClick;
-      tablePopupMenu.Items.Add(Item);
-      end;
-      FSQL.Next;
-      end;
-      FSQL.Close;
-      finally
-      FSQL.Free;
-      end; }
-
-    if True { FRestTable.OrderCount > 1 } then
-    begin
-      // FRestTable.Tag := 0;
-      Pt := CurrentRestTable.ClientToScreen(Point(0, 0));
-      CurrentRestTable.PopupMenu.PopupComponent := CurrentRestTable;
-      CurrentRestTable.PopupMenu.Popup(Pt.X + 64, Pt.Y + 32);
-      exit;
-    end;
-
-    if FOrderKey > 0 then
-    begin
-      if FFrontBase.OrderIsLocked(FOrderKey) then
-      begin
-        if FFrontBase.GetLocalComputerName <> CurrentRestTable.ComputerName then
-        begin
-          Touch_MessageBox('Внимание', 'Заказ редактируется на другом рабочем месте!', MB_OK, mtWarning);
-          exit;
-        end
-        else if Touch_MessageBox('Внимание', 'Заказ редактируется. Продолжить?', MB_YESNO, mtConfirmation) = IDYES then
-        begin
-          FUserInfo := FFrontBase.CheckUserPasswordWithForm;
-          if FUserInfo.CheckedUserPassword then
-          begin
-            if (FUserInfo.UserInGroup and FFrontBase.Options.ManagerGroupMask) = 0 then
-            begin
-              Touch_MessageBox('Внимание', cn_dontManagerPermission, MB_OK, mtWarning);
-              exit;
-            end;
-          end
-          else
-            exit;
-        end
-        else
-          exit;
-      end;
-
-      if CurrentRestTable.RespKey <> FFrontBase.ContactKey then
-        if (FFrontBase.UserKey and FFrontBase.Options.ManagerGroupMask) = 0 then
-        begin
-          Touch_MessageBox('Внимание', cn_dontManagerPermission, MB_OK, mtWarning);
-          exit;
-        end;
-
-      FFrontBase.GetOrder(FHeaderTable, FLineTable, FModificationDataSet, FOrderKey);
-      FFrontBase.LockUserOrder(FOrderKey);
-      if not Assigned(dsMain.DataSet) then
-        dsMain.DataSet := FLineTable
-      else
-      begin
-        // для обнулений значений в гриде
-        dsMain.DataSet := nil;
-        dsMain.DataSet := FLineTable;
-      end;
-      RestFormState := rsMenuInfo;
-      // если заказ закрыт, то оставляем отмену пречека, иначе просто пречек
-      if FHeaderTable.FieldByName('usr$timecloseorder').IsNull then
-        btnPreCheck.Action := actPreCheck
-      else
-        btnPreCheck.Action := actCancelPreCheck;
-      FLogManager.DoOrderLog(GetCurrentUserInfo, GetCurrentOrderInfo, ev_EnterOrder);
-    end
-    else
-      CreateNewTableOrder(CurrentRestTable);
+    Pt := CurrentRestTable.ClientToScreen(Point(0, 0));
+    CurrentRestTable.PopupMenu.PopupComponent := CurrentRestTable;
+    CurrentRestTable.PopupMenu.Popup(Pt.X + 64, Pt.Y + 32);
   end;
 end;
 
@@ -4188,6 +4075,11 @@ begin
   end;
 
   tablePopupMenu.Items.Clear;
+  if FButton.OrderList.Count = 0 then
+  begin
+    CreateNewTableOrder(FButton);
+    exit;
+  end;
   // Пункт меню для нового заказа
   if (FButton.RespKey <= 0) or (FButton.RespKey = FFrontBase.ContactKey) or
     ((FFrontBase.UserKey and FFrontBase.Options.ManagerGroupMask) <> 0) then
