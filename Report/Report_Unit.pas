@@ -7,7 +7,7 @@ uses
   frxDesgn, frxClass, frxDCtrl, frxChart, frxRich, frxBarcode, ImgList,
   frxCross, frxDMPExport, frxExportRTF, frxGZip, frxChBox,
   frxExportText, frxPrinter, Dialogs, frxDBSet, frxPreview, frxIBXComponents,
-  IBQuery, kbmMemTable, DB, Variants, Base_FiscalRegister_unit;
+  IBQuery, kbmMemTable, DB, Variants, Base_FiscalRegister_unit, IBSQL;
 
 type
   Tgs_fr4Report = class(TfrxReport)
@@ -77,6 +77,7 @@ type
     procedure PrintCopyChecks(const DateBegin, DateEnd: TDate);
     procedure PrintRealization(const DateBegin, DateEnd: TDate);
     function EditTemplate(const ID: Integer): Boolean;
+    function ServiceCheckOptions(const OrderKey: Integer): Boolean;
 
     property FrontBase: TFrontBase read FFrontBase write FFrontBase;
   end;
@@ -588,7 +589,7 @@ begin
       if FReport.PrepareReport then
       begin
         InitReportParams(FReport, PrinterName);
-        FReport.Print;
+        FReport.ShowPreparedReport;
       end;
     finally
       FrxDBDataset.Free;
@@ -618,6 +619,8 @@ begin
 
   BaseQueryList := FrontData.BaseQueryList;
   BaseQueryList.Clear;
+
+  PrinterName := FFrontBase.GetPrinterName;
   if PrinterName = '' then
   begin
     Touch_MessageBox('Внимание', 'Для данной рабочей станции не указан пречековый принтер!', MB_OK, mtWarning);
@@ -1136,6 +1139,8 @@ begin
 
   BaseQueryList := FrontData.BaseQueryList;
   BaseQueryList.Clear;
+
+  PrinterName := FFrontBase.GetPrinterName;
   if PrinterName = '' then
   begin
     Touch_MessageBox('Внимание', 'Для данной рабочей станции не указан пречековый принтер!', MB_OK, mtWarning);
@@ -1201,7 +1206,7 @@ begin
       if FReport.PrepareReport then
       begin
         InitReportParams(FReport, PrinterName);
-        FReport.Print;
+        FReport.ShowPreparedReport;
       end;
     finally
       FrxDBDataset.Free;
@@ -1302,7 +1307,7 @@ begin
           then
             begin
               MemTable.FieldByName('modifyname').AsString := '';
-              MemTable.FieldbyName('TIME').AsdateTime := Query.FieldByName('time1').AsDateTime;;
+              MemTable.FieldbyName('TIME').AsdateTime := Query.FieldByName('time1').AsDateTime;
               MemTable.FieldByNAme('COMPRESSEDON').AsVariant := ''; // 'chr(&H1D) + CHR(&H56) + CHR(&H01)
               MemTable.FieldByNAme('RESET').AsVariant := ''; //'chr(&H1B) + CHR(&H40)
               MemTable.FieldByNAme('BELL').AsVariant := ''; //'chr(&H1B) + CHR(&H70) + "0" + CHR(0) + chr(0)
@@ -1319,7 +1324,7 @@ begin
             end;
 
           Linekey := Query.FieldByName('documentkey').AsInteger;
-          MemTable.FieldbyName('TIME').AsdateTime := Query.FieldByName('time1').AsDateTime;;
+          MemTable.FieldbyName('TIME').AsdateTime := Query.FieldByName('time1').AsDateTime;
           MemTable.FieldByNAme('COMPRESSEDON').AsVariant := ''; // 'chr(&H1D) + CHR(&H56) + CHR(&H01)
           MemTable.FieldByNAme('RESET').AsVariant := ''; //'chr(&H1B) + CHR(&H40)
           MemTable.FieldByNAme('BELL').AsVariant := ''; //'chr(&H1B) + CHR(&H70) + "0" + CHR(0) + chr(0)
@@ -1379,6 +1384,41 @@ begin
   Assert(ID <> -1, 'Invalid template RUID');
 
   FFrontBase.SaveReportTemplate(Stream, ID);
+end;
+
+function TRestReport.ServiceCheckOptions(const OrderKey: Integer): Boolean;
+var
+  FSQL: TIBSQL;
+begin
+  Result := False;
+
+  FSQL := TIBSQL.Create(nil);
+  FSQL.Transaction := FFrontBase.ReadTransaction;
+  try
+    FSQL.SQL.Text := 'select ' + '  DISTINCT   ' +
+      '  IIF(setprn.usr$concatchecks = 0, prn.id, null) as prngrid, prn.usr$divide,  ' +
+      '  setprn.usr$printername, setprn.usr$printerid, o.documentkey, setprn.USR$DOSPRINTER  ' + 'from   ' +
+      '  usr$mn_order o  ' + '  join usr$mn_orderline l on o.documentkey = l.masterkey  ' +
+      '  join gd_document doc on doc.id = l.documentkey and doc.usr$mn_printdate is null  ' +
+      '  join gd_good g on g.id = l.usr$goodkey  ' + '  join usr$mn_prngroup prn on prn.id = g.usr$prngroupkey  ' +
+      '  join usr$mn_prngroupset setprn on setprn.usr$prngroup = prn.id  ' + 'where o.documentkey = :docid  ' +
+      ' and setprn.usr$computername = :comp   ' + ' and setprn.usr$kassa = 0   ' + 'order by  ' +
+      '  setprn.usr$printername, prn.id  ';
+    FSQL.ParamByName('docid').AsInteger := OrderKey;
+    FSQL.ParamByName('comp').AsString := FFrontBase.GetLocalComputerName;
+    FSQL.ExecQuery;
+    while not FSQL.Eof do
+    begin
+      PrintServiceCheck(1, FSQL.FieldByName('prngrid').AsInteger, OrderKey,
+        FSQL.FieldByName('usr$printername').AsString);
+      Result := True;
+      FSQL.Next;
+    end;
+
+    FSQL.Close;
+  finally
+    FSQL.Free;
+  end;
 end;
 
 initialization

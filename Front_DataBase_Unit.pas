@@ -3122,7 +3122,7 @@ var
 
 const
   UpdateModify = ' UPDATE USR$CROSS509_157767346 C ' +
-    ' SET C.USR$CLOSETIME = :closetime       ' +
+    ' SET C.USR$CLOSETIME = current_time       ' +
     ' WHERE C.usr$mn_orderlinekey = :linekey ';
 
 begin
@@ -3142,7 +3142,7 @@ begin
         if ModifyTable.FieldByName('CLOSETIME').AsString = '' then
         begin
           FSQL.ParamByName('linekey').AsInteger := ModifyTable.FieldByName('MASTERKEY').AsInteger;
-          FSQL.ParamByName('closetime').AsTime := CloseTime;
+//          FSQL.ParamByName('closetime').AsTime := CloseTime;
           FSQL.ExecQuery;
           FSQL.Close;
         end;
