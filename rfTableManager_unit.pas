@@ -3,7 +3,8 @@ unit rfTableManager_unit;
 interface
 
 uses
-  SysUtils, Classes, Contnrs, Controls, Generics.Collections, Front_DataBase_Unit, RestTable_Unit, AdvMenus, pngimage, AdvGDIP;
+  SysUtils, Classes, Contnrs, Controls, Generics.Collections,
+  Front_DataBase_Unit, RestTable_Unit, AdvMenus, pngimage, AdvGDIP, rfOrder_unit;
 
 type
   TrfTableManager = class(TObject)
@@ -115,7 +116,6 @@ begin
   Result.TableTypeKey := ADesignerTable.TableTypeKey;
   Result.HallKey := ADesignerTable.HallKey;
   Result.OrderKey := 0;
-  Result.RespKey := 0;
   Result.IsLocked := False;
   Result.Number := ATableNumber;
   Result.NeedToInsert := true;
@@ -221,7 +221,7 @@ begin
   FConditionImageDictionary.Add(rtcFreeOther, nil{FrontData.RestPictureContainer.FindPicture('bullet_green_small')});
   FConditionImageDictionary.Add(rtcOccupied, FrontData.RestPictureContainer.FindPicture('user_small'));
   FConditionImageDictionary.Add(rtcOccupiedOther, FrontData.RestPictureContainer.FindPicture('bullet_delete'));
-  FConditionImageDictionary.Add(rtcPreCheck, FrontData.RestPictureContainer.FindPicture('money'));
+  FConditionImageDictionary.Add(rtcPreCheck, FrontData.RestPictureContainer.FindPicture('money_dollar_small'));
 end;
 
 procedure TrfTableManager.LoadTables(const HallKey: Integer);
@@ -427,15 +427,14 @@ begin
           if Table.OrderKey <> ibsql.FieldByName('DOCUMENTKEY').AsInteger then
             Table.OrderKey := ibsql.FieldByName('DOCUMENTKEY').AsInteger;
 
-          if Table.RespKey <> ibsql.FieldByName('USR$RESPKEY').AsInteger then
-            Table.RespKey := ibsql.FieldByName('USR$RESPKEY').AsInteger;
-
           if Table.ComputerName <> ibsql.FieldByName('usr$computername').AsString then
             Table.ComputerName := ibsql.FieldByName('usr$computername').AsString;
 
+          // ƒобавим заказ в список заказов стола
           Order := Table.AddOrder(ibsql.FieldByName('DOCUMENTKEY').AsInteger,
             ibsql.FieldByName('NUMBER').AsString);
           Order.TimeCloseOrder := ibsql.FieldByName('usr$timecloseorder').AsDateTime;
+          Order.ResponsibleKey := ibsql.FieldByName('usr$respkey').AsInteger;
 
           ibsql.Next;
         end;

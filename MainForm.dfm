@@ -50,6 +50,8 @@ object RestMainForm: TRestMainForm
         ColorTo = 14986888
         TabColor = clBtnFace
         TabColorTo = clNone
+        ExplicitLeft = 2
+        ExplicitTop = 14
         object edPassword: TEdit
           Left = 300
           Top = 279
@@ -2751,7 +2753,7 @@ object RestMainForm: TRestMainForm
         Top = 1
         Width = 80
         Height = 719
-        ActivePage = tsManagerInfoButton
+        ActivePage = tsMainButton
         ActiveFont.Charset = DEFAULT_CHARSET
         ActiveFont.Color = clWindowText
         ActiveFont.Height = -11
@@ -3575,6 +3577,7 @@ object RestMainForm: TRestMainForm
             Width = 74
             Height = 54
             Margins.Top = 50
+            Margins.Bottom = 1
             BorderColor = clGray
             BevelWidth = 0
             Appearance.PictureAlignment = taCenter
@@ -3604,7 +3607,43 @@ object RestMainForm: TRestMainForm
             Action = actSwapTable
             Align = alTop
             TabOrder = 5
-            Visible = False
+          end
+          object btnSwapWaiter: TAdvSmoothButton
+            AlignWithMargins = True
+            Left = 3
+            Top = 330
+            Width = 74
+            Height = 54
+            Margins.Top = 1
+            Margins.Bottom = 1
+            Action = actSwapWaiter
+            Align = alTop
+            Appearance.PictureAlignment = taCenter
+            Appearance.Font.Charset = DEFAULT_CHARSET
+            Appearance.Font.Color = clWindowText
+            Appearance.Font.Height = -9
+            Appearance.Font.Name = 'Tahoma'
+            Appearance.Font.Style = [fsBold]
+            Appearance.Layout = blPictureTop
+            Status.Caption = '0'
+            Status.Appearance.Fill.Color = clRed
+            Status.Appearance.Fill.ColorMirror = clNone
+            Status.Appearance.Fill.ColorMirrorTo = clNone
+            Status.Appearance.Fill.GradientType = gtSolid
+            Status.Appearance.Fill.BorderColor = clGray
+            Status.Appearance.Fill.Rounding = 0
+            Status.Appearance.Fill.ShadowOffset = 0
+            Status.Appearance.Font.Charset = DEFAULT_CHARSET
+            Status.Appearance.Font.Color = clWhite
+            Status.Appearance.Font.Height = -11
+            Status.Appearance.Font.Name = 'Tahoma'
+            Status.Appearance.Font.Style = []
+            Bevel = False
+            Color = 15195349
+            DisabledColor = clBlack
+            ParentFont = False
+            TabOrder = 6
+            Version = '1.6.9.0'
           end
         end
         object tsManagerInfoButton: TAdvTabSheet
@@ -4403,9 +4442,20 @@ object RestMainForm: TRestMainForm
       Hint = #1042#1086#1079#1074#1088#1072#1090' '#1079#1072' '#1090#1086#1074#1072#1088
       OnExecute = actReturnGoodSumExecute
     end
+    object actSwapWaiter: TAction
+      Category = 'Hall'
+      Caption = #1057#1084#1077#1085#1072' '#1086#1092#1080#1094#1080#1072#1085#1090#1072
+      OnExecute = actSwapWaiterExecute
+      OnUpdate = actSwapWaiterUpdate
+    end
+    object Action1: TAction
+      Caption = 'Action1'
+    end
     object actSwapTable: TAction
       Category = 'Hall'
       Caption = #1057#1084#1077#1085#1072' '#1089#1090#1086#1083#1072
+      OnExecute = actSwapTableExecute
+      OnUpdate = actSwapTableUpdate
     end
   end
   object dsMain: TDataSource

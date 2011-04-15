@@ -4,7 +4,7 @@ interface
 
 uses
   IBDatabase, Db, Classes, IBSQL, kbmMemTable, Base_Display_unit, Generics.Collections,
-  Pole_Display_Unit, IBQuery, IB, IBErrorCodes, IBServices, obj_QueryList;
+  Pole_Display_Unit, IBQuery, IB, IBErrorCodes, IBServices, obj_QueryList, rfUser_unit, rfOrder_unit;
 
 const
   MN_OrderXID = 147014509;
@@ -63,7 +63,7 @@ const
     '  FROM usr$mn_menu mn left join usr$mn_menuname mnn ' +
     '   ON mn.usr$menunamekey = mnn.id ' +
     '    LEFT JOIN gd_document doc on doc.id = mn.documentkey ' +
-    '  WHERE (mn.usr$todate is null or mn.usr$todate >= :date) and (doc.documentdate <= :Date) ' +
+    '  WHERE (mn.usr$todate is null or mn.usr$todate >= :curdate) and (doc.documentdate <= :curdate) ' +
     '    AND ((mn.USR$TIMEBEGIN <= current_time AND mn.USR$TIMEEND >= current_time) ' +
     '      OR (mn.USR$TIMEBEGIN IS NULL AND mn.USR$TIMEEND IS NULL)) ' +
     ' and exists (select first(1) dd.id from gd_document dd where dd.parent = mn.documentkey) ' +
@@ -319,9 +319,12 @@ type
     function GetServerDateTime: TDateTime;
 
     procedure GetUserList(const UserList: TStrings);
-    function GetUserOrders(const ContactKey: Integer; var MemTable: TkbmMemTable):Boolean; //Если -1 то возвращаем для текущего
+    { Получить заказы для переданного пользователя, если "user = -1" то возвращаем для текущего }
+    procedure GetUserOrderList(const ContactKey: Integer; AOrderList: TList<TrfOrder>);
+    function GetUserOrders(const ContactKey: Integer; var MemTable: TkbmMemTable): Boolean;
     function GetUserOrdersPrecheck(const ContactKey: Integer; const MemTable: TkbmMemTable;
       const WithPrecheck: Boolean):Boolean;
+
     function GetOrdersInfo(const HeaderTable, LineTable: TkbmMemTable; const DateBegin, DateEnd: TDate;
       const WithPreCheck, WithOutPreCheck, Payed, NotPayed: Boolean): Boolean;
     function GetMenuList(var MemTable: TkbmMemTable): Boolean;
@@ -350,7 +353,10 @@ type
     function OrderIsLocked(const ID: Integer): Boolean;
     //причины списания
     function GetCauseDeleteList(var MemTable: TkbmMemTable): Boolean;
-    function GetActiveWaiterList(var MemTable: TkbmMemTable; WithPrecheck: Boolean): Boolean;
+    { Список всех пользователей фронта }
+    procedure GetWaiterList(AOrderList: TList<TrfUser>);
+    { Список всех пользователей фронта у которых на данный момент есть заказы }
+    procedure GetActiveWaiterList(AOrderList: TList<TrfUser>; const WithPrecheck: Boolean);
     function GetLogicDate: TDateTime;
 
     function GetModificationList(var MemTable: TkbmMemTable; const GoodKey: Integer; const ModifyGroupKey: Integer): Boolean;
@@ -757,7 +763,8 @@ const
     '          usr$timecloseorder = :usr$timecloseorder, ' +
     '          usr$pay = :usr$pay,                  ' +
     '          usr$computername = :usr$computername,' +
-    '          USR$ISLOCKED = 0,                     ' +
+    '          USR$ISLOCKED = 0,                    ' +
+    '          usr$tablekey = :usr$tablekey,        ' +
     '          usr$sysnum = :usr$sysnum,            ' +
     '          usr$register = :usr$register         ' +
     '      where (documentkey = :documentkey)       ';
@@ -877,6 +884,7 @@ begin
           updOrder.ParamByName('documentkey').AsInteger := HeaderTable.FieldByName('ID').AsInteger;
           updOrder.ParamByName('usr$pay').AsInteger := HeaderTable.FieldByName('usr$pay').AsInteger;
           updOrder.ParamByName('usr$computername').AsString := GetLocalComputerName;
+          updOrder.ParamByName('usr$tablekey').AsInteger := HeaderTable.FieldByName('usr$tablekey').AsInteger;
           updOrder.ParamByName('usr$sysnum').AsInteger := HeaderTable.FieldByName('usr$sysnum').AsInteger;
           updOrder.ParamByName('usr$register').AsString := HeaderTable.FieldByName('usr$register').AsString;
           updOrder.ExecQuery;
@@ -1368,7 +1376,11 @@ begin
 end;
 
 function TFrontBase.GetMenuList(var MemTable: TkbmMemTable): Boolean;
+var
+  LogicDate: TDateTime;
 begin
+  LogicDate := GetLogicDate;
+
   FReadSQL.Close;
   MemTable.Close;
   MemTable.CreateTable;
@@ -1379,7 +1391,7 @@ begin
         FReadSQL.Transaction.StartTransaction;
 
       FReadSQL.SQL.Text := cst_MenuList;
-      FReadSQL.ParamByName('Date').ASDateTime := Now;
+      FReadSQL.ParamByName('curdate').AsDateTime := LogicDate;
       FReadSQL.ExecQuery;
       while not FReadSQL.EOF do
       begin
@@ -1942,44 +1954,36 @@ begin
         FReadSQL.Transaction.StartTransaction;
 
       FReadSQL.SQL.Text :=
-       ' SELECT  ' +
-       '   Z.ID, ' +
-       '   Z.NUMBER, ' +
-       '   U.USR$GUESTCOUNT, ' +
-       '   U.USR$LOGICDATE,  ' +
-       '   U.USR$PAY,   ' +
-       '   U.USR$TIMECLOSEORDER, ' +
-       '   U.USR$TIMEORDER, ' +
-       '   U.USR$VIP, ' +
-       '   U.USR$ISLOCKED, ' +
-       '   ( SELECT ' +
-       '     SUM ( L.USR$SUMNCUWITHDISCOUNT ) ' +
-       '   FROM ' +
-       '     USR$MN_ORDERLINE L ' +
-       '   WHERE ' +
-       '     L.MASTERKEY  =  Z.ID ' +
-       '        AND ' +
-       '      L.USR$CAUSEDELETEKEY + 0 IS NULL    ) AS USR$SUMNCUWITHDISCOUNT, ' +
-       '   Z.USR$MN_PRINTDATE, U.USR$COMPUTERNAME ' +
-       '  FROM ' +
-       '   GD_DOCUMENT Z ' +
-       '     JOIN ' +
-       '       USR$MN_ORDER U ' +
-       '     ON ' +
-       '       U.DOCUMENTKEY  =  Z.ID ' +
-       ' WHERE ' +
-       '   Z.DOCUMENTTYPEKEY  =  :OrderTypeKey ' +
-       '      AND ' +
-       '   Z.PARENT + 0 IS NULL ' +
-       '      AND ' +
-       '   USR$RESPKEY  =  :RespKey ' +
-       '      AND ' +
-       '   ( USR$PAY  <>  1 ) ' +
-       '      AND ' +
-       '   ( USR$VIP  <>  1 OR   USR$VIP IS NULL ) ' +
-       ' ORDER BY ' +
-       '   U.USR$LOGICDATE, ' +
-       '   U.USR$TIMEORDER ';
+        ' SELECT ' +
+        '   z.id, z.number, ' +
+        '   u.usr$guestcount, ' +
+        '   u.usr$logicdate, ' +
+        '   u.usr$pay, ' +
+        '   u.usr$timecloseorder, ' +
+        '   u.usr$timeorder, ' +
+        '   u.usr$vip, ' +
+        '   u.usr$islocked, ' +
+        '   (SELECT ' +
+        '      SUM(l.usr$sumncuwithdiscount) ' +
+        '    FROM ' +
+        '      usr$mn_orderline l ' +
+        '    WHERE ' +
+        '      l.masterkey = z.id ' +
+        '      AND l.usr$causedeletekey + 0 IS NULL) AS usr$sumncuwithdiscount, ' +
+        '   z.usr$mn_printdate, ' +
+        '   u.usr$computername ' +
+        ' FROM ' +
+        '   gd_document z ' +
+        '   JOIN usr$mn_order u ON u.documentkey = z.id ' +
+        ' WHERE ' +
+        '   z.documenttypekey = :ordertypekey ' +
+        '   AND z.parent + 0 IS NULL ' +
+        '   AND usr$respkey = :respkey ' +
+        '   AND (usr$pay <> 1) ' +
+        '   AND (usr$vip <> 1 ' +
+        '   OR usr$vip IS NULL) ' +
+        ' ORDER BY ' +
+        '   u.usr$logicdate, u.usr$timeorder ';
       if ContactKey  > 0 then
         FReadSQL.ParamByName('RespKey').AsInteger := ContactKey
       else
@@ -2010,6 +2014,72 @@ begin
       Result := True;
     except
       Result := False;
+      raise;
+    end;
+  finally
+    FReadSQL.Close;
+  end;
+end;
+
+procedure TFrontBase.GetUserOrderList(const ContactKey: Integer; AOrderList: TList<TrfOrder>);
+var
+  Order: TrfOrder;
+begin
+  FReadSQL.Close;
+  try
+    try
+      if not FReadSQL.Transaction.InTransaction then
+        FReadSQL.Transaction.StartTransaction;
+
+      FReadSQL.SQL.Text :=
+        ' SELECT ' +
+        '   z.id, z.number, ' +
+        '   u.usr$guestcount, ' +
+        '   u.usr$logicdate, ' +
+        '   u.usr$pay, ' +
+        '   u.usr$timecloseorder AS timecloseorder, ' +
+        '   u.usr$timeorder, ' +
+        '   u.usr$vip, ' +
+        '   u.usr$islocked, ' +
+        '   (SELECT ' +
+        '      SUM(l.usr$sumncuwithdiscount) ' +
+        '    FROM ' +
+        '      usr$mn_orderline l ' +
+        '    WHERE ' +
+        '      l.masterkey = z.id ' +
+        '      AND l.usr$causedeletekey + 0 IS NULL) AS usr$sumncuwithdiscount, ' +
+        '   z.usr$mn_printdate, ' +
+        '   u.usr$computername ' +
+        ' FROM ' +
+        '   gd_document z ' +
+        '   JOIN usr$mn_order u ON u.documentkey = z.id ' +
+        ' WHERE ' +
+        '   z.documenttypekey = :ordertypekey ' +
+        '   AND z.parent + 0 IS NULL ' +
+        '   AND usr$respkey = :respkey ' +
+        '   AND (usr$pay <> 1) ' +
+        '   AND (usr$vip <> 1 ' +
+        '   OR usr$vip IS NULL) ' +
+        ' ORDER BY ' +
+        '   u.usr$logicdate, u.usr$timeorder ';
+      // Пользователь
+      if ContactKey > 0 then
+        FReadSQL.ParamByName('RespKey').AsInteger := ContactKey
+      else
+        FReadSQL.ParamByName('RespKey').AsInteger := FContactKey;
+      // Тип заказа
+      FReadSQL.ParamByName('OrderTypeKey').AsInteger := FOrderTypeKey;
+      FReadSQL.ExecQuery;
+      while not FReadSQL.EOF do
+      begin
+        Order := TrfOrder.Create(FReadSQL.FieldByName('id').AsInteger, FReadSQL.FieldByName('number').AsString);
+        Order.TimeCloseOrder := FReadSQL.FieldByName('timecloseorder').AsDateTime;
+        Order.ResponsibleKey := FReadSQL.ParamByName('RespKey').AsInteger;
+
+        AOrderList.Add(Order);
+        FReadSQL.Next;
+      end;
+    except
       raise;
     end;
   finally
@@ -2110,60 +2180,86 @@ begin
   end;
 end;
 
-function TFrontBase.GetActiveWaiterList(var MemTable: TkbmMemTable; WithPrecheck: Boolean): Boolean;
+{ Список всех пользователей фронта }
+procedure TFrontBase.GetWaiterList(AOrderList: TList<TrfUser>);
 var
-  LDate: TDateTime;
+  Order: TrfUser;
 begin
   FReadSQL.Close;
-  MemTable.Close;
-  MemTable.CreateTable;
-  MemTable.Open;
   try
-    try
-      if not FReadSQL.Transaction.InTransaction then
-        FReadSQL.Transaction.StartTransaction;
+    if not FReadSQL.Transaction.InTransaction then
+      FReadSQL.Transaction.StartTransaction;
 
-      if Options.OrderCurrentLDate then
-        LDate := GetLogicDate;
+    FReadSQL.SQL.Text :=
+      ' SELECT DISTINCT ' +
+      '   u.contactkey AS contactkey, ' +
+      '   con.name AS fullname ' +
+      ' FROM ' +
+      '   gd_user u ' +
+      '   JOIN gd_contact con ON con.id = u.contactkey ' +
+      ' WHERE ' +
+      '   u.disabled <> 1 ' +
+      '   AND u.usr$mn_isfrontuser = 1 ' +
+      ' ORDER BY ' +
+      '   con.name ASC ';
+    FReadSQL.ExecQuery;
+    while not FReadSQL.EOF do
+    begin
+      Order := TrfUser.Create(FReadSQL.FieldByName('contactkey').AsInteger, FReadSQL.FieldByName('fullname').AsString);
+      AOrderList.Add(Order);
 
-      FReadSQL.SQL.Text :=
-        ' select    ' +
-        '   distinct  ' +
-        '   u.contactkey,    ' +
-        '   /* u.ingroup,  */ ' +
-        '   con.name as fullname    ' +
-        ' from    ' +
-        '   gd_user u    ' +
-        '   join gd_contact con on con.id = u.contactkey    ' +
-        ' where  ' +
-        '   u.disabled <> 1    ' +
-        '   and u.usr$mn_isfrontuser = 1    ' +
-        '   and exists (select o.documentkey from usr$mn_order o where o.usr$pay <> 1 and o.usr$respkey = con.id ' ;
-      if WithPrecheck then
-        FReadSQL.SQL.Text := FReadSQL.SQL.Text +
-          '   and o.usr$timecloseorder + 0 is not null ';
-      if Options.OrderCurrentLDate then
-        FReadSQL.SQL.Text := FReadSQL.SQL.Text + ' AND o.USR$LOGICDATE = :LDate ' ;
-      FReadSQL.SQL.Text := FReadSQL.SQL.Text + '   ) ' +
-        ' order by    ' +
-        '   con.name asc  ';
-      if Options.OrderCurrentLDate then
-        FReadSQL.ParamByName('LDate').AsDateTime := LDate;
+      FReadSQL.Next;
+    end;
+  finally
+    FReadSQL.Close;
+  end;
+end;
 
-      FReadSQL.ExecQuery;
-      while not FReadSQL.EOF do
-      begin
-        MemTable.Append;
-        MemTable.FieldByName('ID').AsInteger := FReadSQL.FieldByName('Contactkey').AsInteger;
-        MemTable.FieldByName('NAME').AsString := FReadSQL.FieldByName('fullname').AsString;
-//        MemTable.FieldByName('ingroup').ASInteger := FReadSQL.FieldByName('ingroup').AsInteger;
-        MemTable.Post;
-        FReadSQL.Next;
-      end;
-      Result := True;
-    except
-      Result := False;
-      raise;
+{ Список всех пользователей фронта у которых на данный момент есть заказы }
+procedure TFrontBase.GetActiveWaiterList(AOrderList: TList<TrfUser>; const WithPrecheck: Boolean);
+var
+  LDate: TDateTime;
+  Order: TrfUser;
+begin
+  FReadSQL.Close;
+  try
+    if not FReadSQL.Transaction.InTransaction then
+      FReadSQL.Transaction.StartTransaction;
+
+    if Options.OrderCurrentLDate then
+      LDate := GetLogicDate;
+
+    FReadSQL.SQL.Text :=
+      ' select    ' +
+      '   distinct  ' +
+      '   u.contactkey,    ' +
+      '   /* u.ingroup,  */ ' +
+      '   con.name as fullname    ' +
+      ' from    ' +
+      '   gd_user u    ' +
+      '   join gd_contact con on con.id = u.contactkey    ' +
+      ' where  ' +
+      '   u.disabled <> 1    ' +
+      '   and u.usr$mn_isfrontuser = 1    ' +
+      '   and exists (select o.documentkey from usr$mn_order o where o.usr$pay <> 1 and o.usr$respkey = con.id ' ;
+    if WithPrecheck then
+      FReadSQL.SQL.Text := FReadSQL.SQL.Text +
+        '   and o.usr$timecloseorder + 0 is not null ';
+    if Options.OrderCurrentLDate then
+      FReadSQL.SQL.Text := FReadSQL.SQL.Text + ' AND o.USR$LOGICDATE = :LDate ' ;
+    FReadSQL.SQL.Text := FReadSQL.SQL.Text + '   ) ' +
+      ' order by    ' +
+      '   con.name asc  ';
+    if Options.OrderCurrentLDate then
+      FReadSQL.ParamByName('LDate').AsDateTime := LDate;
+
+    FReadSQL.ExecQuery;
+    while not FReadSQL.EOF do
+    begin
+      Order := TrfUser.Create(FReadSQL.FieldByName('Contactkey').AsInteger, FReadSQL.FieldByName('fullname').AsString);
+      AOrderList.Add(Order);
+
+      FReadSQL.Next;
     end;
   finally
     FReadSQL.Close;
