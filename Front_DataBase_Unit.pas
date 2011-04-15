@@ -437,11 +437,20 @@ type
   procedure GetLineTable(var DS: TkbmMemTable);
   procedure GetModificationTable(var DS: TkbmMemTable);
   function WinExec32(Cmd: string; const CmdShow: Integer): Boolean;
+  procedure RemoveWrongPassChar(var Key: Char);
 
 implementation
 
 uses
   Windows, Sysutils, CardCodeForm_Unit, TouchMessageBoxForm_Unit, Dialogs, FrontData_Unit;
+
+procedure RemoveWrongPassChar(var Key: Char);
+begin
+  if (Key = 'æ') or (Key = 'Æ') then
+    Key := ';';
+  if (Key = ',') or (Key = '.') then
+    Key := '?';
+end;
 
 function WinExec32(Cmd: string; const CmdShow: Integer): Boolean;
 var

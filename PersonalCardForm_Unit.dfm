@@ -120,7 +120,7 @@ object PersonalCardForm: TPersonalCardForm
       ParentFont = False
       PasswordChar = '='
       TabOrder = 0
-      OnKeyUp = usrg_lblCardCodeKeyUp
+      OnKeyPress = usrg_lblCardCodeKeyPress
     end
     object btnCancel: TAdvSmoothButton
       Left = 277

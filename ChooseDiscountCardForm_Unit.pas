@@ -163,10 +163,7 @@ end;
 procedure TChooseDiscountCard.usrg_lblCardCodeKeyPress(Sender: TObject;
   var Key: Char);
 begin
-  if (Key = 'æ') or (Key = 'Æ') then
-    Key := ';';
-  if (Key = ',') or (Key = '.') then
-    Key := '?';
+  RemoveWrongPassChar(Key);
 
   if (Key = #13) then
   begin

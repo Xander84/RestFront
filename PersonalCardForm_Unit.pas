@@ -20,9 +20,8 @@ type
     procedure FormCreate(Sender: TObject);
     procedure btnOKClick(Sender: TObject);
     procedure btnDeleteClick(Sender: TObject);
-    procedure usrg_lblCardCodeKeyUp(Sender: TObject; var Key: Word;
-      Shift: TShiftState);
     procedure FormDestroy(Sender: TObject);
+    procedure usrg_lblCardCodeKeyPress(Sender: TObject; var Key: Char);
   private
     FHeaderTable: TkbmMemTable;
     FPersonalCardID: Integer;
@@ -72,16 +71,11 @@ begin
   FHeaderTable.Free;
 end;
 
-procedure TPersonalCardForm.usrg_lblCardCodeKeyUp(Sender: TObject;
-  var Key: Word; Shift: TShiftState);
+procedure TPersonalCardForm.usrg_lblCardCodeKeyPress(Sender: TObject;
+  var Key: Char);
 begin
- { TODO : Вынести в отдельную ф-цию }
-  if (Chr(Key) = 'ж') or (Chr(Key) = 'Ж') then
-    Key := Ord(';');
-  if (Chr(Key) = ',') or (Chr(Key) = '.') then
-    Key := Ord('?');
-
-  if (Key = VK_RETURN) then
+  RemoveWrongPassChar(Key);
+  if (Key = #13) then
   begin
     if FFrontBase.GetPersonalCardInfo(FHeaderTable, usrg_lblCardCode.Text, FPersonalCardID) then
     begin

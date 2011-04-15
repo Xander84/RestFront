@@ -759,11 +759,7 @@ end;
 
 procedure TRestMainForm.edPasswordKeyPress(Sender: TObject; var Key: Char);
 begin
-  if (Key = 'æ') or (Key = 'Æ') then
-    Key := ';';
-  if (Key = ',') or (Key = '.') then
-    Key := '?';
-
+  RemoveWrongPassChar(Key);
   if Key = #13 then
     actPassEnterExecute(Sender)
   else
