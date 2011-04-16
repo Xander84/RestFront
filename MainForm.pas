@@ -4221,8 +4221,10 @@ begin
 {$IFDEF MSWINDOWS}
     if Touch_MessageBox('Внимание', 'Перезапустить приложение?', MB_YESNO, mtConfirmation) = IDYES then
     begin
-      Application.Terminate;
+      if AppHandle <> 0 then
+        CloseHandle(AppHandle); //ReleaseMutex(AppHandle);
       WinExec32(CmdLine, 1);
+      Application.Terminate;
     end;
 {$ENDIF MSWINDOWS}
   end;

@@ -8,6 +8,7 @@ uses
   AppEvnts,
   MidasLib,
   Windows,
+  Dialogs,
   MainForm in 'MainForm.pas' {RestMainForm},
   GuestForm_unit in 'GuestForm_unit.pas' {GuestForm},
   DeleteOrderLine_unit in 'DeleteOrderLine_unit.pas' {DeleteOrderLine},
@@ -64,18 +65,19 @@ begin
     FApplicationEvents := TApplicationEvents.Create(Application);
     FApplicationEvents.OnException := ApplicationEventsHandler.ApplicationEventsException;
 
+    Application.CreateForm(TFrontData, FrontData);
     hMutex := CreateMutex(nil, False, UniqString);
     if GetLastError = ERROR_ALREADY_EXISTS then
     begin
       CloseHandle(hMutex);
       {$IFNDEF DEBUG}
+      Touch_MessageBox('Внимание', 'Приложение уже запущено', MB_OK, mtWarning);
       Exit;
       {$ENDIF}
     end;
-
     Application.Initialize;
     Application.Title := 'Ресторан';
-    Application.CreateForm(TFrontData, FrontData);
+    AppHandle := hMutex;
     Application.CreateForm(TRestMainForm, RestMainForm);
     Application.Run;
   finally

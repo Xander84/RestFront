@@ -77,6 +77,7 @@ var
   cn_ButtonFontSize: Integer;
   cn_ButtonSmallFontSize: Integer;
   cn_LodDataBasePath: String;
+  AppHandle: THandle;
 
 implementation
 
