@@ -50,54 +50,8 @@ object RestMainForm: TRestMainForm
         ColorTo = 14986888
         TabColor = clBtnFace
         TabColorTo = clNone
-        object edPassword: TEdit
-          Left = 300
-          Top = 279
-          Width = 257
-          Height = 31
-          Font.Charset = RUSSIAN_CHARSET
-          Font.Color = clWindowText
-          Font.Height = -19
-          Font.Name = 'Tahoma'
-          Font.Style = []
-          ParentFont = False
-          PasswordChar = '*'
-          TabOrder = 0
-          OnKeyPress = edPasswordKeyPress
-        end
-        object btnOKPass: TAdvSmoothButton
-          Left = 563
-          Top = 267
-          Width = 110
-          Height = 54
-          Action = actPassEnter
-          Appearance.PictureAlignment = taCenter
-          Appearance.Font.Charset = DEFAULT_CHARSET
-          Appearance.Font.Color = clWindowText
-          Appearance.Font.Height = -11
-          Appearance.Font.Name = 'Tahoma'
-          Appearance.Font.Style = [fsBold]
-          Appearance.Layout = blPictureTop
-          Status.Caption = '0'
-          Status.Appearance.Fill.Color = clRed
-          Status.Appearance.Fill.ColorMirror = clNone
-          Status.Appearance.Fill.ColorMirrorTo = clNone
-          Status.Appearance.Fill.GradientType = gtSolid
-          Status.Appearance.Fill.BorderColor = clGray
-          Status.Appearance.Fill.Rounding = 0
-          Status.Appearance.Fill.ShadowOffset = 0
-          Status.Appearance.Font.Charset = DEFAULT_CHARSET
-          Status.Appearance.Font.Color = clWhite
-          Status.Appearance.Font.Height = -11
-          Status.Appearance.Font.Name = 'Tahoma'
-          Status.Appearance.Font.Style = []
-          Bevel = False
-          Color = 15195349
-          DisabledColor = clBlack
-          ParentFont = False
-          TabOrder = 1
-          Version = '1.6.9.0'
-        end
+        ExplicitLeft = 2
+        ExplicitTop = 14
         object mainTouchKeyBoard: TAdvSmoothTouchKeyBoard
           Left = 0
           Top = 472
@@ -1029,6 +983,124 @@ object RestMainForm: TRestMainForm
           Version = '1.5.0.0'
           Align = alBottom
         end
+        object pnlPassword: TGridPanel
+          Left = 0
+          Top = 0
+          Width = 934
+          Height = 472
+          Align = alClient
+          Color = 16640730
+          ColumnCollection = <
+            item
+              Value = 50.000000000000000000
+            end
+            item
+              SizeStyle = ssAbsolute
+              Value = 300.000000000000000000
+            end
+            item
+              SizeStyle = ssAbsolute
+              Value = 75.000000000000000000
+            end
+            item
+              Value = 50.000000000000000000
+            end>
+          ControlCollection = <
+            item
+              Column = 1
+              Control = edPassword
+              Row = 2
+            end
+            item
+              Column = 2
+              Control = btnOKPass
+              Row = 1
+              RowSpan = 3
+            end>
+          ParentBackground = False
+          RowCollection = <
+            item
+              Value = 50.000000000000000000
+            end
+            item
+              SizeStyle = ssAbsolute
+              Value = 10.000000000000000000
+            end
+            item
+              SizeStyle = ssAbsolute
+              Value = 40.000000000000000000
+            end
+            item
+              SizeStyle = ssAbsolute
+              Value = 10.000000000000000000
+            end
+            item
+              Value = 50.000000000000000000
+            end>
+          TabOrder = 1
+          ExplicitLeft = 177
+          ExplicitTop = 327
+          ExplicitWidth = 552
+          ExplicitHeight = 118
+          object edPassword: TEdit
+            Left = 279
+            Top = 216
+            Width = 300
+            Height = 37
+            Align = alClient
+            Constraints.MaxHeight = 37
+            Font.Charset = RUSSIAN_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -19
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+            PasswordChar = '*'
+            TabOrder = 0
+            OnKeyPress = edPasswordKeyPress
+            ExplicitLeft = 304
+            ExplicitTop = 198
+            ExplicitWidth = 250
+          end
+          object btnOKPass: TAdvSmoothButton
+            Left = 579
+            Top = 206
+            Width = 75
+            Height = 60
+            Action = actPassEnter
+            Align = alClient
+            Appearance.PictureAlignment = taCenter
+            Appearance.Font.Charset = DEFAULT_CHARSET
+            Appearance.Font.Color = clWindowText
+            Appearance.Font.Height = -11
+            Appearance.Font.Name = 'Tahoma'
+            Appearance.Font.Style = [fsBold]
+            Appearance.Layout = blPictureTop
+            Status.Caption = '0'
+            Status.Appearance.Fill.Color = clRed
+            Status.Appearance.Fill.ColorMirror = clNone
+            Status.Appearance.Fill.ColorMirrorTo = clNone
+            Status.Appearance.Fill.GradientType = gtSolid
+            Status.Appearance.Fill.BorderColor = clGray
+            Status.Appearance.Fill.Rounding = 0
+            Status.Appearance.Fill.ShadowOffset = 0
+            Status.Appearance.Font.Charset = DEFAULT_CHARSET
+            Status.Appearance.Font.Color = clWhite
+            Status.Appearance.Font.Height = -11
+            Status.Appearance.Font.Name = 'Tahoma'
+            Status.Appearance.Font.Style = []
+            Bevel = False
+            Color = 15195349
+            DisabledColor = clBlack
+            ParentFont = False
+            TabOrder = 1
+            Version = '1.6.9.0'
+            ExplicitLeft = 72
+            ExplicitTop = 3
+            ExplicitWidth = 120
+            ExplicitHeight = 35
+          end
+        end
       end
       object tsMain: TAdvTabSheet
         Caption = 'Main'
@@ -1539,7 +1611,7 @@ object RestMainForm: TRestMainForm
             Top = 0
             Width = 609
             Height = 701
-            ActivePage = tsOrderInfo
+            ActivePage = tsTablePage
             ActiveFont.Charset = DEFAULT_CHARSET
             ActiveFont.Color = clWindowText
             ActiveFont.Height = -11
@@ -2751,7 +2823,7 @@ object RestMainForm: TRestMainForm
         Top = 1
         Width = 80
         Height = 719
-        ActivePage = tsFunctionButton
+        ActivePage = tsOrderButton
         ActiveFont.Charset = DEFAULT_CHARSET
         ActiveFont.Color = clWindowText
         ActiveFont.Height = -11
@@ -4475,7 +4547,7 @@ object RestMainForm: TRestMainForm
   end
   object tmrClose: TTimer
     Tag = 1
-    Interval = 3000
+    Interval = 4000
     OnTimer = tmrCloseTimer
     Left = 368
     Top = 64

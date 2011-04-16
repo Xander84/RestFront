@@ -78,7 +78,6 @@ type
     tsUserOrder: TAdvTabSheet;
     tsOrderInfo: TAdvTabSheet;
     pnlExtra: TPanel;
-    edPassword: TEdit;
     actList: TActionList;
     actPassEnter: TAction;
     dsMain: TDataSource;
@@ -140,7 +139,6 @@ type
     btnDiscount: TAdvSmoothButton;
     btnPay: TAdvSmoothButton;
     btnDevide: TAdvSmoothButton;
-    btnOKPass: TAdvSmoothButton;
     btnScrollDown: TAdvSmoothButton;
     btnScrollUp: TAdvSmoothButton;
     btnExitWindows: TAdvSmoothButton;
@@ -225,6 +223,9 @@ type
     Action1: TAction;
     actSwapTable: TAction;
     btnRealizationReport: TAdvSmoothButton;
+    pnlPassword: TGridPanel;
+    edPassword: TEdit;
+    btnOKPass: TAdvSmoothButton;
 
     // Проверка введёного пароля
     procedure actPassEnterExecute(Sender: TObject);

@@ -26,6 +26,7 @@ type
     FChecked: Boolean;
     { Изображение стола (ссылка на изображение в глобальном списке) }
     FGraphic: TGraphic;
+    FImageRect: TRect;
 
     { Бизнес-свойства стола }
     FID: Integer;
@@ -54,6 +55,7 @@ type
     function GetRelativeHeight: Double;
     function GetRelativeWidth: Double;
     procedure SetChecked(const Value: Boolean);
+    procedure SetGraphic(const Value: TGraphic);
 
     procedure SetID(const Value: Integer);
     procedure SetHallKey(const Value: Integer);
@@ -68,8 +70,10 @@ type
 
     procedure WMContextMenu(var Message: TWMContextMenu); message WM_CONTEXTMENU;
     function GetOrderCount: Integer;
+    procedure CalculateImageRect;
   protected
     procedure Paint; override;
+    procedure Resize; override;
     procedure DrawTableCondition;
   public
     constructor Create(AOwner: TComponent); override;
@@ -109,7 +113,7 @@ type
     property TableConditionList: TList<TRestTableCondition> read FTableConditionList;
     property Manager: TObject read FManager write FManager;
 
-    property Graphic: TGraphic read FGraphic write FGraphic;
+    property Graphic: TGraphic read FGraphic write SetGraphic;
 
     property OnClick;
     property PopupMenu;
@@ -197,6 +201,49 @@ begin
     ));
 end;
 
+procedure TRestTable.CalculateImageRect;
+var
+  ImageHeight, ImageWidth: Integer;
+  ImageLeft, ImageRight, ImageTop, ImageBottom: Integer;
+begin
+  if Assigned(FGraphic) then
+  begin
+    if Self.Height > Self.Width then
+    begin
+      if FGraphic.Height > Self.Height then
+      begin
+        ImageHeight := Self.Height - IMAGE_MARGIN * 2;
+        ImageWidth := FGraphic.Width * ImageHeight div FGraphic.Height;
+      end
+      else
+      begin
+        ImageWidth := Self.Width - IMAGE_MARGIN * 2;
+        ImageHeight := FGraphic.Height * ImageWidth div FGraphic.Width;
+      end;
+    end
+    else
+    begin
+      if FGraphic.Width > Self.Width then
+      begin
+        ImageWidth := Self.Width - IMAGE_MARGIN * 2;
+        ImageHeight := FGraphic.Height * ImageWidth div FGraphic.Width;
+      end
+      else
+      begin
+        ImageHeight := Self.Height - IMAGE_MARGIN * 2;
+        ImageWidth := FGraphic.Width * ImageHeight div FGraphic.Height;
+      end;
+    end;
+
+    ImageLeft := (Self.Width - ImageWidth) div 2;
+    ImageRight := ImageLeft + ImageWidth;
+    ImageTop := (Self.Height - ImageHeight) div 2;
+    ImageBottom := ImageTop + ImageHeight;
+
+    FImageRect := Rect(ImageLeft, ImageTop, ImageRight, ImageBottom)
+  end;
+end;
+
 procedure TRestTable.ClearOrders;
 var
   Order: TrfOrder;
@@ -264,6 +311,7 @@ end;
 procedure TRestTable.Paint;
 var
   ImgCanvas: TCanvas;
+  ImageRect: TRect;
 begin
   ImgCanvas := Self.Canvas;
 
@@ -279,9 +327,13 @@ begin
 
   // Родительская отрисовка
   inherited;
+
   // Изображение стола
-  if FGraphic is TPngImage then
-    TPngImage(FGraphic).Draw(ImgCanvas, Rect(IMAGE_MARGIN, IMAGE_MARGIN, Self.Width - IMAGE_MARGIN, Self.Height - IMAGE_MARGIN));
+  if Assigned(FGraphic) then
+  begin
+    if FGraphic is TPngImage then
+      TPngImage(FGraphic).Draw(ImgCanvas, FImageRect);
+  end;
 
   // Рисуем номер стола
   ImgCanvas.Brush.Style := bsClear;
@@ -334,6 +386,13 @@ begin
     // Перерисуем стол после обновления состояния
     Repaint;
   end;
+end;
+
+procedure TRestTable.Resize;
+begin
+  inherited;
+  CalculateImageRect;
+  Repaint;
 end;
 
 procedure TRestTable.DrawTableCondition;
@@ -392,6 +451,13 @@ end;
 procedure TRestTable.SetComputerName(const Value: String);
 begin
   FComputerName := Value;
+end;
+
+procedure TRestTable.SetGraphic(const Value: TGraphic);
+begin
+  FGraphic := Value;
+  CalculateImageRect;
+  Repaint;
 end;
 
 procedure TRestTable.SetHallKey(const Value: Integer);
@@ -535,14 +601,20 @@ var
 begin
   inherited;
 
+  ImgCanvas := Self.Canvas;
+
   if FTableName <> '' then
   begin
-    ImgCanvas := Self.Canvas;
     ImgCanvas.Brush.Style := bsClear;
 
     // Рисуем имя стола
     ImgCanvas.TextOut(0, 0, FTableName);
   end;
+
+  // Рамка по краю компонента
+  ImgCanvas.Pen.Style := psDash;
+  ImgCanvas.Brush.Style := bsClear;
+  ImgCanvas.Rectangle(0, 0, Width, Height);
 end;
 
 end.
