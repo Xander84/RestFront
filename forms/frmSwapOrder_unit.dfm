@@ -4,7 +4,7 @@ object frmSwapOrder: TfrmSwapOrder
   BorderStyle = bsDialog
   Caption = #1055#1077#1088#1077#1084#1077#1097#1077#1085#1080#1077' '#1079#1072#1082#1072#1079#1086#1074
   ClientHeight = 450
-  ClientWidth = 545
+  ClientWidth = 574
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -21,14 +21,14 @@ object frmSwapOrder: TfrmSwapOrder
   object pnlBottom: TPanel
     Left = 0
     Top = 388
-    Width = 545
+    Width = 574
     Height = 62
     Align = alBottom
     BevelOuter = bvNone
     Color = 14986888
     ParentBackground = False
     TabOrder = 1
-    ExplicitWidth = 474
+    ExplicitWidth = 545
     object btnOK: TAdvSmoothButton
       Left = 146
       Top = 4
@@ -102,7 +102,7 @@ object frmSwapOrder: TfrmSwapOrder
   object pnlMain: TAdvPanel
     Left = 0
     Top = 0
-    Width = 545
+    Width = 574
     Height = 388
     Align = alClient
     BevelOuter = bvNone
@@ -143,14 +143,14 @@ object frmSwapOrder: TfrmSwapOrder
     StatusBar.ColorTo = 16374724
     StatusBar.GradientDirection = gdVertical
     Styler = FrontData.FrontPanelStyler
-    ExplicitWidth = 474
+    ExplicitWidth = 545
     FullHeight = 0
     object lbItemListFrom: TListBox
       AlignWithMargins = True
       Left = 3
-      Top = 55
-      Width = 220
-      Height = 330
+      Top = 62
+      Width = 240
+      Height = 321
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -27
@@ -164,10 +164,10 @@ object frmSwapOrder: TfrmSwapOrder
     end
     object lbItemListTo: TListBox
       AlignWithMargins = True
-      Left = 318
-      Top = 55
-      Width = 220
-      Height = 330
+      Left = 331
+      Top = 63
+      Width = 240
+      Height = 321
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -27
@@ -178,8 +178,8 @@ object frmSwapOrder: TfrmSwapOrder
       TabOrder = 7
     end
     object btnMoveRight: TAdvSmoothButton
-      Left = 232
-      Top = 61
+      Left = 249
+      Top = 62
       Width = 76
       Height = 54
       Appearance.PictureAlignment = taCenter
@@ -211,8 +211,8 @@ object frmSwapOrder: TfrmSwapOrder
       OnClick = btnMoveRightClick
     end
     object btnMoveRightAll: TAdvSmoothButton
-      Left = 232
-      Top = 255
+      Left = 249
+      Top = 256
       Width = 76
       Height = 54
       Appearance.PictureAlignment = taCenter
@@ -244,8 +244,8 @@ object frmSwapOrder: TfrmSwapOrder
       OnClick = btnMoveRightAllClick
     end
     object btnMoveLeftAll: TAdvSmoothButton
-      Left = 232
-      Top = 325
+      Left = 249
+      Top = 326
       Width = 76
       Height = 54
       Appearance.PictureAlignment = taCenter
@@ -277,8 +277,8 @@ object frmSwapOrder: TfrmSwapOrder
       OnClick = btnMoveLeftAllClick
     end
     object btnMoveLeft: TAdvSmoothButton
-      Left = 232
-      Top = 131
+      Left = 249
+      Top = 132
       Width = 76
       Height = 54
       Appearance.PictureAlignment = taCenter
@@ -311,14 +311,14 @@ object frmSwapOrder: TfrmSwapOrder
     end
     object cbObjectFrom: TComboBox
       Left = 3
-      Top = 8
-      Width = 220
-      Height = 41
+      Top = 14
+      Width = 180
+      Height = 33
       Style = csDropDownList
       DropDownCount = 15
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
-      Font.Height = -27
+      Font.Height = -21
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
@@ -327,21 +327,87 @@ object frmSwapOrder: TfrmSwapOrder
       OnChange = cbObjectFromChange
     end
     object cbObjectTo: TComboBox
-      Left = 318
-      Top = 8
-      Width = 220
-      Height = 41
+      Left = 331
+      Top = 14
+      Width = 180
+      Height = 33
       Style = csDropDownList
       DropDownCount = 15
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
-      Font.Height = -27
+      Font.Height = -21
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
       Sorted = True
       TabOrder = 1
       OnChange = cbObjectToChange
+    end
+    object btnChooseObjectFrom: TAdvSmoothButton
+      Left = 186
+      Top = 3
+      Width = 57
+      Height = 54
+      Appearance.PictureAlignment = taCenter
+      Appearance.Font.Charset = DEFAULT_CHARSET
+      Appearance.Font.Color = clWindowText
+      Appearance.Font.Height = -11
+      Appearance.Font.Name = 'Tahoma'
+      Appearance.Font.Style = [fsBold]
+      Appearance.Layout = blPictureTop
+      Status.Caption = '0'
+      Status.Appearance.Fill.Color = clRed
+      Status.Appearance.Fill.ColorMirror = clNone
+      Status.Appearance.Fill.ColorMirrorTo = clNone
+      Status.Appearance.Fill.GradientType = gtSolid
+      Status.Appearance.Fill.BorderColor = clGray
+      Status.Appearance.Fill.Rounding = 0
+      Status.Appearance.Fill.ShadowOffset = 0
+      Status.Appearance.Font.Charset = DEFAULT_CHARSET
+      Status.Appearance.Font.Color = clWhite
+      Status.Appearance.Font.Height = -11
+      Status.Appearance.Font.Name = 'Tahoma'
+      Status.Appearance.Font.Style = []
+      Bevel = False
+      Color = 15195349
+      DisabledColor = clBlack
+      ParentFont = False
+      TabOrder = 8
+      Version = '1.6.9.0'
+      OnClick = btnChooseObjectFromClick
+    end
+    object btnChooseObjectTo: TAdvSmoothButton
+      Left = 514
+      Top = 3
+      Width = 57
+      Height = 54
+      Appearance.PictureAlignment = taCenter
+      Appearance.Font.Charset = DEFAULT_CHARSET
+      Appearance.Font.Color = clWindowText
+      Appearance.Font.Height = -11
+      Appearance.Font.Name = 'Tahoma'
+      Appearance.Font.Style = [fsBold]
+      Appearance.Layout = blPictureTop
+      Status.Caption = '0'
+      Status.Appearance.Fill.Color = clRed
+      Status.Appearance.Fill.ColorMirror = clNone
+      Status.Appearance.Fill.ColorMirrorTo = clNone
+      Status.Appearance.Fill.GradientType = gtSolid
+      Status.Appearance.Fill.BorderColor = clGray
+      Status.Appearance.Fill.Rounding = 0
+      Status.Appearance.Fill.ShadowOffset = 0
+      Status.Appearance.Font.Charset = DEFAULT_CHARSET
+      Status.Appearance.Font.Color = clWhite
+      Status.Appearance.Font.Height = -11
+      Status.Appearance.Font.Name = 'Tahoma'
+      Status.Appearance.Font.Style = []
+      Bevel = False
+      Color = 15195349
+      DisabledColor = clBlack
+      ParentFont = False
+      TabOrder = 9
+      Version = '1.6.9.0'
+      OnClick = btnChooseObjectToClick
     end
   end
 end

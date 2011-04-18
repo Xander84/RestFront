@@ -21,6 +21,8 @@ type
     btnMoveLeft: TAdvSmoothButton;
     cbObjectFrom: TComboBox;
     cbObjectTo: TComboBox;
+    btnChooseObjectFrom: TAdvSmoothButton;
+    btnChooseObjectTo: TAdvSmoothButton;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure btnMoveRightClick(Sender: TObject);
@@ -30,6 +32,8 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure cbObjectFromChange(Sender: TObject);
     procedure cbObjectToChange(Sender: TObject);
+    procedure btnChooseObjectFromClick(Sender: TObject);
+    procedure btnChooseObjectToClick(Sender: TObject);
   private
     FItemListFrom: TList<TrfOrder>;
     FItemListTo: TList<TrfOrder>;
@@ -70,6 +74,44 @@ begin
 
     FItemListFrom.Add(Order);
     lbItemListFrom.Items.Add('Заказ № ' + Order.Number);
+  end;
+end;
+
+procedure TfrmSwapOrder.btnChooseObjectFromClick(Sender: TObject);
+var
+  UserInfo: TUserInfo;
+  I: Integer;
+begin
+  // удалять может только пользователь с правами менеджера
+  UserInfo := FDBManager.CheckUserPasswordWithForm;
+  if UserInfo.CheckedUserPassword then
+  begin
+    for I := 0 to cbObjectFrom.Items.Count - 1 do
+      if Assigned(cbObjectFrom.Items.Objects[I])
+         and (TrfUser(cbObjectFrom.Items.Objects[I]).ID = UserInfo.UserKey) then
+      begin
+        cbObjectFrom.ItemIndex := I;
+        cbObjectFrom.OnChange(cbObjectFrom);
+      end;
+  end;
+end;
+
+procedure TfrmSwapOrder.btnChooseObjectToClick(Sender: TObject);
+var
+  UserInfo: TUserInfo;
+  I: Integer;
+begin
+  // удалять может только пользователь с правами менеджера
+  UserInfo := FDBManager.CheckUserPasswordWithForm;
+  if UserInfo.CheckedUserPassword then
+  begin
+    for I := 0 to cbObjectTo.Items.Count - 1 do
+      if Assigned(cbObjectTo.Items.Objects[I])
+         and (TrfUser(cbObjectTo.Items.Objects[I]).ID = UserInfo.UserKey) then
+      begin
+        cbObjectTo.ItemIndex := I;
+        cbObjectTo.OnChange(cbObjectTo);
+      end;
   end;
 end;
 
@@ -148,6 +190,7 @@ begin
       lbItemListFrom.Items.Add('Заказ № ' + Order.Number);
 
     cbObjectFrom.Enabled := False;
+    btnChooseObjectFrom.Enabled := False;
   end;
 end;
 
@@ -166,6 +209,7 @@ begin
       lbItemListTo.Items.Add('Заказ № ' + Order.Number);
 
     cbObjectTo.Enabled := False;
+    btnChooseObjectTo.Enabled := False;
   end;
 end;
 
@@ -179,6 +223,9 @@ begin
   btnMoveRightAll.Picture := FrontData.RestPictureContainer.FindPicture('allright');
   btnMoveLeft.Picture := FrontData.RestPictureContainer.FindPicture('left');
   btnMoveLeftAll.Picture := FrontData.RestPictureContainer.FindPicture('allleft');
+
+  btnChooseObjectFrom.Picture := FrontData.RestPictureContainer.FindPicture('user');
+  btnChooseObjectTo.Picture := FrontData.RestPictureContainer.FindPicture('user');
 end;
 
 procedure TfrmSwapOrder.FormDestroy(Sender: TObject);
@@ -239,9 +286,11 @@ begin
   cbObjectFrom.AddItem(ATableNameFrom, nil);
   cbObjectFrom.ItemIndex := 0;
   cbObjectFrom.Enabled := False;
+  btnChooseObjectFrom.Enabled := False;
   cbObjectTo.AddItem(ATableNameTo, nil);
   cbObjectTo.ItemIndex := 0;
   cbObjectTo.Enabled := False;
+  btnChooseObjectTo.Enabled := False;
   Result := ShowModal;
 end;
 

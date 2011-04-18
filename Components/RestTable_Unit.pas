@@ -311,7 +311,6 @@ end;
 procedure TRestTable.Paint;
 var
   ImgCanvas: TCanvas;
-  ImageRect: TRect;
 begin
   ImgCanvas := Self.Canvas;
 
