@@ -30,10 +30,14 @@ var
 
 implementation
 
+uses
+  Front_DataBase_Unit;
+
 {$R *.dfm}
 
 procedure TCardCode.edPassKeyPress(Sender: TObject; var Key: Char);
 begin
+  RemoveWrongPassChar(Key);
   if Key = #13 then
     ModalResult := mrOK;
   if Key = #27 then
