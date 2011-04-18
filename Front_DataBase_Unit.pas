@@ -342,7 +342,8 @@ type
     function UnLockUserOrder(const OrderKey: Integer): Boolean;
 
     function GetPayKindType(const MemTable: TkbmMemTable; const PayType: Integer; IsPlCard: Integer = 0): Boolean;
-    procedure GetPaymentsCount(var CardCount, NoCashCount, PercCardCount: Integer);
+    procedure GetPaymentsCount(var CardCount, NoCashCount, PercCardCount: Integer;
+      const CreditID, PCID: Integer);
 
     function CreateNewOrder(const HeaderTable, LineTable, ModifyTable: TkbmMemTable; out OrderKey: Integer): Boolean;
     function SaveAndReloadOrder(const HeaderTable, LineTable, ModifyTable: TkbmMemTable; OrderKey: Integer): Boolean;
@@ -1741,7 +1742,9 @@ const
 
   OrderClause =
     'ORDER BY ' +
-    '  Z.CREATIONDATE ';
+    '   U.USR$LOGICDATE,' +
+    '   U.USR$TIMEORDER ';
+
 
   LineSQLText =
     'SELECT '+
@@ -2535,8 +2538,7 @@ begin
       if not FReadSQL.Transaction.InTransaction then
         FReadSQL.Transaction.StartTransaction;
 
-      S :=
-        ' SELECT USR$NAME, USR$PAYTYPEKEY, USR$NOFISCAL, ID FROM USR$MN_KINDTYPE ' +
+      S := ' SELECT USR$NAME, USR$PAYTYPEKEY, USR$NOFISCAL, ID FROM USR$MN_KINDTYPE ' +
         ' WHERE USR$PAYTYPEKEY = :paytype ';
       if IsPlCard = 1 then
         S := S + ' AND USR$ISPLCARD = 1 '
@@ -2567,7 +2569,7 @@ begin
 end;
 
 procedure TFrontBase.GetPaymentsCount(var CardCount, NoCashCount,
-  PercCardCount: Integer);
+  PercCardCount: Integer; const CreditID, PCID: Integer);
 begin
   FReadSQL.Close;
 
@@ -2580,11 +2582,18 @@ begin
         FReadSQL.Transaction.StartTransaction;
 
       FReadSQL.SQL.Text :=
-        'SELECT C.*, T.USR$NOFISCAL FROM USR$MN_PERSONALCARD C ' +
-        'JOIN USR$MN_KINDTYPE T ON 1 = 1 ' +
-        'WHERE T.ID = :ID AND C.USR$CODE = :pass ';
+        'SELECT ' +
+        '  SUM(IIF(K.usr$paytypekey = :creditID and k.usr$isplcard = 1, 1, 0)) AS CARD_COUNT, ' +
+        '  SUM(IIF(K.usr$paytypekey = :creditID and (COALESCE(usr$isplcard, 0) = 0), 1, 0)) AS CREDIT_COUNT, ' +
+        '  SUM(IIF(K.usr$paytypekey = :PCID, 1, 0)) AS PC_COUNT ' +
+        'FROM USR$MN_KINDTYPE K ';
+      FReadSQL.ParamByName('creditID').AsInteger := CreditID;
+      FReadSQL.ParamByName('PCID').AsInteger := PCID;
       FReadSQL.ExecQuery;
-
+      CardCount := FReadSQL.FieldByName('CARD_COUNT').AsInteger;
+      NoCashCount := FReadSQL.FieldByName('CREDIT_COUNT').AsInteger;
+      PercCardCount := FReadSQL.FieldByName('PC_COUNT').AsInteger;
+      FReadSQL.Close;
     except
       raise;
     end;

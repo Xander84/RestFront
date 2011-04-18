@@ -406,7 +406,7 @@ object SellParamForm: TSellParamForm
       TabOrder = 4
     end
     object btnCreditlPay: TAdvSmoothToggleButton
-      Left = 306
+      Left = 307
       Top = 182
       Width = 174
       Height = 59
@@ -441,7 +441,7 @@ object SellParamForm: TSellParamForm
       TabOrder = 5
     end
     object btnCardPay: TAdvSmoothToggleButton
-      Left = 306
+      Left = 307
       Top = 117
       Width = 174
       Height = 59
@@ -476,9 +476,9 @@ object SellParamForm: TSellParamForm
       TabOrder = 6
     end
     object btnDelPay: TAdvSmoothButton
-      Left = 308
+      Left = 307
       Top = 312
-      Width = 172
+      Width = 174
       Height = 57
       Action = actDeletePay
       Appearance.Font.Charset = DEFAULT_CHARSET
@@ -715,7 +715,7 @@ object SellParamForm: TSellParamForm
         131)
     end
     object btnPersonalCard: TAdvSmoothToggleButton
-      Left = 306
+      Left = 307
       Top = 247
       Width = 174
       Height = 59

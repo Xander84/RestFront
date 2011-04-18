@@ -3452,8 +3452,13 @@ end;
 
 procedure TRestMainForm.btnAllChecClick(Sender: TObject);
 begin
-  FFrontBase.GetOrdersInfo(FHeaderInfoTable, FLineInfoTable, xDateBegin.Date, xDateEnd.Date, False, False, False, False);
-  AfterLoadManagerInfo;
+  dsHeaderInfo.DataSet := nil;
+  dsLineInfo.DataSet := nil;
+  try
+    FFrontBase.GetOrdersInfo(FHeaderInfoTable, FLineInfoTable, xDateBegin.Date, xDateEnd.Date, False, False, False, False);
+  finally
+    AfterLoadManagerInfo;
+  end;
 end;
 
 procedure TRestMainForm.btnCheckRegisterClick(Sender: TObject);
@@ -3480,14 +3485,24 @@ end;
 
 procedure TRestMainForm.btnWithPrecheckClick(Sender: TObject);
 begin
-  FFrontBase.GetOrdersInfo(FHeaderInfoTable, FLineInfoTable, xDateBegin.Date, xDateEnd.Date, True, False, False, False);
-  AfterLoadManagerInfo;
+  dsHeaderInfo.DataSet := nil;
+  dsLineInfo.DataSet := nil;
+  try
+    FFrontBase.GetOrdersInfo(FHeaderInfoTable, FLineInfoTable, xDateBegin.Date, xDateEnd.Date, True, False, False, False);
+  finally
+    AfterLoadManagerInfo;
+  end;
 end;
 
 procedure TRestMainForm.btnWithoutPrecheckClick(Sender: TObject);
 begin
-  FFrontBase.GetOrdersInfo(FHeaderInfoTable, FLineInfoTable, xDateBegin.Date, xDateEnd.Date, False, True, False, False);
-  AfterLoadManagerInfo;
+  dsHeaderInfo.DataSet := nil;
+  dsLineInfo.DataSet := nil;
+  try
+    FFrontBase.GetOrdersInfo(FHeaderInfoTable, FLineInfoTable, xDateBegin.Date, xDateEnd.Date, False, True, False, False);
+  finally
+    AfterLoadManagerInfo;
+  end;
 end;
 
 procedure TRestMainForm.btnWithOutPrecheckOrdersClick(Sender: TObject);
@@ -3506,14 +3521,24 @@ end;
 
 procedure TRestMainForm.btnPayedClick(Sender: TObject);
 begin
-  FFrontBase.GetOrdersInfo(FHeaderInfoTable, FLineInfoTable, xDateBegin.Date, xDateEnd.Date, False, False, True, False);
-  AfterLoadManagerInfo;
+  dsHeaderInfo.DataSet := nil;
+  dsLineInfo.DataSet := nil;
+  try
+    FFrontBase.GetOrdersInfo(FHeaderInfoTable, FLineInfoTable, xDateBegin.Date, xDateEnd.Date, False, False, True, False);
+  finally
+    AfterLoadManagerInfo;
+  end;
 end;
 
 procedure TRestMainForm.btnNotPayedClick(Sender: TObject);
 begin
-  FFrontBase.GetOrdersInfo(FHeaderInfoTable, FLineInfoTable, xDateBegin.Date, xDateEnd.Date, False, False, False, True);
-  AfterLoadManagerInfo;
+  dsHeaderInfo.DataSet := nil;
+  dsLineInfo.DataSet := nil;
+  try
+    FFrontBase.GetOrdersInfo(FHeaderInfoTable, FLineInfoTable, xDateBegin.Date, xDateEnd.Date, False, False, False, True);
+  finally
+    AfterLoadManagerInfo;
+  end;
 end;
 
 procedure TRestMainForm.AfterConstruction;

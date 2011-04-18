@@ -190,6 +190,10 @@ end;
 
 constructor TSellParamForm.CreateWithFrontBase(AOwner: TComponent;
   FBase: TFrontBase);
+var
+  CardCount: Integer;
+  PercCardCount: Integer;
+  NoCashCount: Integer;
 begin
   inherited Create(AOwner);
   FFrontBase := FBase;
@@ -231,6 +235,11 @@ begin
   FPayType := cn_paytype_cash;
 
   Assert(FCurrentPayType <> -1, 'Invalid RUID');
+
+  FFrontBase.GetPaymentsCount(CardCount, NoCashCount, PercCardCount, FCreditID, FPersonalCardID);
+  btnCardPay.Enabled := (CardCount > 0);
+  btnCreditlPay.Enabled := (NoCashCount > 0);
+  btnPersonalCard.Enabled := (PercCardCount > 0);
 
   SetupAdvGrid(DBAdvGrMain);
   with DBAdvGrMain do
