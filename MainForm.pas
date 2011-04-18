@@ -3131,7 +3131,7 @@ begin
         tmrTables.Enabled := False;
 
         // Информация о заказе
-        lblOrderInfoUserName.Caption := FFrontBase.GetNameWaiterOnID(FFrontBase.ContactKey, True, False);
+        lblOrderInfoUserName.Caption := FFrontBase.GetNameWaiterOnID(FHeaderTable.FieldByName('usr$respkey').AsInteger, True, False);
         if not FHeaderTable.Eof then
           lblOrderInfoTableNumber.Caption := FHeaderTable.FieldByName('number').AsString;
       end;
