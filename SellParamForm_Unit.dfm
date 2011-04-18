@@ -14,6 +14,7 @@ object SellParamForm: TSellParamForm
   Font.Style = []
   OldCreateOrder = False
   Position = poScreenCenter
+  OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
   object pnlMain: TAdvPanel
@@ -57,7 +58,7 @@ object SellParamForm: TSellParamForm
     FullHeight = 0
     object lblToPay: TLabel
       Left = 627
-      Top = 17
+      Top = 11
       Width = 152
       Height = 33
       Alignment = taRightJustify
@@ -91,7 +92,7 @@ object SellParamForm: TSellParamForm
     end
     object Label1: TLabel
       Left = 519
-      Top = 17
+      Top = 11
       Width = 105
       Height = 29
       Caption = #1082' '#1086#1087#1083#1072#1090#1077':'
@@ -134,8 +135,8 @@ object SellParamForm: TSellParamForm
     object TouchKeyBoard: TAdvSmoothTouchKeyBoard
       Left = 16
       Top = 17
-      Width = 265
-      Height = 305
+      Width = 268
+      Height = 329
       AutoCompletion.Font.Charset = DEFAULT_CHARSET
       AutoCompletion.Font.Color = clWhite
       AutoCompletion.Font.Height = -19
@@ -149,6 +150,7 @@ object SellParamForm: TSellParamForm
       Fill.ShadowOffset = 0
       AutoPostKey = False
       KeyboardType = ktCELLPHONE
+      KeyDistance = 2
       Keys = <
         item
           Caption = '7'
@@ -158,8 +160,8 @@ object SellParamForm: TSellParamForm
           SpecialKey = skNone
           X = 3
           Y = 2
-          Height = 76
-          Width = 86
+          Height = 82
+          Width = 87
           SubKeys = <>
         end
         item
@@ -168,10 +170,10 @@ object SellParamForm: TSellParamForm
           ShiftKeyValue = -1
           AltGrKeyValue = -1
           SpecialKey = skNone
-          X = 89
+          X = 90
           Y = 2
-          Height = 76
-          Width = 86
+          Height = 82
+          Width = 87
           SubKeys = <>
         end
         item
@@ -180,10 +182,10 @@ object SellParamForm: TSellParamForm
           ShiftKeyValue = -1
           AltGrKeyValue = -1
           SpecialKey = skNone
-          X = 176
+          X = 178
           Y = 2
-          Height = 76
-          Width = 86
+          Height = 82
+          Width = 87
           SubKeys = <>
         end
         item
@@ -193,9 +195,9 @@ object SellParamForm: TSellParamForm
           AltGrKeyValue = -1
           SpecialKey = skNone
           X = 3
-          Y = 78
-          Height = 76
-          Width = 86
+          Y = 84
+          Height = 82
+          Width = 87
           SubKeys = <>
         end
         item
@@ -204,10 +206,10 @@ object SellParamForm: TSellParamForm
           ShiftKeyValue = -1
           AltGrKeyValue = -1
           SpecialKey = skNone
-          X = 89
-          Y = 78
-          Height = 76
-          Width = 86
+          X = 90
+          Y = 84
+          Height = 82
+          Width = 87
           SubKeys = <>
         end
         item
@@ -216,10 +218,10 @@ object SellParamForm: TSellParamForm
           ShiftKeyValue = -1
           AltGrKeyValue = -1
           SpecialKey = skNone
-          X = 176
-          Y = 78
-          Height = 76
-          Width = 86
+          X = 178
+          Y = 84
+          Height = 82
+          Width = 87
           SubKeys = <>
         end
         item
@@ -229,9 +231,9 @@ object SellParamForm: TSellParamForm
           AltGrKeyValue = -1
           SpecialKey = skNone
           X = 3
-          Y = 152
-          Height = 76
-          Width = 86
+          Y = 164
+          Height = 82
+          Width = 87
           SubKeys = <>
         end
         item
@@ -240,10 +242,10 @@ object SellParamForm: TSellParamForm
           ShiftKeyValue = -1
           AltGrKeyValue = -1
           SpecialKey = skNone
-          X = 89
-          Y = 152
-          Height = 76
-          Width = 86
+          X = 90
+          Y = 164
+          Height = 82
+          Width = 87
           SubKeys = <>
         end
         item
@@ -252,10 +254,10 @@ object SellParamForm: TSellParamForm
           ShiftKeyValue = -1
           AltGrKeyValue = -1
           SpecialKey = skNone
-          X = 176
-          Y = 152
-          Height = 76
-          Width = 86
+          X = 178
+          Y = 164
+          Height = 82
+          Width = 87
           SubKeys = <>
         end
         item
@@ -265,9 +267,9 @@ object SellParamForm: TSellParamForm
           AltGrKeyValue = -1
           SpecialKey = skNone
           X = 3
-          Y = 227
-          Height = 76
-          Width = 86
+          Y = 245
+          Height = 82
+          Width = 87
           SubKeys = <>
         end
         item
@@ -276,10 +278,10 @@ object SellParamForm: TSellParamForm
           ShiftKeyValue = -1
           AltGrKeyValue = -1
           SpecialKey = skNone
-          X = 89
-          Y = 227
-          Height = 76
-          Width = 86
+          X = 90
+          Y = 245
+          Height = 82
+          Width = 87
           SubKeys = <>
         end
         item
@@ -289,10 +291,10 @@ object SellParamForm: TSellParamForm
           AltGrKeyValue = -1
           SpecialKey = skBackSpace
           Color = 10526880
-          X = 176
-          Y = 227
-          Height = 76
-          Width = 86
+          X = 178
+          Y = 245
+          Height = 82
+          Width = 87
           SubKeys = <>
         end>
       SmallFont.Charset = DEFAULT_CHARSET
@@ -314,11 +316,13 @@ object SellParamForm: TSellParamForm
       Width = 268
       Height = 57
       Action = actPay
+      Appearance.PictureAlignment = taCenter
       Appearance.Font.Charset = DEFAULT_CHARSET
       Appearance.Font.Color = clWindowText
       Appearance.Font.Height = -13
       Appearance.Font.Name = 'Tahoma'
       Appearance.Font.Style = [fsBold]
+      Appearance.Layout = blPictureTop
       Status.Caption = '0'
       Status.Appearance.Fill.Color = clRed
       Status.Appearance.Fill.ColorMirror = clNone
@@ -345,11 +349,13 @@ object SellParamForm: TSellParamForm
       Width = 268
       Height = 57
       Action = actCancel
+      Appearance.PictureAlignment = taCenter
       Appearance.Font.Charset = DEFAULT_CHARSET
       Appearance.Font.Color = clWindowText
       Appearance.Font.Height = -13
       Appearance.Font.Name = 'Tahoma'
       Appearance.Font.Style = [fsBold]
+      Appearance.Layout = blPictureTop
       Status.Caption = '0'
       Status.Appearance.Fill.Color = clRed
       Status.Appearance.Fill.ColorMirror = clNone
@@ -371,8 +377,8 @@ object SellParamForm: TSellParamForm
       Version = '1.6.9.0'
     end
     object btnCashPay: TAdvSmoothToggleButton
-      Left = 307
-      Top = 52
+      Left = 301
+      Top = 20
       Width = 174
       Height = 59
       Color = 15195349
@@ -381,11 +387,13 @@ object SellParamForm: TSellParamForm
       BevelColor = 15195349
       BevelColorDisabled = 16765357
       BevelColorDown = 11196927
+      Appearance.PictureAlignment = taCenter
       Appearance.Font.Charset = DEFAULT_CHARSET
       Appearance.Font.Color = clWindowText
-      Appearance.Font.Height = -16
+      Appearance.Font.Height = -13
       Appearance.Font.Name = 'Tahoma'
-      Appearance.Font.Style = []
+      Appearance.Font.Style = [fsBold]
+      Appearance.Layout = blPictureTop
       Version = '1.1.8.0'
       Status.Caption = '0'
       Status.Appearance.Fill.Color = clRed
@@ -406,8 +414,8 @@ object SellParamForm: TSellParamForm
       TabOrder = 4
     end
     object btnCreditlPay: TAdvSmoothToggleButton
-      Left = 307
-      Top = 182
+      Left = 301
+      Top = 150
       Width = 174
       Height = 59
       Color = 15195349
@@ -416,11 +424,13 @@ object SellParamForm: TSellParamForm
       BevelColor = 15195349
       BevelColorDisabled = 16765357
       BevelColorDown = 11196927
+      Appearance.PictureAlignment = taCenter
       Appearance.Font.Charset = DEFAULT_CHARSET
       Appearance.Font.Color = clWindowText
-      Appearance.Font.Height = -16
+      Appearance.Font.Height = -13
       Appearance.Font.Name = 'Tahoma'
-      Appearance.Font.Style = []
+      Appearance.Font.Style = [fsBold]
+      Appearance.Layout = blPictureTop
       Version = '1.1.8.0'
       Status.Caption = '0'
       Status.Appearance.Fill.Color = clRed
@@ -441,8 +451,8 @@ object SellParamForm: TSellParamForm
       TabOrder = 5
     end
     object btnCardPay: TAdvSmoothToggleButton
-      Left = 307
-      Top = 117
+      Left = 301
+      Top = 85
       Width = 174
       Height = 59
       Color = 15195349
@@ -451,11 +461,13 @@ object SellParamForm: TSellParamForm
       BevelColor = 15195349
       BevelColorDisabled = 16765357
       BevelColorDown = 11196927
+      Appearance.PictureAlignment = taCenter
       Appearance.Font.Charset = DEFAULT_CHARSET
       Appearance.Font.Color = clWindowText
-      Appearance.Font.Height = -16
+      Appearance.Font.Height = -13
       Appearance.Font.Name = 'Tahoma'
-      Appearance.Font.Style = []
+      Appearance.Font.Style = [fsBold]
+      Appearance.Layout = blPictureTop
       Version = '1.1.8.0'
       Status.Caption = '0'
       Status.Appearance.Fill.Color = clRed
@@ -476,16 +488,18 @@ object SellParamForm: TSellParamForm
       TabOrder = 6
     end
     object btnDelPay: TAdvSmoothButton
-      Left = 307
-      Top = 312
+      Left = 301
+      Top = 280
       Width = 174
       Height = 57
       Action = actDeletePay
+      Appearance.PictureAlignment = taCenter
       Appearance.Font.Charset = DEFAULT_CHARSET
       Appearance.Font.Color = clWindowText
-      Appearance.Font.Height = -16
+      Appearance.Font.Height = -13
       Appearance.Font.Name = 'Tahoma'
-      Appearance.Font.Style = []
+      Appearance.Font.Style = [fsBold]
+      Appearance.Layout = blPictureTop
       Status.Caption = '0'
       Status.Appearance.Fill.Color = clRed
       Status.Appearance.Fill.ColorMirror = clNone
@@ -715,8 +729,8 @@ object SellParamForm: TSellParamForm
         131)
     end
     object btnPersonalCard: TAdvSmoothToggleButton
-      Left = 307
-      Top = 247
+      Left = 301
+      Top = 215
       Width = 174
       Height = 59
       Color = 15195349
@@ -725,11 +739,13 @@ object SellParamForm: TSellParamForm
       BevelColor = 15195349
       BevelColorDisabled = 16765357
       BevelColorDown = 11196927
+      Appearance.PictureAlignment = taCenter
       Appearance.Font.Charset = DEFAULT_CHARSET
       Appearance.Font.Color = clWindowText
-      Appearance.Font.Height = -16
+      Appearance.Font.Height = -13
       Appearance.Font.Name = 'Tahoma'
-      Appearance.Font.Style = []
+      Appearance.Font.Style = [fsBold]
+      Appearance.Layout = blPictureTop
       Version = '1.1.8.0'
       Status.Caption = '0'
       Status.Appearance.Fill.Color = clRed

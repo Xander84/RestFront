@@ -8,12 +8,12 @@ inherited DevideForm: TDevideForm
   inherited pnlMain: TAdvPanel
     FullHeight = 0
     inherited lblMain: TLabel
-      Height = 37
+      Height = 33
       Caption = #1050#1086#1083#1080#1095#1077#1089#1090#1074#1086
       Font.Name = 'Tahoma'
       Layout = tlCenter
-      ExplicitWidth = 450
-      ExplicitHeight = 37
+      ExplicitWidth = 144
+      ExplicitHeight = 33
     end
     inherited edtNumber: TEdit
       Alignment = taRightJustify
@@ -132,6 +132,7 @@ inherited DevideForm: TDevideForm
           SubKeys = <>
         end
         item
+          Caption = ','
           KeyValue = -1
           ShiftKeyValue = -1
           AltGrKeyValue = -1
@@ -139,9 +140,8 @@ inherited DevideForm: TDevideForm
           X = 4
           Y = 240
           Height = 79
-          Width = 100
+          Width = 141
           SubKeys = <>
-          ShowBackGround = False
         end
         item
           Caption = '0'

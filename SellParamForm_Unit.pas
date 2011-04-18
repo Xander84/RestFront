@@ -64,6 +64,7 @@ type
     procedure actCardPayExecute(Sender: TObject);
     procedure actCreditPayUpdate(Sender: TObject);
     procedure actCreditPayExecute(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
   private
     FFrontBase: TFrontBase;
     // сумма к оплате
@@ -260,6 +261,19 @@ procedure TSellParamForm.edMainKeyPress(Sender: TObject; var Key: Char);
 begin
   if (Key = 'ю') or (Key = 'Ю') or (Key = 'б') or (Key = 'Б') or (Key = ',') or (Key = '<') then
     Key := FFormatSettings.DecimalSeparator;
+end;
+
+procedure TSellParamForm.FormCreate(Sender: TObject);
+begin
+  inherited;
+
+  btnCashPay.Picture := FrontData.RestPictureContainer.FindPicture('money');
+  btnCardPay.Picture := FrontData.RestPictureContainer.FindPicture('master_card');
+  btnPersonalCard.Picture := FrontData.RestPictureContainer.FindPicture('user');
+  btnDelPay.Picture := FrontData.RestPictureContainer.FindPicture('cancel');
+
+  btnPay.Picture := FrontData.RestPictureContainer.FindPicture('tick');
+  btnCancel.Picture := FrontData.RestPictureContainer.FindPicture('cross');
 end;
 
 procedure TSellParamForm.edMainChange(Sender: TObject);
