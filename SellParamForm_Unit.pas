@@ -229,6 +229,7 @@ begin
   FPersonalCardID := FFrontBase.GetIDByRUID(mn_personalcardXID, mn_personalcardDBID);
   Assert(FPersonalCardID <> -1, 'Invalid RUID');
 
+  {
   btnCashPay.Down := True;
   FCurrentPayType := FFrontBase.GetIDByRUID(mn_RUBpaytypeXID, mn_RUBpaytypeDBID);
   FCurrentPayName := 'Рубли';
@@ -236,6 +237,7 @@ begin
   FPayType := cn_paytype_cash;
 
   Assert(FCurrentPayType <> -1, 'Invalid RUID');
+  }
 
   FFrontBase.GetPaymentsCount(CardCount, NoCashCount, PercCardCount, FCreditID, FPersonalCardID);
   btnCardPay.Enabled := (CardCount > 0);
@@ -484,6 +486,15 @@ end;
 procedure TSellParamForm.TouchKeyBoardKeyClick(Sender: TObject;
   Index: Integer);
 begin
+  if FCurrentPayType = -1 then
+  begin
+    btnCashPay.Down := True;
+    FCurrentPayType := FFrontBase.GetIDByRUID(mn_RUBpaytypeXID, mn_RUBpaytypeDBID);
+    FCurrentPayName := 'Рубли';
+    FNoFiscal := 0;
+    FPayType := cn_paytype_cash;
+  end;
+
   with TouchKeyBoard.Keys.Items[Index] do
   begin
     if SpecialKey = skNone then
@@ -576,7 +587,14 @@ begin
     FCurrentPayName := 'Рубли';
     FNoFiscal := 0;
     FPayType := cn_paytype_cash;
-    edMain.Text := '';
+
+    if dsPayLine.RecordCount = 0 then
+    begin
+      edMain.Text := FloatToStr(FSumToPay);
+      edMain.SelectAll;
+    end
+    else
+      edMain.Text := '';
   end;
   Assert(FCurrentPayType <> -1, 'Invalid RUID');
 end;
