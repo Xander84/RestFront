@@ -282,7 +282,7 @@ end;
 procedure TSellParamForm.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
   inherited;
-  if Char(Key) in ['0'..'9', #8] then
+  if CharInSet(Char(Key), ['0'..'9', #8]) then
     PostMessage(edMain.Handle, WM_KEYUP, Key, 0);
 end;
 
