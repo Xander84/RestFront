@@ -17,8 +17,12 @@ type
     pnlBottom: TAdvPanel;
     btnOK: TAdvSmoothButton;
     btnCancel: TAdvSmoothButton;
+    btnChooseEmployee: TAdvSmoothButton;
+    btnChooseResp: TAdvSmoothButton;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure btnChooseEmployeeClick(Sender: TObject);
+    procedure btnChooseRespClick(Sender: TObject);
   private
     function GetEmplkey: Integer;
     function GetRespKey: Integer;
@@ -44,6 +48,8 @@ begin
 
   btnOK.Picture := FrontData.RestPictureContainer.FindPicture('tick');
   btnCancel.Picture := FrontData.RestPictureContainer.FindPicture('cross');
+  btnChooseEmployee.Picture := FrontData.RestPictureContainer.FindPicture('user');
+  btnChooseResp.Picture := FrontData.RestPictureContainer.FindPicture('user');
 end;
 
 procedure TChooseEmpl.FormDestroy(Sender: TObject);
@@ -56,6 +62,42 @@ begin
     if Assigned(cbEmplName.Items.Objects[I]) then
       cbEmplName.Items.Objects[I].Free;
   inherited;
+end;
+
+procedure TChooseEmpl.btnChooseEmployeeClick(Sender: TObject);
+var
+  UserInfo: TUserInfo;
+  I: Integer;
+begin
+  // удалять может только пользователь с правами менеджера
+  UserInfo := FrontBase.CheckUserPasswordWithForm;
+  if UserInfo.CheckedUserPassword then
+  begin
+    for I := 0 to cbEmplName.Items.Count - 1 do
+      if Assigned(cbEmplName.Items.Objects[I])
+         and (TrfUser(cbEmplName.Items.Objects[I]).ID = UserInfo.UserKey) then
+      begin
+        cbEmplName.ItemIndex := I;
+      end;
+  end;
+end;
+
+procedure TChooseEmpl.btnChooseRespClick(Sender: TObject);
+var
+  UserInfo: TUserInfo;
+  I: Integer;
+begin
+  // удалять может только пользователь с правами менеджера
+  UserInfo := FrontBase.CheckUserPasswordWithForm;
+  if UserInfo.CheckedUserPassword then
+  begin
+    for I := 0 to cbResp.Items.Count - 1 do
+      if Assigned(cbResp.Items.Objects[I])
+         and (TrfUser(cbResp.Items.Objects[I]).ID = UserInfo.UserKey) then
+      begin
+        cbResp.ItemIndex := I;
+      end;
+  end;
 end;
 
 procedure TChooseEmpl.FillEmployees;

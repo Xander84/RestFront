@@ -4,7 +4,7 @@ object ChooseEmpl: TChooseEmpl
   BorderStyle = bsDialog
   Caption = #1042#1099#1073#1086#1088' '#1087#1086#1083#1100#1079#1086#1074#1072#1090#1077#1083#1103
   ClientHeight = 246
-  ClientWidth = 360
+  ClientWidth = 418
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -20,7 +20,7 @@ object ChooseEmpl: TChooseEmpl
   object pnlMain: TAdvPanel
     Left = 0
     Top = 0
-    Width = 360
+    Width = 418
     Height = 184
     Align = alClient
     BevelOuter = bvNone
@@ -61,8 +61,8 @@ object ChooseEmpl: TChooseEmpl
     StatusBar.ColorTo = 16374724
     StatusBar.GradientDirection = gdVertical
     Styler = FrontData.FrontPanelStyler
-    ExplicitWidth = 350
-    ExplicitHeight = 231
+    ExplicitTop = -1
+    ExplicitWidth = 420
     FullHeight = 0
     object Label1: TLabel
       Left = 35
@@ -122,11 +122,77 @@ object ChooseEmpl: TChooseEmpl
       Sorted = True
       TabOrder = 1
     end
+    object btnChooseEmployee: TAdvSmoothButton
+      Left = 331
+      Top = 37
+      Width = 57
+      Height = 54
+      Appearance.PictureAlignment = taCenter
+      Appearance.Font.Charset = DEFAULT_CHARSET
+      Appearance.Font.Color = clWindowText
+      Appearance.Font.Height = -11
+      Appearance.Font.Name = 'Tahoma'
+      Appearance.Font.Style = [fsBold]
+      Appearance.Layout = blPictureTop
+      Status.Caption = '0'
+      Status.Appearance.Fill.Color = clRed
+      Status.Appearance.Fill.ColorMirror = clNone
+      Status.Appearance.Fill.ColorMirrorTo = clNone
+      Status.Appearance.Fill.GradientType = gtSolid
+      Status.Appearance.Fill.BorderColor = clGray
+      Status.Appearance.Fill.Rounding = 0
+      Status.Appearance.Fill.ShadowOffset = 0
+      Status.Appearance.Font.Charset = DEFAULT_CHARSET
+      Status.Appearance.Font.Color = clWhite
+      Status.Appearance.Font.Height = -11
+      Status.Appearance.Font.Name = 'Tahoma'
+      Status.Appearance.Font.Style = []
+      Bevel = False
+      Color = 15195349
+      DisabledColor = clBlack
+      ParentFont = False
+      TabOrder = 2
+      Version = '1.6.9.0'
+      OnClick = btnChooseEmployeeClick
+    end
+    object btnChooseResp: TAdvSmoothButton
+      Left = 331
+      Top = 115
+      Width = 57
+      Height = 54
+      Appearance.PictureAlignment = taCenter
+      Appearance.Font.Charset = DEFAULT_CHARSET
+      Appearance.Font.Color = clWindowText
+      Appearance.Font.Height = -11
+      Appearance.Font.Name = 'Tahoma'
+      Appearance.Font.Style = [fsBold]
+      Appearance.Layout = blPictureTop
+      Status.Caption = '0'
+      Status.Appearance.Fill.Color = clRed
+      Status.Appearance.Fill.ColorMirror = clNone
+      Status.Appearance.Fill.ColorMirrorTo = clNone
+      Status.Appearance.Fill.GradientType = gtSolid
+      Status.Appearance.Fill.BorderColor = clGray
+      Status.Appearance.Fill.Rounding = 0
+      Status.Appearance.Fill.ShadowOffset = 0
+      Status.Appearance.Font.Charset = DEFAULT_CHARSET
+      Status.Appearance.Font.Color = clWhite
+      Status.Appearance.Font.Height = -11
+      Status.Appearance.Font.Name = 'Tahoma'
+      Status.Appearance.Font.Style = []
+      Bevel = False
+      Color = 15195349
+      DisabledColor = clBlack
+      ParentFont = False
+      TabOrder = 3
+      Version = '1.6.9.0'
+      OnClick = btnChooseRespClick
+    end
   end
   object pnlBottom: TAdvPanel
     Left = 0
     Top = 184
-    Width = 360
+    Width = 418
     Height = 62
     Align = alBottom
     BevelOuter = bvNone
@@ -167,10 +233,10 @@ object ChooseEmpl: TChooseEmpl
     StatusBar.ColorTo = 16374724
     StatusBar.GradientDirection = gdVertical
     Styler = FrontData.FrontPanelStyler
-    ExplicitTop = 183
+    ExplicitWidth = 360
     FullHeight = 0
     object btnOK: TAdvSmoothButton
-      Left = 36
+      Left = 70
       Top = 5
       Width = 110
       Height = 54
@@ -204,7 +270,7 @@ object ChooseEmpl: TChooseEmpl
       ModalResult = 1
     end
     object btnCancel: TAdvSmoothButton
-      Left = 203
+      Left = 237
       Top = 5
       Width = 110
       Height = 54
