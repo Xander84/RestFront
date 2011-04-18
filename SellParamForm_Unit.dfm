@@ -12,9 +12,11 @@ object SellParamForm: TSellParamForm
   Font.Height = -11
   Font.Name = 'MS Sans Serif'
   Font.Style = []
+  KeyPreview = True
   OldCreateOrder = False
   Position = poScreenCenter
   OnCreate = FormCreate
+  OnKeyDown = FormKeyDown
   PixelsPerInch = 96
   TextHeight = 13
   object pnlMain: TAdvPanel
@@ -123,8 +125,8 @@ object SellParamForm: TSellParamForm
       Transparent = True
     end
     object edMain: TEdit
-      Left = 32
-      Top = 5
+      Left = 336
+      Top = 363
       Width = 121
       Height = 21
       TabOrder = 0

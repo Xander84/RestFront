@@ -65,6 +65,7 @@ type
     procedure actCreditPayUpdate(Sender: TObject);
     procedure actCreditPayExecute(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     FFrontBase: TFrontBase;
     // сумма к оплате
@@ -278,8 +279,24 @@ begin
   btnCancel.Picture := FrontData.RestPictureContainer.FindPicture('cross');
 end;
 
+procedure TSellParamForm.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  inherited;
+  if Char(Key) in ['0'..'9', #8] then
+    PostMessage(edMain.Handle, WM_KEYUP, Key, 0);
+end;
+
 procedure TSellParamForm.edMainChange(Sender: TObject);
 begin
+  if FCurrentPayType = -1 then
+  begin
+    btnCashPay.Down := True;
+    FCurrentPayType := FFrontBase.GetIDByRUID(mn_RUBpaytypeXID, mn_RUBpaytypeDBID);
+    FCurrentPayName := 'Рубли';
+    FNoFiscal := 0;
+    FPayType := cn_paytype_cash;
+  end;
+
   FInInsert := True;
   try
     if not FInDeleteOrUpdate then
@@ -486,15 +503,6 @@ end;
 procedure TSellParamForm.TouchKeyBoardKeyClick(Sender: TObject;
   Index: Integer);
 begin
-  if FCurrentPayType = -1 then
-  begin
-    btnCashPay.Down := True;
-    FCurrentPayType := FFrontBase.GetIDByRUID(mn_RUBpaytypeXID, mn_RUBpaytypeDBID);
-    FCurrentPayName := 'Рубли';
-    FNoFiscal := 0;
-    FPayType := cn_paytype_cash;
-  end;
-
   with TouchKeyBoard.Keys.Items[Index] do
   begin
     if SpecialKey = skNone then
