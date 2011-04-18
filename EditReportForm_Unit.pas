@@ -23,11 +23,7 @@ type
     procedure btnOKClick(Sender: TObject);
     procedure DBGrLeftDblClick(Sender: TObject);
   private
-    FFrontBase: TFrontBase;
     FReport: TRestReport;
-    procedure SetFrontBase(const Value: TFrontBase);
-  public
-    property FrontBase: TFrontBase read FFrontBase write SetFrontBase;
   end;
 
 var
@@ -54,6 +50,7 @@ procedure TEditReport.FormShow(Sender: TObject);
 begin
   Assert(Assigned(FFrontBase), 'FrontBase not assigned');
 
+  FReport.FrontBase := FFrontBase;
   FFrontBase.GetReportList(MemTable);
   MemTable.First;
 end;
@@ -65,18 +62,13 @@ end;
 
 procedure TEditReport.btnEditClick(Sender: TObject);
 begin
+  Assert(Assigned(FFrontBase), 'FrontBase not assigned');
   FReport.EditTemplate(MemTable.FieldByName('ID').AsInteger);
 end;
 
 procedure TEditReport.btnOKClick(Sender: TObject);
 begin
   ModalResult := mrOK;
-end;
-
-procedure TEditReport.SetFrontBase(const Value: TFrontBase);
-begin
-  FFrontBase := Value;
-  FReport.FrontBase := Value;
 end;
 
 procedure TEditReport.DBGrLeftDblClick(Sender: TObject);

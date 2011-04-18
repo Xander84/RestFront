@@ -2,7 +2,7 @@ object EditReport: TEditReport
   Left = 380
   Top = 130
   BorderStyle = bsDialog
-  Caption = 'EditReport'
+  Caption = #1054#1090#1095#1077#1090#1099
   ClientHeight = 493
   ClientWidth = 441
   Color = clBtnFace
@@ -95,7 +95,7 @@ object EditReport: TEditReport
       Height = 37
       Appearance.Font.Charset = DEFAULT_CHARSET
       Appearance.Font.Color = clWindowText
-      Appearance.Font.Height = -13
+      Appearance.Font.Height = -11
       Appearance.Font.Name = 'Times New Roman'
       Appearance.Font.Style = [fsBold]
       Status.Caption = '0'
@@ -323,6 +323,6 @@ object EditReport: TEditReport
   object dsMain: TDataSource
     DataSet = MemTable
     Left = 88
-    Top = 216
+    Top = 240
   end
 end

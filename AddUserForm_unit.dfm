@@ -65,14 +65,14 @@ object AddUserForm: TAddUserForm
     object Label1: TLabel
       Left = 16
       Top = 2
-      Width = 87
-      Height = 23
+      Width = 90
+      Height = 24
       Caption = #1060#1072#1084#1080#1083#1080#1103':'
       Color = clNone
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
-      Font.Height = -21
-      Font.Name = 'Times New Roman'
+      Font.Height = -20
+      Font.Name = 'Tahoma'
       Font.Style = []
       ParentColor = False
       ParentFont = False
@@ -82,13 +82,13 @@ object AddUserForm: TAddUserForm
       Left = 16
       Top = 68
       Width = 44
-      Height = 23
+      Height = 24
       Caption = #1048#1084#1103':'
       Color = clNone
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
-      Font.Height = -21
-      Font.Name = 'Times New Roman'
+      Font.Height = -20
+      Font.Name = 'Tahoma'
       Font.Style = []
       ParentColor = False
       ParentFont = False
@@ -97,14 +97,14 @@ object AddUserForm: TAddUserForm
     object Label3: TLabel
       Left = 16
       Top = 131
-      Width = 90
-      Height = 23
+      Width = 91
+      Height = 24
       Caption = #1054#1090#1095#1077#1089#1090#1074#1086':'
       Color = clNone
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
-      Font.Height = -21
-      Font.Name = 'Times New Roman'
+      Font.Height = -20
+      Font.Name = 'Tahoma'
       Font.Style = []
       ParentColor = False
       ParentFont = False
@@ -113,14 +113,14 @@ object AddUserForm: TAddUserForm
     object Label5: TLabel
       Left = 16
       Top = 197
-      Width = 71
-      Height = 23
+      Width = 75
+      Height = 24
       Caption = #1055#1072#1088#1086#1083#1100':'
       Color = clNone
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
-      Font.Height = -21
-      Font.Name = 'Times New Roman'
+      Font.Height = -20
+      Font.Name = 'Tahoma'
       Font.Style = []
       ParentColor = False
       ParentFont = False
@@ -129,14 +129,14 @@ object AddUserForm: TAddUserForm
     object Label6: TLabel
       Left = 16
       Top = 263
-      Width = 145
-      Height = 23
+      Width = 154
+      Height = 24
       Caption = #1055#1086#1076#1090#1074#1077#1088#1078#1076#1077#1085#1080#1077':'
       Color = clNone
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
-      Font.Height = -21
-      Font.Name = 'Times New Roman'
+      Font.Height = -20
+      Font.Name = 'Tahoma'
       Font.Style = []
       ParentColor = False
       ParentFont = False
@@ -210,7 +210,7 @@ object AddUserForm: TAddUserForm
     end
     object edConfirmPass: TEdit
       Left = 16
-      Top = 289
+      Top = 292
       Width = 160
       Height = 31
       Font.Charset = DEFAULT_CHARSET
@@ -228,7 +228,7 @@ object AddUserForm: TAddUserForm
       Left = 200
       Top = 31
       Width = 353
-      Height = 289
+      Height = 226
       Cursor = crDefault
       ColCount = 3
       RowCount = 5
@@ -1415,6 +1415,26 @@ object AddUserForm: TAddUserForm
       Font.Height = -11
       Font.Name = 'Tahoma'
       Font.Style = []
+    end
+    object cbDisabled: TDBCheckBox
+      Left = 200
+      Top = 292
+      Width = 257
+      Height = 31
+      Caption = #1055#1086#1083#1100#1079#1086#1074#1072#1090#1077#1083#1100' '#1086#1090#1082#1083#1102#1095#1077#1085
+      Color = 16640730
+      DataField = 'DISABLED'
+      DataSource = dsMain
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -20
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentColor = False
+      ParentFont = False
+      TabOrder = 7
+      ValueChecked = 'True'
+      ValueUnchecked = 'False'
     end
   end
   object pnlRight: TAdvPanel

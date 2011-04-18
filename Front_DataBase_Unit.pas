@@ -356,6 +356,7 @@ type
     function GetCauseDeleteList(const MemTable: TkbmMemTable): Boolean;
     { Список всех пользователей фронта }
     procedure GetWaiterList(AOrderList: TList<TrfUser>);
+    procedure GetAllUserList(const MemTable: TkbmMemTable);
     { Список всех пользователей фронта у которых на данный момент есть заказы }
     procedure GetActiveWaiterList(AOrderList: TList<TrfUser>; const WithPrecheck: Boolean);
     function GetLogicDate: TDateTime;
@@ -377,7 +378,9 @@ type
     //список подразделений компании
     function GetDepartmentList(const MemTable: TkbmMemTable): Boolean;
     function GetUserGroupList(const MemTable: TkbmMemTable): Boolean;
-    function AddUser(var EmplTable, GroupListTable: TkbmMemTable): Boolean;
+    function AddUser(const EmplTable, GroupListTable: TkbmMemTable): Boolean;
+    function UpdateUser(const EmplTable, GroupListTable: TkbmMemTable; UserKey: Integer): Boolean;
+    procedure GetEditUserInfo(const EmplTable, GroupListTable: TkbmMemTable; UserKey: Integer);
     //работа с оборудованием
     procedure InitDisplay;
     function GetPrinterName: String;
@@ -2273,6 +2276,35 @@ begin
   end;
 end;
 
+procedure TFrontBase.GetAllUserList(const MemTable: TkbmMemTable);
+begin
+  FReadSQL.Close;
+  MemTable.Close;
+  MemTable.CreateTable;
+  MemTable.Open;
+  try
+    try
+      if not FReadSQL.Transaction.InTransaction then
+        FReadSQL.Transaction.StartTransaction;
+
+      FReadSQL.SQL.Text := 'SELECT ID, NAME FROM GD_USER ORDER BY NAME';
+      FReadSQL.ExecQuery;
+      while not FReadSQL.EOF do
+      begin
+        MemTable.Append;
+        MemTable.FieldByName('ID').AsInteger := FReadSQL.FieldByName('ID').AsInteger;
+        MemTable.FieldByName('NAME').AsString := FReadSQL.FieldByName('NAME').AsString;
+        MemTable.Post;
+        FReadSQL.Next;
+      end;
+    except
+      raise;
+    end;
+  finally
+    FReadSQL.Close;
+  end;
+end;
+
 procedure TFrontBase.InitDB;
 var
   I: Integer;
@@ -2510,6 +2542,69 @@ begin
     InitDisplay;
 
   Result := FDisplay;
+end;
+
+procedure TFrontBase.GetEditUserInfo(const EmplTable,
+  GroupListTable: TkbmMemTable; UserKey: Integer);
+var
+  InGroup: Integer;
+begin
+  FReadSQL.Close;
+  EmplTable.Close;
+  EmplTable.Open;
+
+  InGroup := 0;
+  try
+    try
+      if not FReadSQL.Transaction.InTransaction then
+        FReadSQL.Transaction.StartTransaction;
+
+      FReadSQL.SQL.Text :=
+        'SELECT U.PASSW, U.DISABLED, U.DISABLED, U.CONTACTKEY, ' +
+        '  P.FIRSTNAME, P.MIDDLENAME, P.SURNAME, U.INGROUP ' +
+        'FROM GD_USER U ' +
+        'JOIN GD_PEOPLE P ON U.CONTACTKEY = P.CONTACTKEY ' +
+        'WHERE U.ID = :userkey ';
+      FReadSQL.Params[0].AsInteger := UserKey;
+      FReadSQL.ExecQuery;
+      if not FReadSQL.Eof then
+      begin
+        EmplTable.Append;
+        EmplTable.FieldByName('ID').AsInteger := FReadSQL.FieldByName('CONTACTKEY').AsInteger;
+        EmplTable.FieldByName('FIRSTNAME').AsString := FReadSQL.FieldByName('FIRSTNAME').AsString;
+        EmplTable.FieldByName('MIDDLENAME').AsString := FReadSQL.FieldByName('MIDDLENAME').AsString;
+        EmplTable.FieldByName('SURNAME').AsString := FReadSQL.FieldByName('SURNAME').AsString;
+        EmplTable.FieldByName('DISABLED').AsBoolean := (FReadSQL.FieldByName('DISABLED').AsInteger = 1);
+        EmplTable.FieldByName('PASSW').AsString := FReadSQL.FieldByName('PASSW').AsString;
+        InGroup := FReadSQL.FieldByName('INGROUP').AsInteger;
+        EmplTable.Post;
+      end;
+      FReadSQL.Close;
+
+      //выделяем группы
+      FReadSQL.SQL.Text :=
+        ' SELECT ID FROM ' +
+        ' gd_usergroup z ' +
+        ' WHERE g_b_and(:id, g_b_shl(1, z.id - 1)) <> 0 ';
+      FReadSQL.Params[0].AsInteger := InGroup;
+      FReadSQL.ExecQuery;
+      while not FReadSQL.Eof do
+      begin
+        if GroupListTable.Locate('ID', FReadSQL.FieldByName('ID').AsInteger, []) then
+        begin
+          GroupListTable.Edit;
+          GroupListTable.FieldByName('CHECKED').AsInteger := 1;
+          GroupListTable.Post;
+        end;
+        FReadSQL.Next;
+      end;
+      FReadSQL.Close;
+    except
+      raise;
+    end;
+  finally
+    FReadSQL.Close;
+  end;
 end;
 
 class function TFrontBase.GetLocalComputerName: String;
@@ -3256,6 +3351,98 @@ begin
   end;
 end;
 
+function TFrontBase.UpdateUser(const EmplTable,
+  GroupListTable: TkbmMemTable; UserKey: Integer): Boolean;
+var
+  FSQL: TIBSQL;
+  Tr: TIBTransaction;
+  ContactID: Integer;
+begin
+// 1. Добавляем запись в GD_CONTACT
+// 2. Добавляем запись в GD_PEOPLE
+// 3. Создаем IB запись
+// 4. Добавляем запись в GD_USER
+// 5. Добавляем запись в GD_USERCOMPANY
+  FSQL := TIBSQL.Create(nil);
+  Tr := TIBTransaction.Create(nil);
+  try
+    try
+      GroupListTable.First;
+
+      Tr.DefaultDatabase := FDataBase;
+      Tr.StartTransaction;
+      FSQL.Transaction := Tr;
+
+      ContactID := EmplTable.FieldByName('ID').AsInteger;
+      //1.
+      FSQL.SQL.Text := ' UPDATE GD_CONTACT ' +
+        ' SET NAME = :NAME ' +
+        ' WHERE ID = :ID ';
+      FSQL.ParamByName('ID').AsInteger := ContactID;
+      FSQL.ParamByName('NAME').AsString := EmplTable.FieldByName('SURNAME').AsString + ' ' +
+        EmplTable.FieldByName('FIRSTNAME').AsString + ' ' + EmplTable.FieldByName('MIDDLENAME').AsString;
+      FSQL.ExecQuery;
+      FSQL.Close;
+
+      //2.
+      FSQL.SQL.Text := ' UPDATE GD_PEOPLE ' +
+        ' SET FIRSTNAME = :FNAME, ' +
+        '     SURNAME = :SNAME, ' +
+        '     MIDDLENAME = :MNAME ' +
+        ' WHERE CONTACTKEY = :ID ';
+      FSQL.ParamByName('ID').AsInteger := ContactID;
+      FSQL.ParamByName('FNAME').AsString := EmplTable.FieldByName('FIRSTNAME').AsString;
+      FSQL.ParamByName('SNAME').AsString := EmplTable.FieldByName('SURNAME').AsString;
+      FSQL.ParamByName('MNAME').AsString := EmplTable.FieldByName('MIDDLENAME').AsString;
+      FSQL.ExecQuery;
+      FSQL.Close;
+
+      FSQL.SQL.Text := ' UPDATE GD_USER ' +
+        ' SET NAME = :NAME, ' +
+        '     PASSW = :PASS, ' +
+        '     DISABLED = :DISABLED ' +
+        ' WHERE ID = :ID ';
+      FSQL.ParamByName('NAME').AsString := EmplTable.FieldByName('SURNAME').AsString;
+      FSQL.ParamByName('PASS').AsString := EmplTable.FieldByName('PASSW').AsString;
+      if EmplTable.FieldByName('DISABLED').AsBoolean then
+        FSQL.ParamByName('DISABLED').AsInteger := 1
+      else
+        FSQL.ParamByName('DISABLED').AsInteger := 0;
+      FSQL.ParamByName('ID').AsInteger := UserKey;
+      FSQL.ExecQuery;
+      FSQL.Close;
+
+      while not GroupListTable.Eof do
+      begin
+        if GroupListTable.FieldByName('CHECKED').AsInteger = 1 then
+        begin
+          FSQL.SQL.Text := Format('UPDATE gd_user SET ingroup=g_b_or(ingroup, %d) WHERE id=%d',
+            [GetGroupMask(GroupListTable.FieldByName('ID').AsInteger), UserKey]);
+          FSQL.ExecQuery;
+          FSQL.Close;
+        end;
+        GroupListTable.Next;
+      end;
+
+      Tr.Commit;
+      Result := True;
+    except
+      on E: Exception do
+      begin
+        if (E is EIBError) and (EIBError(E).IBErrorCode = isc_no_dup) then
+          Touch_MessageBox('Внимание', 'Пользователь уже существует', MB_OK, mtError)
+        else
+          Touch_MessageBox('Внимание', 'Ошибка при создании пользователя ' + E.Message, MB_OK, mtError);
+        Result := False;
+        Tr.Rollback;
+      end;
+    end;
+  finally
+    FSQL.Free;
+    Tr.Free;
+  end;
+end;
+
 function TFrontBase.GetPrinterName: String;
 begin
   FReadSQL.Close;
@@ -3504,7 +3691,7 @@ begin
   end;
 end;
 
-function TFrontBase.AddUser(var EmplTable,
+function TFrontBase.AddUser(const EmplTable,
   GroupListTable: TkbmMemTable): Boolean;
 var
   FSQL: TIBSQL;
@@ -3564,11 +3751,15 @@ begin
       //4.
       UserID := GetNextID;
       FSQL.SQL.Text := ' INSERT INTO GD_USER (ID, NAME, PASSW, IBNAME, IBPASSWORD, CONTACTKEY, ' +
-        '   CANTCHANGEPASSW, PASSWNEVEREXP, USR$MN_ISFRONTUSER) ' +
-        ' VALUES (:ID, :NAME, :PASS, :IBPASS, :IBNAME, :CONTACTKEY, 1, 1, 1) ';
+        '   CANTCHANGEPASSW, PASSWNEVEREXP, USR$MN_ISFRONTUSER, DISABLED) ' +
+        ' VALUES (:ID, :NAME, :PASS, :IBPASS, :IBNAME, :CONTACTKEY, 1, 1, 1, :DISABLED) ';
       FSQL.ParamByName('ID').AsInteger := UserID;
       FSQL.ParamByName('NAME').AsString := EmplTable.FieldByName('SURNAME').AsString;
       FSQL.ParamByName('PASS').AsString := EmplTable.FieldByName('PASSW').AsString;
+      if EmplTable.FieldByName('DISABLED').AsBoolean then
+        FSQL.ParamByName('DISABLED').AsInteger := 1
+      else
+        FSQL.ParamByName('DISABLED').AsInteger := 0;
       FSQL.ParamByName('IBPASS').AsString := IBPass;
       FSQL.ParamByName('IBNAME').AsString := IBName;
       FSQL.ParamByName('CONTACTKEY').AsInteger := ContactID;

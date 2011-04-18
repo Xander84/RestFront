@@ -3,7 +3,7 @@ object AdminForm: TAdminForm
   Top = 0
   BorderStyle = bsSingle
   Caption = #1040#1076#1084#1080#1085#1080#1089#1090#1088#1072#1090#1086#1088
-  ClientHeight = 209
+  ClientHeight = 221
   ClientWidth = 324
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -19,7 +19,7 @@ object AdminForm: TAdminForm
     Left = 0
     Top = 0
     Width = 324
-    Height = 209
+    Height = 221
     Align = alClient
     BevelOuter = bvNone
     Color = 16640730
@@ -59,38 +59,8 @@ object AdminForm: TAdminForm
     StatusBar.ColorTo = 16374724
     StatusBar.GradientDirection = gdVertical
     Styler = FrontData.FrontPanelStyler
-    ExplicitHeight = 196
+    ExplicitHeight = 241
     FullHeight = 0
-    object btnAddUser: TAdvSmoothButton
-      Left = 14
-      Top = 6
-      Width = 296
-      Height = 40
-      Action = actAddUser
-      Appearance.Font.Charset = DEFAULT_CHARSET
-      Appearance.Font.Color = clWindowText
-      Appearance.Font.Height = -19
-      Appearance.Font.Name = 'Times New Roman'
-      Appearance.Font.Style = [fsBold]
-      Status.Caption = '0'
-      Status.Appearance.Fill.Color = clRed
-      Status.Appearance.Fill.ColorMirror = clNone
-      Status.Appearance.Fill.ColorMirrorTo = clNone
-      Status.Appearance.Fill.GradientType = gtSolid
-      Status.Appearance.Fill.BorderColor = clGray
-      Status.Appearance.Fill.Rounding = 0
-      Status.Appearance.Fill.ShadowOffset = 0
-      Status.Appearance.Font.Charset = DEFAULT_CHARSET
-      Status.Appearance.Font.Color = clWhite
-      Status.Appearance.Font.Height = -11
-      Status.Appearance.Font.Name = 'Tahoma'
-      Status.Appearance.Font.Style = []
-      Bevel = False
-      Color = 15195349
-      ParentFont = False
-      TabOrder = 0
-      Version = '1.6.9.0'
-    end
     object btnEditReport: TAdvSmoothButton
       Left = 14
       Top = 52
@@ -118,7 +88,7 @@ object AdminForm: TAdminForm
       Bevel = False
       Color = 15195349
       ParentFont = False
-      TabOrder = 1
+      TabOrder = 0
       Version = '1.6.9.0'
     end
     object btnHallsEdit: TAdvSmoothButton
@@ -149,14 +119,44 @@ object AdminForm: TAdminForm
       Caption = #1056#1077#1076#1072#1082#1090#1086#1088' '#1079#1072#1083#1072
       Color = 15195349
       ParentFont = False
-      TabOrder = 2
+      TabOrder = 1
       Version = '1.6.9.0'
       ModalResult = 1
+    end
+    object btnEditUser: TAdvSmoothButton
+      Left = 14
+      Top = 6
+      Width = 296
+      Height = 40
+      Action = actEditUser
+      Appearance.Font.Charset = DEFAULT_CHARSET
+      Appearance.Font.Color = clWindowText
+      Appearance.Font.Height = -16
+      Appearance.Font.Name = 'Times New Roman'
+      Appearance.Font.Style = [fsBold]
+      Status.Caption = '0'
+      Status.Appearance.Fill.Color = clRed
+      Status.Appearance.Fill.ColorMirror = clNone
+      Status.Appearance.Fill.ColorMirrorTo = clNone
+      Status.Appearance.Fill.GradientType = gtSolid
+      Status.Appearance.Fill.BorderColor = clGray
+      Status.Appearance.Fill.Rounding = 0
+      Status.Appearance.Fill.ShadowOffset = 0
+      Status.Appearance.Font.Charset = DEFAULT_CHARSET
+      Status.Appearance.Font.Color = clWhite
+      Status.Appearance.Font.Height = -11
+      Status.Appearance.Font.Name = 'Tahoma'
+      Status.Appearance.Font.Style = []
+      Bevel = False
+      Color = 15195349
+      ParentFont = False
+      TabOrder = 2
+      Version = '1.6.9.0'
     end
   end
   object btnExit: TAdvSmoothButton
     Left = 14
-    Top = 157
+    Top = 168
     Width = 296
     Height = 40
     Hint = #1042#1099#1093#1086#1076
@@ -198,6 +198,11 @@ object AdminForm: TAdminForm
       Caption = #1056#1077#1076#1072#1082#1090#1086#1088' '#1086#1090#1095#1077#1090#1086#1074
       Hint = #1056#1077#1076#1072#1082#1090#1086#1088' '#1086#1090#1095#1077#1090#1086#1074
       OnExecute = actEditReportExecute
+    end
+    object actEditUser: TAction
+      Caption = #1056#1077#1076#1072#1082#1090#1080#1088#1086#1074#1072#1085#1080#1077' '#1087#1086#1083#1100#1079#1086#1074#1072#1090#1077#1083#1077#1081
+      Hint = #1056#1077#1076#1072#1082#1090#1080#1088#1086#1074#1072#1090#1100' '#1087#1086#1083#1100#1079#1086#1074#1072#1090#1077#1083#1103
+      OnExecute = actEditUserExecute
     end
   end
 end

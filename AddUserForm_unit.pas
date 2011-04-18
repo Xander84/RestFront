@@ -37,14 +37,19 @@ type
     UserGroupTableUSRNAME: TStringField;
     UserGroupTableCHECKED: TIntegerField;
     AdvTouchKeyBoard: TAdvSmoothTouchKeyBoard;
+    cbDisabled: TDBCheckBox;
     procedure FormShow(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure actAddUserExecute(Sender: TObject);
     procedure actAddUserUpdate(Sender: TObject);
     procedure dbePASSWKeyPress(Sender: TObject; var Key: Char);
     procedure edConfirmPassKeyPress(Sender: TObject; var Key: Char);
+  private
+    FInsertMode: Boolean;
+    FUserKey: Integer;
   public
-
+    property InsertMode: Boolean read FInsertMode write FInsertMode;
+    property UserKey: Integer read FUserKey write FUserKey;
   end;
 
 var
@@ -56,8 +61,16 @@ implementation
 
 procedure TAddUserForm.actAddUserExecute(Sender: TObject);
 begin
-  if FFrontBase.AddUser(MainTable, UserGroupTable) then
-    ModalResult := mrOk;
+  if not FInsertMode then
+  begin
+    if FFrontBase.AddUser(MainTable, UserGroupTable) then
+      ModalResult := mrOk;
+  end else
+  if FInsertMode then
+  begin
+    if FFrontBase.UpdateUser(MainTable, UserGroupTable, FUserKey) then
+      ModalResult := mrOk;
+  end;
 end;
 
 procedure TAddUserForm.actAddUserUpdate(Sender: TObject);
@@ -69,26 +82,21 @@ end;
 
 procedure TAddUserForm.dbePASSWKeyPress(Sender: TObject; var Key: Char);
 begin
-  if (Key = 'æ') or (Key = 'Æ') then
-    Key := ';';
-  if (Key = ',') or (Key = '.') then
-    Key := '?';
-
+  RemoveWrongPassChar(Key);
   inherited;
 end;
 
 procedure TAddUserForm.edConfirmPassKeyPress(Sender: TObject; var Key: Char);
 begin
-  if (Key = 'æ') or (Key = 'Æ') then
-    Key := ';';
-  if (Key = ',') or (Key = '.') then
-    Key := '?';
-
+  RemoveWrongPassChar(Key);
   inherited;
 end;
 
 procedure TAddUserForm.FormCreate(Sender: TObject);
 begin
+  FInsertMode := False;
+  FUserKey := -1;
+
   DepartmentTable.FieldDefs.Add('ID', ftInteger, 0);
   DepartmentTable.FieldDefs.Add('USR$NAME', ftString, 60);
   DepartmentTable.CreateTable;
@@ -101,8 +109,11 @@ begin
   MainTable.FieldDefs.Add('ibname', ftString, 8);
   MainTable.FieldDefs.Add('ibpassword', ftString, 8);
   MainTable.FieldDefs.Add('PASSW', ftString, 20);
+  MainTable.FieldDefs.Add('DISABLED', ftBoolean, 0);
   MainTable.CreateTable;
   MainTable.Open;
+
+  cbDisabled.Checked := False;
 
   SetupAdvGrid(DBAdvGrid1);
 end;
@@ -113,6 +124,11 @@ begin
   FFrontBase.GetDepartmentList(DepartmentTable);
   FFrontBase.GetUserGroupList(UserGroupTable);
   UserGroupTable.First;
+  if FInsertMode then
+  begin
+    FFrontBase.GetEditUserInfo(MainTable, UserGroupTable, FUserKey);
+    edConfirmPass.Text := MainTable.FieldByName('PASSW').AsString;
+  end;
 end;
 
 end.
