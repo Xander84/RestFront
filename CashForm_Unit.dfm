@@ -147,7 +147,7 @@ object CashForm: TCashForm
     end
     object btnReportWithCleaning: TAdvSmoothButton
       Left = 14
-      Top = 113
+      Top = 376
       Width = 296
       Height = 40
       Action = actReportWithCleaning
@@ -173,11 +173,12 @@ object CashForm: TCashForm
       Color = 15195349
       ParentFont = False
       TabOrder = 3
+      Visible = False
       Version = '1.6.9.0'
     end
     object btnEndSession: TAdvSmoothButton
       Left = 14
-      Top = 376
+      Top = 113
       Width = 296
       Height = 40
       Action = actEndSession
@@ -203,7 +204,6 @@ object CashForm: TCashForm
       Color = 15195349
       ParentFont = False
       TabOrder = 4
-      Visible = False
       Version = '1.6.9.0'
     end
     object btnEndDay: TAdvSmoothButton
@@ -360,8 +360,8 @@ object CashForm: TCashForm
     end
   end
   object alMain: TActionList
-    Left = 96
-    Top = 80
+    Left = 248
+    Top = 88
     object actStartDay: TAction
       Caption = #1054#1090#1082#1088#1099#1090#1100' '#1076#1077#1085#1100
       Hint = #1054#1090#1082#1088#1099#1090#1100' '#1076#1077#1085#1100
@@ -385,8 +385,8 @@ object CashForm: TCashForm
       OnExecute = actReportWithCleaningExecute
     end
     object actEndSession: TAction
-      Caption = #1047#1072#1082#1088#1099#1090#1100' '#1089#1084#1077#1085#1091
-      Hint = #1047#1072#1082#1088#1099#1090#1100' '#1089#1084#1077#1085#1091
+      Caption = #1047#1072#1082#1088#1099#1090#1100' '#1089#1084#1077#1085#1091' (Z '#1086#1090#1095#1077#1090')'
+      Hint = #1047#1072#1082#1088#1099#1090#1100' '#1089#1084#1077#1085#1091' (Z '#1086#1090#1095#1077#1090')'
       OnExecute = actEndSessionExecute
       OnUpdate = actEndSessionUpdate
     end

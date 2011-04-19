@@ -106,62 +106,66 @@ begin
       exit;
     end;
 
+    // если смена закрыта
     if GetDeviceInfo(4) = 0 then
     begin
+      // Развернутая печать налогов на чеке отключена
       Res := SetDeviceOpt(3, 0);
       ErrMessage(Res);
-
+      // Печать на чеке «в т.ч. НДС» отключена
       Res := SetDeviceOpt(4, 0);
       ErrMessage(Res);
-
+      // Печать на чеке ставок налогов отключена
       Res := SetDeviceOpt(5, 0);
       ErrMessage(Res);
-
+      // Печать ставок налогов и рассчитанных налогов на X и Z отчетах отключена
       Res := SetDeviceOpt(6, 0);
       ErrMessage(Res);
-
+      // Не использовать налоговые цепочки при начислении налогов
       Res := SetDeviceOpt(7, 0);
       ErrMessage(Res);
-
+      // Печатать на чеке количество покупок
       Res := SetDeviceOpt(8, 1);
       ErrMessage(Res);
-
+      // Не печатать номер отдела перед наименованием товара
       Res := SetDeviceOpt(9, 0);
       ErrMessage(Res);
-
+      // Полная резка чека
       Res := SetDeviceOpt(10, 1);
       ErrMessage(Res);
-
+      // Центрировать клише
       Res := SetDeviceOpt(11, 1);
       ErrMessage(Res);
-
+      // Печатать сумму итога увеличенным по высоте шрифтом в сочетании с разделительными линиями
       Res := SetDeviceOpt(12, 1);
       ErrMessage(Res);
-
+      // Печатать сумму итога символами двойной ширины
       Res := SetDeviceOpt(13, 1);
       ErrMessage(Res);
-
+      // Печатать «*» перед суммой
       Res := SetDeviceOpt(14, 1);
       ErrMessage(Res);
-
+      // Не проверять наличие денег в кассе при подсчете сдачи
       Res := SetDeviceOpt(15, 0);
       ErrMessage(Res);
-
+      // Игнорировать состояние денежного ящика при регистрации продаж
       Res := SetDeviceOpt(18, 0);
       ErrMessage(Res);
-
+      // Не открывать уже открытый денежный ящик
       Res := SetDeviceOpt(20, 0);
       ErrMessage(Res);
-
+      // Счетчик покупок подсчитывает общее количество
       Res := SetDeviceOpt(21, 1);
       ErrMessage(Res);
-
+      // Дата в формате День-Месяц-Год
       Res := SetDeviceOpt(22, 0);
       ErrMessage(Res);
-
+      // Печатать строку - разделитель между содержимым чека и его ”обрамлением”
       Res := SetDeviceOpt(25, 1);
       ErrMessage(Res);
-
+      // Установка текста, отображаемого в заголовке чека
+      // 0	Обычный режим
+      // 1	Режим отображения текста жирными буквами
       Res := SetOrderHeader(1, FrontBase.Options.CheckLine1, 0);
       ErrMessage(Res);
 
@@ -185,13 +189,19 @@ begin
 
       Res := SetOrderHeader(8, FrontBase.Options.CheckLine8, 0);
       ErrMessage(Res);
-
+      // Установка значения текстового дескриптора
+      // Номер дескриптора      Содержание      Значение по умолчанию
+      // 42                     Номер заказа    Заказ №
+      // 80                     Обслуж. лицо    Портье
       Res := SetDescriptorText(42, 'Стол №');
       ErrMessage(Res);
 
       Res := SetDescriptorText(80, 'Официант:');
       ErrMessage(Res);
-
+      // Задание параметров платежных средств
+      // Spark_Cash   = 8;  Наличные
+      // Spark_NoCash = 7;  Безнал
+      // Spark_Credit = 1;  Карты
       Res := SetPaymentMean(Spark_Credit, 'Пласт. карта', 0, 1, 1, 1);
       ErrMessage(Res);
 
@@ -200,8 +210,8 @@ begin
 
       Res := SetPaymentMean(Spark_Cash, 'Наличные', 0, 1, 1, 1);
       ErrMessage(Res);
-
-      Res := StartSession(FFrontBase.UserName, FFrontBase.CashNumber); //открыть сессию
+      //открытие сессии
+      Res := StartSession(FFrontBase.UserName, FFrontBase.CashNumber);
       if Res <> 0 then
       begin
         ErrMessage(Res);
