@@ -1,4 +1,4 @@
-unit ShtrihFR_Unit;
+﻿unit ShtrihFR_Unit;
 
 interface
 
@@ -18,6 +18,7 @@ type
     procedure SetFrontBase(const Value: TFrontBase);
     function GetFrontBase: TFrontBase;
     function Get_Self: Integer;
+    function CheckFiscalState: Boolean;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -54,13 +55,79 @@ begin
   Result := True;
 end;
 
+function TShtrihFR.CheckFiscalState: Boolean;
+begin
+  while True do
+  begin
+    GetShortECRStatus;
+    Sleep(250);
+    case ECRAdvancedMode of
+      // Бумага есть, ФР не в фазе печати операции
+      0:
+        begin
+          Result := True;
+          exit;
+        end;
+      // Пассивное отсутствие бумаги, ККМ не в фазе печати операции
+      1:
+        begin
+          Touch_MessageBox('Внимание', 'Бумага закончилась!', MB_OK or MB_ICONEXCLAMATION);
+          Result := True;
+          exit;
+        end;
+      // Активное отсутствие бумаги  ККМ в фазе печати операции
+      2:
+        begin
+          Touch_MessageBox('Внимание', 'Бумага закончилась, заправьте новый рулон!', MB_OK or MB_ICONEXCLAMATION);
+        end;
+      // После активного отсутствия бумаги, ККМ ждет команду
+      3:
+        begin
+          ContinuePrint;
+          if ResultCode <> 0 then
+          begin
+            CancelCheck;
+            ErrMessage(ResultCode);
+            Result := False;
+          end else
+            Result := True;
+
+          exit;
+        end;
+      // Фаза печати операции, ККМ не принимает от хоста команды
+      4:
+        begin
+          Result := True;
+          exit;
+        end;
+      // Фаза печати операции длинного отчета
+      5:
+        begin
+          Result := True;
+          exit;
+        end;
+    else
+      begin
+        if ResultCode <> 0 then
+        begin
+          ErrMessage(ResultCode);
+          Result := False;
+        end else
+          Result := True;
+
+        exit;
+      end;
+    end;
+  end;
+end;
+
 constructor TShtrihFR.Create(AOwner: TComponent);
 begin
   FDriverInit := True;
   try
     inherited Create(AOwner);
   except
-    Touch_MessageBox('��������', '�� ���������� ������� ��� �� ''����� ��''!', MB_OK, mtError);
+    Touch_MessageBox('Внимание', 'Не установлен драйвер для ФР ''Штрих ФР''!', MB_OK, mtError);
     FDriverInit := False;
   end;
   IsInit := False;
@@ -85,7 +152,7 @@ begin
   if Err <> 0 then
   begin
     ErrStr := WideCharToString(PWideChar(ResultCodeDescription));
-    Touch_MessageBox('��������', ErrStr, MB_OK, mtWarning);
+    Touch_MessageBox('Внимание', ErrStr, MB_OK, mtWarning);
   end;
 end;
 
@@ -174,20 +241,8 @@ begin
   begin
     if Init then
     begin
-      GetShortECRStatus;
-      Sleep(250);
-      if ECRAdvancedMode = 3 then
-      begin
-        ContinuePrint;
-        if ResultCode <> 0 then
-        begin
-          CancelCheck;
-          ErrMessage(ResultCode);
-        end else
-          Result := True;
-
+      if not CheckFiscalState then
         exit;
-      end;
 
       DocNumber := Doc.FieldByName('NUMBER').AsString;
       DocNumber := StringReplace(DocNumber, '.', '', [rfReplaceAll]);
@@ -198,14 +253,16 @@ begin
       WaiterName := FFrontBase.GetNameWaiterOnID(Doc.FieldByName('usr$respkey').AsInteger, False, False);
 
       UseReceiptRibbon := True;
-      StringForPrinting := '������ - ' + DateToStr(Date) + ' ' + TimeToStr(Time);
+      StringForPrinting := 'Открыт - ' + DateToStr(Date) + ' ' + TimeToStr(Time);
       PrintString;
-      StringForPrinting := '������ - ' + DateToStr(Date) + ' ' + TimeToStr(Time);
+      StringForPrinting := 'Закрыт - ' + DateToStr(Date) + ' ' + TimeToStr(Time);
       PrintString;
-      StringForPrinting := '������ - ' + WaiterName;
+      StringForPrinting := 'Кассир - ' + WaiterName;
       PrintString;
-      Res := ResultCode;
+      if not CheckFiscalState then
+        exit;
 
+      Res := ResultCode;
       if Res <> 0 then
       begin
         CancelCheck;
@@ -233,6 +290,8 @@ begin
           Delete(GoodName, 40, Length(GoodName) - 40);
           StringForPrinting := GoodName;
           Sale;
+          if not CheckFiscalState then
+            exit;
 
           Res := ResultCode;
           if Res <> 0 then
@@ -250,17 +309,25 @@ begin
       if TotalDiscount <> 0 then
       begin
         if WasDiscount then
-          DiscName := '������'
+          DiscName := 'Скидка'
         else
-          DiscName := '����������';
+          DiscName := 'Округление';
 
         StringForPrinting := DiscName + ' ' + CurrToStr(TotalDiscount);
         Summ1 := Abs(TotalDiscount);
         if TotalDiscount > 0 then
-          Discount
-        else
+        begin
+          Discount;
+          if not CheckFiscalState then
+            exit;
+        end else
+        begin
           Charge;
+          if not CheckFiscalState then
+            exit;
+        end;
 
+        Res := ResultCode;
         if Res <> 0 then
         begin
           CancelCheck;
@@ -277,6 +344,8 @@ begin
 
       StringForPrinting := '';
       CloseCheck;
+      if not CheckFiscalState then
+        exit;
       Res := ResultCode;
       if Res <> 0 then
       begin
@@ -287,7 +356,7 @@ begin
 
       if Result then
       begin
-        // ��������� ���
+        // сохраняем чек
         if Doc.State <> dsEdit then
           Doc.Edit;
         Doc.FieldByName('USR$WHOPAYOFFKEY').AsInteger := FFrontBase.ContactKey;
@@ -314,7 +383,7 @@ begin
   Result := False;
   if FDriverInit then
   begin
-    if Touch_MessageBox('��������', '�� ������������� ������ ����� ����� X1?', MB_YESNO, mtConfirmation) = IDYES then
+    if Touch_MessageBox('Внимание', 'Вы действительно хотите снять отчет X1?', MB_YESNO, mtConfirmation) = IDYES then
     begin
       PrintReportWithoutCleaning;
       if ResultCode = 0 then
@@ -328,7 +397,7 @@ end;
 function TShtrihFR.PrintX2ReportWithOutCleaning: Boolean;
 begin
   Result := False;
-  Touch_MessageBox('��������', '������ ��� ������ �� ��������������', MB_OK, mtError);
+  Touch_MessageBox('Внимание', 'Данный вид отчёта не поддерживается', MB_OK, mtError);
 end;
 
 function TShtrihFR.PrintZ1ReportWithCleaning: Boolean;
@@ -336,8 +405,8 @@ begin
   Result := False;
   if FDriverInit then
   begin
-    if Touch_MessageBox('��������',
-      '�� ������������� ������ ����� ����� � �������� Z1?', MB_YESNO, mtConfirmation) = IDYES then
+    if Touch_MessageBox('Внимание',
+      'Вы действительно хотите снять отчет с гашением Z1?', MB_YESNO, mtConfirmation) = IDYES then
     begin
       PrintReportWithCleaning;
       if ResultCode = 0 then
@@ -351,12 +420,12 @@ end;
 function TShtrihFR.PrintZ2ReportWithCleaning: Boolean;
 begin
   Result := False;
-  Touch_MessageBox('��������', '������ ��� ������ �� ��������������', MB_OK, mtError);
+  Touch_MessageBox('Внимание', 'Данный вид отчёта не поддерживается', MB_OK, mtError);
 end;
 
 function TShtrihFR.ReturnGoodMoney(const FSums: TSaleSums): Boolean;
 begin
-{ TODO : ����������� }
+{ TODO : Реализовать }
   Result := True;
 end;
 
