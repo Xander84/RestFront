@@ -61,7 +61,7 @@ type
     rsMenuInfo,                // редактирование заказа
     rsManagerPage,             // окно менеджера
     rsManagerChooseOrder,      // окно менеджера для разделения
-    rsManagerInfo,             //
+    rsManagerInfo,             // выручка
     rsKassirInfo,              // окно кассира для оплаты
     rsHallsPage,               // окно просмотра залов
     rsHallEdit);               // редактирование зала
@@ -2909,6 +2909,7 @@ begin
           tsManagerPage.Visible := False;
           tsTablePage.Visible := False;
           pnlRight.Visible := False;
+          btnSwapTable.Visible := False;
           RemoveGoodButton;
           RemoveGroupButton;
           RemoveOrderButton;
