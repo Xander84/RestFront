@@ -985,7 +985,6 @@ begin
       FButton.TableTypeKey := IBSQL.FieldByName('ID').AsInteger;
       FButton.RelativeWidth := IBSQL.FieldByName('usr$width').AsFloat;
       FButton.RelativeHeight := IBSQL.FieldByName('usr$length').AsFloat;
-      // FButton.TableName := IBSQL.FieldByName('USR$NAME').AsString;
       FButton.HallKey := HallKey;
       // Изображение стола
       FButton.Graphic := FTableManager.GetImageForType(FButton.TableTypeKey);
@@ -4107,8 +4106,11 @@ begin
     if tmrClose.Tag = 10 then
     begin
       // Для скрытия контекстного меню стола симулируем клик
-      PostMessage(Handle, WM_LBUTTONDOWN, MK_LBUTTON, 0);
-      PostMessage(Handle, WM_LBUTTONUP, MK_LBUTTON, 0);
+      if FRestFormState = rsHallsPage then
+      begin
+        PostMessage(Handle, WM_LBUTTONDOWN, MK_LBUTTON, 0);
+        PostMessage(Handle, WM_LBUTTONUP, MK_LBUTTON, 0);
+      end;
       // Запустим обработчик кнопки Отмена
       //actCancel.Execute;
       RestFormState := rsPass;
