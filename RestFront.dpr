@@ -49,7 +49,8 @@ uses
   TouchMessageBoxForm_Unit in 'TouchMessageBoxForm_Unit.pas' {TTouchMessageBox},
   ReturneyMoneyForm_Unit in 'ReturneyMoneyForm_Unit.pas' {ReturnMoneyForm},
   ChooseEmplFrom_Unit in 'ChooseEmplFrom_Unit.pas' {ChooseEmpl},
-  frmEditUsers_unit in 'forms\frmEditUsers_unit.pas' {EditUsers};
+  frmEditUsers_unit in 'forms\frmEditUsers_unit.pas' {EditUsers},
+  rfChooseForm_Unit in 'forms\rfChooseForm_Unit.pas' {ChooseForm};
 
 {$R *.res}
 

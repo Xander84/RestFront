@@ -484,12 +484,11 @@ begin
 
       FSQL.Close;
       FSQL.SQL.Text := ' INSERT INTO GD_EVENTLOG(USERKEY, EVENTKEY, ORDERKEY, GOODLOGKEY, EDITIONDATE) ' +
-        ' VALUES(:USERKEY, :EVENTKEY, :ORDERKEY, :GOODLOGKEY, :ED) ';
+        ' VALUES(:USERKEY, :EVENTKEY, :ORDERKEY, :GOODLOGKEY, CURRENT_TIMESTAMP) ';
       FSQL.ParamByName('USERKEY').AsInteger := FUserList.Items[UserInfo.UserID];
       FSQL.ParamByName('EVENTKEY').AsInteger := Event;
       FSQL.ParamByName('GOODLOGKEY').AsInteger := FID;
       FSQL.ParamByName('ORDERKEY').AsInteger := FOrderList.Items[OrderInfo.OrderID];
-      FSQL.ParamByName('ED').AsDateTime := Now;
       FSQL.ExecQuery;
       FTransaction.Commit;
     finally
@@ -522,11 +521,10 @@ begin
       FTransaction.StartTransaction;
       FSQL.Transaction := FTransaction;
       FSQL.SQL.Text := ' INSERT INTO GD_EVENTLOG(USERKEY, EVENTKEY, ORDERKEY, EDITIONDATE) ' +
-        ' VALUES(:USERKEY, :EVENTKEY, :ORDERKEY, :ED) ';
+        ' VALUES(:USERKEY, :EVENTKEY, :ORDERKEY, CURRENT_TIMESTAMP) ';
       FSQL.ParamByName('USERKEY').AsInteger := FUserList.Items[UserInfo.UserID];
       FSQL.ParamByName('EVENTKEY').AsInteger := Event;
       FSQL.ParamByName('ORDERKEY').AsInteger := FOrderList.Items[OrderInfo.OrderID];
-      FSQL.ParamByName('ED').AsDateTime := Now;
       FSQL.ExecQuery;
       FTransaction.Commit;
     finally
@@ -555,9 +553,8 @@ begin
       FTransaction.StartTransaction;
       FSQL.Transaction := FTransaction;
       FSQL.SQL.Text := ' INSERT INTO GD_EVENTLOG(EVENTKEY, EDITIONDATE) ' +
-        ' VALUES(:EVENTKEY, :ED) ';
+        ' VALUES(:EVENTKEY, CURRENT_TIMESTAMP) ';
       FSQL.ParamByName('EVENTKEY').AsInteger := Event;
-      FSQL.ParamByName('ED').AsDateTime := Now;
       FSQL.ExecQuery;
       FTransaction.Commit;
     finally
@@ -588,10 +585,9 @@ begin
       FTransaction.StartTransaction;
       FSQL.Transaction := FTransaction;
       FSQL.SQL.Text := ' INSERT INTO GD_EVENTLOG(USERKEY, EVENTKEY, EDITIONDATE) ' +
-        ' VALUES(:USERKEY, :EVENTKEY, :ED) ';
+        ' VALUES(:USERKEY, :EVENTKEY, CURRENT_TIMESTAMP) ';
       FSQL.ParamByName('USERKEY').AsInteger := FUserList.Items[UserInfo.UserID];
       FSQL.ParamByName('EVENTKEY').AsInteger := Event;
-      FSQL.ParamByName('ED').AsDateTime := Now;
       FSQL.ExecQuery;
       FTransaction.Commit;
     finally
@@ -693,7 +689,7 @@ begin
           FInit := False;
       end;
     end;
-  end  else
+  end else
   begin
     FInit := False;
   end;

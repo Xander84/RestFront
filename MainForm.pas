@@ -512,7 +512,8 @@ uses
   ChooseDiscountCardForm_Unit, EditReportForm_Unit,
   GDIPPictureContainer, IB, GDIPFill, CashForm_Unit, IBSQL,
   TouchMessageBoxForm_Unit, Base_FiscalRegister_unit,
-  ReturneyMoneyForm_Unit, frmSwapOrder_unit, rfOrder_unit, ChooseEmplFrom_Unit;
+  ReturneyMoneyForm_Unit, frmSwapOrder_unit, rfOrder_unit, ChooseEmplFrom_Unit,
+  rfChooseForm_Unit;
 
 {$R *.dfm}
 { TRestMainForm }
@@ -812,6 +813,7 @@ begin
   FGoodDataSet.FieldDefs.Add('MODIFYGROUPKEY', ftInteger, 0);
   FGoodDataSet.FieldDefs.Add('ISNEEDMODIFY', ftInteger, 0);
   FGoodDataSet.FieldDefs.Add('BEDIVIDE', ftInteger, 0);
+  FGoodDataSet.FieldDefs.Add('PRNGROUPKEY', ftInteger, 0);
   FGoodDataSet.CreateTable;
   FGoodDataSet.Open;
 
@@ -1649,6 +1651,13 @@ var
   FForm: TModificationForm;
   S, ES: String;
   FGoodInfo: TLogGoodInfo;
+  FChooseForm: TChooseForm;
+
+const
+  cn_prnSQL = 'SELECT ID, USR$NAME FROM USR$MN_PRNGROUP';
+  cn_modSQL = ' SELECT ID, USR$NAME FROM USR$MN_MODIFY ' +
+    ' WHERE USR$ISGROUP = 1 ';
+
 begin
   if not FHeaderTable.FieldByName('usr$timecloseorder').IsNull then
   begin
@@ -1674,6 +1683,61 @@ begin
     FLineTable.Post;
 
     Inc(FLineID);
+    //Issue 97
+    if FGoodDataSet.FieldByName('PRNGROUPKEY').AsInteger = 0 then
+    begin
+      if Touch_MessageBox('Внимание', 'Для блюда не установлена группа сервис-печати. Установить?',
+        MB_YESNO, mtConfirmation) = IDYES then
+      begin
+        FChooseForm := TChooseForm.Create(nil);
+        try
+          FChooseForm.SQLText := cn_prnSQL;
+          FChooseForm.KeyField := 'ID';
+          FChooseForm.ListField := 'USR$NAME';
+          FChooseForm.FrontBase := FFrontBase;
+          FChooseForm.ChooseName := 'Группа сервис-печати';
+          FChooseForm.ShowModal;
+          if FChooseForm.ModalResult = mrOK then
+          begin
+            FGoodDataSet.Edit;
+            FGoodDataSet.FieldByName('PRNGROUPKEY').AsInteger := FChooseForm.ID;
+            FGoodDataSet.Post;
+            if FChooseForm.ID <> -1 then
+              FFrontBase.UpdateGoodPrnGroup(GoodKey, FChooseForm.ID);
+          end;
+        finally
+          FChooseForm.Free;
+        end;
+      end;
+    end;
+
+    if (FGoodDataSet.FieldByName('MODIFYGROUPKEY').AsInteger = 0) and (FFrontBase.Options.NeedModGroup) then
+    begin
+      if Touch_MessageBox('Внимание', 'Для блюда не установлена группа модификаторов. Установить?',
+        MB_YESNO, mtConfirmation) = IDYES then
+      begin
+        FChooseForm := TChooseForm.Create(nil);
+        try
+          FChooseForm.SQLText := cn_modSQL;
+          FChooseForm.KeyField := 'ID';
+          FChooseForm.ListField := 'USR$NAME';
+          FChooseForm.FrontBase := FFrontBase;
+          FChooseForm.ChooseName := 'Группа модификаторов';
+          FChooseForm.ShowModal;
+          if FChooseForm.ModalResult = mrOK then
+          begin
+            FGoodDataSet.Edit;
+            FGoodDataSet.FieldByName('MODIFYGROUPKEY').AsInteger := FChooseForm.ID;
+            FGoodDataSet.Post;
+            if FChooseForm.ID <> -1 then
+              FFrontBase.UpdateGoodModifyGroup(GoodKey, FChooseForm.ID);
+          end;
+        finally
+          FChooseForm.Free;
+        end;
+      end;
+    end;
+
     // проверяем сначала на модификаторы
     if FGoodDataSet.FieldByName('ISNEEDMODIFY').AsInteger = 1 then
     begin

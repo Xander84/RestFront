@@ -29,7 +29,8 @@ const
   cst_CauseDelete = 'SELECT * FROM usr$mn_causedeleteorderline';
 
   cst_GoodList =
-    ' SELECT g.id, g.name, mn.usr$cost, g.alias, g.USR$MODIFYGROUPKEY, g.USR$BEDIVIDE ' +
+    ' SELECT g.id, g.name, mn.usr$cost, g.alias, g.USR$MODIFYGROUPKEY, g.USR$BEDIVIDE, ' +
+    '   g.USR$PRNGROUPKEY ' +
     ' FROM usr$mn_menuline mn  ' +
     '   JOIN gd_good g on g.id = mn.usr$goodkey  ' +
     '   JOIN gd_goodgroup cg ON g.groupkey = cg.id  ' +
@@ -50,7 +51,9 @@ const
     ' ORDER BY 1 ';
 
   cst_PopularGoodList =
-    ' SELECT g.id, g.name, mn.usr$cost, g.alias, g.USR$MODIFYGROUPKEY, g.USR$BEDIVIDE FROM GD_GOOD G ' +
+    ' SELECT g.id, g.name, mn.usr$cost, g.alias, g.USR$MODIFYGROUPKEY, g.USR$BEDIVIDE, ' +
+    '   g.USR$PRNGROUPKEY ' +
+    ' FROM GD_GOOD G ' +
     ' JOIN GD_GOODGROUP GD ON GD.ID = G.GROUPKEY ' +
     ' JOIN usr$mn_menuline mn ON g.id = mn.usr$goodkey ' +
     ' JOIN gd_document doc on doc.id = mn.documentkey ' +
@@ -236,6 +239,7 @@ type
     BackType:          Integer;
     UseHalls:          Boolean;
     NoPrintEmptyCheck: Boolean;
+    NeedModGroup: Boolean;
   end;
 
   TUserInfo = record
@@ -331,6 +335,8 @@ type
     function GetGroupList(const MemTable: TkbmMemTable; const MenuKey: Integer): Boolean;
     function GetGoodList(const MemTable: TkbmMemTable; const MenuKey, GroupKey: Integer): Boolean;
     function GetGoodByID(const MemTable: TkbmMemTable; const GoodKey: Integer): Boolean;
+    procedure UpdateGoodPrnGroup(const GoodKey, PrnGroupKey: Integer);
+    procedure UpdateGoodModifyGroup(const GoodKey, ModifyGroupKey: Integer);
     function GetPopularGoodList(const MemTable: TkbmMemTable): Boolean;
     procedure DeleteOrder(const ID: Integer);
 
@@ -1213,7 +1219,8 @@ var
   FSQL: TIBSQL;
 const
   cst_GoodByID =
-    ' SELECT g.id, g.name, mn.usr$cost, g.alias, g.USR$MODIFYGROUPKEY, g.USR$BEDIVIDE ' +
+    ' SELECT g.id, g.name, mn.usr$cost, g.alias, g.USR$MODIFYGROUPKEY, g.USR$BEDIVIDE, ' +
+    '   g.USR$PRNGROUPKEY ' +
     ' FROM gd_good g ' +
     '   JOIN usr$mn_menuline mn ON mn.usr$goodkey = g.id ' +
     '   JOIN gd_goodgroup cg ON g.groupkey = cg.id ' +
@@ -1247,6 +1254,7 @@ begin
         MemTable.FieldByName('MODIFYGROUPKEY').AsInteger := FReadSQL.FieldByName('USR$MODIFYGROUPKEY').AsInteger;
         MemTable.FieldByName('ISNEEDMODIFY').AsInteger := IsNeedModify(FSQL, FReadSQL.FieldByName('ID').AsInteger);
         MemTable.FieldByName('BEDIVIDE').AsInteger := FReadSQL.FieldByName('USR$BEDIVIDE').AsInteger;
+        MemTable.FieldByName('PRNGROUPKEY').AsInteger := FReadSQL.FieldByName('USR$PRNGROUPKEY').AsInteger;
         MemTable.Post;
         FReadSQL.Next;
       end;
@@ -1293,6 +1301,7 @@ begin
         MemTable.FieldByName('MODIFYGROUPKEY').AsInteger := FReadSQL.FieldByName('USR$MODIFYGROUPKEY').AsInteger;
         MemTable.FieldByName('ISNEEDMODIFY').AsInteger := IsNeedModify(FSQL, FReadSQL.FieldByName('ID').AsInteger);
         MemTable.FieldByName('BEDIVIDE').AsInteger := FReadSQL.FieldByName('USR$BEDIVIDE').AsInteger;
+        MemTable.FieldByName('PRNGROUPKEY').AsInteger := FReadSQL.FieldByName('USR$PRNGROUPKEY').AsInteger;
         MemTable.Post;
         FReadSQL.Next;
       end;
@@ -1339,6 +1348,7 @@ begin
         MemTable.FieldByName('MODIFYGROUPKEY').AsInteger := FReadSQL.FieldByName('USR$MODIFYGROUPKEY').AsInteger;
         MemTable.FieldByName('ISNEEDMODIFY').AsInteger := IsNeedModify(FSQL, FReadSQL.FieldByName('ID').AsInteger);
         MemTable.FieldByName('BEDIVIDE').AsInteger := FReadSQL.FieldByName('USR$BEDIVIDE').AsInteger;
+        MemTable.FieldByName('PRNGROUPKEY').AsInteger := FReadSQL.FieldByName('USR$PRNGROUPKEY').AsInteger;
         MemTable.Post;
         FReadSQL.Next;
       end;
@@ -3351,6 +3361,61 @@ begin
   end;
 end;
 
+procedure TFrontBase.UpdateGoodModifyGroup(const GoodKey,
+  ModifyGroupKey: Integer);
+var
+  FSQL: TIBSQL;
+  Tr: TIBTransaction;
+begin
+  FSQL := TIBSQL.Create(nil);
+  Tr := TIBTransaction.Create(nil);
+  try
+    Tr.DefaultDatabase := ReadTransaction.DefaultDatabase;
+    Tr.StartTransaction;
+
+    FSQL.Transaction := Tr;
+    FSQL.SQL.Text := ' UPDATE GD_GOOD G ' +
+      ' SET G.USR$MODIFYGROUPKEY = :ID ' +
+      ' WHERE G.ID = :GOODKEY ';
+    FSQL.ParamByName('ID').AsInteger := ModifyGroupKey;
+    FSQL.ParamByName('GOODKEY').AsInteger := GoodKey;
+    FSQL.ExecQuery;
+    FSQL.Close;
+
+    Tr.Commit;
+  finally
+    FSQL.Free;
+    Tr.Free;
+  end;
+end;
+
+procedure TFrontBase.UpdateGoodPrnGroup(const GoodKey, PrnGroupKey: Integer);
+var
+  FSQL: TIBSQL;
+  Tr: TIBTransaction;
+begin
+  FSQL := TIBSQL.Create(nil);
+  Tr := TIBTransaction.Create(nil);
+  try
+    Tr.DefaultDatabase := ReadTransaction.DefaultDatabase;
+    Tr.StartTransaction;
+
+    FSQL.Transaction := Tr;
+    FSQL.SQL.Text := ' UPDATE GD_GOOD G ' +
+      ' SET G.USR$PRNGROUPKEY = :ID ' +
+      ' WHERE G.ID = :GOODKEY ';
+    FSQL.ParamByName('ID').AsInteger := PrnGroupKey;
+    FSQL.ParamByName('GOODKEY').AsInteger := GoodKey;
+    FSQL.ExecQuery;
+    FSQL.Close;
+
+    Tr.Commit;
+  finally
+    FSQL.Free;
+    Tr.Free;
+  end;
+end;
+
 function TFrontBase.UpdateUser(const EmplTable,
   GroupListTable: TkbmMemTable; UserKey: Integer): Boolean;
 var
@@ -4626,6 +4691,7 @@ begin
 
       UseHalls := False;
       NoPrintEmptyCheck := True;
+      NeedModGroup := False;
     end;
 
     FReadSQL.Close;
@@ -4765,6 +4831,10 @@ begin
       if FName = 'NOPRINTEMPTYCHECK' then
       begin
         FOptions.NoPrintEmptyCheck := (FReadSQL.FieldByName('INT_DATA').AsInteger = 1);
+      end else
+      if FName = 'NEEDMODGROUP' then
+      begin
+        FOptions.NeedModGroup := (FReadSQL.FieldByName('INT_DATA').AsInteger = 1);
       end;
 
       FReadSQL.Next;

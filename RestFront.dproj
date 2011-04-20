@@ -153,6 +153,9 @@
 			<DCCReference Include="forms\frmEditUsers_unit.pas">
 				<Form>EditUsers</Form>
 			</DCCReference>
+			<DCCReference Include="forms\rfChooseForm_Unit.pas">
+				<Form>ChooseForm</Form>
+			</DCCReference>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>

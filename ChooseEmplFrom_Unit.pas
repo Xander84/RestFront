@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, ExtCtrls, AdvPanel, Front_DataBase_Unit,
-  FrontData_Unit, BaseFrontForm_Unit, AdvSmoothButton, AdvCombo;
+  FrontData_Unit, BaseFrontForm_Unit, AdvSmoothButton;
 
 type
   TChooseEmpl = class(TBaseFrontForm)
