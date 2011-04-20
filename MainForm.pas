@@ -2609,6 +2609,7 @@ begin
         if FHeaderTable.State = dsBrowse then
           FHeaderTable.Edit;
         FHeaderTable.FieldByName('usr$timecloseorder').AsDateTime := GetServerDateTime;
+        FHeaderTable.Post;
         // ”кажем в заказе стола что был распечатен пречек
         Order := FTableManager.GetOrder(FHeaderTable.FieldByName('usr$tablekey').AsInteger, FHeaderTable.FieldByName('ID').AsInteger);
         if Assigned(Order) then
