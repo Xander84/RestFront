@@ -1919,7 +1919,7 @@ begin
 
   FButton := TButton(Sender);
   // сначала ставим флаг, что редактируем набор данных
-  if not FOrderDataSet.Locate('ID', FButton.Tag, []) then
+//  if not FOrderDataSet.Locate('ID', FButton.Tag, []) then
     FFrontBase.GetUserOrders(-1, FOrderDataSet);
 
   if FOrderDataSet.Locate('ID', FButton.Tag, []) then
