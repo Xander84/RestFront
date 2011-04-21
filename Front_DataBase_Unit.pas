@@ -3086,7 +3086,7 @@ begin
       FSQL.ParamByName('USR$WAITERKEY').AsInteger := WaiterKey;
       FSQL.ParamByName('USR$MANAGERKEY').AsInteger := ManagerKey;
       FSQL.ParamByName('USR$ORDERKEY').AsInteger := OrderKey;
-      FSQL.ParamByName('USR$ORDERKEY').AsInteger := OrderLineKey;
+      FSQL.ParamByName('USR$ORDERLINEKEY').AsInteger := OrderLineKey;
       FSQL.ParamByName('USR$OPERATION').AsInteger := Operation;
       FSQL.ParamByName('USR$LOGICDATE').AsDateTime := GetLogicDate;
       FSQL.ParamByName('USR$ORDERSUM').AsCurrency := Curr;

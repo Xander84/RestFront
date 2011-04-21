@@ -82,7 +82,7 @@ begin
   if not SourceDS.IsEmpty then
   begin
     FFrontBase.SaveOrderLog(FFrontBase.ContactKey, ManagerKey,
-      SourceDS.FieldByName('ID').AsInteger, SourceDS.FieldByName('ID').AsInteger, 2);
+      Parent, SourceDS.FieldByName('ID').AsInteger, 2);
 
     if (SourceDS.FieldByName('usr$quantity').AsCurrency > 1) and (not All) then
     begin
