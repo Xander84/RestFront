@@ -57,6 +57,9 @@ var
 
 implementation
 
+uses
+  rfUtils_unit;
+
 {$R *.dfm}
 
 procedure TAddUserForm.actAddUserExecute(Sender: TObject);

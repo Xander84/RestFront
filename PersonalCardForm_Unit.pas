@@ -35,6 +35,9 @@ var
 
 implementation
 
+uses
+  rfUtils_unit;
+
 {$R *.dfm}
 
 procedure TPersonalCardForm.btnDeleteClick(Sender: TObject);

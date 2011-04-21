@@ -98,12 +98,13 @@ const
      '   o.usr$whopayoffkey,       ' +
      '   o.usr$vip,                ' +
      '   o.usr$tablekey,           ' +
+     '   o.usr$islocked AS islocked, ' +
      ' ( SELECT SUM(L.USR$SUMNCUWITHDISCOUNT) FROM USR$MN_ORDERLINE L WHERE L.MASTERKEY = doc.ID AND L.USR$CAUSEDELETEKEY IS NULL) AS USR$SUMNCUWITHDISCOUNT, ' +
      '   o.usr$computername        ' +
      ' FROM gd_document doc        ' +
-     '  join usr$mn_order o on o.documentkey = doc.id  ' +
-     '  WHERE                                          ' +
-     '  o.documentkey = :id                            ';
+     '   JOIN usr$mn_order o ON o.documentkey = doc.id  ' +
+     ' WHERE                                          ' +
+     '    o.documentkey = :id                            ';
 
    cst_OrderHeaderByDate =
      ' SELECT                      ' +
@@ -359,7 +360,9 @@ type
 
     function CreateNewOrder(const HeaderTable, LineTable, ModifyTable: TkbmMemTable; out OrderKey: Integer): Boolean;
     function SaveAndReloadOrder(const HeaderTable, LineTable, ModifyTable: TkbmMemTable; OrderKey: Integer): Boolean;
-    function GetOrder(const HeaderTable, LineTable, ModifyTable: TkbmMemTable; OrderKey: Integer): Boolean; // Если OrderKey = -1 то новый заказ
+    // Если OrderKey = -1 то новый заказ
+    function GetOrder(const HeaderTable, LineTable, ModifyTable: TkbmMemTable; OrderKey: Integer): Boolean;
+    function GetOrderInfo(const AOrderKey: Integer): TrfOrder;
     function CloseModifyTable(const ModifyTable: TkbmMemTable): Boolean;
     //оплачен или нет
     function OrderIsPayed(const ID: Integer): Boolean;
@@ -432,7 +435,6 @@ type
     procedure ClearCache;
 
     class function GetGroupMask(const AGroupID: Integer): Integer;
-    class function GetLocalComputerName: String;
     class function RoundCost(const Cost: Currency): Currency;
 
     property UserName: String read FUserName;
@@ -455,52 +457,11 @@ type
   procedure GetHeaderTable(var DS: TkbmMemTable);
   procedure GetLineTable(var DS: TkbmMemTable);
   procedure GetModificationTable(var DS: TkbmMemTable);
-  function WinExec32(Cmd: string; const CmdShow: Integer): Boolean;
-  procedure RemoveWrongPassChar(var Key: Char);
 
 implementation
 
 uses
-  Windows, Sysutils, CardCodeForm_Unit, TouchMessageBoxForm_Unit, Dialogs, FrontData_Unit;
-
-procedure RemoveWrongPassChar(var Key: Char);
-begin
-  if (Key = 'ж') or (Key = 'Ж') then
-    Key := ';';
-  if (Key = ',') or (Key = '.') then
-    Key := '?';
-end;
-
-function WinExec32(Cmd: string; const CmdShow: Integer): Boolean;
-var
-  StartupInfo: TStartupInfo;
-  ProcessInfo: TProcessInformation;
-
-  procedure ResetMemory(out P; Size: Longint);
-  begin
-    if Size > 0 then
-    begin
-      Byte(P) := 0;
-      FillChar(P, Size, 0);
-    end;
-  end;
-
-begin
-  ResetMemory(StartupInfo, SizeOf(TStartupInfo));
-  ResetMemory(ProcessInfo, SizeOf(ProcessInfo));
-  StartupInfo.cb := SizeOf(TStartupInfo);
-  StartupInfo.dwFlags := STARTF_USESHOWWINDOW;
-  StartupInfo.wShowWindow := CmdShow;
-  UniqueString(Cmd);//in the Unicode version the parameter lpCommandLine needs to be writable
-  Result := CreateProcess(nil, PChar(Cmd), nil, nil, False,
-    NORMAL_PRIORITY_CLASS, nil, nil, StartupInfo, ProcessInfo);
-  if Result then
-  begin
-    WaitForInputIdle(ProcessInfo.hProcess, INFINITE);
-    CloseHandle(ProcessInfo.hThread);
-    CloseHandle(ProcessInfo.hProcess);
-  end;
-end;
+  Windows, Sysutils, CardCodeForm_Unit, TouchMessageBoxForm_Unit, Dialogs, FrontData_Unit, rfUtils_unit;
 
 procedure GetHeaderTable(var DS: TkbmMemTable);
 begin
@@ -1624,6 +1585,36 @@ begin
   end;
 end;
 
+function TFrontBase.GetOrderInfo(const AOrderKey: Integer): TrfOrder;
+begin
+  Result := nil;
+  if AOrderKey > -1 then
+  begin
+    FReadSQL.Close;
+    try
+      if not FReadSQL.Transaction.InTransaction then
+        FReadSQL.Transaction.StartTransaction;
+
+      FReadSQL.SQL.Text := cst_OrderHeader;
+      FReadSQL.ParamByName('ID').AsInteger := AOrderKey;
+      FReadSQL.ExecQuery;
+      if not FReadSQL.Eof then
+      begin
+        Result := TrfOrder.Create(FReadSQL.FieldByName('id').AsInteger, FReadSQL.FieldByName('number').AsString);
+        Result.TimeCloseOrder := FReadSQL.FieldByName('usr$timecloseorder').AsDateTime;
+        Result.ResponsibleKey := FReadSQL.FieldByName('usr$respkey').AsInteger;
+        if FReadSQL.FieldByName('usr$computername').AsString <> '' then
+          Result.ComputerName := FReadSQL.FieldByName('usr$computername').AsString
+        else
+          Result.ComputerName := GetLocalComputerName;
+        Result.IsLocked := (FReadSQL.FieldByName('islocked').AsInteger = 1);
+      end;
+    finally
+      FReadSQL.Close;
+    end;
+  end;
+end;
+
 function TFrontBase.GetOrdersInfo(const HeaderTable, LineTable: TkbmMemTable;
   const DateBegin, DateEnd: TDate; const WithPreCheck, WithOutPreCheck,
   Payed, NotPayed: Boolean): Boolean;
@@ -2013,7 +2004,7 @@ begin
         '   OR usr$vip IS NULL) ' +
         ' ORDER BY ' +
         '   u.usr$logicdate, u.usr$timeorder ';
-      if ContactKey  > 0 then
+      if ContactKey > 0 then
         FReadSQL.ParamByName('RespKey').AsInteger := ContactKey
       else
         FReadSQL.ParamByName('RespKey').AsInteger := FContactKey;
@@ -2624,18 +2615,6 @@ begin
   finally
     FReadSQL.Close;
   end;
-end;
-
-class function TFrontBase.GetLocalComputerName: String;
-var
-  ComputerName: array[0..MAX_COMPUTERNAME_LENGTH + 1] of Char;
-  ComputerNameSize: DWORD;
-begin
-  ComputerNameSize := SizeOf(ComputerName);
-  if GetComputerName(ComputerName, ComputerNameSize) = BOOL(0) then
-    Result := ''
-  else
-    Result := AnsiUpperCase(ComputerName);
 end;
 
 function TFrontBase.GetPayKindType(const MemTable: TkbmMemTable;

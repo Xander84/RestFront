@@ -55,7 +55,7 @@ var
 implementation
 
 uses
-  DevideForm_Unit, TouchMessageBoxForm_Unit;
+  DevideForm_Unit, TouchMessageBoxForm_Unit, rfUtils_unit;
 
 {$R *.dfm}
 

@@ -216,9 +216,8 @@ type
     lblOrderInfoTableNumberLabel: TLabel;
     lblOrderInfoTableNumber: TLabel;
     actSwapWaiter: TAction;
-    btnSwapTable: TAdvSmoothToggleButton;
+    btnUnblockTable: TAdvSmoothToggleButton;
     grScrollBar: TScrollBar;
-    btnSwapWaiter: TAdvSmoothButton;
     btnPrintBiilsCopy: TAdvSmoothButton;
     Action1: TAction;
     actSwapTable: TAction;
@@ -226,6 +225,9 @@ type
     pnlPassword: TGridPanel;
     edPassword: TEdit;
     btnOKPass: TAdvSmoothButton;
+    btnSwapWaiter: TAdvSmoothButton;
+    actUnblockTable: TAction;
+    btnSwapTable: TAdvSmoothToggleButton;
 
     // Проверка введёного пароля
     procedure actPassEnterExecute(Sender: TObject);
@@ -312,6 +314,7 @@ type
     procedure btnPrintBiilsCopyClick(Sender: TObject);
     procedure btnRealizationReportClick(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure actUnblockTableUpdate(Sender: TObject);
   private
     // Компонент обращения к БД
     FFrontBase: TFrontBase;
@@ -495,7 +498,6 @@ type
     procedure OnAfterPost(DataSet: TDataSet);
     /// !!!!
     procedure OnAfterDelete(DataSet: TDataSet);
-
   public
     procedure AfterConstruction; override;
   end;
@@ -513,9 +515,10 @@ uses
   GDIPPictureContainer, IB, GDIPFill, CashForm_Unit, IBSQL,
   TouchMessageBoxForm_Unit, Base_FiscalRegister_unit,
   ReturneyMoneyForm_Unit, frmSwapOrder_unit, rfOrder_unit, ChooseEmplFrom_Unit,
-  rfChooseForm_Unit;
+  rfChooseForm_Unit, rfUtils_unit;
 
 {$R *.dfm}
+
 { TRestMainForm }
 
 procedure TRestMainForm.actPassEnterExecute(Sender: TObject);
@@ -755,7 +758,7 @@ begin
     (edPassword.CanFocus) then
   begin
     edPassword.SetFocus;
-    PostMessage(edPassword.Handle, WM_KEYUP, Key, 0)
+    PostMessage(edPassword.Handle, WM_KEYUP, Key, 0);
   end;
 end;
 
@@ -1422,7 +1425,7 @@ begin
     FHeaderTable.FieldByName('USR$TIMEORDER').Value := Time;
     if TableKey > 0 then
       FHeaderTable.FieldByName('USR$TABLEKEY').AsInteger := TableKey;
-    FHeaderTable.FieldByName('USR$COMPUTERNAME').AsString := FFrontBase.GetLocalComputerName;
+    FHeaderTable.FieldByName('USR$COMPUTERNAME').AsString := GetLocalComputerName;
     FHeaderTable.Post;
 
     btnPreCheck.Action := actPreCheck;
@@ -1451,7 +1454,7 @@ begin
     end;
 
     FFrontBase.GetOrder(FHeaderTable, FLineTable, FModificationDataSet, -1);
-    FOrderNumber := Table.Number + '.' + IntToStr(Table.OrderCount + 1);
+    FOrderNumber := Table.Number + '.' + IntToStr(Table.GetMaxOrderNumber + 1);
 
     if FOrderNumber = '' then
       exit;
@@ -1483,7 +1486,8 @@ begin
       FHeaderTable.FieldByName('USR$TIMEORDER').Value := Time;
       if Table.ID > 0 then
         FHeaderTable.FieldByName('USR$TABLEKEY').AsInteger := Table.ID;
-      FHeaderTable.FieldByName('USR$COMPUTERNAME').AsString := FFrontBase.GetLocalComputerName;
+      FHeaderTable.FieldByName('USR$COMPUTERNAME').AsString := GetLocalComputerName;
+      FHeaderTable.FieldByName('usr$respkey').AsInteger := FFrontBase.ContactKey;
       FHeaderTable.Post;
 
       btnPreCheck.Action := actPreCheck;
@@ -1776,7 +1780,7 @@ begin
     FLineTable.FieldByName('usr$costncu').AsCurrency := FGoodDataSet.FieldByName('COST').AsCurrency;
     FLineTable.FieldByName('MODIFYSTRING').AsString := S;
     FLineTable.FieldByName('EXTRAMODIFY').AsString := ES;
-    FLineTable.FieldByName('USR$COMPUTERNAME').AsString := FFrontBase.GetLocalComputerName;
+    FLineTable.FieldByName('USR$COMPUTERNAME').AsString := GetLocalComputerName;
     FLineTable.Post;
 
     FGoodInfo.GoodID := GoodKey;
@@ -1907,65 +1911,6 @@ begin
   finally
     LockWindowUpdate(0);
   end;
-end;
-
-procedure TRestMainForm.OrderButtonOnClick(Sender: TObject);
-var
-  FUserInfo: TUserInfo;
-  FButton: TButton;
-begin
-  if not FFrontBase.CheckForSession then
-    exit;
-
-  FButton := TButton(Sender);
-  // сначала ставим флаг, что редактируем набор данных
-//  if not FOrderDataSet.Locate('ID', FButton.Tag, []) then
-    FFrontBase.GetUserOrders(-1, FOrderDataSet);
-
-  if FOrderDataSet.Locate('ID', FButton.Tag, []) then
-  begin
-    if FFrontBase.OrderIsLocked(FButton.Tag) then
-    begin
-      if (FFrontBase.GetLocalComputerName <> FOrderDataSet.FieldByName('USR$COMPUTERNAME').AsString) then
-      begin
-        Touch_MessageBox('Внимание', 'Заказ редактируется на другом рабочем месте!', MB_OK, mtWarning);
-        exit;
-      end
-      else if Touch_MessageBox('Внимание', 'Заказ редактируется. Продолжить?', MB_YESNO, mtConfirmation) = IDYES then
-      begin
-        FUserInfo := FFrontBase.CheckUserPasswordWithForm;
-        if FUserInfo.CheckedUserPassword then
-        begin
-          if (FUserInfo.UserInGroup and FFrontBase.Options.ManagerGroupMask) = 0 then
-          begin
-            Touch_MessageBox('Внимание', cn_dontManagerPermission, MB_OK, mtWarning);
-            exit;
-          end;
-        end
-        else
-          exit;
-      end
-      else
-        exit;
-    end;
-  end;
-  FFrontBase.GetOrder(FHeaderTable, FLineTable, FModificationDataSet, FButton.Tag);
-  FFrontBase.LockUserOrder(FButton.Tag);
-  if not Assigned(dsMain.DataSet) then
-    dsMain.DataSet := FLineTable
-  else
-  begin
-    // для обнулений значений в гриде
-    dsMain.DataSet := nil;
-    dsMain.DataSet := FLineTable;
-  end;
-  RestFormState := rsMenuInfo;
-  // если заказ закрыт, то оставляем отмену пречека, иначе просто пречек
-  if FHeaderTable.FieldByName('usr$timecloseorder').IsNull then
-    btnPreCheck.Action := actPreCheck
-  else
-    btnPreCheck.Action := actCancelPreCheck;
-  FLogManager.DoOrderLog(GetCurrentUserInfo, GetCurrentOrderInfo, ev_EnterOrder);
 end;
 
 procedure TRestMainForm.PopItemOnClick(Sender: TObject);
@@ -2270,7 +2215,7 @@ begin
           FLineTable.FieldByName('usr$costncu').AsCurrency := FGoodDataSet.FieldByName('COST').AsCurrency;
           FLineTable.FieldByName('MODIFYSTRING').AsString := S;
           FLineTable.FieldByName('EXTRAMODIFY').AsString := ES;
-          FLineTable.FieldByName('USR$COMPUTERNAME').AsString := FFrontBase.GetLocalComputerName;
+          FLineTable.FieldByName('USR$COMPUTERNAME').AsString := GetLocalComputerName;
           FLineTable.Post;
 
           FGoodInfo.GoodID := GoodKey;
@@ -2604,7 +2549,7 @@ begin
         FFrontBase.CloseModifyTable(FModificationDataSet);
       end;
 
-      if FReport.PrintPreCheck(1, FHeaderTable.FieldByName('ID').AsInteger) then
+      if true{FReport.PrintPreCheck(1, FHeaderTable.FieldByName('ID').AsInteger)} then
       begin
         if FHeaderTable.State = dsBrowse then
           FHeaderTable.Edit;
@@ -2974,6 +2919,7 @@ begin
           tsTablePage.Visible := False;
           pnlRight.Visible := False;
           btnSwapTable.Visible := False;
+          btnUnblockTable.Visible := False;
           RemoveGoodButton;
           RemoveGroupButton;
           RemoveOrderButton;
@@ -3040,6 +2986,8 @@ begin
           tsManagerPage.Visible := False;
           tsTablePage.Visible := True;
           pnlRight.Visible := True;
+          btnSwapTable.Visible := True;
+          btnUnblockTable.Visible := True;
           RemoveGoodButton;
           RemoveGroupButton;
           RemoveOrderButton;
@@ -3646,6 +3594,7 @@ begin
       FSwapTableFrom := nil;
     end;
     btnSwapTable.Down := False;
+    btnUnblockTable.Down := False;
   end;
 end;
 
@@ -3667,6 +3616,12 @@ begin
   finally
     LockWindowUpdate(0);
   end;
+end;
+
+procedure TRestMainForm.actUnblockTableUpdate(Sender: TObject);
+begin
+  actSwapTable.Enabled := ((FFrontBase.UserKey and FFrontBase.Options.ManagerGroupMask) <> 0);
+  btnUnblockTable.Enabled := actSwapTable.Enabled;
 end;
 
 procedure TRestMainForm.actUsersDownExecute(Sender: TObject);
@@ -3998,10 +3953,11 @@ var
   Order: TrfOrder;
   ItemListFrom: TList<TrfOrder>;
   ItemListTo: TList<TrfOrder>;
+  BlockedOrderListStr: String;
 
   procedure EditOrderInfo(OrderList: TList<TrfOrder>; Table: TRestTable);
   var
-    Order: TrfOrder;
+    Order, OrderInTable: TrfOrder;
   begin
     // Пройдем по списку заказов
     for Order in OrderList do
@@ -4010,12 +3966,23 @@ var
       FFrontBase.GetOrder(FHeaderTable, FLineTable, FModificationDataSet, Order.ID);
       if FHeaderTable.FieldByName('usr$tablekey').AsInteger <> Table.ID then
       begin
-        FHeaderTable.Edit;
-        FHeaderTable.FieldByName('usr$tablekey').AsInteger := Table.ID;
-        FHeaderTable.Post;
-        // Сохраним в БД и перезагрузим заказ, не забудем анлочить заказ
-        FFrontBase.SaveAndReloadOrder(FHeaderTable, FLineTable, FModificationDataSet, Order.ID);
-        FFrontBase.UnLockUserOrder(Order.ID);
+        // Проверим не заблокирован ли заказ
+        if not FFrontBase.OrderIsLocked(Order.ID) then
+        begin
+
+          FHeaderTable.Edit;
+          FHeaderTable.FieldByName('usr$tablekey').AsInteger := Table.ID;
+          FHeaderTable.Post;
+          // Сохраним в БД и перезагрузим заказ, не забудем анлочить заказ
+          FFrontBase.SaveAndReloadOrder(FHeaderTable, FLineTable, FModificationDataSet, Order.ID);
+          FFrontBase.UnLockUserOrder(Order.ID);
+        end
+        else
+        begin
+          if BlockedOrderListStr <> '' then
+            BlockedOrderListStr := BlockedOrderListStr + ', ';
+          BlockedOrderListStr := BlockedOrderListStr + Order.Number;
+        end;
       end;
     end;
   end;
@@ -4024,34 +3991,36 @@ begin
   SetCloseTimerActive(False);
 
   frmSwap := TfrmSwapOrder.Create(Self);
-  // Заполнение списка заказов FROM
   ItemListFrom := TList<TrfOrder>.Create;
-  for Order in ATableFrom.OrderList do
-    ItemListFrom.Add(Order);
-  // Заполнение списка заказов TO
   ItemListTo := TList<TrfOrder>.Create;
-  for Order in ATableTo.OrderList do
-    ItemListTo.Add(Order);
   try
+    // Заполнение списка заказов FROM
+    for Order in ATableFrom.OrderList do
+      ItemListFrom.Add(Order);
+    // Заполнение списка заказов TO
+    for Order in ATableTo.OrderList do
+      ItemListTo.Add(Order);
+
     // Инициализация диалога
     frmSwap.ItemListFrom := ItemListFrom;
     frmSwap.ItemListTo := ItemListTo;
     // Покажем пользователю форму перемещения заказов, ждем его подтверждения
     if frmSwap.ShowModalForTable('Стол №' + ATableFrom.Number, 'Стол №' + ATableTo.Number) = mrOK then
     begin
+      BlockedOrderListStr := '';
       // Пройдем по списку заказов FROM
       EditOrderInfo(ItemListFrom, ATableFrom);
-      ATableFrom.OrderList.Clear;
-      for Order in ItemListFrom do
-        ATableFrom.AddOrder(Order);
-      ATableFrom.RefreshTableCondition(FFrontBase.ContactKey);
+      // Обновим информацию по текущему столу
+      FTableManager.RefreshOrderData(ATableFrom);
 
       // Пройдем по списку заказов TO
       EditOrderInfo(ItemListTo, ATableTo);
-      ATableTo.OrderList.Clear;
-      for Order in ItemListTo do
-        ATableTo.AddOrder(Order);
-      ATableTo.RefreshTableCondition(FFrontBase.ContactKey);
+      // Обновим информацию по текущему столу
+      FTableManager.RefreshOrderData(ATableTo);
+
+      if BlockedOrderListStr <> '' then
+        Touch_MessageBox('Столы заблокированы', 'Заказы ' + BlockedOrderListStr + ' заблокированы и не перемещены.',
+          MB_OK, mtWarning);
     end;
   finally
     FreeAndNil(ItemListFrom);
@@ -4066,6 +4035,8 @@ procedure TRestMainForm.TableButtonOnClick(Sender: TObject);
 var
   CurrentRestTable: TRestTable;
   Pt: TPoint;
+  UserInfo: TUserInfo;
+  Order: TrfOrder;
 begin
   if not FFrontBase.CheckForSession then
     exit;
@@ -4078,8 +4049,26 @@ begin
 
   CurrentRestTable := TRestTable(Sender);
 
-  // Если активен режим смены стола
-  if btnSwapTable.Down then
+  if btnUnblockTable.Down then      // Если активен режим разблокировки стола
+  begin
+    // Запросим ввод пароля пользователем
+    UserInfo := FFrontBase.CheckUserPasswordWithForm;
+    if UserInfo.CheckedUserPassword then
+    begin
+      if (UserInfo.UserInGroup and FFrontBase.Options.ManagerGroupMask) <> 0 then
+      begin
+        // Разблокируем все заказы в столе
+        for Order in CurrentRestTable.OrderList do
+          FFrontBase.UnLockUserOrder(Order.ID);
+        Touch_MessageBox('Разблокировка стола', Format('Стол %s разблокирован.', [CurrentRestTable.Number]), MB_OK, mtInformation);
+      end
+      else
+        // Сообщим о недостатке прав пользователя
+        Touch_MessageBox('Внимание', cn_dontManagerPermission, MB_OK, mtWarning);
+    end;
+    btnUnblockTable.Down := False;
+  end
+  else if btnSwapTable.Down then    // Если активен режим смены стола
   begin
     // Если первый стол выделен
     if Assigned(FSwapTableFrom) and (FSwapTableFrom <> CurrentRestTable) then
@@ -4123,7 +4112,7 @@ begin
   begin
     Table.Tag := 1;
     if (tablePopupMenu.Items.Count = 0) and (Table.OrderList.Count > 0) then
-      Touch_MessageBox('Внимание', 'Стол занят ' + FFrontBase.GetNameWaiterOnID(Table.RespKey, True, False), MB_OK, mtWarning);
+      Touch_MessageBox('Внимание', 'Стол занят'#13#10 + FFrontBase.GetNameWaiterOnID(Table.RespKey, True, False), MB_OK, mtWarning);
     exit;
   end;
 
@@ -4158,7 +4147,47 @@ begin
   end;
 
   if (tablePopupMenu.Items.Count = 0) and (Table.OrderList.Count > 0) then
-    Touch_MessageBox('Внимание', 'Стол занят ' + FFrontBase.GetNameWaiterOnID(Table.RespKey, True, False), MB_OK, mtWarning);
+    Touch_MessageBox('Внимание', 'Стол занят'#13#10 + FFrontBase.GetNameWaiterOnID(Table.RespKey, True, False), MB_OK, mtWarning);
+end;
+
+procedure TRestMainForm.OrderButtonOnClick(Sender: TObject);
+var
+  FUserInfo: TUserInfo;
+  MenuOrderButton: TButton;
+  Order: TrfOrder;
+begin
+  // Если смена не открыта не даем редактировать заказ
+  if not FFrontBase.CheckForSession then
+    exit;
+
+  // В поле Tag храним ID связанного заказа
+  MenuOrderButton := TButton(Sender);
+
+  Order := FFrontBase.GetOrderInfo(MenuOrderButton.Tag);
+  // Если заказ заблокирован, то позволяем зайти в него только с того же компьютера
+  if Order.IsLocked {and (Order.ComputerName <> FFrontBase.GetLocalComputerName)} then
+  begin
+    Touch_MessageBox('Внимание', 'Заказ редактируется на другом рабочем месте!', MB_OK, mtWarning);
+    Exit;
+  end;
+
+  FFrontBase.GetOrder(FHeaderTable, FLineTable, FModificationDataSet, MenuOrderButton.Tag);
+  FFrontBase.LockUserOrder(MenuOrderButton.Tag);
+  if not Assigned(dsMain.DataSet) then
+    dsMain.DataSet := FLineTable
+  else
+  begin
+    // для обнулений значений в гриде
+    dsMain.DataSet := nil;
+    dsMain.DataSet := FLineTable;
+  end;
+  RestFormState := rsMenuInfo;
+  // если заказ закрыт, то оставляем отмену пречека, иначе просто пречек
+  if FHeaderTable.FieldByName('usr$timecloseorder').IsNull then
+    btnPreCheck.Action := actPreCheck
+  else
+    btnPreCheck.Action := actCancelPreCheck;
+  FLogManager.DoOrderLog(GetCurrentUserInfo, GetCurrentOrderInfo, ev_EnterOrder);
 end;
 
 procedure TRestMainForm.tmrCloseTimer(Sender: TObject);
@@ -4576,6 +4605,7 @@ var
   UserFrom, UserTo: TrfUser;
   ItemListFrom: TList<TrfOrder>;
   ItemListTo: TList<TrfOrder>;
+  BlockedOrderListStr: String;
 
   procedure EditOrderInfo(OrderList: TList<TrfOrder>; AUser: TrfUser);
   var
@@ -4590,21 +4620,31 @@ var
       FFrontBase.GetOrder(FHeaderTable, FLineTable, FModificationDataSet, Order.ID);
       if FHeaderTable.FieldByName('usr$respkey').AsInteger <> AUser.ID then
       begin
-        FHeaderTable.Edit;
-        FHeaderTable.FieldByName('usr$respkey').AsInteger := AUser.ID;
-        FHeaderTable.Post;
-        // Сохраним в БД и перезагрузим заказ, не забудем анлочить заказ
-        FFrontBase.SaveAndReloadOrder(FHeaderTable, FLineTable, FModificationDataSet, Order.ID);
-        FFrontBase.UnLockUserOrder(Order.ID);
-
-        // Обновим пользователя в заказе на столе зала
-        Table := FTableManager.GetTable(FHeaderTable.FieldByName('usr$tablekey').AsInteger);
-        if Assigned(Table) then
+        // Проверим не заблокирован ли заказ
+        if not FFrontBase.OrderIsLocked(Order.ID) then
         begin
-          OrderInTable := Table.GetOrder(Order.ID);
-          if Assigned(OrderInTable) then
-            OrderInTable.ResponsibleKey := AUser.ID;
-          Table.RefreshTableCondition(FFrontBase.ContactKey);
+          FHeaderTable.Edit;
+          FHeaderTable.FieldByName('usr$respkey').AsInteger := AUser.ID;
+          FHeaderTable.Post;
+          // Сохраним в БД и перезагрузим заказ, не забудем анлочить заказ
+          FFrontBase.SaveAndReloadOrder(FHeaderTable, FLineTable, FModificationDataSet, Order.ID);
+          FFrontBase.UnLockUserOrder(Order.ID);
+
+          // Обновим пользователя в заказе на столе зала
+          Table := FTableManager.GetTable(FHeaderTable.FieldByName('usr$tablekey').AsInteger);
+          if Assigned(Table) then
+          begin
+            OrderInTable := Table.GetOrder(Order.ID);
+            if Assigned(OrderInTable) then
+              OrderInTable.ResponsibleKey := AUser.ID;
+            Table.RefreshTableCondition(FFrontBase.ContactKey);
+          end;
+        end
+        else
+        begin
+          if BlockedOrderListStr <> '' then
+            BlockedOrderListStr := BlockedOrderListStr + ', ';
+          BlockedOrderListStr := BlockedOrderListStr + Order.Number;
         end;
       end;
     end;
@@ -4628,11 +4668,17 @@ begin
       // Если в форме были выбраны пользователи
       if Assigned(UserFrom) and Assigned(UserTo) then
       begin
+        BlockedOrderListStr := '';
+
         // Пройдем по списку заказов FROM
         EditOrderInfo(ItemListFrom, UserFrom);
 
         // Пройдем по списку заказов TO
         EditOrderInfo(ItemListTo, UserTo);
+
+        if BlockedOrderListStr <> '' then
+          Touch_MessageBox('Столы заблокированы', 'Заказы ' + BlockedOrderListStr + ' заблокированы и не перемещены.',
+            MB_OK, mtWarning);
       end;
     end;
   finally

@@ -96,6 +96,7 @@ object CardCode: TCardCode
       Bevel = False
       Caption = #1054#1050
       Color = 15195349
+      DisabledColor = clBlack
       ParentFont = False
       TabOrder = 1
       Version = '1.6.9.0'

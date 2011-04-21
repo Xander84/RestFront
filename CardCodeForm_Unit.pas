@@ -31,7 +31,7 @@ var
 implementation
 
 uses
-  Front_DataBase_Unit;
+  Front_DataBase_Unit, rfUtils_unit;
 
 {$R *.dfm}
 

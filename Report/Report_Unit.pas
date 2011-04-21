@@ -101,7 +101,7 @@ const
 implementation
 
 uses
-  Windows, Forms, FrontData_Unit, obj_QueryList, TouchMessageBoxForm_Unit;
+  Windows, Forms, FrontData_Unit, obj_QueryList, TouchMessageBoxForm_Unit, rfUtils_unit;
 
 { Tgs_fr4Report }
 
@@ -866,7 +866,7 @@ begin
         Header.ParamByName('docid').AsInteger := DocumentKey;
         Header.ParamByName('LineID').AsInteger := MasterKey;
         Header.ParambyName('printername').AsString := PrinterName;
-        Header.ParambyName('comp').AsString := FFrontBase.GetLocalComputerName;
+        Header.ParambyName('comp').AsString := GetLocalComputerName;
         if PrnGrID <> 0 then
           Header.ParambyName('prngrid').Value := PrnGrID;
         Header.Open;
@@ -1504,7 +1504,7 @@ begin
       'order by  ' +
       '  setprn.usr$printername, prn.id  ';
     FSQL.ParamByName('docid').AsInteger := OrderKey;
-    FSQL.ParamByName('comp').AsString := FFrontBase.GetLocalComputerName;
+    FSQL.ParamByName('comp').AsString := GetLocalComputerName;
     FSQL.ExecQuery;
     while not FSQL.Eof do
     begin

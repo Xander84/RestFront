@@ -398,17 +398,19 @@ var
       CurTable.ClearOrders;
       while not ibsql.Eof do
       begin
-        if CurTable.OrderKey <> ibsql.FieldByName('DOCUMENTKEY').AsInteger then
-          CurTable.OrderKey := ibsql.FieldByName('DOCUMENTKEY').AsInteger;
-
-        if CurTable.ComputerName <> ibsql.FieldByName('usr$computername').AsString then
-          CurTable.ComputerName := ibsql.FieldByName('usr$computername').AsString;
-
         // ƒобавим заказ в список заказов стола
         Order := CurTable.AddOrder(ibsql.FieldByName('DOCUMENTKEY').AsInteger,
           ibsql.FieldByName('NUMBER').AsString);
         Order.TimeCloseOrder := ibsql.FieldByName('usr$timecloseorder').AsDateTime;
         Order.ResponsibleKey := ibsql.FieldByName('usr$respkey').AsInteger;
+        Order.ComputerName := ibsql.FieldByName('usr$computername').AsString;
+        Order.IsLocked := (ibsql.FieldByName('islocked').AsInteger = 1);
+
+        if CurTable.OrderKey <> Order.ID then
+          CurTable.OrderKey := Order.ID;
+
+        if CurTable.ComputerName <> Order.ComputerName then
+          CurTable.ComputerName := Order.ComputerName;
 
         ibsql.Next;
       end;
@@ -428,6 +430,7 @@ begin
       '   u.documentkey, ' +
       '   u.usr$timecloseorder, ' +
       '   u.usr$computername, ' +
+      '   u.usr$islocked AS islocked, ' +
       '   doc.number, ' +
       '   con.name ' +
       ' FROM ' +

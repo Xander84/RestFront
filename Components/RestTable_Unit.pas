@@ -57,15 +57,7 @@ type
     procedure SetChecked(const Value: Boolean);
     procedure SetGraphic(const Value: TGraphic);
 
-    procedure SetID(const Value: Integer);
-    procedure SetHallKey(const Value: Integer);
     procedure SetTableType(const Value: Integer);
-    procedure SetMainTableKey(const Value: Integer);
-    procedure SetOrderKey(const Value: Integer);
-    procedure SetIsLocked(const Value: Boolean);
-    procedure SetNumber(const Value: String);
-    procedure SetComputerName(const Value: String);
-    procedure SetRespName(const Value: String);
     function GetRespKey: Integer;
 
     procedure WMContextMenu(var Message: TWMContextMenu); message WM_CONTEXTMENU;
@@ -89,25 +81,27 @@ type
     { ”ничтожить все объекты заказов и очистить список }
     procedure ClearOrders;
 
+    function GetMaxOrderNumber: Integer;
+
     procedure SetTableCondition(const Value: TRestTableCondition);
 
     // ссылка на зал
-    property HallKey: Integer read FHallKey write SetHallKey;
+    property HallKey: Integer read FHallKey write FHallKey;
     // тип стола
     property TableTypeKey: Integer read FTableTypeKey write SetTableType;
     // ссылка на главный стол
-    property MainTableKey: Integer read FMainTableKey write SetMainTableKey;
+    property MainTableKey: Integer read FMainTableKey write FMainTableKey;
     // зан€т или нет
-    property IsLocked: Boolean read FIsLocked write SetIsLocked;
-    property ComputerName: String read FComputerName write SetComputerName;
-    property ID: Integer read FID write SetID;
-    property OrderKey: Integer read FOrderKey write SetOrderKey;
+    property IsLocked: Boolean read FIsLocked write FIsLocked;
+    property ComputerName: String read FComputerName write FComputerName;
+    property ID: Integer read FID write FID;
+    property OrderKey: Integer read FOrderKey write FOrderKey;
     property RespKey: Integer read GetRespKey;
     property OrderCount: Integer read GetOrderCount;
     // номер стола
-    property Number: String read FNumber write SetNumber;
+    property Number: String read FNumber write FNumber;
     property OrderList: TList<TrfOrder>read FOrderList;
-    property RespName: String read FRespName write SetRespName;
+    property RespName: String read FRespName write FRespName;
     property NeedToInsert: Boolean read FNeedToInsert write FNeedToInsert;
 
     property TableConditionList: TList<TRestTableCondition> read FTableConditionList;
@@ -142,7 +136,7 @@ procedure Register;
 implementation
 
 uses
-  FrontData_Unit, AdvGDIP, rfTableManager_unit, Generics.Defaults;
+  FrontData_Unit, AdvGDIP, rfTableManager_unit, Generics.Defaults, StrUtils;
 
 const
   POS_MULTIPLIER = 100;
@@ -195,8 +189,20 @@ begin
   FOrderList.Sort(
     TComparer<TrfOrder>.Construct(
       function (const L, R: TrfOrder): integer
+      var
+        LNumber, RNumber: Integer;
       begin
-        Result := L.ID - R.ID;
+        if Pos('.', L.Number) > 0 then
+          LNumber := StrToIntDef(RightStr(L.Number, Length(L.Number) - Pos('.', L.Number)), L.ID)
+        else
+          LNumber := StrToIntDef(L.Number, L.ID);
+
+        if Pos('.', R.Number) > 0 then
+          RNumber := StrToIntDef(RightStr(R.Number, Length(R.Number) - Pos('.', R.Number)), R.ID)
+        else
+          RNumber := StrToIntDef(R.Number, R.ID);
+
+        Result := LNumber - RNumber;
       end
     ));
 end;
@@ -255,6 +261,22 @@ begin
 
   FOrderKey := -1;
   FComputerName := '';
+end;
+
+function TRestTable.GetMaxOrderNumber: Integer;
+var
+  Order: TrfOrder;
+begin
+  if FOrderList.Count > 0 then
+  begin
+    Order := FOrderList.Items[FOrderList.Count - 1];
+    if Pos('.', Order.Number) > 0 then
+      Result := StrToIntDef(RightStr(Order.Number, Length(Order.Number) - Pos('.', Order.Number)), 1)
+    else
+      Result := StrToIntDef(Order.Number, 1);
+  end
+  else
+    Result := 0;
 end;
 
 function TRestTable.GetOrder(const AOrderKey: Integer): TrfOrder;
@@ -447,46 +469,11 @@ begin
   Repaint;
 end;
 
-procedure TRestTable.SetComputerName(const Value: String);
-begin
-  FComputerName := Value;
-end;
-
 procedure TRestTable.SetGraphic(const Value: TGraphic);
 begin
   FGraphic := Value;
   CalculateImageRect;
   Repaint;
-end;
-
-procedure TRestTable.SetHallKey(const Value: Integer);
-begin
-  FHallKey := Value;
-end;
-
-procedure TRestTable.SetID(const Value: Integer);
-begin
-  FID := Value;
-end;
-
-procedure TRestTable.SetIsLocked(const Value: Boolean);
-begin
-  FIsLocked := Value;
-end;
-
-procedure TRestTable.SetMainTableKey(const Value: Integer);
-begin
-  FMainTableKey := Value;
-end;
-
-procedure TRestTable.SetNumber(const Value: String);
-begin
-  FNumber := Value;
-end;
-
-procedure TRestTable.SetOrderKey(const Value: Integer);
-begin
-  FOrderKey := Value;
 end;
 
 procedure TRestTable.SetPosX(const Value: Double);
@@ -523,13 +510,6 @@ begin
     Width := Round(Parent.Width / POS_MULTIPLIER * Value)
   else
     Width := Round(Value);
-end;
-
-procedure TRestTable.SetRespName(const Value: String);
-begin
-  FRespName := Value;
-  if FRespName <> '' then
-    SetNumber(FNumber);
 end;
 
 procedure TRestTable.SetTableCondition(const Value: TRestTableCondition);
