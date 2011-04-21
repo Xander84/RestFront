@@ -32,7 +32,7 @@ object RestMainForm: TRestMainForm
       Top = 0
       Width = 934
       Height = 721
-      ActivePage = tsPassWord
+      ActivePage = tsMain
       ActiveFont.Charset = DEFAULT_CHARSET
       ActiveFont.Color = clWindowText
       ActiveFont.Height = -11
@@ -50,8 +50,6 @@ object RestMainForm: TRestMainForm
         ColorTo = 14986888
         TabColor = clBtnFace
         TabColorTo = clNone
-        ExplicitLeft = 2
-        ExplicitTop = 14
         object mainTouchKeyBoard: TAdvSmoothTouchKeyBoard
           Left = 0
           Top = 472
@@ -1038,10 +1036,6 @@ object RestMainForm: TRestMainForm
               Value = 50.000000000000000000
             end>
           TabOrder = 1
-          ExplicitLeft = 177
-          ExplicitTop = 327
-          ExplicitWidth = 552
-          ExplicitHeight = 118
           object edPassword: TEdit
             Left = 279
             Top = 216
@@ -1058,9 +1052,7 @@ object RestMainForm: TRestMainForm
             PasswordChar = '*'
             TabOrder = 0
             OnKeyPress = edPasswordKeyPress
-            ExplicitLeft = 304
-            ExplicitTop = 198
-            ExplicitWidth = 250
+            ExplicitHeight = 31
           end
           object btnOKPass: TAdvSmoothButton
             Left = 579
@@ -1095,10 +1087,6 @@ object RestMainForm: TRestMainForm
             ParentFont = False
             TabOrder = 1
             Version = '1.6.9.0'
-            ExplicitLeft = 72
-            ExplicitTop = 3
-            ExplicitWidth = 120
-            ExplicitHeight = 35
           end
         end
       end
@@ -1611,7 +1599,7 @@ object RestMainForm: TRestMainForm
             Top = 0
             Width = 609
             Height = 701
-            ActivePage = tsTablePage
+            ActivePage = tsUserOrder
             ActiveFont.Charset = DEFAULT_CHARSET
             ActiveFont.Color = clWindowText
             ActiveFont.Height = -11
@@ -2823,7 +2811,7 @@ object RestMainForm: TRestMainForm
         Top = 1
         Width = 80
         Height = 719
-        ActivePage = tsOrderButton
+        ActivePage = tsFunctionButton
         ActiveFont.Charset = DEFAULT_CHARSET
         ActiveFont.Color = clWindowText
         ActiveFont.Height = -11

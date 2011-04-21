@@ -56,6 +56,9 @@ type
     procedure GetTemplateStreamByRuid(const XID: Integer;
       const DBID: Integer;var Stream: TStream);
 
+    procedure GetTemplateStreamByPrnIDAndType(const ReportType,
+      PrinterID: Integer; const Stream: TStream);
+
     procedure SaveTemplateStreamByRuid(const XID: Integer;
       const DBID: Integer;var Stream: TStream);
 
@@ -68,9 +71,10 @@ type
 
     function PrintPreCheck(const ReportType, DocID: Integer): Boolean;
     procedure PrintAfterSalePreCheck(const DocID: Integer; const FSums: TSaleSums);
-    function PrintServiceCheck(const ReportType, PrnGrID, DocID: Integer; const PrinterName: String): Boolean;
+    function PrintServiceCheck(const ReportType, PrnGrID, DocID: Integer; const PrinterName: String;
+      PrinterID: Integer): Boolean;
     function PrintDeleteServiceCheck(const ReportType, PrnGrID, DocumentKey, MasterKey: Integer;
-      const PrinterName: String): Boolean;
+      const PrinterName: String; PrinterID: Integer): Boolean;
     procedure PrintIncomeReport(const DateBegin, DateEnd: TDate);
     procedure PrintCheckRegister(const DateBegin, DateEnd: TDate);
     procedure PrintCheckRegisterEmpl(const DateBegin, DateEnd: TDate; EmplKey, RespKey: Integer);
@@ -157,6 +161,12 @@ begin
     FReport.Free;
     Str.Free;
   end;
+end;
+
+procedure TRestReport.GetTemplateStreamByPrnIDAndType(const ReportType,
+  PrinterID: Integer; const Stream: TStream);
+begin
+  FFrontBase.GetReportTemplateByPrnIDAndType(ReportType, PrinterID, Stream);
 end;
 
 procedure TRestReport.GetTemplateStreamByRuid(const XID, DBID: Integer;
@@ -758,7 +768,7 @@ begin
 end;
 
 function TRestReport.PrintDeleteServiceCheck(const ReportType, PrnGrID,
-  DocumentKey, MasterKey: Integer; const PrinterName: String): Boolean;
+  DocumentKey, MasterKey: Integer; const PrinterName: String; PrinterID: Integer): Boolean;
 var
   FReport: Tgs_fr4SingleReport;
   Str: TStream;
@@ -825,11 +835,20 @@ begin
 
         FReport.DataSets.Add(FfrxDBDataset);
         FReport.EnabledDataSets.Add(FfrxDBDataset);
-        GetTemplateStreamByRuid(147373760, 1033124911, Str);
+
+        GetTemplateStreamByPrnIDAndType(2, PrinterID, Str);
         if Str.Size > 0 then
         begin
           Str.Position := 0;
           FReport.LoadFromStream(Str);
+        end else
+        begin
+          GetTemplateStreamByRuid(147373760, 1033124911, Str);
+          if Str.Size > 0 then
+          begin
+            Str.Position := 0;
+            FReport.LoadFromStream(Str);
+          end;
         end;
         //
         FReport.Variables.Clear;
@@ -1027,12 +1046,14 @@ var
   MemTable: TkbmMemTable;
   I: Integer;
   TfrxDBDataset2: TfrxDBDataset;
+  FPrinterInfo: TPrinterInfo;
 begin
   Result := False;
 
   Assert(Assigned(FFrontBase), 'FrontBase not assigned');
 
-  PrinterName := FFrontBase.GetPrinterName;
+  FPrinterInfo := FFrontBase.GetPrinterInfo;
+  PrinterName := FPrinterInfo.PrinterName;
   if PrinterName = '' then
   begin
     Touch_MessageBox('Внимание', 'Для данной рабочей станции не указан пречековый принтер!', MB_OK, mtWarning);
@@ -1091,15 +1112,19 @@ begin
         FReport.DataSets.Add(TfrxDBDataset2);
         FReport.EnabledDataSets.Add(TfrxDBDataset2);
 
-        case ReportType of
-          1:
+
+        GetTemplateStreamByPrnIDAndType(3, FPrinterInfo.PrinterID, Str);
+        if Str.Size > 0 then
+        begin
+          Str.Position := 0;
+          FReport.LoadFromStream(Str);
+        end else
+        begin
+          GetTemplateStreamByRuid(147373700, 1033124911, Str);
+          if Str.Size > 0 then
           begin
-            GetTemplateStreamByRuid(147373700, 1033124911, Str);
-            if Str.Size > 0 then
-            begin
-              Str.Position := 0;
-              FReport.LoadFromStream(Str);
-            end;
+            Str.Position := 0;
+            FReport.LoadFromStream(Str);
           end;
         end;
         //
@@ -1219,7 +1244,7 @@ begin
 end;
 
 function TRestReport.PrintServiceCheck(const ReportType, PrnGrID,
-  DocID: Integer; const PrinterName: String): Boolean;
+  DocID: Integer; const PrinterName: String; PrinterID: Integer): Boolean;
 var
   FReport: Tgs_fr4SingleReport;
   Str: TStream;
@@ -1342,11 +1367,19 @@ begin
         case ReportType of
           1:
           begin
-            GetTemplateStreamByRuid(147373664, 1033124911, Str);
+            GetTemplateStreamByPrnIDAndType(1, PrinterID, Str);
             if Str.Size > 0 then
             begin
               Str.Position := 0;
               FReport.LoadFromStream(Str);
+            end else
+            begin
+              GetTemplateStreamByRuid(147373664, 1033124911, Str);
+              if Str.Size > 0 then
+              begin
+                Str.Position := 0;
+                FReport.LoadFromStream(Str);
+              end;
             end;
           end;
         end;
@@ -1395,14 +1428,21 @@ begin
   FSQL := TIBSQL.Create(nil);
   FSQL.Transaction := FFrontBase.ReadTransaction;
   try
-    FSQL.SQL.Text := 'select ' + '  DISTINCT   ' +
+    FSQL.SQL.Text := 'select ' +
+      '  DISTINCT setprn.id as prnid,  ' +
       '  IIF(setprn.usr$concatchecks = 0, prn.id, null) as prngrid, prn.usr$divide,  ' +
-      '  setprn.usr$printername, setprn.usr$printerid, o.documentkey, setprn.USR$DOSPRINTER  ' + 'from   ' +
-      '  usr$mn_order o  ' + '  join usr$mn_orderline l on o.documentkey = l.masterkey  ' +
+      '  setprn.usr$printername, setprn.usr$printerid, o.documentkey, setprn.USR$DOSPRINTER ' +
+      'from   ' +
+      '  usr$mn_order o  ' +
+      '  join usr$mn_orderline l on o.documentkey = l.masterkey  ' +
       '  join gd_document doc on doc.id = l.documentkey and doc.usr$mn_printdate is null  ' +
-      '  join gd_good g on g.id = l.usr$goodkey  ' + '  join usr$mn_prngroup prn on prn.id = g.usr$prngroupkey  ' +
-      '  join usr$mn_prngroupset setprn on setprn.usr$prngroup = prn.id  ' + 'where o.documentkey = :docid  ' +
-      ' and setprn.usr$computername = :comp   ' + ' and setprn.usr$kassa = 0   ' + 'order by  ' +
+      '  join gd_good g on g.id = l.usr$goodkey  ' +
+      '  join usr$mn_prngroup prn on prn.id = g.usr$prngroupkey  ' +
+      '  join usr$mn_prngroupset setprn on setprn.usr$prngroup = prn.id  ' +
+      'where o.documentkey = :docid  ' +
+      ' and setprn.usr$computername = :comp   ' +
+      ' and setprn.usr$kassa = 0   ' +
+      'order by  ' +
       '  setprn.usr$printername, prn.id  ';
     FSQL.ParamByName('docid').AsInteger := OrderKey;
     FSQL.ParamByName('comp').AsString := FFrontBase.GetLocalComputerName;
@@ -1410,7 +1450,7 @@ begin
     while not FSQL.Eof do
     begin
       PrintServiceCheck(1, FSQL.FieldByName('prngrid').AsInteger, OrderKey,
-        FSQL.FieldByName('usr$printername').AsString);
+        FSQL.FieldByName('usr$printername').AsString, FSQL.FieldByName('prnid').AsInteger);
       Result := True;
       FSQL.Next;
     end;

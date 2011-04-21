@@ -239,7 +239,8 @@ type
     BackType:          Integer;
     UseHalls:          Boolean;
     NoPrintEmptyCheck: Boolean;
-    NeedModGroup: Boolean;
+    NeedModGroup:      Boolean;
+    NeedPrnGroup:      Boolean;
   end;
 
   TUserInfo = record
@@ -260,6 +261,11 @@ type
     ID: TID;
     XID: TID;
     DBID: TID;
+  end;
+
+  TPrinterInfo = record
+    PrinterName: String;
+    PrinterID: Integer;
   end;
 
   TFrontBase = class
@@ -390,8 +396,11 @@ type
     //работа с оборудованием
     procedure InitDisplay;
     function GetPrinterName: String;
+    function GetPrinterInfo: TPrinterInfo;
     function GetReportTemplate(const Stream: TStream; const ID: Integer): Boolean;
     function SaveReportTemplate(const Stream: TStream; const ID: Integer): Boolean;
+    procedure GetReportTemplateByPrnIDAndType(const ReportType, PrinterID: Integer; const Stream: TStream);
+
     function GetHallBackGround(const Stream: TStream; const HallKey: Integer): Boolean;
     procedure GetCashInfo;
 
@@ -411,7 +420,7 @@ type
     function SavePrintDate(const ID: Integer): Boolean;
     function GetPreCheckQuery(const Query: TIBQuery; const DocID: Integer): Boolean;
     function GetDeleteServiceCheckOptions(const DocID, MasterKey: Integer; out PrinterName: String;
-      out PrnGrid: Integer): Boolean;
+      out PrnGrid, PrinterID: Integer): Boolean;
     function GetReportList(var MemTable: TkbmMemTable): Boolean;
 
     procedure CanCloseDay;
@@ -3508,6 +3517,40 @@ begin
   end;
 end;
 
+function TFrontBase.GetPrinterInfo: TPrinterInfo;
+begin
+  Result.PrinterName := '';
+  Result.PrinterID := -1;
+
+  FReadSQL.Close;
+  try
+    try
+      if not FReadSQL.Transaction.InTransaction then
+        FReadSQL.Transaction.StartTransaction;
+
+      FReadSQL.SQL.Text :=
+        'select first(1) prnset.id as prnid, ' +
+        '  prnset.usr$printername, prnset.USR$ENCLOSE, prnset.usr$printerid ' +
+        'from ' +
+        '  usr$mn_prngroupset prnset ' +
+        'where ' +
+        '  prnset.usr$kassa = 1 ' +
+        '  and prnset.usr$computername = :comp ';
+      FReadSQL.Params[0].AsString := GetLocalComputerName;
+      FReadSQL.ExecQuery;
+      if not FReadSQL.Eof then
+      begin
+        Result.PrinterName := FReadSQL.FieldByName('usr$printername').AsString;
+        Result.PrinterID := FReadSQL.FieldByName('prnid').AsInteger;
+      end;
+    except
+      raise;
+    end;
+  finally
+    FReadSQL.Close;
+  end;
+end;
+
 function TFrontBase.GetPrinterName: String;
 begin
   FReadSQL.Close;
@@ -3556,6 +3599,35 @@ begin
       if not FReadSQL.Eof then
       begin
         Result := True;
+        FReadSQL.FieldByName('templatedata').SaveToStream(Stream);
+      end;
+    except
+      raise;
+    end;
+  finally
+    FReadSQL.Close;
+  end;
+end;
+
+procedure TFrontBase.GetReportTemplateByPrnIDAndType(const ReportType,
+  PrinterID: Integer; const Stream: TStream);
+begin
+  FReadSQL.Close;
+  try
+    try
+      if not FReadSQL.Transaction.InTransaction then
+        FReadSQL.Transaction.StartTransaction;
+      FReadSQL.SQL.Text :=
+        ' SELECT R.USR$TEMPLATEDATA AS TEMPLATEDATA ' +
+        ' FROM USR$MN_REPORT R ' +
+        ' JOIN USR$MN_PRNGROUPSET G ON G.USR$PRNTYPEKEY = R.USR$PRNTYPEKEY ' +
+        ' WHERE R.USR$TYPE = :RTYPE ' +
+        '   AND G.ID = :ID ';
+      FReadSQL.ParamByName('ID').AsInteger := PrinterID;
+      FReadSQL.ParamByName('RTYPE').AsInteger := ReportType;
+      FReadSQL.ExecQuery;
+      if not FReadSQL.Eof then
+      begin
         FReadSQL.FieldByName('templatedata').SaveToStream(Stream);
       end;
     except
@@ -4385,7 +4457,7 @@ begin
 end;
 
 function TFrontBase.GetDeleteServiceCheckOptions(const DocID,
-  MasterKey: Integer; out PrinterName: String; out PrnGrid: Integer): Boolean;
+  MasterKey: Integer; out PrinterName: String; out PrnGrid, PrinterID: Integer): Boolean;
 begin
   Result := False;
   FReadSQL.Close;
@@ -4396,7 +4468,7 @@ begin
 
       FReadSQL.SQL.Text :=
         'select ' +
-        '  DISTINCT  ' +
+        '  DISTINCT setprn.id as prnid, ' +
         '  IIF(setprn.usr$concatchecks = 0, prn.id, null) as prngrid, ' +
         '  setprn.usr$printername,                                    ' +
         '  o.documentkey, prn.usr$name, setprn.usr$PRINTERID          ' +
@@ -4423,6 +4495,7 @@ begin
       begin
         PrinterName := FReadSQL.FieldByName('usr$printername').AsString;
         PrnGrid := FReadSQL.FieldByName('prngrid').AsInteger;
+        PrinterID := FReadSQL.FieldByName('prnid').AsInteger;
 
         Result := True;
       end;
@@ -4692,6 +4765,7 @@ begin
       UseHalls := False;
       NoPrintEmptyCheck := True;
       NeedModGroup := False;
+      NeedPrnGroup := False;
     end;
 
     FReadSQL.Close;
@@ -4835,6 +4909,10 @@ begin
       if FName = 'NEEDMODGROUP' then
       begin
         FOptions.NeedModGroup := (FReadSQL.FieldByName('INT_DATA').AsInteger = 1);
+      end else
+      if FName = 'NEEDPRNGROUP' then
+      begin
+        FOptions.NeedPrnGroup := (FReadSQL.FieldByName('INT_DATA').AsInteger = 1);
       end;
 
       FReadSQL.Next;

@@ -1684,7 +1684,7 @@ begin
 
     Inc(FLineID);
     //Issue 97
-    if FGoodDataSet.FieldByName('PRNGROUPKEY').AsInteger = 0 then
+    if (FGoodDataSet.FieldByName('PRNGROUPKEY').AsInteger = 0) and (FFrontBase.Options.NeedPrnGroup) then
     begin
       if Touch_MessageBox('Внимание', 'Для блюда не установлена группа сервис-печати. Установить?',
         MB_YESNO, mtConfirmation) = IDYES then
@@ -3785,6 +3785,7 @@ var
   I: Integer;
   PrnGrid, DocumentKey: Integer;
   PrinterName: String;
+  PrinterID: Integer;
 begin
   OldQuantity := FLineTable.FieldByName('usr$quantity').AsCurrency;
   OldDetailID := FLineTable.FieldByName('ID').AsInteger;
@@ -3830,8 +3831,8 @@ begin
   // update grid footer
   DBGrMain.SumList.RecalcAll;
 
-  if FFrontBase.GetDeleteServiceCheckOptions(OldDetailID, MasterKey, PrinterName, PrnGrid) then
-    FReport.PrintDeleteServiceCheck(1, PrnGrid, MasterKey, DocumentKey, PrinterName);
+  if FFrontBase.GetDeleteServiceCheckOptions(OldDetailID, MasterKey, PrinterName, PrnGrid, PrinterID) then
+    FReport.PrintDeleteServiceCheck(1, PrnGrid, MasterKey, DocumentKey, PrinterName, PrinterID);
 end;
 
 { procedure TRestMainForm.OnFilterLine(DataSet: TDataSet;
