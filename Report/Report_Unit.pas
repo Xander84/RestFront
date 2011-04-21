@@ -88,6 +88,15 @@ type
 
 const
   cn_RestParam = 'RestParam';
+  rp_ServiceCheck      = 1;
+  rp_DelServiceCheck   = 2;
+  rp_PreCheck          = 3;
+  rp_AfterSalePreCheck = 4;
+  rp_IncomeReport      = 5;
+  rp_CheckRegisterEmpl = 6;
+  rp_CopyCheck         = 7;
+  rp_Realization       = 8;
+
 
 implementation
 
@@ -204,10 +213,12 @@ var
   FrxDBDataset, FrxDBDataset1: TfrxDBDataset;
   MemTable: TkbmMemTable;
   I: Integer;
+  FPrinterInfo: TPrinterInfo;
 begin
   Assert(Assigned(FFrontBase), 'FrontBase not assigned');
 
-  PrinterName := FFrontBase.GetPrinterName;
+  FPrinterInfo := FFrontBase.GetPrinterInfo;
+  PrinterName := FPrinterInfo.PrinterName;
   if PrinterName = '' then
   begin
     Touch_MessageBox('Внимание', 'Для данной рабочей станции не указан пречековый принтер!', MB_OK, mtWarning);
@@ -375,12 +386,21 @@ begin
       FReport.EnabledDataSets.Add(FrxDBDataset);
       FReport.EnabledDataSets.Add(FrxDBDataset1);
 
-      GetTemplateStreamByRuid(147733973, 1604829035, Str);
+      GetTemplateStreamByPrnIDAndType(rp_AfterSalePreCheck, FPrinterInfo.PrinterID, Str);
       if Str.Size > 0 then
       begin
         Str.Position := 0;
         FReport.LoadFromStream(Str);
+      end else
+      begin
+        GetTemplateStreamByRuid(147733973, 1604829035, Str);
+        if Str.Size > 0 then
+        begin
+          Str.Position := 0;
+          FReport.LoadFromStream(Str);
+        end;
       end;
+
       FReport.Variables.Clear;
       FReport.Variables[' ' + cn_RestParam] := Null;
       FReport.Variables.AddVariable(cn_RestParam, 'DocID', '''' + VarToStr(DocID) + '''');
@@ -483,12 +503,15 @@ var
   MemTable: TkbmMemTable;
   DocDate: TDate;
   NomPP, DocKey, I: Integer;
+  FPrinterInfo: TPrinterInfo;
 begin
   Assert(Assigned(FFrontBase), 'FrontBase not assigned');
 
   BaseQueryList := FrontData.BaseQueryList;
   BaseQueryList.Clear;
-  PrinterName := FFrontBase.GetPrinterName;
+
+  FPrinterInfo := FFrontBase.GetPrinterInfo;
+  PrinterName := FPrinterInfo.PrinterName;
   FReport := Tgs_fr4SingleReport.Create(nil);
   try
     Str := TMemoryStream.Create;
@@ -585,11 +608,19 @@ begin
       FReport.EnabledDataSets.Add(FrxDBDataset1);
       FReport.EnabledDataSets.Add(FrxDBDataset2);
 
-      GetTemplateStreamByRuid(147733800, 1604829035, Str);
+      GetTemplateStreamByPrnIDAndType(rp_CheckRegisterEmpl, FPrinterInfo.PrinterID, Str);
       if Str.Size > 0 then
       begin
         Str.Position := 0;
         FReport.LoadFromStream(Str);
+      end else
+      begin
+        GetTemplateStreamByRuid(147733800, 1604829035, Str);
+        if Str.Size > 0 then
+        begin
+          Str.Position := 0;
+          FReport.LoadFromStream(Str);
+        end;
       end;
 
       FReport.Variables.Clear;
@@ -624,13 +655,15 @@ var
   MemTable: TkbmMemTable;
   NomPP, DocKey, I: Integer;
   DocDate: TDateTime;
+  FPrinterInfo: TPrinterInfo;
 begin
   Assert(Assigned(FFrontBase), 'FrontBase not assigned');
 
   BaseQueryList := FrontData.BaseQueryList;
   BaseQueryList.Clear;
 
-  PrinterName := FFrontBase.GetPrinterName;
+  FPrinterInfo := FFrontBase.GetPrinterInfo;
+  PrinterName := FPrinterInfo.PrinterName;
   if PrinterName = '' then
   begin
     Touch_MessageBox('Внимание', 'Для данной рабочей станции не указан пречековый принтер!', MB_OK, mtWarning);
@@ -740,11 +773,19 @@ begin
       FReport.EnabledDataSets.Add(FrxDBDataset);
       FReport.EnabledDataSets.Add(FrxDBDataset1);
 
-      GetTemplateStreamByRuid(147744649, 1650037404, Str);
+      GetTemplateStreamByPrnIDAndType(rp_CopyCheck, FPrinterInfo.PrinterID, Str);
       if Str.Size > 0 then
       begin
         Str.Position := 0;
         FReport.LoadFromStream(Str);
+      end else
+      begin
+        GetTemplateStreamByRuid(147744649, 1650037404, Str);
+        if Str.Size > 0 then
+        begin
+          Str.Position := 0;
+          FReport.LoadFromStream(Str);
+        end;
       end;
 
       FReport.Variables.Clear;
@@ -836,7 +877,7 @@ begin
         FReport.DataSets.Add(FfrxDBDataset);
         FReport.EnabledDataSets.Add(FfrxDBDataset);
 
-        GetTemplateStreamByPrnIDAndType(2, PrinterID, Str);
+        GetTemplateStreamByPrnIDAndType(rp_DelServiceCheck, PrinterID, Str);
         if Str.Size > 0 then
         begin
           Str.Position := 0;
@@ -885,12 +926,15 @@ var
   Q, P, Np, Comp, Header: TgsDataSet;
   I: Integer;
   FrxDBDataset: TfrxDBDataset;
+  FPrinterInfo: TPrinterInfo;
 begin
   Assert(Assigned(FFrontBase), 'FrontBase not assigned');
 
   BaseQueryList := FrontData.BaseQueryList;
   BaseQueryList.Clear;
-  PrinterName := FFrontBase.GetPrinterName;
+
+  FPrinterInfo := FFrontBase.GetPrinterInfo;
+  PrinterName := FPrinterInfo.PrinterName;
   FReport := Tgs_fr4SingleReport.Create(nil);
   try
     Str := TMemoryStream.Create;
@@ -1011,11 +1055,19 @@ begin
       FReport.DataSets.Add(FrxDBDataset);
       FReport.EnabledDataSets.Add(FrxDBDataset);
 
-      GetTemplateStreamByRuid(147733592, 1604829035, Str);
+      GetTemplateStreamByPrnIDAndType(rp_IncomeReport, FPrinterInfo.PrinterID, Str);
       if Str.Size > 0 then
       begin
         Str.Position := 0;
         FReport.LoadFromStream(Str);
+      end else
+      begin
+        GetTemplateStreamByRuid(147733592, 1604829035, Str);
+        if Str.Size > 0 then
+        begin
+          Str.Position := 0;
+          FReport.LoadFromStream(Str);
+        end;
       end;
 
       FReport.Variables.Clear;
@@ -1112,8 +1164,7 @@ begin
         FReport.DataSets.Add(TfrxDBDataset2);
         FReport.EnabledDataSets.Add(TfrxDBDataset2);
 
-
-        GetTemplateStreamByPrnIDAndType(3, FPrinterInfo.PrinterID, Str);
+        GetTemplateStreamByPrnIDAndType(rp_PreCheck, FPrinterInfo.PrinterID, Str);
         if Str.Size > 0 then
         begin
           Str.Position := 0;
@@ -1157,15 +1208,15 @@ var
   BaseQueryList: TgsQueryList;
   Header1, Header: TgsDataSet;
   FrxDBDataset, FrxDBDataset1: TfrxDBDataset;
-  NomPP, DocKey, I: Integer;
-  DocDate: TDateTime;
+  FPrinterInfo: TPrinterInfo;
 begin
   Assert(Assigned(FFrontBase), 'FrontBase not assigned');
 
   BaseQueryList := FrontData.BaseQueryList;
   BaseQueryList.Clear;
 
-  PrinterName := FFrontBase.GetPrinterName;
+  FPrinterInfo := FFrontBase.GetPrinterInfo;
+  PrinterName := FPrinterInfo.PrinterName;
   if PrinterName = '' then
   begin
     Touch_MessageBox('Внимание', 'Для данной рабочей станции не указан пречековый принтер!', MB_OK, mtWarning);
@@ -1217,11 +1268,19 @@ begin
       FReport.EnabledDataSets.Add(FrxDBDataset);
       FReport.EnabledDataSets.Add(FrxDBDataset1);
 
-      GetTemplateStreamByRuid(147744656, 1650037404, Str);
+      GetTemplateStreamByPrnIDAndType(rp_Realization, FPrinterInfo.PrinterID, Str);
       if Str.Size > 0 then
       begin
         Str.Position := 0;
         FReport.LoadFromStream(Str);
+      end else
+      begin
+        GetTemplateStreamByRuid(147744656, 1650037404, Str);
+        if Str.Size > 0 then
+        begin
+          Str.Position := 0;
+          FReport.LoadFromStream(Str);
+        end;
       end;
 
       FReport.Variables.Clear;
@@ -1367,7 +1426,7 @@ begin
         case ReportType of
           1:
           begin
-            GetTemplateStreamByPrnIDAndType(1, PrinterID, Str);
+            GetTemplateStreamByPrnIDAndType(rp_ServiceCheck, PrinterID, Str);
             if Str.Size > 0 then
             begin
               Str.Position := 0;
