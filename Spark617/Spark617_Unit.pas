@@ -47,7 +47,7 @@ type
 
 implementation
 
-uses SysUtils, Math, Controls, TouchMessageBoxForm_Unit;
+uses SysUtils, Controls, TouchMessageBoxForm_Unit;
 
 const
   Spark_Cash   = 8;  // Наличные
@@ -97,7 +97,6 @@ begin
     if GetDeviceInfo(13) = 1 then
     begin
       Touch_MessageBox('Внимание', 'Ошибка в фискальной операции!', MB_OK or MB_ICONEXCLAMATION);
-
       exit;
     end;
     if GetDeviceInfo(14) = 1 then
@@ -202,13 +201,17 @@ begin
       // Spark_Cash   = 8;  Наличные
       // Spark_NoCash = 7;  Безнал
       // Spark_Credit = 1;  Карты
-      Res := SetPaymentMean(Spark_Credit, 'Пласт. карта', 0, 1, 1, 1);
+
+      Res := SetPaymentMean(Spark_Credit, 'Пласт. карта', 0, 0, 1, 1);
+//      Res := SetPaymentMean(Spark_Credit, 'Пласт. карта', 0, 1, 1, 1);
       ErrMessage(Res);
 
-      Res := SetPaymentMean(Spark_NoCash, 'Безналичные', 0, 1, 1, 1);
+      Res := SetPaymentMean(Spark_NoCash, 'Безналичные', 0, 0, 1, 0);
+//      Res := SetPaymentMean(Spark_NoCash, 'Безналичные', 0, 1, 1, 1);
       ErrMessage(Res);
 
       Res := SetPaymentMean(Spark_Cash, 'Наличные', 0, 1, 1, 1);
+//      Res := SetPaymentMean(Spark_Cash, 'Наличные', 0, 1, 1, 1);
       ErrMessage(Res);
       //открытие сессии
       Res := StartSession(FFrontBase.UserName, FFrontBase.CashNumber);
