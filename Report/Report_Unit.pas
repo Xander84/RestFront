@@ -237,34 +237,6 @@ begin
     try
       Header := BaseQueryList.Query[BaseQueryList.Add('Header2', False)];
       Header.SQL :=
- {       '  SELECT comp.name compname, comp.address compadr, comp.city compcity, ' +
-        '  g.alias a, cat.usr$name categ, g.name goodname, ol.usr$costncu C, ' +
-        '  con.name conname, o.usr$logicdate docdate, doc.number docnum, ' +
-        '  o.usr$guestcount guest, o.usr$timeorder open1, o.usr$timecloseorder close1, ' +
-        '  o.usr$cash cash, o.usr$sysnum sysnum, ' +
-        '  SUM(ol.usr$sumncu) S, ' +
-        '  SUM(ol.usr$sumncuwithdiscount) SWD, ' +
-        '  SUM(ol.usr$sumdiscount) SD, ' +
-        '  Sum(ol.usr$quantity) q ' +
-        '  FROM gd_document doc ' +
-        '  JOIN usr$mn_order o ON o.documentkey = doc.id ' +
-        '    AND doc.id = :dockey ' +
-        '  JOIN usr$mn_orderline ol on ol.masterkey = o.documentkey ' +
-        '  JOIN gd_good g ON g.id = ol.usr$goodkey ' +
-        '  LEFT JOIN gd_contact comp ON comp.id = doc.companykey ' +
-        '  LEFT JOIN usr$mn_p_getcontact_department(usr$respkey) cd ON 0 = 0 ' +
-        '  LEFT JOIN gd_contact con ON con.id = cd.peoplekey ' +
-        '  LEFT JOIN gd_contact dept ON dept.id = cd.departmentkey ' +
-        '  LEFT JOIN USR$mn_category cat ON cat.id = g.usr$category ' +
-        '  where ol.usr$causedeletekey + 0 is null ' +
-        '  GROUP BY ' +
-        '  comp.name, comp.address, comp.city, ' +
-        '  g.name, g.alias, ol.usr$costncu, ' +
-        '  con.name, o.usr$logicdate, doc.number, ' +
-        '  o.usr$guestcount, o.usr$timeorder, o.usr$timecloseorder, ' +
-        '  o.usr$cash, usr$sysnum, cat.usr$name ' +
-        '  having Sum(ol.usr$quantity) > 0 ' +
-        '  order by cat.usr$name '; }
       '  SELECT comp.name compname, comp.address compadr, comp.city compcity,  ' +
       '  g.alias a, g.name goodname, ol.usr$costncu C, ' +
       '  con.name conname, doc.documentdate as docdate, doc.number docnum, ' +
@@ -333,46 +305,7 @@ begin
           Header.Next;
         end;
 
- {     Sells := BaseQueryList.Query[BaseQueryList.Add('Sells', True)];
-      Sells.AddField('PayType1', 'ftString', 15, False);
-      Sells.AddField('PaySum1', 'ftString', 15, False);
-      Sells.AddField('ChangeSum', 'ftString', 15, False);
-      Sells.AddField('NOW', 'ftDate', 0, False);
-      Sells.AddField('NOWTIME', 'ftTime', 0, False);
-      Sells.Open;
-      with FSums do
-      begin
-        if FCashSum > 0 then
-        begin
-          Sells.Append;
-          Sells.FieldByName('PayType1').AsString := 'Наличные';
-          Sells.FieldByName('PaySum1').AsString := CurrToStr(FCashSum);
-          Sells.FieldByName('ChangeSum').AsString := CurrToStr(FChangeSum);
-          Sells.FieldByName('NOW').AsDateTime := Date;
-          Sells.FieldByName('NOWTIME').AsDateTime := Now;
-          Sells.Post;
-        end;
-        if (FCreditSum + FPersonalCardSum) > 0 then
-        begin
-          Sells.Append;
-          Sells.FieldByName('PayType1').AsString := 'Безналичные';
-          Sells.FieldByName('PaySum1').AsString := CurrToStr(FCreditSum + FPersonalCardSum);
-          Sells.FieldByName('ChangeSum').AsString := CurrToStr(FChangeSum);
-          Sells.FieldByName('NOW').AsDateTime := Date;
-          Sells.FieldByName('NOWTIME').AsDateTime := Now;
-          Sells.Post;
-        end;
-        if FCardSum > 0 then
-        begin
-          Sells.Append;
-          Sells.FieldByName('PayType1').AsString := 'Карта';
-          Sells.FieldByName('PaySum1').AsString := CurrToStr(FCardSum);
-          Sells.FieldByName('ChangeSum').AsString := CurrToStr(FChangeSum);
-          Sells.FieldByName('NOW').AsDateTime := Date;
-          Sells.FieldByName('NOWTIME').AsDateTime := Now;
-          Sells.Post;
-        end;
-      end;      }
+
 
 
       FrxDBDataset.Name := Header.DataSet.Name;
@@ -1269,13 +1202,17 @@ begin
       Header1.Open;
 
       Header := BaseQueryList.Query[BaseQueryList.Add('Header', True)];
-      Header.AddField('FromDAte', 'ftDate', 0, False);
-      Header.AddField('ToDAte', 'ftDate', 0, False);
+      Header.AddField('FromDate', 'ftDate', 0, False);
+      Header.AddField('ToDate', 'ftDate', 0, False);
+      Header.AddField('CompanyName', 'ftString', 255, False);
       Header.Open;
 
       Header.Append;
       Header.FieldByName('FromDAte').AsDateTime := DateBegin;
       Header.FieldByName('ToDAte').AsDateTime := DateEnd;
+      Header.FieldbyName('CompanyName').AsString := FFrontBase.Options.CheckLine1 +
+          ' ' + FFrontBase.Options.CheckLine2 + ' ' +
+          FFrontBase.Options.CheckLine3 + ' ' + FFrontBase.Options.CheckLine4;
       Header.Post;
 
       FrxDBDataset.Name := Header1.DataSet.Name;
