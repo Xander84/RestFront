@@ -4464,6 +4464,8 @@ begin
       FForm.Free;
     end;
   end;
+  if edPassword.CanFocus then
+    edPassword.SetFocus;
 end;
 
 procedure TRestMainForm.actAllChecksExecute(Sender: TObject);
