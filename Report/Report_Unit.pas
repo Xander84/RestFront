@@ -1206,8 +1206,8 @@ var
   FReport: Tgs_fr4SingleReport;
   Str: TStream;
   BaseQueryList: TgsQueryList;
-  Header1, Header: TgsDataSet;
-  FrxDBDataset, FrxDBDataset1: TfrxDBDataset;
+  Header2, Header1, Header: TgsDataSet;
+  FrxDBDataset, FrxDBDataset1, FrxDBDataset2: TfrxDBDataset;
   FPrinterInfo: TPrinterInfo;
 begin
   Assert(Assigned(FFrontBase), 'FrontBase not assigned');
@@ -1227,12 +1227,13 @@ begin
     Str := TMemoryStream.Create;
     FrxDBDataset := TfrxDBDataset.Create(nil);
     FrxDBDataset1 := TfrxDBDataset.Create(nil);
+    FrxDBDataset2 := TfrxDBDataset.Create(nil);
     try
-      Header1 := BaseQueryList.Query[BaseQueryList.Add('Report', False)];
-      Header1.SQL :=
+      Header2 := BaseQueryList.Query[BaseQueryList.Add('Report2', False)];
+      Header2.SQL :=
         'select ' +
         '   pt.usr$name , ' +
-        '   con.name as groupname, ' +
+        '   c.usr$name as groupname, ' +
         '   sum(rc.summ) as ss  ' +
         'from ' +
         '  usr$mn_p_cashreport_kassa(:begindate, :enddate) rc ' +
@@ -1240,7 +1241,26 @@ begin
         '  left join usr$mn_kindtype kt on rc.kindtypekey = kt.id ' +
         '  left join usr$inv_paytype pt on pt.id = kt.usr$paytypekey ' +
         '  left join usr$mn_category c on c.id = rc.categorykey ' +
-        '  left join gd_contact con on con.id = rc.depotkey ' +
+        'group by ' +
+        '  1, 2 ' +
+        '  order by 2,1 ';
+      Header2.ParamByName('begindate').AsDate := DateBegin;
+      Header2.ParamByName('enddate').AsDate := DateEnd;
+      Header2.Open;
+
+
+      Header1 := BaseQueryList.Query[BaseQueryList.Add('Report', False)];
+      Header1.SQL :=
+        'select ' +
+        '   pt.usr$name , ' +
+        '   c.usr$name as groupname, ' +
+        '   sum(rc.summ) as ss  ' +
+        'from ' +
+        '  usr$mn_p_cashreport_kassa(:begindate, :enddate) rc ' +
+        '  left join  usr$mn_order o on rc.orderkey = o.documentkey ' +
+        '  left join usr$mn_kindtype kt on rc.kindtypekey = kt.id ' +
+        '  left join usr$inv_paytype pt on pt.id = kt.usr$paytypekey ' +
+        '  left join usr$mn_category c on c.id = rc.categorykey ' +
         'group by ' +
         '  1, 2 ' +
         '  order by 1,2 ';
@@ -1262,11 +1282,15 @@ begin
       FrxDBDataset.DataSet := Header1.DataSet;
       FrxDBDataset1.Name := Header.DataSet.Name;;
       FrxDBDataset1.DataSet := Header.DataSet;
+      FrxDBDataset2.Name := Header2.DataSet.Name;;
+      FrxDBDataset2.DataSet := Header2.DataSet;
 
       FReport.DataSets.Add(FrxDBDataset);
       FReport.DataSets.Add(FrxDBDataset1);
+      FReport.DataSets.Add(FrxDBDataset2);
       FReport.EnabledDataSets.Add(FrxDBDataset);
       FReport.EnabledDataSets.Add(FrxDBDataset1);
+      FReport.EnabledDataSets.Add(FrxDBDataset2);
 
       GetTemplateStreamByPrnIDAndType(rp_Realization, FPrinterInfo.PrinterID, Str);
       if Str.Size > 0 then
@@ -1295,6 +1319,7 @@ begin
     finally
       FrxDBDataset.Free;
       FrxDBDataset1.Free;
+      FrxDBDataset2.Free;
       Str.Free;
     end;
   finally
