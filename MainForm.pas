@@ -2549,7 +2549,7 @@ begin
         FFrontBase.CloseModifyTable(FModificationDataSet);
       end;
 
-      if true{FReport.PrintPreCheck(1, FHeaderTable.FieldByName('ID').AsInteger)} then
+      if FReport.PrintPreCheck(1, FHeaderTable.FieldByName('ID').AsInteger) then
       begin
         if FHeaderTable.State = dsBrowse then
           FHeaderTable.Edit;

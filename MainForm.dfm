@@ -1752,6 +1752,13 @@ object RestMainForm: TRestMainForm
                       OnGetCellParams = DBGrMainColumns1GetCellParams
                     end
                     item
+                      DisplayFormat = ',#0'
+                      EditButtons = <>
+                      FieldName = 'USR$PERSDISCOUNT'
+                      Footers = <>
+                      Title.Caption = '% '#1089#1082#1080#1076#1082#1080
+                    end
+                    item
                       DisplayFormat = '# ##0.##'
                       EditButtons = <>
                       FieldName = 'usr$costncuwithdiscount'
@@ -1763,7 +1770,7 @@ object RestMainForm: TRestMainForm
                       Title.Font.Height = -15
                       Title.Font.Name = 'Times New Roman'
                       Title.Font.Style = []
-                      Width = 112
+                      Width = 75
                       OnGetCellParams = DBGrMainColumns2GetCellParams
                     end
                     item
@@ -1786,7 +1793,7 @@ object RestMainForm: TRestMainForm
                       Title.Font.Height = -15
                       Title.Font.Name = 'Times New Roman'
                       Title.Font.Style = []
-                      Width = 120
+                      Width = 70
                       OnGetCellParams = DBGrMainColumns3GetCellParams
                     end>
                 end
@@ -3665,8 +3672,6 @@ object RestMainForm: TRestMainForm
             Action = actUnblockTable
             Align = alTop
             TabOrder = 5
-            ExplicitLeft = 1
-            ExplicitTop = 498
           end
           object btnSwapWaiter: TAdvSmoothButton
             AlignWithMargins = True
@@ -4373,8 +4378,8 @@ object RestMainForm: TRestMainForm
     end
   end
   object actList: TActionList
-    Left = 504
-    Top = 64
+    Left = 424
+    Top = 128
     object actPassEnter: TAction
       Category = 'PassWord'
       Caption = 'OK'
@@ -4562,38 +4567,38 @@ object RestMainForm: TRestMainForm
     end
   end
   object dsMain: TDataSource
-    Left = 568
-    Top = 64
+    Left = 480
+    Top = 128
   end
   object TouchKeyBoard: TAdvSmoothPopupTouchKeyBoard
     KeyboardType = ktQWERTY
-    Left = 440
-    Top = 64
+    Left = 352
+    Top = 128
   end
   object dsHeaderInfo: TDataSource
-    Left = 440
-    Top = 128
+    Left = 352
+    Top = 176
   end
   object dsLineInfo: TDataSource
-    Left = 504
-    Top = 128
+    Left = 424
+    Top = 176
   end
   object tmrClose: TTimer
     Tag = 1
     Interval = 4000
     OnTimer = tmrCloseTimer
-    Left = 368
-    Top = 64
+    Left = 272
+    Top = 128
   end
   object dxfDesigner: TdxfDesigner
     StepToGrid = 1
     Active = False
-    Left = 368
-    Top = 128
+    Left = 272
+    Top = 176
   end
   object gmFront: TGestureManager
-    Left = 568
-    Top = 128
+    Left = 488
+    Top = 184
     GestureData = <
       item
         Control = pnlMenu
@@ -4688,8 +4693,8 @@ object RestMainForm: TRestMainForm
     OnPopup = tablePopupMenuPopup
     MenuStyler = MenuOfficeStyler
     Version = '2.5.3.1'
-    Left = 368
-    Top = 184
+    Left = 272
+    Top = 224
   end
   object MenuOfficeStyler: TAdvMenuOfficeStyler
     AntiAlias = aaNone
@@ -4777,19 +4782,19 @@ object RestMainForm: TRestMainForm
     NotesFont.Style = []
     UseSystemFont = False
     MenuBorderColor = 9841920
-    Left = 472
-    Top = 184
+    Left = 352
+    Top = 224
   end
   object tmrTables: TTimer
     Enabled = False
     Interval = 30000
     OnTimer = tmrTablesTimer
-    Left = 568
-    Top = 184
+    Left = 424
+    Top = 232
   end
   object tmrTime: TTimer
     OnTimer = tmrTimeTimer
-    Left = 368
-    Top = 240
+    Left = 272
+    Top = 272
   end
 end
