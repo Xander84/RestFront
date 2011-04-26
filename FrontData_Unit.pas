@@ -119,6 +119,7 @@ begin
       Columns[I].Title.Font.Size := cn_TitleFontSize;
       Columns[I].Footer.Font.Name := cn_FontType;
       Columns[I].Footer.Font.Size := cn_GridFontSize;
+      Columns[I].Footer.Font.Style := [fsBold];
     end;
   end;
 end;
@@ -150,10 +151,6 @@ function GetFrontStyle: TTMSStyle;
 begin
   Result := FFrontStyle;
 end;
-
-var
-  IconIDs: array[TMsgDlgType] of PChar = (IDI_EXCLAMATION, IDI_HAND,
-    IDI_ASTERISK, IDI_QUESTION, nil);
 
 procedure TFrontData.DataModuleCreate(Sender: TObject);
 begin

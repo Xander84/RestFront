@@ -320,6 +320,7 @@ type
     function GetIBRandomString: String;
     function CheckIBUser(const IBName: String): Boolean;
     procedure CreateIBUser(const IBName, IBPass: String; ID: Integer);
+    function IsComputerDBConnected(const ComputerName: String): Boolean;
 
     function CheckUserPassword(UserID: Integer; UserPassword: String): Integer; //Возвращает ID Группы -1 Если не нашло
     function LogIn(UserPassword: String): Boolean; //Возвращает ID Группы -1 Если не нашло
@@ -4944,6 +4945,47 @@ begin
   except
     on E: Exception do
       Touch_MessageBox('Внимание', 'Ошибка при загрузке настроек ' + E.Message, MB_OK, mtError);
+  end;
+end;
+
+function TFrontBase.IsComputerDBConnected(const ComputerName: String): Boolean;
+var
+  Tr: TIBTransaction;
+  FSQL: TIBSQL;
+  FCN: AnsiString;
+begin
+  Result := False;
+
+  FSQL := TIBSQL.Create(nil);
+  Tr := TIBTransaction.Create(nil);
+  try
+    Tr.DefaultDatabase := ReadTransaction.DefaultDatabase;
+    Tr.Params.Add('read_committed');
+    Tr.Params.Add('read');
+    Tr.Params.Add('rec_version');
+    Tr.Params.Add('nowait');
+    Tr.StartTransaction;
+
+    FSQL.Transaction := Tr;
+    FSQL.SQL.Text := ' SELECT A.MON$REMOTE_ADDRESS FROM MON$ATTACHMENTS A ';
+    FSQL.ExecQuery;
+    while not FSQL.Eof do
+    begin
+      FCN := IPAddrToName(AnsiString(FSQL.Fields[0].AsString));
+      if (FCN = '') and (FSQL.Fields[0].AsString <> '') then
+        FCN := AnsiString(FSQL.Fields[0].AsString);
+
+      if AnsiString(ComputerName) = FCN then
+      begin
+        Result := True;
+        Break;
+      end;
+      FSQL.Next;
+    end;
+    FSQL.Close;
+  finally
+    FSQL.Free;
+    Tr.Free;
   end;
 end;
 

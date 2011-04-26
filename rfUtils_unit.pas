@@ -5,11 +5,12 @@ interface
 procedure RemoveWrongPassChar(var Key: Char);
 function WinExec32(Cmd: string; const CmdShow: Integer): Boolean;
 function GetLocalComputerName: String;
+function IPAddrToName(IPAddr : AnsiString): AnsiString;
 
 implementation
 
 uses
-  Windows, SysUtils;
+  Windows, SysUtils, WinSock;
 
 procedure RemoveWrongPassChar(var Key: Char);
 begin
@@ -60,6 +61,28 @@ begin
     Result := ''
   else
     Result := AnsiUpperCase(ComputerName);
+end;
+
+//inet_addr является устаревшей
+function IPAddrToName(IPAddr : AnsiString): AnsiString;
+var
+  SockAddrIn: TSockAddrIn;
+  HostEnt: PHostEnt;
+  WSAData: TWSAData;
+begin
+  WSAData.wVersion := 0;
+  WSAStartup(MAKEWORD(2, 2), WSAData);
+  try
+    SockAddrIn.sin_addr.s_addr:= inet_addr(PAnsiChar(IPAddr));
+    HostEnt:= gethostbyaddr(@SockAddrIn.sin_addr.S_addr, 4, AF_INET);
+    if HostEnt <> nil then
+      Result := StrPas(Hostent^.h_name)
+    else
+      Result := '';
+  finally
+    if WSAData.wVersion = 2 then
+      WSACleanup;
+  end;
 end;
 
 end.
