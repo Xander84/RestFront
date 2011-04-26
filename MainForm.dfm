@@ -1752,13 +1752,6 @@ object RestMainForm: TRestMainForm
                       OnGetCellParams = DBGrMainColumns1GetCellParams
                     end
                     item
-                      DisplayFormat = ',#0'
-                      EditButtons = <>
-                      FieldName = 'USR$PERSDISCOUNT'
-                      Footers = <>
-                      Title.Caption = '% '#1089#1082#1080#1076#1082#1080
-                    end
-                    item
                       DisplayFormat = '# ##0.##'
                       EditButtons = <>
                       FieldName = 'usr$costncuwithdiscount'
@@ -1770,7 +1763,8 @@ object RestMainForm: TRestMainForm
                       Title.Font.Height = -15
                       Title.Font.Name = 'Times New Roman'
                       Title.Font.Style = []
-                      Width = 75
+                      Width = 76
+                      WordWrap = True
                       OnGetCellParams = DBGrMainColumns2GetCellParams
                     end
                     item
@@ -1793,7 +1787,7 @@ object RestMainForm: TRestMainForm
                       Title.Font.Height = -15
                       Title.Font.Name = 'Times New Roman'
                       Title.Font.Style = []
-                      Width = 70
+                      Width = 72
                       OnGetCellParams = DBGrMainColumns3GetCellParams
                     end>
                 end

@@ -117,6 +117,8 @@ begin
       Columns[I].Font.Size := cn_GridFontSize;
       Columns[I].Title.Font.Name := cn_FontType;
       Columns[I].Title.Font.Size := cn_TitleFontSize;
+      Columns[I].Footer.Font.Name := cn_FontType;
+      Columns[I].Footer.Font.Size := cn_GridFontSize;
     end;
   end;
 end;

@@ -3858,6 +3858,10 @@ end;
 
 procedure TRestMainForm.DBGrMainColumns2GetCellParams(Sender: TObject; EditMode: Boolean; Params: TColCellParamsEh);
 begin
+  if FLineTable.FieldByName('USR$PERSDISCOUNT').AsCurrency > 0 then
+    Params.Text := Params.Text + #13#10 +
+      FLineTable.FieldByName('USR$PERSDISCOUNT').AsString + '%';
+
   if FLineTable.FieldByName('usr$mn_printdate').AsString = '' then
   begin
     Params.Font.Color := clGreen;
