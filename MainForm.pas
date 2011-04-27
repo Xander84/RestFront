@@ -697,6 +697,10 @@ begin
   FActiveHallKey := -1;
   // Получим разницу локального времени и серверного
   FServerTimeLag := FFrontBase.GetServerDateTime - Now;
+
+  // Поместим в заголовок окна и наименование приложения наименование организации
+  Self.Caption := Format('%s - %s', [Self.Caption, FFrontBase.CompanyName]);
+  Application.Title := Self.Caption;
 end;
 
 procedure TRestMainForm.FormDestroy(Sender: TObject);

@@ -295,6 +295,7 @@ type
 
     FOrderTypeKey: Integer;
     FCompanyKey: Integer;
+    FCompanyName: String;
     FOptions: TFrontOptions;
 
     FDisplay: TDisplay;
@@ -452,6 +453,7 @@ type
     property ServerName: String read GetServerName;
     property QueryList: TgsQueryList read FQueryList;
     property CompanyKey: Integer read FCompanyKey;
+    property CompanyName: String read FCompanyName;
     property ReadTransaction: TIBTransaction read GetReadTransaction;
   end;
 
@@ -2364,14 +2366,24 @@ begin
     FReadSQL.Close;
 
     FReadSQL.SQL.Text :=
-      ' SELECT first(1) oc.companykey ' +
-      '  FROM gd_ourcompany oc  ' +
-      '  WHERE oc.disabled = 0  ';
+      ' SELECT FIRST(1) ' +
+      '   oc.companykey, c.name AS companyname ' +
+      ' FROM ' +
+      '   gd_ourcompany oc ' +
+      '   LEFT JOIN gd_contact c ON c.id = oc.companykey ' +
+      ' WHERE ' +
+      '   oc.disabled = 0  ';
     FReadSQL.ExecQuery ;
     if not FReadSQL.Eof then
-      FCompanyKey := FReadSQL.FieldByName('companyKey').AsInteger
+    begin
+      FCompanyKey := FReadSQL.FieldByName('companyKey').AsInteger;
+      FCompanyName := FReadSQL.FieldByName('companyname').AsString;
+    end
     else
+    begin
       FCompanyKey := -1;
+      FCompanyName := '';
+    end;
     FReadSQL.Close;
   except
     raise;
