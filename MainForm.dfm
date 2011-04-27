@@ -1599,7 +1599,7 @@ object RestMainForm: TRestMainForm
             Top = 0
             Width = 609
             Height = 701
-            ActivePage = tsOrderInfo
+            ActivePage = tsTablePage
             ActiveFont.Charset = DEFAULT_CHARSET
             ActiveFont.Color = clWindowText
             ActiveFont.Height = -11
@@ -2499,7 +2499,6 @@ object RestMainForm: TRestMainForm
                 DoubleBuffered = False
                 ParentDoubleBuffered = False
                 TabOrder = 0
-                Touch.GestureManager = gmFront
                 OnGesture = sbTableGesture
                 object imgHallBackground: TImage
                   Left = 0
@@ -2812,7 +2811,7 @@ object RestMainForm: TRestMainForm
         Top = 1
         Width = 80
         Height = 719
-        ActivePage = tsOrderButton
+        ActivePage = tsEmpty
         ActiveFont.Charset = DEFAULT_CHARSET
         ActiveFont.Color = clWindowText
         ActiveFont.Height = -11
@@ -4367,6 +4366,46 @@ object RestMainForm: TRestMainForm
             TabStop = False
             Version = '1.6.9.0'
           end
+          object btnDeleteTable: TAdvSmoothToggleButton
+            AlignWithMargins = True
+            Left = 3
+            Top = 152
+            Width = 74
+            Height = 54
+            Margins.Top = 40
+            Margins.Bottom = 1
+            BorderColor = clGray
+            BevelWidth = 0
+            Appearance.PictureAlignment = taCenter
+            Appearance.Font.Charset = DEFAULT_CHARSET
+            Appearance.Font.Color = clWindowText
+            Appearance.Font.Height = -9
+            Appearance.Font.Name = 'Tahoma'
+            Appearance.Font.Style = [fsBold]
+            Appearance.Layout = blPictureTop
+            Appearance.Spacing = 0
+            HorizontalSpacing = 0
+            Caption = #1059#1076#1072#1083#1077#1085#1080#1077' '#1089#1090#1086#1083#1072
+            Version = '1.1.8.0'
+            Status.Caption = '0'
+            Status.Appearance.Fill.Color = clRed
+            Status.Appearance.Fill.ColorMirror = clNone
+            Status.Appearance.Fill.ColorMirrorTo = clNone
+            Status.Appearance.Fill.GradientType = gtSolid
+            Status.Appearance.Fill.BorderColor = clGray
+            Status.Appearance.Fill.Rounding = 0
+            Status.Appearance.Fill.ShadowOffset = 0
+            Status.Appearance.Font.Charset = DEFAULT_CHARSET
+            Status.Appearance.Font.Color = clWhite
+            Status.Appearance.Font.Height = -11
+            Status.Appearance.Font.Name = 'Tahoma'
+            Status.Appearance.Font.Style = []
+            ParentFont = False
+            Align = alTop
+            TabOrder = 4
+            OnClick = btnDeleteTableClick
+            ExplicitTop = 274
+          end
         end
       end
     end
@@ -4585,7 +4624,7 @@ object RestMainForm: TRestMainForm
     Top = 128
   end
   object dxfDesigner: TdxfDesigner
-    StepToGrid = 1
+    StepToGrid = 5
     Active = False
     Left = 272
     Top = 176
@@ -4663,22 +4702,6 @@ object RestMainForm: TRestMainForm
           end
           item
             Action = actUsersDown
-            GestureID = sgiDown
-          end>
-      end
-      item
-        Control = sbTable
-        Collection = <
-          item
-            GestureID = sgiLeft
-          end
-          item
-            GestureID = sgiRight
-          end
-          item
-            GestureID = sgiUp
-          end
-          item
             GestureID = sgiDown
           end>
       end>

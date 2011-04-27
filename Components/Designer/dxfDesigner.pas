@@ -194,38 +194,50 @@ begin
     Items[0].Caption := 'Align to Grid';
     Items[0].Tag := 1;
     Items[0].OnClick := PopupMenuClick;
+
     Items.Add(TMenuItem.Create(FPopupMenu));
     Items[1].Caption := 'Bring To Front';
     Items[1].Tag := 2;
     Items[1].OnClick := PopupMenuClick;
+    Items[1].Visible := False;
+
     Items.Add(TMenuItem.Create(FPopupMenu));
     Items[2].Caption := 'Send To Back';
     Items[2].Tag := 3;
     Items[2].OnClick := PopupMenuClick;
+    Items[2].Visible := False;
+
     Items.Add(TMenuItem.Create(FPopupMenu));
     Items[3].Caption := '-';
+
     Items.Add(TMenuItem.Create(FPopupMenu));
     Items[4].Caption := 'Align';
+
     Items[4].Add(TMenuItem.Create(Items[4]));
     Items[4].Items[0].Caption := 'None';
     Items[4].Items[0].Tag := 4;
     Items[4].Items[0].OnClick := PopupMenuClick;
+
     Items[4].Add(TMenuItem.Create(Items[4]));
     Items[4].Items[1].Caption := 'Top';
     Items[4].Items[1].Tag := 5;
     Items[4].Items[1].OnClick := PopupMenuClick;
+
     Items[4].Add(TMenuItem.Create(Items[4]));
     Items[4].Items[2].Caption := 'Bottom';
     Items[4].Items[2].Tag := 6;
     Items[4].Items[2].OnClick := PopupMenuClick;
+
     Items[4].Add(TMenuItem.Create(Items[4]));
     Items[4].Items[3].Caption := 'Left';
     Items[4].Items[3].Tag := 7;
     Items[4].Items[3].OnClick := PopupMenuClick;
+
     Items[4].Add(TMenuItem.Create(Items[4]));
     Items[4].Items[4].Caption := 'Right';
     Items[4].Items[4].Tag := 8;
     Items[4].Items[4].OnClick := PopupMenuClick;
+
     Items[4].Add(TMenuItem.Create(Items[4]));
     Items[4].Items[5].Caption := 'Client';
     Items[4].Items[5].Tag := 9;

@@ -228,6 +228,7 @@ type
     btnSwapWaiter: TAdvSmoothButton;
     actUnblockTable: TAction;
     btnSwapTable: TAdvSmoothToggleButton;
+    btnDeleteTable: TAdvSmoothToggleButton;
 
     // Проверка введёного пароля
     procedure actPassEnterExecute(Sender: TObject);
@@ -315,6 +316,7 @@ type
     procedure btnRealizationReportClick(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure actUnblockTableUpdate(Sender: TObject);
+    procedure btnDeleteTableClick(Sender: TObject);
   private
     // Компонент обращения к БД
     FFrontBase: TFrontBase;
@@ -1870,14 +1872,41 @@ begin
   LockWindowUpdate(Handle);
   try
     if pcMenu.ActivePage = tsMenu then
+    begin
       if FMenuButtonCount > 6 then
         ScrollControl(pnlMenu, True, FMenuFirstTop, FMenuLastTop)
       else
-        ScrollControl(pnlExtraGoodGroup, True, FGroupFirstTop, FGroupLastTop)
-      else
-        ScrollControl(pnlGoodGroup, True, FGroupFirstTop, FGroupLastTop);
+        ScrollControl(pnlExtraGoodGroup, True, FGroupFirstTop, FGroupLastTop);
+    end
+    else if pcMenu.ActivePage = tsTablesDesigner then
+    begin
+      ScrollControl(pnlDesignerTables, True, FTableChooseTop, FTableChooseLastTop);
+    end
+    else
+    begin
+      ScrollControl(pnlGoodGroup, True, FGroupFirstTop, FGroupLastTop);
+    end;
   finally
     LockWindowUpdate(0);
+  end;
+end;
+
+procedure TRestMainForm.actScrollDownUpdate(Sender: TObject);
+begin
+  if pcMenu.ActivePage = tsMenu then
+  begin
+    if FMenuButtonCount > 6 then
+      actScrollDown.Enabled := (FMenuLastTop + btnHeight > pnlMenu.Height)
+    else
+      actScrollDown.Enabled := (FGroupLastTop + btnHeight > pnlExtraGoodGroup.Height);
+  end
+  else if pcMenu.ActivePage = tsTablesDesigner then
+  begin
+    actScrollDown.Enabled := (FTableChooseLastTop + btnHeight > pnlDesignerTables.Height);
+  end
+  else
+  begin
+    actScrollDown.Enabled := (FGroupLastTop + btnHeight > pnlGoodGroup.Height);
   end;
 end;
 
@@ -1886,14 +1915,41 @@ begin
   LockWindowUpdate(Handle);
   try
     if pcMenu.ActivePage = tsMenu then
+    begin
       if FMenuButtonCount > 6 then
         ScrollControl(pnlMenu, False, FMenuFirstTop, FMenuLastTop)
       else
-        ScrollControl(pnlExtraGoodGroup, False, FGroupFirstTop, FGroupLastTop)
-      else
-        ScrollControl(pnlGoodGroup, False, FGroupFirstTop, FGroupLastTop);
+        ScrollControl(pnlExtraGoodGroup, False, FGroupFirstTop, FGroupLastTop);
+    end
+    else if pcMenu.ActivePage = tsTablesDesigner then
+    begin
+      ScrollControl(pnlDesignerTables, False, FTableChooseTop, FTableChooseLastTop);
+    end
+    else
+    begin
+      ScrollControl(pnlGoodGroup, False, FGroupFirstTop, FGroupLastTop);
+    end;
   finally
     LockWindowUpdate(0);
+  end;
+end;
+
+procedure TRestMainForm.actScrollUpUpdate(Sender: TObject);
+begin
+  if pcMenu.ActivePage = tsMenu then
+  begin
+    if FMenuButtonCount > 6 then
+      actScrollUp.Enabled := (FMenuFirstTop > 8)
+    else
+      actScrollUp.Enabled := (FGroupFirstTop > 8);
+  end
+  else if pcMenu.ActivePage = tsTablesDesigner then
+  begin
+    actScrollUp.Enabled := (FTableChooseTop > 8);
+  end
+  else
+  begin
+    actScrollUp.Enabled := (FGroupFirstTop > 8);
   end;
 end;
 
@@ -3069,6 +3125,7 @@ begin
           FHallButtonNumber := 1;
           FHallLastTop := -(btnHeight);
           FTableChooseLastTop := -(btnHeight);
+          FTableChooseTop := btnFirstTop;
 
           pcMain.ActivePage := tsMain;
           pcOrder.ActivePage := tsTablePage;
@@ -3082,6 +3139,7 @@ begin
           pnlRight.Visible := True;
           btnOK2.Visible := True;
           btnReturnGoodSum.Visible := False;
+          btnDeleteTable.Down := False;
           RemoveGoodButton;
           RemoveGroupButton;
           RemoveOrderButton;
@@ -3498,6 +3556,11 @@ begin
     SetCloseTimerActive(not FFrontBase.Options.NoPassword);
     FForm.Free;
   end;
+end;
+
+procedure TRestMainForm.btnDeleteTableClick(Sender: TObject);
+begin
+  dxfDesigner.Active := (not btnDeleteTable.Down);
 end;
 
 procedure TRestMainForm.btnWithPrecheckClick(Sender: TObject);
@@ -4049,13 +4112,21 @@ begin
   if not FFrontBase.CheckForSession then
     exit;
 
+  CurrentRestTable := TRestTable(Sender);
+
   if dxfDesigner.Active then
-    exit;
+    Exit;
+
+  // Если необходимо удалить стол, удалим
+  if (FRestFormState = rsHallEdit) and btnDeleteTable.Down then
+  begin
+    FTableManager.DropTable(CurrentRestTable);
+    CurrentRestTable.Free;
+    Exit;
+  end;
 
   // Сбросим таймер выхода из окна зала
   SetCloseTimerActive(not FFrontBase.Options.NoPassword);
-
-  CurrentRestTable := TRestTable(Sender);
 
   if btnUnblockTable.Down then      // Если активен режим разблокировки стола
   begin
@@ -4582,17 +4653,6 @@ begin
   actGoodDown.Enabled := (FGoodLastTop + btnHeight > pnlGood.Height);
 end;
 
-procedure TRestMainForm.actScrollUpUpdate(Sender: TObject);
-begin
-  if pcMenu.ActivePage = tsMenu then
-    if FMenuButtonCount > 6 then
-      actScrollUp.Enabled := (FMenuFirstTop > 8)
-    else
-      actScrollUp.Enabled := (FGroupFirstTop > 8)
-    else
-      actScrollUp.Enabled := (FGroupFirstTop > 8);
-end;
-
 procedure TRestMainForm.actSwapTableExecute(Sender: TObject);
 begin
   if Assigned(FSwapTableFrom) then
@@ -4709,18 +4769,6 @@ procedure TRestMainForm.actSwapWaiterUpdate(Sender: TObject);
 begin
   actSwapWaiter.Enabled := ((FFrontBase.UserKey and FFrontBase.Options.ManagerGroupMask) <> 0)
     and (not btnSwapTable.Down);
-end;
-
-procedure TRestMainForm.actScrollDownUpdate(Sender: TObject);
-begin
-  if pcMenu.ActivePage = tsMenu then
-  begin
-    if FMenuButtonCount > 6 then
-      actScrollDown.Enabled := (FMenuLastTop + btnHeight > pnlMenu.Height)
-    else
-      actScrollDown.Enabled := (FGroupLastTop + btnHeight > pnlExtraGoodGroup.Height)
-  end else
-    actScrollDown.Enabled := (FGroupLastTop + btnHeight > pnlGoodGroup.Height);
 end;
 
 end.
