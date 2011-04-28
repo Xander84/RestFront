@@ -2888,6 +2888,8 @@ begin
   else
     FViewMode := False;
 
+  btnDeleteTable.Visible := (FRestFormState = rsHallEdit);
+
   case Value of
     rsPass:
       begin
