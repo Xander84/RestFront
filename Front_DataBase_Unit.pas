@@ -367,6 +367,7 @@ type
     function GetPayKindType(const MemTable: TkbmMemTable; const PayType: Integer; IsPlCard: Integer = 0): Boolean;
     procedure GetPaymentsCount(var CardCount, NoCashCount, PercCardCount: Integer;
       const CreditID, PCID: Integer);
+    function GetCashFiscalType: Integer;
 
     function CreateNewOrder(const HeaderTable, LineTable, ModifyTable: TkbmMemTable; out OrderKey: Integer): Boolean;
     function SaveAndReloadOrder(const HeaderTable, LineTable, ModifyTable: TkbmMemTable; OrderKey: Integer): Boolean;
@@ -2949,6 +2950,29 @@ begin
   if not (FCashCode > 0) then
     GetCashInfo;
   Result := FCashCode;
+end;
+
+function TFrontBase.GetCashFiscalType: Integer;
+var
+  FSQL: TIBSQL;
+begin
+  Result := 0;
+  FSQL := TIBSQL.Create(nil);
+  try
+    try
+      FSQL.Transaction := ReadTransaction;
+      FSQL.SQL.Text := ' SELECT USR$NOFISCAL ' +
+        ' FROM USR$MN_KINDTYPE WHERE ID = :ID ';
+      FSQL.Params[0].AsInteger := GetIDByRUID(mn_RUBpaytypeXID, mn_RUBpaytypeDBID);
+      FSQL.ExecQuery;
+      Result := FSQL.FieldByName('USR$NOFISCAL').AsInteger;
+      FSQL.Close;
+    except
+      raise;
+    end;
+  finally
+    FSQL.Free;
+  end;
 end;
 
 function TFrontBase.GetFiscalComPort: Integer;

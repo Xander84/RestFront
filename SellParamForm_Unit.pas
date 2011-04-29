@@ -94,6 +94,7 @@ type
     dsPayLine: TkbmMemTable;
     FIsValidPayment: Boolean;
     FNoFiscalPayment: Boolean;
+    FCashNoFiscal: Integer;
 
     procedure SetSumToPay(const Value: Currency);
     procedure SetFiscalRegister(const Value: TFiscalRegister);
@@ -229,6 +230,7 @@ begin
   Assert(FCreditID <> -1, 'Invalid RUID');
   FPersonalCardID := FFrontBase.GetIDByRUID(mn_personalcardXID, mn_personalcardDBID);
   Assert(FPersonalCardID <> -1, 'Invalid RUID');
+  FCashNoFiscal := FFrontBase.GetCashFiscalType;
 
   FFrontBase.GetPaymentsCount(CardCount, NoCashCount, PercCardCount, FCreditID, FPersonalCardID);
   btnCardPay.Enabled := (CardCount > 0);
@@ -283,7 +285,7 @@ begin
     btnCashPay.Down := True;
     FCurrentPayType := FFrontBase.GetIDByRUID(mn_RUBpaytypeXID, mn_RUBpaytypeDBID);
     FCurrentPayName := 'Рубли';
-    FNoFiscal := 0;
+    FNoFiscal := FCashNoFiscal;//0;
     FPayType := cn_paytype_cash;
   end;
 
@@ -583,7 +585,7 @@ begin
     FPersonalCardKey := -1;
     FCurrentPayType := FFrontBase.GetIDByRUID(mn_RUBpaytypeXID, mn_RUBpaytypeDBID);
     FCurrentPayName := 'Рубли';
-    FNoFiscal := 0;
+    FNoFiscal := FCashNoFiscal;//0;
     FPayType := cn_paytype_cash;
 
     if dsPayLine.RecordCount = 0 then

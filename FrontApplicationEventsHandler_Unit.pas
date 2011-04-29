@@ -3,7 +3,7 @@ unit FrontApplicationEventsHandler_Unit;
 interface
 
 uses
-  Sysutils, Messages, Forms;
+  Sysutils, Messages, Forms, Windows;
 
 type
   TApplicationEventsHandler = class(TObject)
@@ -13,6 +13,9 @@ type
 
 implementation
 
+uses
+  TouchMessageBoxForm_Unit, Dialogs;
+
 { TApplicationEventsHandler }
 
 procedure TApplicationEventsHandler.ApplicationEventsException(
@@ -20,7 +23,7 @@ procedure TApplicationEventsHandler.ApplicationEventsException(
 begin
 { TODO : Записывать все ошибки в лог }
 {если ошибка - потеря соединения, сделать переподлючение}
-  Application.ShowException(E);
+  Touch_MessageBox('Внимание', 'Ошибка ' + E.Message, MB_OK, mtError);
 end;
 
 end.
