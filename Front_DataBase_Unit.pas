@@ -242,6 +242,10 @@ type
     NoPrintEmptyCheck: Boolean;
     NeedModGroup:      Boolean;
     NeedPrnGroup:      Boolean;
+    //настройки СПАРК
+    SparkCash:         Integer;
+    SparkNoCash:       Integer;
+    SparkCredit:       Integer;
   end;
 
   TUserInfo = record
@@ -4758,6 +4762,10 @@ begin
       NoPrintEmptyCheck := True;
       NeedModGroup := False;
       NeedPrnGroup := False;
+
+      SparkCash := 8;
+      SparkNoCash := 7;
+      SparkCredit := 1;
     end;
 
     FReadSQL.Close;
@@ -4953,7 +4961,29 @@ begin
 
       FReadSQL.Next;
     end;
+
     FReadSQL.Close;
+    FReadSQL.Params[0].AsString := 'SPARK';
+    FReadSQL.ExecQuery;
+    while not FReadSQL.Eof do
+    begin
+      FName := AnsiUpperCase(FReadSQL.FieldByName('NAME').AsString);
+      if FName = 'SPARKNOCASH' then
+      begin
+        FOptions.SparkNoCash := FReadSQL.FieldByName('INT_DATA').AsInteger;
+      end else
+      if FName = 'SPARKCASH' then
+      begin
+        FOptions.SparkCash := FReadSQL.FieldByName('INT_DATA').AsInteger;
+      end else
+      if FName = 'SPARKCREDIT' then
+      begin
+        FOptions.SparkCredit := FReadSQL.FieldByName('INT_DATA').AsInteger;
+      end;
+
+      FReadSQL.Next;
+    end;
+
   except
     on E: Exception do
       Touch_MessageBox('Внимание', 'Ошибка при загрузке настроек ' + E.Message, MB_OK, mtError);
