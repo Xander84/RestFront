@@ -418,6 +418,7 @@ type
     FViewMode: Boolean;
 
     FSplitForm: TSplitOrder;
+    FMousePos: TPoint;
 
     // Создание первичных наборов данных
     procedure CreateDataSets;
@@ -502,6 +503,8 @@ type
     procedure OnAfterPost(DataSet: TDataSet);
     /// !!!!
     procedure OnAfterDelete(DataSet: TDataSet);
+
+    procedure AppMessage(var Msg: TMsg; var Handled: Boolean);    
   public
     procedure AfterConstruction; override;
   end;
@@ -611,6 +614,8 @@ begin
   FWithPreCheck := True;
   FActiveHallButton := '';
 
+  FMousePos := Point(0, 0);
+  
   CreateDataSets;
   RestFormState := rsPass;
   try
@@ -706,6 +711,7 @@ begin
   // Поместим в заголовок окна и наименование приложения наименование организации
   Self.Caption := Format('%s - %s', [Self.Caption, FFrontBase.CompanyName]);
   Application.Title := Self.Caption;
+  Application.OnMessage := AppMessage;
 end;
 
 procedure TRestMainForm.FormDestroy(Sender: TObject);
@@ -3653,6 +3659,22 @@ begin
   FHeaderInfoTable.First;
   if DBGrInfoHeader.CanFocus then
     DBGrInfoHeader.SetFocus;
+end;
+
+procedure TRestMainForm.AppMessage(var Msg: TMsg; var Handled: Boolean);
+begin
+  if (not FFrontBase.Options.NoPassword)
+    and (FRestFormState in [rsOrderMenu, rsHallsPage, rsManagerPage, rsManagerInfo, rsKassirInfo]) then
+  begin
+    if Msg.message = WM_MOUSEMOVE then
+    begin
+      if not EqualPoints(FMousePos, msg.pt) then
+      begin
+        tmrClose.Tag := 0;
+        FMousePos := Msg.pt; 
+      end; 
+    end;
+  end;
 end;
 
 procedure TRestMainForm.BeforeRestFormStateChanged;

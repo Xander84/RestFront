@@ -2,16 +2,20 @@ unit rfUtils_unit;
 
 interface
 
+uses
+  Windows;
+
 procedure RemoveWrongPassChar(var Key: Char);
 function IsKeyCalculatorValid(const Key: Word): Boolean;
 function WinExec32(Cmd: string; const CmdShow: Integer): Boolean;
 function GetLocalComputerName: String;
 function IPAddrToName(IPAddr : AnsiString): AnsiString;
+function EqualPoints(const a, b: TPoint): Boolean;
 
 implementation
 
 uses
-  Windows, SysUtils, WinSock;
+  SysUtils, WinSock;
 
 procedure RemoveWrongPassChar(var Key: Char);
 begin
@@ -89,6 +93,11 @@ begin
     if WSAData.wVersion = 2 then
       WSACleanup;
   end;
+end;
+
+function EqualPoints(const a, b: TPoint): Boolean;
+begin
+  Result := (a.x = b.x) and (a.y = b.y);
 end;
 
 end.
