@@ -43,6 +43,7 @@ type
     function AddTable(const ATableNumber: String; const ADesignerTable: TRestTable): TRestTable;
     { Удалить стол по идентификатору }
     procedure DropTable(ATable: TRestTable);
+    procedure ClearDropList;
     { Получим объект стола по ИД }
     function GetTable(const ATableKey: Integer): TRestTable;
 
@@ -62,6 +63,11 @@ uses
   ibsql, ibdatabase, FrontData_Unit;
 
 { TrfTableManager }
+
+procedure TrfTableManager.ClearDropList;
+begin
+  FToDeleteList.Clear;
+end;
 
 procedure TrfTableManager.ClearTables;
 var
@@ -133,7 +139,7 @@ end;
 
 procedure TrfTableManager.DropTable(ATable: TRestTable);
 begin
-  // Созраним ИД стола в список на удаление из БД
+  // Сохраним ИД стола в список на удаление из БД
   FToDeleteList.Add(ATable.ID);
   // Удалим объект
   FTablesList.Remove(ATable);
@@ -347,12 +353,12 @@ begin
 
       ibsqlInsert.Transaction := WriteTransaction;
       ibsqlInsert.SQL.Text :=
-        'INSERT INTO usr$mn_table(id, usr$number, usr$posy, usr$posx, usr$hallkey, usr$type, usr$maintablekey) ' +
+        ' INSERT INTO usr$mn_table(id, usr$number, usr$posy, usr$posx, usr$hallkey, usr$type, usr$maintablekey) ' +
         ' VALUES (:id, :number, :posy, :posx, :hallkey, :typekey, null) ';
 
       ibsqlDelete.Transaction := WriteTransaction;
       ibsqlDelete.SQL.Text :=
-        'DELETE FROM usr$mn_table t WHERE t.id = :id ';
+        ' DELETE FROM usr$mn_table t WHERE t.id = :id ';
 
       // Обновление или вставка столов
       for I := 0 to FTablesList.Count - 1 do

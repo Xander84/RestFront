@@ -2134,6 +2134,8 @@ begin
           FFrontBase.ClearCache;
           dxfDesigner.EditControl := nil;
           dxfDesigner.Active := False;
+          if (FRestFormState = rsHallEdit) then
+            FTableManager.ClearDropList;
 
           RestFormState := rsPass;
           FLogManager.DoSimpleLog(GetCurrentUserInfo, ev_Exit);
@@ -4233,9 +4235,7 @@ end;
 
 procedure TRestMainForm.OrderButtonOnClick(Sender: TObject);
 var
-  FUserInfo: TUserInfo;
   MenuOrderButton: TButton;
-  Order: TrfOrder;
 begin
   // Если смена не открыта не даем редактировать заказ
   if not FFrontBase.CheckForSession then
@@ -4243,10 +4243,8 @@ begin
 
   // В поле Tag храним ID связанного заказа
   MenuOrderButton := TButton(Sender);
-
-  Order := FFrontBase.GetOrderInfo(MenuOrderButton.Tag);
   // Если заказ заблокирован, то позволяем зайти в него только с того же компьютера
-  if Order.IsLocked {and (Order.ComputerName <> FFrontBase.GetLocalComputerName)} then
+  if FFrontBase.OrderIsLocked(MenuOrderButton.Tag) {and (Order.ComputerName <> FFrontBase.GetLocalComputerName)} then
   begin
     Touch_MessageBox('Внимание', 'Заказ редактируется на другом рабочем месте!', MB_OK, mtWarning);
     Exit;
