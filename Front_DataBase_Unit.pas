@@ -1159,13 +1159,16 @@ begin
   Result := FDataBase.TestConnected;
   if not Result then
   begin
-    FDataBase.ForceClose;
     try
+      FDataBase.ForceClose;
       WaitWindowThread.Start;
-
-      Result := TryToConnect(5);
-    finally
-      WaitWindowThread.Finish;
+      try
+        Result := TryToConnect(5);
+      finally
+        WaitWindowThread.Finish;
+      end;
+    except
+      raise;
     end;
   end;
 end;
