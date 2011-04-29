@@ -32,7 +32,7 @@ object RestMainForm: TRestMainForm
       Top = 0
       Width = 934
       Height = 721
-      ActivePage = tsMain
+      ActivePage = tsPassWord
       ActiveFont.Charset = DEFAULT_CHARSET
       ActiveFont.Color = clWindowText
       ActiveFont.Height = -11
@@ -50,6 +50,9 @@ object RestMainForm: TRestMainForm
         ColorTo = 14986888
         TabColor = clBtnFace
         TabColorTo = clNone
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object mainTouchKeyBoard: TAdvSmoothTouchKeyBoard
           Left = 0
           Top = 472
@@ -980,6 +983,8 @@ object RestMainForm: TRestMainForm
           SmallFont.Style = []
           Version = '1.5.0.0'
           Align = alBottom
+          Visible = False
+          ExplicitTop = 701
         end
         object pnlPassword: TGridPanel
           Left = 0
@@ -1014,6 +1019,11 @@ object RestMainForm: TRestMainForm
               Control = btnOKPass
               Row = 1
               RowSpan = 3
+            end
+            item
+              Column = 1
+              Control = btnToggleInternalKeyboard
+              Row = 4
             end>
           ParentBackground = False
           RowCollection = <
@@ -1037,10 +1047,11 @@ object RestMainForm: TRestMainForm
             end>
           TabOrder = 1
           object edPassword: TEdit
-            Left = 279
-            Top = 216
-            Width = 300
-            Height = 37
+            AlignWithMargins = True
+            Left = 282
+            Top = 219
+            Width = 294
+            Height = 34
             Align = alClient
             Constraints.MaxHeight = 37
             Font.Charset = RUSSIAN_CHARSET
@@ -1052,7 +1063,8 @@ object RestMainForm: TRestMainForm
             PasswordChar = '*'
             TabOrder = 0
             OnKeyPress = edPasswordKeyPress
-            ExplicitHeight = 31
+            ExplicitTop = 2
+            ExplicitHeight = 37
           end
           object btnOKPass: TAdvSmoothButton
             Left = 579
@@ -1088,6 +1100,48 @@ object RestMainForm: TRestMainForm
             TabOrder = 1
             Version = '1.6.9.0'
           end
+          object btnToggleInternalKeyboard: TAdvSmoothButton
+            AlignWithMargins = True
+            Left = 329
+            Top = 414
+            Width = 200
+            Height = 54
+            Margins.Left = 50
+            Margins.Right = 50
+            Align = alBottom
+            Appearance.PictureAlignment = taCenter
+            Appearance.Font.Charset = DEFAULT_CHARSET
+            Appearance.Font.Color = clWindowText
+            Appearance.Font.Height = -9
+            Appearance.Font.Name = 'Tahoma'
+            Appearance.Font.Style = [fsBold]
+            Appearance.Layout = blPictureTop
+            Status.Caption = '0'
+            Status.Appearance.Fill.Color = clRed
+            Status.Appearance.Fill.ColorMirror = clNone
+            Status.Appearance.Fill.ColorMirrorTo = clNone
+            Status.Appearance.Fill.GradientType = gtSolid
+            Status.Appearance.Fill.BorderColor = clGray
+            Status.Appearance.Fill.Rounding = 0
+            Status.Appearance.Fill.ShadowOffset = 0
+            Status.Appearance.Font.Charset = DEFAULT_CHARSET
+            Status.Appearance.Font.Color = clWhite
+            Status.Appearance.Font.Height = -11
+            Status.Appearance.Font.Name = 'Tahoma'
+            Status.Appearance.Font.Style = []
+            Bevel = False
+            Caption = #1050#1083#1072#1074#1080#1072#1090#1091#1088#1072
+            Color = 14922381
+            DisabledColor = clBlack
+            ParentFont = False
+            TabOrder = 2
+            TabStop = False
+            Version = '1.6.9.0'
+            OnClick = btnToggleInternalKeyboardClick
+            ExplicitLeft = 282
+            ExplicitTop = 267
+            ExplicitWidth = 294
+          end
         end
       end
       object tsMain: TAdvTabSheet
@@ -1097,6 +1151,9 @@ object RestMainForm: TRestMainForm
         ImageIndex = 1
         TabColor = clBtnFace
         TabColorTo = clNone
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object pnlRight: TAdvPanel
           Left = 609
           Top = 0
@@ -1599,7 +1656,7 @@ object RestMainForm: TRestMainForm
             Top = 0
             Width = 609
             Height = 701
-            ActivePage = tsTablePage
+            ActivePage = tsManagerPage
             ActiveFont.Charset = DEFAULT_CHARSET
             ActiveFont.Color = clWindowText
             ActiveFont.Height = -11
@@ -1619,6 +1676,9 @@ object RestMainForm: TRestMainForm
               ColorTo = 14986888
               TabColor = clBtnFace
               TabColorTo = clNone
+              ExplicitTop = 0
+              ExplicitWidth = 0
+              ExplicitHeight = 0
               object btnNewOrder: TAdvSmoothButton
                 Left = 16
                 Top = 1
@@ -2125,15 +2185,19 @@ object RestMainForm: TRestMainForm
                 StatusBar.ColorTo = 16374724
                 StatusBar.GradientDirection = gdVertical
                 Styler = FrontData.FrontPanelStyler
-                DesignSize = (
-                  609
-                  65)
                 FullHeight = 65
                 object lblResp: TLabel
-                  Left = 190
-                  Top = 7
-                  Width = 6
-                  Height = 23
+                  AlignWithMargins = True
+                  Left = 169
+                  Top = 5
+                  Width = 271
+                  Height = 55
+                  Margins.Left = 5
+                  Margins.Top = 5
+                  Margins.Right = 5
+                  Margins.Bottom = 5
+                  Align = alClient
+                  AutoSize = False
                   Font.Charset = DEFAULT_CHARSET
                   Font.Color = clWindowText
                   Font.Height = -19
@@ -2142,13 +2206,23 @@ object RestMainForm: TRestMainForm
                   ParentFont = False
                   Transparent = True
                   WordWrap = True
+                  ExplicitLeft = 190
+                  ExplicitTop = 7
+                  ExplicitWidth = 6
+                  ExplicitHeight = 48
                 end
                 object btnUsersDown: TAdvSmoothButton
-                  Left = 17
-                  Top = 1
+                  AlignWithMargins = True
+                  Left = 5
+                  Top = 5
                   Width = 72
-                  Height = 54
+                  Height = 55
+                  Margins.Left = 5
+                  Margins.Top = 5
+                  Margins.Right = 5
+                  Margins.Bottom = 5
                   Action = actUsersDown
+                  Align = alLeft
                   Appearance.PictureAlignment = taCenter
                   Appearance.Font.Charset = DEFAULT_CHARSET
                   Appearance.Font.Color = clWindowText
@@ -2176,11 +2250,17 @@ object RestMainForm: TRestMainForm
                   Version = '1.6.9.0'
                 end
                 object btnUsersUp: TAdvSmoothButton
-                  Left = 112
-                  Top = 1
+                  AlignWithMargins = True
+                  Left = 87
+                  Top = 5
                   Width = 72
-                  Height = 54
+                  Height = 55
+                  Margins.Left = 5
+                  Margins.Top = 5
+                  Margins.Right = 5
+                  Margins.Bottom = 5
                   Action = actUsersUp
+                  Align = alLeft
                   Appearance.PictureAlignment = taCenter
                   Appearance.Font.Charset = DEFAULT_CHARSET
                   Appearance.Font.Color = clWindowText
@@ -2208,12 +2288,17 @@ object RestMainForm: TRestMainForm
                   Version = '1.6.9.0'
                 end
                 object btnUserLeft: TAdvSmoothButton
-                  Left = 416
-                  Top = 1
+                  AlignWithMargins = True
+                  Left = 450
+                  Top = 5
                   Width = 72
-                  Height = 54
+                  Height = 55
+                  Margins.Left = 5
+                  Margins.Top = 5
+                  Margins.Right = 5
+                  Margins.Bottom = 5
                   Action = actUsersLeft
-                  Anchors = [akTop, akRight]
+                  Align = alRight
                   Appearance.PictureAlignment = taCenter
                   Appearance.Font.Charset = DEFAULT_CHARSET
                   Appearance.Font.Color = clWindowText
@@ -2241,12 +2326,17 @@ object RestMainForm: TRestMainForm
                   Version = '1.6.9.0'
                 end
                 object btnUserRight: TAdvSmoothButton
-                  Left = 508
-                  Top = 1
+                  AlignWithMargins = True
+                  Left = 532
+                  Top = 5
                   Width = 72
-                  Height = 54
+                  Height = 55
+                  Margins.Left = 5
+                  Margins.Top = 5
+                  Margins.Right = 5
+                  Margins.Bottom = 5
                   Action = actUsersRight
-                  Anchors = [akTop, akRight]
+                  Align = alRight
                   Appearance.PictureAlignment = taCenter
                   Appearance.Font.Charset = DEFAULT_CHARSET
                   Appearance.Font.Color = clWindowText
@@ -2378,50 +2468,54 @@ object RestMainForm: TRestMainForm
                   Touch.GestureManager = gmFront
                   FullHeight = 528
                 end
-                object pnlManagerBottom: TAdvPanel
+                object pnlManagerBottom: TGridPanel
                   Left = 1
                   Top = 548
                   Width = 607
                   Height = 67
                   Align = alBottom
                   BevelOuter = bvNone
-                  Color = 16640730
+                  Color = 14986888
+                  ColumnCollection = <
+                    item
+                      Value = 25.000000000000000000
+                    end
+                    item
+                      Value = 25.000000000000000000
+                    end
+                    item
+                      Value = 25.000000000000000000
+                    end
+                    item
+                      Value = 25.000000000000000000
+                    end>
+                  ControlCollection = <
+                    item
+                      Column = 1
+                      Control = btnPrecheckOrders
+                      Row = 0
+                    end
+                    item
+                      Column = 2
+                      Control = btnWithOutPrecheckOrders
+                      Row = 0
+                    end>
+                  ParentBackground = False
+                  RowCollection = <
+                    item
+                      Value = 100.000000000000000000
+                    end>
                   TabOrder = 2
-                  UseDockManager = True
-                  Version = '2.0.1.0'
-                  BorderColor = clGray
-                  Caption.Color = 14059353
-                  Caption.ColorTo = 9648131
-                  Caption.Font.Charset = DEFAULT_CHARSET
-                  Caption.Font.Color = clWhite
-                  Caption.Font.Height = -11
-                  Caption.Font.Name = 'MS Sans Serif'
-                  Caption.Font.Style = []
-                  Caption.GradientDirection = gdVertical
-                  Caption.Indent = 2
-                  Caption.ShadeLight = 255
-                  CollapsColor = clNone
-                  CollapsDelay = 0
-                  ColorTo = 14986888
-                  ShadowColor = clBlack
-                  ShadowOffset = 0
-                  StatusBar.BorderColor = clNone
-                  StatusBar.BorderStyle = bsSingle
-                  StatusBar.Font.Charset = DEFAULT_CHARSET
-                  StatusBar.Font.Color = clWhite
-                  StatusBar.Font.Height = -11
-                  StatusBar.Font.Name = 'Tahoma'
-                  StatusBar.Font.Style = []
-                  StatusBar.Color = 14716773
-                  StatusBar.ColorTo = 16374724
-                  StatusBar.GradientDirection = gdVertical
-                  Styler = FrontData.FrontPanelStyler
-                  FullHeight = 67
                   object btnPrecheckOrders: TAdvSmoothToggleButton
-                    Left = 192
-                    Top = 10
-                    Width = 145
-                    Height = 50
+                    AlignWithMargins = True
+                    Left = 156
+                    Top = 5
+                    Width = 141
+                    Height = 57
+                    Margins.Left = 5
+                    Margins.Top = 5
+                    Margins.Right = 5
+                    Margins.Bottom = 5
                     BorderColor = clGray
                     BevelWidth = 0
                     Appearance.Font.Charset = DEFAULT_CHARSET
@@ -2445,14 +2539,20 @@ object RestMainForm: TRestMainForm
                     Status.Appearance.Font.Name = 'Tahoma'
                     Status.Appearance.Font.Style = []
                     ParentFont = False
+                    Align = alClient
                     TabOrder = 0
                     OnClick = btnPrecheckOrdersClick
                   end
                   object btnWithOutPrecheckOrders: TAdvSmoothToggleButton
-                    Left = 358
-                    Top = 10
-                    Width = 145
-                    Height = 50
+                    AlignWithMargins = True
+                    Left = 307
+                    Top = 5
+                    Width = 141
+                    Height = 57
+                    Margins.Left = 5
+                    Margins.Top = 5
+                    Margins.Right = 5
+                    Margins.Bottom = 5
                     BorderColor = clGray
                     BevelWidth = 0
                     Appearance.Font.Charset = DEFAULT_CHARSET
@@ -2477,6 +2577,7 @@ object RestMainForm: TRestMainForm
                     Status.Appearance.Font.Style = []
                     GroupIndex = 1
                     ParentFont = False
+                    Align = alClient
                     TabOrder = 1
                     OnClick = btnWithOutPrecheckOrdersClick
                   end
@@ -2489,6 +2590,9 @@ object RestMainForm: TRestMainForm
               ColorTo = clNone
               TabColor = clBtnFace
               TabColorTo = clNone
+              ExplicitTop = 0
+              ExplicitWidth = 0
+              ExplicitHeight = 0
               object sbTable: TScrollBox
                 Left = 0
                 Top = 0
@@ -2523,6 +2627,9 @@ object RestMainForm: TRestMainForm
         ColorTo = clNone
         TabColor = clBtnFace
         TabColorTo = clNone
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object pnlManagerInfo: TPanel
           Left = 0
           Top = 0
@@ -2811,7 +2918,7 @@ object RestMainForm: TRestMainForm
         Top = 1
         Width = 80
         Height = 719
-        ActivePage = tsEmpty
+        ActivePage = tsMainButton
         ActiveFont.Charset = DEFAULT_CHARSET
         ActiveFont.Color = clWindowText
         ActiveFont.Height = -11
@@ -2829,6 +2936,9 @@ object RestMainForm: TRestMainForm
           ColorTo = clNone
           TabColor = clBtnFace
           TabColorTo = clNone
+          ExplicitTop = 0
+          ExplicitWidth = 0
+          ExplicitHeight = 0
           object btnExitWindows: TAdvSmoothButton
             AlignWithMargins = True
             Left = 3
@@ -2986,6 +3096,9 @@ object RestMainForm: TRestMainForm
           ImageIndex = 1
           TabColor = clBtnFace
           TabColorTo = clNone
+          ExplicitTop = 0
+          ExplicitWidth = 0
+          ExplicitHeight = 0
           object btnAddQuantity: TAdvSmoothButton
             AlignWithMargins = True
             Left = 3
@@ -3442,6 +3555,9 @@ object RestMainForm: TRestMainForm
           ImageIndex = 2
           TabColor = clBtnFace
           TabColorTo = clNone
+          ExplicitTop = 0
+          ExplicitWidth = 0
+          ExplicitHeight = 0
           object btnCashForm: TAdvSmoothButton
             AlignWithMargins = True
             Left = 3
@@ -3754,6 +3870,9 @@ object RestMainForm: TRestMainForm
           ParentFont = False
           TabColor = clBtnFace
           TabColorTo = clNone
+          ExplicitTop = 0
+          ExplicitWidth = 0
+          ExplicitHeight = 0
           object xDateBegin: TDateTimePicker
             AlignWithMargins = True
             Left = 3
@@ -4213,6 +4332,9 @@ object RestMainForm: TRestMainForm
           ColorTo = clNone
           TabColor = clBtnFace
           TabColorTo = clNone
+          ExplicitTop = 0
+          ExplicitWidth = 0
+          ExplicitHeight = 0
           object btnShowKeyboard2: TAdvSmoothButton
             AlignWithMargins = True
             Left = 3
@@ -4404,7 +4526,6 @@ object RestMainForm: TRestMainForm
             Align = alTop
             TabOrder = 4
             OnClick = btnDeleteTableClick
-            ExplicitTop = 274
           end
         end
       end

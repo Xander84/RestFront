@@ -4,7 +4,7 @@ interface
 
 uses
   IBDatabase, Db, Classes, IBSQL, kbmMemTable, Base_Display_unit, Generics.Collections,
-  Pole_Display_Unit, IBQuery, IB, IBErrorCodes, IBServices, obj_QueryList, rfUser_unit, rfOrder_unit;
+  Pole_Display_Unit, IBQuery, IB, IBErrorCodes, IBServices, obj_QueryList, rfUser_unit, rfOrder_unit, RestTable_Unit;
 
 const
   MN_OrderXID = 147014509;
@@ -316,6 +316,8 @@ type
     function GetIsMainCash: Boolean;
     function GetServerName: String;
     function GetReadTransaction: TIBTransaction;
+
+    function EnsureDBConnection: Boolean;
   public
     constructor Create;
     destructor Destroy; override;
@@ -356,6 +358,8 @@ type
     procedure GetHallsInfo(const MemTable: TkbmMemTable);
     procedure GetTablesInfo(const MemTable: TkbmMemTable; const HallKey: Integer);
     procedure GetTables(const MemTable: TkbmMemTable; const HallKey: Integer);
+    // Список типов столов для редактора зала
+    function GetTableTypeList: TList<TChooseTable>;
 
     function LockUserOrder(const OrderKey: Integer): Boolean;
     function UnLockUserOrder(const OrderKey: Integer): Boolean;
@@ -468,7 +472,8 @@ type
 implementation
 
 uses
-  Windows, Sysutils, CardCodeForm_Unit, TouchMessageBoxForm_Unit, Dialogs, FrontData_Unit, rfUtils_unit;
+  Windows, Sysutils, CardCodeForm_Unit, TouchMessageBoxForm_Unit, Dialogs, FrontData_Unit, rfUtils_unit,
+  rfWaitWindow_unit;
 
 procedure GetHeaderTable(var DS: TkbmMemTable);
 begin
@@ -1147,6 +1152,22 @@ begin
   if not TryToConnect(5) then
 { TODO : Обработать }
     ;
+end;
+
+function TFrontBase.EnsureDBConnection: Boolean;
+begin
+  Result := FDataBase.TestConnected;
+  if not Result then
+  begin
+    FDataBase.ForceClose;
+    try
+      WaitWindowThread.Start;
+
+      Result := TryToConnect(5);
+    finally
+      WaitWindowThread.Finish;
+    end;
+  end;
 end;
 
 function TFrontBase.GetCauseDeleteList(const MemTable: TkbmMemTable): Boolean;
@@ -2397,7 +2418,8 @@ end;
 function TFrontBase.LogIn(UserPassword: String): Boolean;
 begin
   Result := False;
-  if FDataBase.Connected then
+  // Проверяем коннект к серверу
+  if EnsureDBConnection then
   begin
     FReadSQL.Close;
     if not FReadSQL.Transaction.InTransaction then
@@ -3191,42 +3213,45 @@ var
   FForm: TCardCode;
 begin
   Result.CheckedUserPassword := False;
-
-  FForm := TCardCode.Create(nil);
-  try
-    FForm.ShowModal;
-    if FForm.ModalResult = 1 then
-    begin
-      FReadSQL.Close;
-      if not FReadSQL.Transaction.InTransaction then
-        FReadSQL.Transaction.StartTransaction;
-      try
-        FReadSQL.SQL.Text :=
-          'select ' +
-          '  con.id, con.name, usr.ingroup ' +
-          'from  ' +
-          '  gd_user usr  ' +
-          '  join gd_contact con on con.id = usr.contactkey  ' +
-          'where ' +
-          '  usr.passw = :pass ' +
-          '  and usr.disabled = 0  ' +
-          '  and usr.usr$mn_isfrontuser = 1 ';
-        FReadSQL.Params[0].AsString := FForm.InputString;
-        FReadSQL.ExecQuery;
-        if not FReadSQL.Eof then
-        begin
-          Result.CheckedUserPassword := True;
-          Result.UserName := FReadSQL.FieldByName('Name').AsString;
-          Result.UserKey := FReadSQL.FieldByName('ID').AsInteger;
-          Result.UserInGroup := FReadSQL.FieldByName('InGroup').AsInteger;
-        end else
-          Touch_MessageBox('Внимание', 'Введён неверный пароль!', MB_OK, mtWarning);
-      finally
+  // Проверяем коннект к серверу
+  if EnsureDBConnection then
+  begin
+    FForm := TCardCode.Create(nil);
+    try
+      FForm.ShowModal;
+      if FForm.ModalResult = 1 then
+      begin
         FReadSQL.Close;
+        if not FReadSQL.Transaction.InTransaction then
+          FReadSQL.Transaction.StartTransaction;
+        try
+          FReadSQL.SQL.Text :=
+            'select ' +
+            '  con.id, con.name, usr.ingroup ' +
+            'from  ' +
+            '  gd_user usr  ' +
+            '  join gd_contact con on con.id = usr.contactkey  ' +
+            'where ' +
+            '  usr.passw = :pass ' +
+            '  and usr.disabled = 0  ' +
+            '  and usr.usr$mn_isfrontuser = 1 ';
+          FReadSQL.Params[0].AsString := FForm.InputString;
+          FReadSQL.ExecQuery;
+          if not FReadSQL.Eof then
+          begin
+            Result.CheckedUserPassword := True;
+            Result.UserName := FReadSQL.FieldByName('Name').AsString;
+            Result.UserKey := FReadSQL.FieldByName('ID').AsInteger;
+            Result.UserInGroup := FReadSQL.FieldByName('InGroup').AsInteger;
+          end else
+            Touch_MessageBox('Внимание', 'Введён неверный пароль!', MB_OK, mtWarning);
+        finally
+          FReadSQL.Close;
+        end;
       end;
-    end;  
-  finally
-    FForm.Free;
+    finally
+      FForm.Free;
+    end;
   end;
 end;
 
@@ -4144,6 +4169,37 @@ begin
     end;
   finally
     FReadSQL.Close;
+  end;
+end;
+
+function TFrontBase.GetTableTypeList: TList<TChooseTable>;
+var
+  TableType: TChooseTable;
+begin
+  Result := nil;
+
+  if EnsureDBConnection then
+  begin
+    Result := TList<TChooseTable>.Create;
+
+    FReadSQL.Close;
+    try
+      FReadSQL.SQL.Text :=
+        ' SELECT id, usr$name AS name, usr$width AS width, usr$length AS height FROM usr$mn_tabletype ';
+      FReadSQL.ExecQuery;
+      while not FReadSQL.Eof do
+      begin
+        TableType := TChooseTable.Create(nil);
+        TableType.TableTypeKey := FReadSQL.FieldByName('id').AsInteger;
+        TableType.RelativeWidth := FReadSQL.FieldByName('width').AsFloat;
+        TableType.RelativeHeight := FReadSQL.FieldByName('height').AsFloat;
+        Result.Add(TableType);
+
+        FReadSQL.Next;
+      end;
+    finally
+      FReadSQL.Close;
+    end;
   end;
 end;
 

@@ -120,7 +120,6 @@ type
     actUsersUp: TAction;
     actUsersDown: TAction;
     actDevide: TAction;
-    pnlManagerBottom: TAdvPanel;
     actUsersLeft: TAction;
     actUsersRight: TAction;
     actExitWindows: TAction;
@@ -200,8 +199,6 @@ type
     tsTablesDesigner: TAdvTabSheet;
     pnlDesignerTables: TAdvPanel;
     tmrTables: TTimer;
-    btnPrecheckOrders: TAdvSmoothToggleButton;
-    btnWithOutPrecheckOrders: TAdvSmoothToggleButton;
     mainTouchKeyBoard: TAdvSmoothTouchKeyBoard;
     tmrTime: TTimer;
     imgHallBackground: TImage;
@@ -229,6 +226,10 @@ type
     actUnblockTable: TAction;
     btnSwapTable: TAdvSmoothToggleButton;
     btnDeleteTable: TAdvSmoothToggleButton;
+    pnlManagerBottom: TGridPanel;
+    btnPrecheckOrders: TAdvSmoothToggleButton;
+    btnWithOutPrecheckOrders: TAdvSmoothToggleButton;
+    btnToggleInternalKeyboard: TAdvSmoothButton;
 
     // Проверка введёного пароля
     procedure actPassEnterExecute(Sender: TObject);
@@ -317,6 +318,7 @@ type
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure actUnblockTableUpdate(Sender: TObject);
     procedure btnDeleteTableClick(Sender: TObject);
+    procedure btnToggleInternalKeyboardClick(Sender: TObject);
   private
     // Компонент обращения к БД
     FFrontBase: TFrontBase;
@@ -514,7 +516,7 @@ uses
   Modification_Unit, DevideForm_Unit, CommCtrl,
   SellParamForm_Unit, PercOrCardForm_Unit, DiscountTypeForm_Unit,
   ChooseDiscountCardForm_Unit, EditReportForm_Unit,
-  GDIPPictureContainer, IB, GDIPFill, CashForm_Unit, IBSQL,
+  GDIPPictureContainer, IB, GDIPFill, CashForm_Unit,
   TouchMessageBoxForm_Unit, Base_FiscalRegister_unit,
   ReturneyMoneyForm_Unit, frmSwapOrder_unit, rfOrder_unit, ChooseEmplFrom_Unit,
   rfChooseForm_Unit, rfUtils_unit;
@@ -660,6 +662,7 @@ begin
   btnExitWindows.Picture := FrontData.RestPictureContainer.FindPicture('exit');
   btnRestartRest.Picture := FrontData.RestPictureContainer.FindPicture('update');
   btnShowKeyBoard.Picture := FrontData.RestPictureContainer.FindPicture('keyboard');
+  btnToggleInternalKeyboard.Picture := FrontData.RestPictureContainer.FindPicture('keyboard');
   btnAdminOptions.Picture := FrontData.RestPictureContainer.FindPicture('user');
 
   btnShowKeyboard2.Picture := FrontData.RestPictureContainer.FindPicture('keyboard');
@@ -980,47 +983,43 @@ end;
 
 procedure TRestMainForm.AddChooseTables(const HallKey: Integer);
 var
-  IBSQL: TIBSQL;
-  FButton: TChooseTable;
+  TableType: TChooseTable;
+  TableTypeList: TList<TChooseTable>;
 begin
-  IBSQL := TIBSQL.Create(nil);
-  try
-    IBSQL.Transaction := FFrontBase.ReadTransaction;
-    IBSQL.SQL.Text := ' SELECT ID, USR$NAME, usr$width, usr$length FROM USR$MN_TABLETYPE ';
-    IBSQL.ExecQuery;
-    while not IBSQL.Eof do
-    begin
-      FButton := TChooseTable.Create(pnlDesignerTables);
-      FButton.Parent := pnlDesignerTables;
-      FButton.OnClick := ChooseTableOnClick;
-      FButton.TableTypeKey := IBSQL.FieldByName('ID').AsInteger;
-      FButton.RelativeWidth := IBSQL.FieldByName('usr$width').AsFloat;
-      FButton.RelativeHeight := IBSQL.FieldByName('usr$length').AsFloat;
-      FButton.HallKey := HallKey;
-      // Изображение стола
-      FButton.Graphic := FTableManager.GetImageForType(FButton.TableTypeKey);
+  // Получим список типов столов из БД
+  TableTypeList := FFrontBase.GetTableTypeList;
 
-      FButton.Height := btnHeight;
-{$IFNDEF DEBUG}
-      if Screen.Width > 1024 then
-        FButton.Width := 4 * btnNewLong + 4
-      else
-{$ENDIF}
-        FButton.Width := 2 * btnNewLong;
+  if Assigned(TableTypeList) then
+  begin
+    try
+      for TableType in TableTypeList do
+      begin
+        pnlDesignerTables.InsertControl(TableType);
+        TableType.Parent := pnlDesignerTables;
+        TableType.OnClick := ChooseTableOnClick;
+        TableType.HallKey := HallKey;
+        // Изображение стола
+        TableType.Graphic := FTableManager.GetImageForType(TableType.TableTypeKey);
 
-      FTableChooseLastTop := FTableChooseLastTop + btnHeight + btnFirstTop;
+        TableType.Height := btnHeight;
+        {$IFNDEF DEBUG}
+        if Screen.Width > 1024 then
+          TableType.Width := 4 * btnNewLong + 4
+        else
+        {$ENDIF}
+          TableType.Width := 2 * btnNewLong;
 
-      FButton.Left := btnFirstTop {$IFDEF NEW_TABCONTROL} + 4 {$ENDIF};
-      FButton.Top := FTableChooseLastTop;
-      FButton.Tag := IBSQL.FieldByName('ID').AsInteger;
+        FTableChooseLastTop := FTableChooseLastTop + btnHeight + btnFirstTop;
 
-      FChooseTableButtonList.Add(FButton);
+        TableType.Left := btnFirstTop {$IFDEF NEW_TABCONTROL} + 4 {$ENDIF};
+        TableType.Top := FTableChooseLastTop;
+        TableType.Tag := TableType.TableTypeKey;
 
-      IBSQL.Next;
+        FChooseTableButtonList.Add(TableType);
+      end;
+    finally
+      FreeAndNil(TableTypeList);
     end;
-    IBSQL.Close;
-  finally
-    IBSQL.Free;
   end;
 end;
 
@@ -2545,6 +2544,7 @@ procedure TRestMainForm.actKeyBoardExecute(Sender: TObject);
 begin
   // TouchKeyBoard.Show;
   // TouchKeyBoard.Keyboard.SetComponentStyle(GetFrontStyle);
+
   WinExec('osk.exe', 1);
 end;
 
@@ -2850,10 +2850,11 @@ begin
         FForm.DocLine := FLineTable;
         FForm.SumToPay := SumToPay;
         FForm.ShowModal;
+        // Сохраняем и обновляем заказ не в зависимости от нажатой кнопки диалога
+        SaveCheck;
         if FForm.ModalResult = mrOK then
         begin
           // сохранить и выйти
-          SaveCheck;
           FPayed := True;
           actCancel.Execute;
         end;
@@ -3780,6 +3781,7 @@ procedure TRestMainForm.ChooseTableOnClick(Sender: TObject);
 var
   FForm: TDevideForm;
   FChooseButton: TChooseTable;
+  NewTable: TRestTable;
 begin
   FForm := TDevideForm.Create(nil);
   try
@@ -3791,7 +3793,9 @@ begin
     begin
       FChooseButton := TChooseTable(Sender);
       // Добавим новый стол
-      FTableManager.AddTable(FForm.Number, FChooseButton);
+      NewTable := FTableManager.AddTable(FForm.Number, FChooseButton);
+      // Установим обработчик клика для возможности удаления столика
+      NewTable.OnClick := TableButtonOnClick;
     end;
   finally
     FForm.Free;
@@ -4007,6 +4011,14 @@ begin
   FReport.PrintRealization(xDateBegin.Date, xDateEnd.Date);
 end;
 
+procedure TRestMainForm.btnToggleInternalKeyboardClick(Sender: TObject);
+begin
+  if mainTouchKeyBoard.Visible then
+    mainTouchKeyBoard.Hide
+  else
+    mainTouchKeyBoard.Show;
+end;
+
 procedure TRestMainForm.SplitButtonOnClick(Sender: TObject);
 begin
   if Assigned(FSplitForm) then
@@ -4044,7 +4056,6 @@ var
         // Проверим не заблокирован ли заказ
         if not FFrontBase.OrderIsLocked(Order.ID) then
         begin
-
           FHeaderTable.Edit;
           FHeaderTable.FieldByName('usr$tablekey').AsInteger := Table.ID;
           FHeaderTable.Post;
@@ -4083,14 +4094,13 @@ begin
     if frmSwap.ShowModalForTable('Стол №' + ATableFrom.Number, 'Стол №' + ATableTo.Number) = mrOK then
     begin
       BlockedOrderListStr := '';
-      // Пройдем по списку заказов FROM
-      EditOrderInfo(ItemListFrom, ATableFrom);
-      // Обновим информацию по текущему столу
-      FTableManager.RefreshOrderData(ATableFrom);
 
-      // Пройдем по списку заказов TO
+      // Пройдем по спискам заказов
+      EditOrderInfo(ItemListFrom, ATableFrom);
       EditOrderInfo(ItemListTo, ATableTo);
-      // Обновим информацию по текущему столу
+
+      // Обновим информацию по столам
+      FTableManager.RefreshOrderData(ATableFrom);
       FTableManager.RefreshOrderData(ATableTo);
 
       if BlockedOrderListStr <> '' then
@@ -4410,17 +4420,17 @@ begin
 end;
 
 procedure TRestMainForm.actRestartRestExecute(Sender: TObject);
-var
-  FUserInfo: TUserInfo;
+{var
+  FUserInfo: TUserInfo;}
 begin
-  FUserInfo := FFrontBase.CheckUserPasswordWithForm;
+  {FUserInfo := FFrontBase.CheckUserPasswordWithForm;
   if FUserInfo.CheckedUserPassword then
   begin
     if (FUserInfo.UserInGroup and FFrontBase.Options.ManagerGroupMask) = 0 then
     begin
       Touch_MessageBox('Внимание', cn_dontManagerPermission, MB_OK, mtWarning);
       exit;
-    end;
+    end; }
 {$IFDEF MSWINDOWS}
     if Touch_MessageBox('Внимание', 'Перезапустить приложение?', MB_YESNO, mtConfirmation) = IDYES then
     begin
@@ -4430,7 +4440,7 @@ begin
       Application.Terminate;
     end;
 {$ENDIF MSWINDOWS}
-  end;
+  {end;}
 end;
 
 procedure TRestMainForm.actReturnGoodSumExecute(Sender: TObject);
@@ -4521,6 +4531,7 @@ var
   FForm: TAdminForm;
 begin
   FUserInfo := FFrontBase.CheckUserPasswordWithForm;
+  // Если проверка пароля успешна, и пользователь может зайти
   if FUserInfo.CheckedUserPassword then
   begin
     if (FUserInfo.UserInGroup and FFrontBase.Options.ManagerGroupMask) = 0 then

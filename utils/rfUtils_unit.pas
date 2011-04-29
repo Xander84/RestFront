@@ -3,6 +3,7 @@ unit rfUtils_unit;
 interface
 
 procedure RemoveWrongPassChar(var Key: Char);
+function IsKeyCalculatorValid(const Key: Word): Boolean;
 function WinExec32(Cmd: string; const CmdShow: Integer): Boolean;
 function GetLocalComputerName: String;
 function IPAddrToName(IPAddr : AnsiString): AnsiString;
@@ -18,6 +19,11 @@ begin
     Key := ';';
   if (Key = ',') or (Key = '.') then
     Key := '?';
+end;
+
+function IsKeyCalculatorValid(const Key: Word): Boolean;
+begin
+  Result := (Key in [8, 48..57, 96..105]);
 end;
 
 function WinExec32(Cmd: string; const CmdShow: Integer): Boolean;

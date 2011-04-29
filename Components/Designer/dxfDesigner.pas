@@ -209,9 +209,11 @@ begin
 
     Items.Add(TMenuItem.Create(FPopupMenu));
     Items[3].Caption := '-';
+    Items[3].Visible := False;
 
     Items.Add(TMenuItem.Create(FPopupMenu));
     Items[4].Caption := 'Align';
+    Items[4].Visible := False;
 
     Items[4].Add(TMenuItem.Create(Items[4]));
     Items[4].Items[0].Caption := 'None';

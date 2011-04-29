@@ -47,13 +47,13 @@ type
     procedure CreateDeleteClauseButtonList;
     procedure AddDeleteClauseButton;
 
-    function GetRemoveQuantuty: Integer;
+    function GetRemoveQuantity: Currency;
 
     procedure DeleteButtonOnClick(Sender: TObject);
   public
     property FrontBase: TFrontBase read FFrontBase write SetFrontBase;
     property Quantity: Currency read FQuantity write FQuantity;
-    property RemoveQuantity: Integer read GetRemoveQuantuty;
+    property RemoveQuantity: Currency read GetRemoveQuantity;
     property DeleteClauseID: Integer read FDeleteClauseID write FDeleteClauseID;
     constructor CreateWithFrontBase(AOwner: TComponent; FBase: TFrontBase);
 
@@ -167,20 +167,30 @@ begin
 end;
 
 procedure TDeleteOrderLine.btnAddQuantityClick(Sender: TObject);
+var
+  IncrementedQuantity: Currency;
 begin
-  if StrToInt(lblQuantity.Caption) < FQuantity then
-    lblQuantity.Caption := IntToStr(StrToInt(lblQuantity.Caption) + 1);
+  IncrementedQuantity := StrToCurr(lblQuantity.Caption) + 1;
+  if IncrementedQuantity < FQuantity then
+    lblQuantity.Caption := CurrToStr(IncrementedQuantity)
+  else
+    lblQuantity.Caption := CurrToStr(FQuantity);
 end;
 
 procedure TDeleteOrderLine.btnRemoveQuantityClick(Sender: TObject);
+var
+  DecrementedQuantity: Currency;
 begin
-  if StrToInt(lblQuantity.Caption) > 1 then
-    lblQuantity.Caption := IntToStr(StrToInt(lblQuantity.Caption) - 1);
+  DecrementedQuantity := StrToCurr(lblQuantity.Caption) - 1;
+  if DecrementedQuantity > 0 then
+    lblQuantity.Caption := CurrToStr(DecrementedQuantity)
+  else
+    lblQuantity.Caption := '0';
 end;
 
-function TDeleteOrderLine.GetRemoveQuantuty: Integer;
+function TDeleteOrderLine.GetRemoveQuantity: Currency;
 begin
-  Result := StrToInt(lblQuantity.Caption);
+  Result := StrToCurr(lblQuantity.Caption);
 end;
 
 procedure TDeleteOrderLine.DeleteButtonOnClick(Sender: TObject);

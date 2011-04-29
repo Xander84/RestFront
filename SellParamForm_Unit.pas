@@ -124,7 +124,7 @@ var
 implementation
 
 uses
-  PayForm_Unit, TouchMessageBoxForm_Unit, Report_Unit, PersonalCardForm_Unit;
+  PayForm_Unit, TouchMessageBoxForm_Unit, Report_Unit, PersonalCardForm_Unit, rfUtils_unit;
 
 {$R *.dfm}
 
@@ -230,16 +230,6 @@ begin
   FPersonalCardID := FFrontBase.GetIDByRUID(mn_personalcardXID, mn_personalcardDBID);
   Assert(FPersonalCardID <> -1, 'Invalid RUID');
 
-  {
-  btnCashPay.Down := True;
-  FCurrentPayType := FFrontBase.GetIDByRUID(mn_RUBpaytypeXID, mn_RUBpaytypeDBID);
-  FCurrentPayName := 'Рубли';
-  FNoFiscal := 0;
-  FPayType := cn_paytype_cash;
-
-  Assert(FCurrentPayType <> -1, 'Invalid RUID');
-  }
-
   FFrontBase.GetPaymentsCount(CardCount, NoCashCount, PercCardCount, FCreditID, FPersonalCardID);
   btnCardPay.Enabled := (CardCount > 0);
   btnCreditlPay.Enabled := (NoCashCount > 0);
@@ -282,7 +272,7 @@ end;
 procedure TSellParamForm.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
   inherited;
-  if CharInSet(Char(Key), ['0'..'9', #8]) then
+  if IsKeyCalculatorValid(Key) and (Shift = []) then
     PostMessage(edMain.Handle, WM_KEYUP, Key, 0);
 end;
 
