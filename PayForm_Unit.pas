@@ -8,27 +8,39 @@ uses
   StdCtrls, ActnList, FrontData_Unit, AdvPanel, AdvSmoothToggleButton, AdvStyleIF,
   AdvSmoothButton, BaseFrontForm_Unit;
 
+const
+  btnHeight = 51;
+  btnWidth = 145;
+
 type
   TPayForm = class(TBaseFrontForm)
-    pnlBottom: TAdvPanel;
     pnlMain: TAdvPanel;
     pnlRight: TAdvPanel;
     actMain: TActionList;
     actOK: TAction;
-    btnOK: TAdvSmoothButton;
     btnCancel: TAdvSmoothButton;
+    btnOK: TAdvSmoothButton;
+    btnScrollDown: TAdvSmoothButton;
+    btnScrollUp: TAdvSmoothButton;
+    actPayUp: TAction;
+    actPayDown: TAction;
     procedure FormShow(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure actOKExecute(Sender: TObject);
     procedure actOKUpdate(Sender: TObject);
     procedure btnCancelClick(Sender: TObject);
+    procedure actPayUpExecute(Sender: TObject);
+    procedure actPayUpUpdate(Sender: TObject);
+    procedure actPayDownExecute(Sender: TObject);
+    procedure actPayDownUpdate(Sender: TObject);
   private
     FFrontBase: TFrontBase;
     FPayFormDataSet: TkbmMemTable;
     //
+    FFirstTopButton          : Integer;
     FLastLeftButton          : Integer;
     FLastTopButton           : Integer;
-    FPayFormButtonNumber: Integer;
+    FPayFormButtonNumber     : Integer;
     //
     FButtonList : TObjectList;
     FIsPlCard: Integer;
@@ -40,6 +52,8 @@ type
     procedure AddPayFormButton;
 
     procedure PayFormButtonOnClick(Sender: TObject);
+    procedure ScrollControl(const FControl: TWinControl; const Down: Boolean;
+      var Top: Integer; var Bottom: Integer);
   public
     constructor CreateWithFrontBase(AOwner: TComponent; FBase: TFrontBase);
     //наличные безналичные
@@ -77,9 +91,9 @@ begin
   FButton.SetComponentStyle(tsOffice2007Silver);
 
   //проверяем, есть ли ещё место в ряду
-  if (FLastLeftButton + 145) > pnlMain.Width then
+  if (FLastLeftButton + btnWidth) > pnlMain.Width then
   begin
-    FLastTopButton := FLastTopButton + 51 + 8;
+    FLastTopButton := FLastTopButton + btnHeight + 8;
     FLastLeftButton := 8;
 
     FButton.Left := FLastLeftButton;
@@ -93,7 +107,7 @@ begin
   FButton.Tag := FPayFormDataSet.FieldByName('USR$PAYTYPEKEY').AsInteger;
   FButton.Caption := FPayFormDataSet.FieldByName('USR$NAME').AsString;
 
-  FLastLeftButton := FLastLeftButton + 145 + 10;
+  FLastLeftButton := FLastLeftButton + btnWidth + 10;
 
   FButtonList.Add(FButton);
   Inc(FPayFormButtonNumber);
@@ -116,6 +130,7 @@ begin
   inherited Create(AOwner);
   FFrontBase := FBase;
 
+  FFirstTopButton := 8;
   FLastLeftButton := 8;
   FLastTopButton  := 8;
   FPayFormButtonNumber := 1;
@@ -131,6 +146,9 @@ begin
   FPayFormDataSet.Open;
 
   FButtonList := TObjectList.Create;
+
+  btnScrollUp.Picture := FrontData.RestPictureContainer.FindPicture('Up');
+  btnScrollDown.Picture := FrontData.RestPictureContainer.FindPicture('Down');
 end;
 
 procedure TPayForm.FormShow(Sender: TObject);
@@ -148,6 +166,35 @@ begin
     FIsChecked := False;  
 end;
 
+procedure TPayForm.ScrollControl(const FControl: TWinControl;
+  const Down: Boolean; var Top, Bottom: Integer);
+var
+  Step: Integer;
+begin
+  Step := 0;
+  if Down then
+  begin
+    while (Step < btnHeight + 8) and (Bottom + btnHeight > FControl.Height) do
+    begin
+      FControl.ScrollBy(0, -1);
+
+      Dec(Bottom);
+      Inc(Top);
+      Inc(Step);
+    end;
+  end else
+  begin
+    while (Step < btnHeight + 8) and (Top > 8) do
+    begin
+      FControl.ScrollBy(0, 1);
+
+      Inc(Bottom);
+      Dec(Top);
+      Inc(Step);
+    end;
+  end;
+end;
+
 procedure TPayForm.FormDestroy(Sender: TObject);
 begin
   FButtonList.Free;
@@ -162,6 +209,36 @@ end;
 procedure TPayForm.actOKUpdate(Sender: TObject);
 begin
   actOK.Enabled := FIsChecked;
+end;
+
+procedure TPayForm.actPayDownExecute(Sender: TObject);
+begin
+  LockWindowUpdate(Self.Handle);
+  try
+    ScrollControl(pnlMain, True, FFirstTopButton, FLastTopButton);
+  finally
+    LockWindowUpdate(0);
+  end;
+end;
+
+procedure TPayForm.actPayDownUpdate(Sender: TObject);
+begin
+  actPayDown.Enabled := (FLastTopButton + btnHeight > pnlMain.Height);
+end;
+
+procedure TPayForm.actPayUpExecute(Sender: TObject);
+begin
+  LockWindowUpdate(Self.Handle);
+  try
+    ScrollControl(pnlMain, False, FFirstTopButton, FLastTopButton);
+  finally
+    LockWindowUpdate(0);
+  end;
+end;
+
+procedure TPayForm.actPayUpUpdate(Sender: TObject);
+begin
+  actPayUp.Enabled := (FFirstTopButton > 8);
 end;
 
 procedure TPayForm.btnCancelClick(Sender: TObject);
