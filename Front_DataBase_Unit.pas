@@ -3523,7 +3523,8 @@ begin
       FSQL.SQL.Text := ' UPDATE GD_USER ' +
         ' SET NAME = :NAME, ' +
         '     PASSW = :PASS, ' +
-        '     DISABLED = :DISABLED ' +
+        '     DISABLED = :DISABLED, ' +
+        '     INGROUP = 1 ' +
         ' WHERE ID = :ID ';
       FSQL.ParamByName('NAME').AsString := EmplTable.FieldByName('SURNAME').AsString;
       FSQL.ParamByName('PASS').AsString := EmplTable.FieldByName('PASSW').AsString;
@@ -3535,17 +3536,24 @@ begin
       FSQL.ExecQuery;
       FSQL.Close;
 
+      GroupListTable.First;
       while not GroupListTable.Eof do
       begin
         if GroupListTable.FieldByName('CHECKED').AsInteger = 1 then
         begin
-          FSQL.SQL.Text := Format('UPDATE gd_user SET ingroup=g_b_or(ingroup, %d) WHERE id=%d',
+          FSQL.SQL.Text := Format('UPDATE GD_USER SET INGROUP = G_B_OR(ingroup, %d) WHERE id=%d',
             [GetGroupMask(GroupListTable.FieldByName('ID').AsInteger), UserKey]);
           FSQL.ExecQuery;
           FSQL.Close;
         end;
         GroupListTable.Next;
       end;
+
+      //удаление из группы администраторов
+      FSQL.SQL.Text := Format('UPDATE GD_USER SET INGROUP = G_B_AND(ingroup, %d) WHERE id=%d',
+        [not GetGroupMask(1), UserKey]);
+      FSQL.ExecQuery;
+      FSQL.Close;
 
       Tr.Commit;
       Result := True;
@@ -3952,17 +3960,24 @@ begin
       FSQL.ExecQuery;
       FSQL.Close;
 
+      GroupListTable.First;
       while not GroupListTable.Eof do
       begin
         if GroupListTable.FieldByName('CHECKED').AsInteger = 1 then
         begin
-          FSQL.SQL.Text := Format('UPDATE gd_user SET ingroup=g_b_or(ingroup, %d) WHERE id=%d',
+          FSQL.SQL.Text := Format('UPDATE GD_USER SET INGROUP = G_B_OR(ingroup, %d) WHERE id=%d',
             [GetGroupMask(GroupListTable.FieldByName('ID').AsInteger), UserID]);
           FSQL.ExecQuery;
           FSQL.Close;
         end;
         GroupListTable.Next;
       end;
+
+       //удаление из группы администраторов
+      FSQL.SQL.Text := Format('UPDATE GD_USER SET INGROUP = G_B_AND(ingroup, %d) WHERE id=%d',
+        [not GetGroupMask(1), UserID]);
+      FSQL.ExecQuery;
+      FSQL.Close;
 
       //5.
       FSQL.SQL.Text := 'INSERT INTO gd_usercompany(userkey, companykey) VALUES (' +

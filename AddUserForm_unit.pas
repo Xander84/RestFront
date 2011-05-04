@@ -58,12 +58,30 @@ var
 implementation
 
 uses
-  rfUtils_unit;
+  rfUtils_unit, TouchMessageBoxForm_Unit;
 
 {$R *.dfm}
 
 procedure TAddUserForm.actAddUserExecute(Sender: TObject);
+var
+  FValidGroup: Boolean;
 begin
+  FValidGroup := False;
+  UserGroupTable.First;
+  while not UserGroupTable.Eof do
+  begin
+    if UserGroupTable.FieldByName('CHECKED').AsInteger = 1 then
+    begin
+      FValidGroup := True;
+      Break;
+    end;
+    UserGroupTable.Next
+  end;
+  if not FValidGroup then
+  begin
+    Touch_MessageBox('Внимание', 'Нужно указать группу пользователя', MB_OK, mtWarning);
+    exit;
+  end;
   if not FInsertMode then
   begin
     if FFrontBase.AddUser(MainTable, UserGroupTable) then

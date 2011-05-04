@@ -37,6 +37,16 @@ begin
     FForm.FrontBase := FFrontBase;
     FForm.InsertMode := False;
     FForm.ShowModal;
+    if FForm.ModalResult = mrOk then
+    begin
+      MemTable.DisableControls;
+      try
+        FFrontBase.GetAllUserList(MemTable);
+        MemTable.First;
+      finally
+        MemTable.EnableControls;
+      end;
+    end;
   finally
     FForm.Free;
   end;
