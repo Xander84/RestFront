@@ -57,40 +57,58 @@ object DeleteOrderLine: TDeleteOrderLine
     StatusBar.GradientDirection = gdVertical
     Styler = FrontData.FrontPanelStyler
     FullHeight = 41
-    object Label1: TLabel
-      Left = 15
-      Top = 14
-      Width = 141
-      Height = 31
+    object lblQuantityLabel: TLabel
+      AlignWithMargins = True
+      Left = 8
+      Top = 13
+      Width = 154
+      Height = 44
+      Margins.Left = 8
+      Margins.Top = 13
+      Align = alLeft
       Caption = #1050#1086#1083#1080#1095#1077#1089#1090#1074#1086':'
       Color = 16640730
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -27
-      Font.Name = 'Times New Roman'
+      Font.Name = 'Tahoma'
       Font.Style = []
       ParentColor = False
       ParentFont = False
+      Transparent = True
+      ExplicitLeft = 15
+      ExplicitTop = 14
+      ExplicitHeight = 33
     end
     object lblQuantity: TLabel
-      Left = 167
-      Top = 14
-      Width = 98
-      Height = 31
+      AlignWithMargins = True
+      Left = 168
+      Top = 13
+      Width = 140
+      Height = 44
+      Margins.Top = 13
+      Align = alClient
       Alignment = taCenter
       AutoSize = False
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -27
-      Font.Name = 'Times New Roman'
+      Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
+      Transparent = True
+      ExplicitLeft = 175
+      ExplicitTop = 14
+      ExplicitWidth = 98
+      ExplicitHeight = 31
     end
     object btnAddQuantity: TAdvSmoothButton
-      Left = 296
+      AlignWithMargins = True
+      Left = 314
       Top = 3
       Width = 73
       Height = 54
+      Align = alRight
       Appearance.PictureAlignment = taCenter
       Appearance.Font.Charset = DEFAULT_CHARSET
       Appearance.Font.Color = clWindowText
@@ -117,12 +135,15 @@ object DeleteOrderLine: TDeleteOrderLine
       TabOrder = 0
       Version = '1.6.9.0'
       OnClick = btnAddQuantityClick
+      ExplicitLeft = 296
     end
     object btnRemoveQuantity: TAdvSmoothButton
-      Left = 389
+      AlignWithMargins = True
+      Left = 393
       Top = 3
       Width = 73
       Height = 54
+      Align = alRight
       Appearance.PictureAlignment = taCenter
       Appearance.Font.Charset = DEFAULT_CHARSET
       Appearance.Font.Color = clWindowText
@@ -149,6 +170,7 @@ object DeleteOrderLine: TDeleteOrderLine
       TabOrder = 1
       Version = '1.6.9.0'
       OnClick = btnRemoveQuantityClick
+      ExplicitLeft = 389
     end
   end
   object pnlBottom: TAdvPanel
@@ -189,7 +211,6 @@ object DeleteOrderLine: TDeleteOrderLine
     StatusBar.ColorTo = 16374724
     StatusBar.GradientDirection = gdVertical
     Styler = FrontData.FrontPanelStyler
-    ExplicitTop = 277
     FullHeight = 48
     object btnOK: TAdvSmoothButton
       Left = 8
@@ -297,11 +318,9 @@ object DeleteOrderLine: TDeleteOrderLine
     StatusBar.ColorTo = 16374724
     StatusBar.GradientDirection = gdVertical
     Styler = FrontData.FrontPanelStyler
-    ExplicitTop = 47
-    ExplicitHeight = 225
     FullHeight = 231
   end
-  object ActionList1: TActionList
+  object alMain: TActionList
     Left = 64
     Top = 113
     object actOK: TAction

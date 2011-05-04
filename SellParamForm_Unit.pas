@@ -16,7 +16,7 @@ const
   mn_CashlDBID = 354772515;
   mn_CreditlXID = 147142771;
   mn_CreditDBID = 362821871;
-  mn_personalcardXID = 147733997;
+  mn_personalcardXID = 147733995;
   mn_personalcardDBID = 1604829035;
 
 type
@@ -596,7 +596,6 @@ begin
     else
       edMain.Text := '';
   end;
-  Assert(FCurrentPayType <> -1, 'Invalid RUID');
 end;
 
 procedure TSellParamForm.actCashPayUpdate(Sender: TObject);

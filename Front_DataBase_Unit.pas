@@ -2674,15 +2674,16 @@ begin
       if not FReadSQL.Transaction.InTransaction then
         FReadSQL.Transaction.StartTransaction;
 
-      S := ' SELECT USR$NAME, USR$PAYTYPEKEY, USR$NOFISCAL, ID FROM USR$MN_KINDTYPE ' +
-        ' WHERE USR$PAYTYPEKEY = :paytype ';
+      S := ' SELECT USR$NAME, USR$PAYTYPEKEY, USR$NOFISCAL, ID FROM USR$MN_KINDTYPE ';
       if IsPlCard = 1 then
-        S := S + ' AND USR$ISPLCARD = 1 '
+      begin
+        FReadSQL.SQL.Text := S + ' WHERE USR$ISPLCARD = 1 ';
+      end
       else
-        S := S + ' AND ((USR$ISPLCARD IS NULL) OR (USR$ISPLCARD = 0))';
-
-      FReadSQL.SQL.Text := S;
-      FReadSQL.Params[0].AsInteger := PayType;
+      begin
+        FReadSQL.SQL.Text := S + ' WHERE USR$PAYTYPEKEY = :paytype AND ((USR$ISPLCARD IS NULL) OR (USR$ISPLCARD = 0))';
+        FReadSQL.Params[0].AsInteger := PayType;
+      end;
       FReadSQL.ExecQuery;
       while not FReadSQL.Eof do
       begin
@@ -2719,7 +2720,7 @@ begin
 
       FReadSQL.SQL.Text :=
         'SELECT ' +
-        '  SUM(IIF(K.usr$paytypekey = :creditID and k.usr$isplcard = 1, 1, 0)) AS CARD_COUNT, ' +
+        '  SUM(IIF(/*K.usr$paytypekey = :creditID and*/ k.usr$isplcard = 1, 1, 0)) AS CARD_COUNT, ' +
         '  SUM(IIF(K.usr$paytypekey = :creditID and (COALESCE(usr$isplcard, 0) = 0), 1, 0)) AS CREDIT_COUNT, ' +
         '  SUM(IIF(K.usr$paytypekey = :PCID, 1, 0)) AS PC_COUNT ' +
         'FROM USR$MN_KINDTYPE K ';

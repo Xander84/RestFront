@@ -16,7 +16,7 @@ type
   private
     FTimer: THandle;
     FCriticalSection: TRTLCriticalSection;
-    FWnd, FLabel, FButton: hWnd;
+    FWnd, FLabel: hWnd;
     FCounter: Integer;
 
     procedure CreateWinAPIForm;
@@ -103,8 +103,6 @@ const
   WindowWidth   = 280;
   ButtonWidth   = 84;
   ButtonHeight  = 23;
-var
-  Style: Integer;
 begin
   FWnd := CreateWindowEx(
     0,
@@ -129,22 +127,6 @@ begin
     idLabel,
     hInstance,
     nil);
-
-  {if Assigned(fb_cancel_operation) then
-    Style := 0
-  else
-    Style := WS_DISABLED;   
-
-  FButton := CreateWindow(
-    'button',
-    'Прервать',
-    Style or WS_VISIBLE or WS_CHILD or BS_PUSHBUTTON,
-    (WindowWidth - ButtonWidth) div 2, 30,
-    ButtonWidth, ButtonHeight,
-    FWnd,
-    idButton,
-    hInstance,
-    nil);}
 
   SetTimer(FWnd, idTimer, RefreshRate, nil);
 

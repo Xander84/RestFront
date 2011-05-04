@@ -13,9 +13,9 @@ type
     pnlTop: TAdvPanel;
     pnlBottom: TAdvPanel;
     pnlMain: TAdvPanel;
-    Label1: TLabel;
+    lblQuantityLabel: TLabel;
     lblQuantity: TLabel;
-    ActionList1: TActionList;
+    alMain: TActionList;
     actOK: TAction;
     btnOK: TAdvSmoothButton;
     btnCancel: TAdvSmoothButton;

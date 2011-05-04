@@ -4066,7 +4066,7 @@ var
 
   procedure EditOrderInfo(OrderList: TList<TrfOrder>; Table: TRestTable);
   var
-    Order, OrderInTable: TrfOrder;
+    Order: TrfOrder;
   begin
     // Пройдем по списку заказов
     for Order in OrderList do
