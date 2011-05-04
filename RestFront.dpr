@@ -50,7 +50,9 @@ uses
   ReturneyMoneyForm_Unit in 'ReturneyMoneyForm_Unit.pas' {ReturnMoneyForm},
   ChooseEmplFrom_Unit in 'ChooseEmplFrom_Unit.pas' {ChooseEmpl},
   frmEditUsers_unit in 'forms\frmEditUsers_unit.pas' {EditUsers},
-  rfChooseForm_Unit in 'forms\rfChooseForm_Unit.pas' {ChooseForm};
+  rfChooseForm_Unit in 'forms\rfChooseForm_Unit.pas' {ChooseForm},
+  frmEditMenu_unit in 'forms\frmEditMenu_unit.pas' {EditMenu},
+  frmMenuLine_unit in 'forms\frmMenuLine_unit.pas' {MenuLine};
 
 {$R *.res}
 

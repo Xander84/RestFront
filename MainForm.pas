@@ -14,7 +14,7 @@ uses
   FrontLog_Unit, Grids, Menus, AddUserForm_unit, AdminForm_Unit,
   Buttons, RestTable_Unit, dxfDesigner, GestureMgr, AdvObj, AdvMenus, AdvMenuStylers,
   AdvSmoothToggleButton, pngimage, Generics.Collections, rfTableManager_unit,
-  rfUser_unit;
+  rfUser_unit, jpeg;
 
 const
   btnHeight = 65;
@@ -216,7 +216,6 @@ type
     btnUnblockTable: TAdvSmoothToggleButton;
     grScrollBar: TScrollBar;
     btnPrintBiilsCopy: TAdvSmoothButton;
-    Action1: TAction;
     actSwapTable: TAction;
     btnRealizationReport: TAdvSmoothButton;
     pnlPassword: TGridPanel;
@@ -230,6 +229,8 @@ type
     btnPrecheckOrders: TAdvSmoothToggleButton;
     btnWithOutPrecheckOrders: TAdvSmoothToggleButton;
     btnToggleInternalKeyboard: TAdvSmoothButton;
+    actEditMenu: TAction;
+    btnEditMenu: TAdvSmoothButton;
 
     // Проверка введёного пароля
     procedure actPassEnterExecute(Sender: TObject);
@@ -319,6 +320,8 @@ type
     procedure actUnblockTableUpdate(Sender: TObject);
     procedure btnDeleteTableClick(Sender: TObject);
     procedure btnToggleInternalKeyboardClick(Sender: TObject);
+    procedure actEditMenuExecute(Sender: TObject);
+    procedure actEditMenuUpdate(Sender: TObject);
   private
     // Компонент обращения к БД
     FFrontBase: TFrontBase;
@@ -522,7 +525,7 @@ uses
   GDIPPictureContainer, IB, GDIPFill, CashForm_Unit,
   TouchMessageBoxForm_Unit, Base_FiscalRegister_unit,
   ReturneyMoneyForm_Unit, frmSwapOrder_unit, rfOrder_unit, ChooseEmplFrom_Unit,
-  rfChooseForm_Unit, rfUtils_unit;
+  rfChooseForm_Unit, rfUtils_unit, frmEditMenu_unit;
 
 {$R *.dfm}
 
@@ -4416,6 +4419,30 @@ begin
       Inc(Step);
     end;
   end;
+end;
+
+procedure TRestMainForm.actEditMenuExecute(Sender: TObject);
+var
+  Form: TEditMenu;
+begin
+  SetCloseTimerActive(False);
+  try
+    Form := TEditMenu.Create(nil);
+    try
+      Form.FrontBase := FFrontBase;
+      Form.ShowModal;
+    finally
+      Form.Free;
+    end;
+  finally
+    SetCloseTimerActive(not FFrontBase.Options.NoPassword);
+  end;
+end;
+
+procedure TRestMainForm.actEditMenuUpdate(Sender: TObject);
+begin
+  actEditMenu.Enabled := ((FFrontBase.UserKey and FFrontBase.Options.ManagerGroupMask) <> 0)
+    and (not btnSwapTable.Down);
 end;
 
 procedure TRestMainForm.actExitWindowsExecute(Sender: TObject);

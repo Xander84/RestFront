@@ -224,7 +224,7 @@ object AddUserForm: TAddUserForm
       TabOrder = 4
       OnKeyPress = edConfirmPassKeyPress
     end
-    object DBAdvGrid1: TDBAdvGrid
+    object dbrgMain: TDBAdvGrid
       Left = 200
       Top = 31
       Width = 353

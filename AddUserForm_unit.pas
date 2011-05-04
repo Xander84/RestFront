@@ -30,7 +30,7 @@ type
     edConfirmPass: TEdit;
     alMain: TActionList;
     actAddUser: TAction;
-    DBAdvGrid1: TDBAdvGrid;
+    dbrgMain: TDBAdvGrid;
     UserGroupTable: TkbmMemTable;
     dsUserGroup: TDataSource;
     UserGroupTableID: TIntegerField;
@@ -136,7 +136,7 @@ begin
 
   cbDisabled.Checked := False;
 
-  SetupAdvGrid(DBAdvGrid1);
+  SetupAdvGrid(dbrgMain);
 end;
 
 procedure TAddUserForm.FormShow(Sender: TObject);

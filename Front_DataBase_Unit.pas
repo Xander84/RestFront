@@ -347,6 +347,8 @@ type
     function GetOrdersInfo(const HeaderTable, LineTable: TkbmMemTable; const DateBegin, DateEnd: TDate;
       const WithPreCheck, WithOutPreCheck, Payed, NotPayed: Boolean): Boolean;
     function GetMenuList(const MemTable: TkbmMemTable): Boolean;
+    procedure GetGoodByMenu(const MemTable: TkbmMemTable; const MenuKey: Integer);
+    procedure UpdateMenuStopList(const MemTable: TkbmMemTable; const FChangeList: TList<Integer>);
     function GetGroupList(const MemTable: TkbmMemTable; const MenuKey: Integer): Boolean;
     function GetGoodList(const MemTable: TkbmMemTable; const MenuKey, GroupKey: Integer): Boolean;
     function GetGoodByID(const MemTable: TkbmMemTable; const GoodKey: Integer): Boolean;
@@ -1268,6 +1270,42 @@ begin
   except
     on E: Exception do
       Touch_MessageBox('Внимание', 'Ошибка ' + E.Message, MB_OK, mtError);
+  end;
+end;
+
+procedure TFrontBase.GetGoodByMenu(const MemTable: TkbmMemTable;
+  const MenuKey: Integer);
+begin
+  FReadSQL.Close;
+  MemTable.Close;
+//  MemTable.CreateTable;
+  MemTable.Open;
+  try
+    if not FReadSQL.Transaction.InTransaction then
+      FReadSQL.Transaction.StartTransaction;
+
+    FReadSQL.SQL.Text :=
+      ' SELECT G.NAME, M.USR$COST, DOC.DISABLED, M.DOCUMENTKEY ' +
+      ' FROM USR$MN_MENULINE M ' +
+      ' JOIN GD_DOCUMENT DOC ON DOC.ID = M.DOCUMENTKEY ' +
+      ' JOIN GD_GOOD G ON G.ID = M.USR$GOODKEY ' +
+      ' WHERE M.MASTERKEY = :ID ';
+    FReadSQL.Params[0].AsInteger := MenuKey;
+    FReadSQL.ExecQuery;
+    while not FReadSQL.Eof do
+    begin
+      MemTable.Append;
+      MemTable.FieldByName('ID').AsInteger := FReadSQL.FieldByName('DOCUMENTKEY').AsInteger;
+      MemTable.FieldByName('NAME').AsString := FReadSQL.FieldByName('NAME').AsString;
+      MemTable.FieldByName('COST').AsCurrency := FReadSQL.FieldByName('USR$COST').AsCurrency;
+      MemTable.FieldByName('DISABLED').AsInteger := FReadSQL.FieldByName('DISABLED').AsInteger;
+      MemTable.Post;
+
+      FReadSQL.Next;
+    end;
+    FReadSQL.Close;
+  except
+    raise;
   end;
 end;
 
@@ -2278,9 +2316,7 @@ begin
     if not FReadSQL.Transaction.InTransaction then
       FReadSQL.Transaction.StartTransaction;
 
-    if Options.OrderCurrentLDate then
-      LDate := GetLogicDate;
-
+    LDate := GetLogicDate;
     FReadSQL.SQL.Text :=
       ' select    ' +
       '   distinct  ' +
@@ -2459,27 +2495,27 @@ begin
 end;
 
 function TFrontBase.GetLogicDate: TDateTime;
+var
+  FSQL: TIBSQL;
 begin
   GetLogicDate := Date;
   if not Options.UseCurrentDate then
   begin
-    FReadSQL.Close;
+    FSQL := TIBSQL.Create(nil);
     try
       try
-        if not FReadSQL.Transaction.InTransaction then
-          FReadSQL.Transaction.StartTransaction;
-
-        FReadSQL.SQL.Text :=
+        FSQL.Transaction := ReadTransaction;
+        FSQL.SQL.Text :=
           'select max(op.usr$logicdate) as LDate ' +
           '  from usr$mn_options op ';
-        FReadSQL.ExecQuery;
-        if not FReadSQL.EOF then
-          GetLogicDate := FReadSQL.FieldByName('Ldate').AsDateTime;
+        FSQL.ExecQuery;
+        if not FSQL.EOF then
+          GetLogicDate := FSQL.FieldByName('Ldate').AsDateTime;
       except
         raise;
       end;
     finally
-      FReadSQL.Close;
+      FSQL.Close;
     end;
   end;
 end;
@@ -3455,22 +3491,68 @@ begin
   FSQL := TIBSQL.Create(nil);
   Tr := TIBTransaction.Create(nil);
   try
-    Tr.DefaultDatabase := ReadTransaction.DefaultDatabase;
-    Tr.StartTransaction;
+    try
+      Tr.DefaultDatabase := ReadTransaction.DefaultDatabase;
+      Tr.StartTransaction;
 
-    FSQL.Transaction := Tr;
-    FSQL.SQL.Text := ' UPDATE GD_GOOD G ' +
-      ' SET G.USR$PRNGROUPKEY = :ID ' +
-      ' WHERE G.ID = :GOODKEY ';
-    FSQL.ParamByName('ID').AsInteger := PrnGroupKey;
-    FSQL.ParamByName('GOODKEY').AsInteger := GoodKey;
-    FSQL.ExecQuery;
-    FSQL.Close;
+      FSQL.Transaction := Tr;
+      FSQL.SQL.Text := ' UPDATE GD_GOOD G ' +
+        ' SET G.USR$PRNGROUPKEY = :ID ' +
+        ' WHERE G.ID = :GOODKEY ';
+      FSQL.ParamByName('ID').AsInteger := PrnGroupKey;
+      FSQL.ParamByName('GOODKEY').AsInteger := GoodKey;
+      FSQL.ExecQuery;
+      FSQL.Close;
 
-    Tr.Commit;
+      Tr.Commit;
+    except
+      raise;
+    end;
   finally
     FSQL.Free;
     Tr.Free;
+  end;
+end;
+
+procedure TFrontBase.UpdateMenuStopList(const MemTable: TkbmMemTable;
+  const FChangeList: TList<Integer>);
+var
+  FSQL: TIBSQL;
+  Tr: TIBTransaction;
+  I, ID: Integer;
+begin
+  if FChangeList.Count > 0 then
+  begin
+    FSQL := TIBSQL.Create(nil);
+    Tr := TIBTransaction.Create(nil);
+    try
+      Tr.DefaultDatabase := ReadTransaction.DefaultDatabase;
+      Tr.StartTransaction;
+      try
+        FSQL.Transaction := Tr;
+        FSQL.SQL.Text :=
+          ' UPDATE GD_DOCUMENT ' +
+          ' SET DISABLED = :disabled ' +
+          ' WHERE ID = :id ';
+        for I := 0 to FChangeList.Count - 1 do
+        begin
+          ID := FChangeList.Items[I];
+          if MemTable.Locate('ID', ID, []) then
+          begin
+            FSQL.ParamByName('DISABLED').AsInteger := MemTable.FieldByName('DISABLED').AsInteger;
+            FSQL.ParamByName('ID').AsInteger := ID;
+            FSQL.ExecQuery;
+            FSQL.Close;
+          end;
+        end;
+        Tr.Commit;
+      except
+        raise;
+      end;
+    finally
+      FSQL.Free;
+      Tr.Free;
+    end;
   end;
 end;
 

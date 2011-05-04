@@ -2898,7 +2898,7 @@ object RestMainForm: TRestMainForm
         Top = 1
         Width = 80
         Height = 719
-        ActivePage = tsMainButton
+        ActivePage = tsOrderButton
         ActiveFont.Charset = DEFAULT_CHARSET
         ActiveFont.Color = clWindowText
         ActiveFont.Height = -11
@@ -3685,7 +3685,7 @@ object RestMainForm: TRestMainForm
             Width = 74
             Height = 54
             Margins.Top = 1
-            Margins.Bottom = 50
+            Margins.Bottom = 1
             Action = actKassirInfo
             Align = alTop
             Appearance.PictureAlignment = taCenter
@@ -3714,11 +3714,12 @@ object RestMainForm: TRestMainForm
             ParentFont = False
             TabOrder = 4
             Version = '1.6.9.0'
+            ExplicitTop = 330
           end
           object btnUnblockTable: TAdvSmoothToggleButton
             AlignWithMargins = True
             Left = 3
-            Top = 386
+            Top = 442
             Width = 74
             Height = 54
             Margins.Top = 1
@@ -3752,11 +3753,12 @@ object RestMainForm: TRestMainForm
             Action = actUnblockTable
             Align = alTop
             TabOrder = 5
+            ExplicitTop = 386
           end
           object btnSwapWaiter: TAdvSmoothButton
             AlignWithMargins = True
             Left = 3
-            Top = 330
+            Top = 386
             Width = 74
             Height = 54
             Margins.Top = 1
@@ -3789,11 +3791,12 @@ object RestMainForm: TRestMainForm
             ParentFont = False
             TabOrder = 6
             Version = '1.6.9.0'
+            ExplicitTop = 330
           end
           object btnSwapTable: TAdvSmoothToggleButton
             AlignWithMargins = True
             Left = 3
-            Top = 274
+            Top = 330
             Width = 74
             Height = 54
             Margins.Top = 1
@@ -3827,6 +3830,45 @@ object RestMainForm: TRestMainForm
             Action = actSwapTable
             Align = alTop
             TabOrder = 7
+            ExplicitTop = 274
+          end
+          object btnEditMenu: TAdvSmoothButton
+            AlignWithMargins = True
+            Left = 3
+            Top = 225
+            Width = 74
+            Height = 54
+            Margins.Top = 1
+            Margins.Bottom = 50
+            Action = actEditMenu
+            Align = alTop
+            Appearance.PictureAlignment = taCenter
+            Appearance.Font.Charset = DEFAULT_CHARSET
+            Appearance.Font.Color = clWindowText
+            Appearance.Font.Height = -9
+            Appearance.Font.Name = 'Tahoma'
+            Appearance.Font.Style = [fsBold]
+            Appearance.Layout = blPictureTop
+            Status.Caption = '0'
+            Status.Appearance.Fill.Color = clRed
+            Status.Appearance.Fill.ColorMirror = clNone
+            Status.Appearance.Fill.ColorMirrorTo = clNone
+            Status.Appearance.Fill.GradientType = gtSolid
+            Status.Appearance.Fill.BorderColor = clGray
+            Status.Appearance.Fill.Rounding = 0
+            Status.Appearance.Fill.ShadowOffset = 0
+            Status.Appearance.Font.Charset = DEFAULT_CHARSET
+            Status.Appearance.Font.Color = clWhite
+            Status.Appearance.Font.Height = -11
+            Status.Appearance.Font.Name = 'Tahoma'
+            Status.Appearance.Font.Style = []
+            Bevel = False
+            Color = 15195349
+            DisabledColor = clBlack
+            ParentFont = False
+            TabOrder = 8
+            Version = '1.6.9.0'
+            ExplicitTop = 274
           end
         end
         object tsManagerInfoButton: TAdvTabSheet
@@ -4670,9 +4712,6 @@ object RestMainForm: TRestMainForm
       OnExecute = actSwapWaiterExecute
       OnUpdate = actSwapWaiterUpdate
     end
-    object Action1: TAction
-      Caption = 'Action1'
-    end
     object actSwapTable: TAction
       Category = 'Hall'
       Caption = #1057#1084#1077#1085#1072' '#1089#1090#1086#1083#1072
@@ -4683,6 +4722,13 @@ object RestMainForm: TRestMainForm
       Category = 'Hall'
       Caption = #1056#1072#1079#1073#1083#1086#1082#1080#1088#1086#1074'. '#1089#1090#1086#1083
       OnUpdate = actUnblockTableUpdate
+    end
+    object actEditMenu: TAction
+      Category = 'menu'
+      Caption = #1052#1077#1085#1102
+      Hint = #1052#1077#1085#1102
+      OnExecute = actEditMenuExecute
+      OnUpdate = actEditMenuUpdate
     end
   end
   object dsMain: TDataSource
