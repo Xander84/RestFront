@@ -112,6 +112,7 @@ begin
   FrxRTFExport  := TfrxRTFExport.Create(Self);
   FrxSimpleTextExport := TfrxSimpleTextExport.Create(Self);
   FrxDMPExport  := TfrxDotMatrixExport.Create(Self);
+  ShowProgress := False;
 end;
 
 destructor Tgs_fr4Report.Destroy;
