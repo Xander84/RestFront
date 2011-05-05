@@ -49,6 +49,11 @@ implementation
 
 uses SysUtils, Controls, TouchMessageBoxForm_Unit;
 
+const
+  Spark_Cash   = 8;  // Наличные
+  Spark_NoCash = 7;  // Безнал
+  Spark_Credit = 1;  // Карты
+
  { TSpark617Register }
 
 function TSpark617Register.CheckDeviceInfo: Boolean;
@@ -197,15 +202,15 @@ begin
       // Spark_NoCash = 7;  Безнал
       // Spark_Credit = 1;  Карты
 
-      Res := SetPaymentMean(FrontBase.Options.SparkCredit, 'Пласт. карта', 0, 0, 1, 1);
+      Res := SetPaymentMean(Spark_Credit, 'Пласт. карта', 0, 0, 1, 1);
 //      Res := SetPaymentMean(Spark_Credit, 'Пласт. карта', 0, 1, 1, 1);
       ErrMessage(Res);
 
-      Res := SetPaymentMean(FrontBase.Options.SparkNoCash, 'Безналичные', 0, 0, 1, 0);
+      Res := SetPaymentMean(Spark_NoCash, 'Безналичные', 0, 0, 1, 0);
 //      Res := SetPaymentMean(Spark_NoCash, 'Безналичные', 0, 1, 1, 1);
       ErrMessage(Res);
 
-      Res := SetPaymentMean(FrontBase.Options.SparkCash, 'Наличные', 0, 1, 1, 1);
+      Res := SetPaymentMean(Spark_Cash, 'Наличные', 0, 1, 1, 1);
 //      Res := SetPaymentMean(Spark_Cash, 'Наличные', 0, 1, 1, 1);
       ErrMessage(Res);
       //открытие сессии
@@ -257,14 +262,11 @@ procedure TSpark617Register.ErrMessage(Err: Integer);
 var
   ErrStr: String;
 begin
-  if (Err <> 0) and (FLastErr <> Err) then
+  if Err <> 0 then
   begin
-    // Delphi2009+ само сделает преобразование
-    // ErrStr := WideCharToString(PWideChar(GetErrorComment(Err)));
-    ErrStr := GetErrorComment(Err);
+    ErrStr := WideCharToString(PWideChar(GetErrorComment(Err)));
     Touch_MessageBox('Внимание', ErrStr, MB_OK or MB_ICONEXCLAMATION);
   end;
-  FLastErr := Err;
 end;
 
 function TSpark617Register.GetDocumentNumber: Integer;
@@ -277,7 +279,6 @@ end;
 function TSpark617Register.Init: Boolean;
 begin
   Result := False;
-  FLastErr := 0;
   if FDriverInit then
   begin
     if IsInit then
@@ -413,7 +414,7 @@ begin
       // кредитная карта
       if FSums.FCardSum > 0 then
       begin
-        Res := Tender2(FSums.FCardSum, FrontBase.Options.SparkCredit, '', '');
+        Res := Tender2(FSums.FCardSum, Spark_Credit, '', '');
         if res <> 0 then
         begin
           ErrMessage(Res);
@@ -425,7 +426,7 @@ begin
       // Безнал
       if (FSums.FCreditSum + FSums.FPersonalCardSum) > 0 then
       begin
-        Res := Tender2(FSums.FCreditSum + FSums.FPersonalCardSum, FrontBase.Options.SparkNoCash, '', '');
+        Res := Tender2(FSums.FCreditSum + FSums.FPersonalCardSum, Spark_NoCash, '', '');
         if res <> 0 then
         begin
           ErrMessage(Res);
@@ -440,7 +441,7 @@ begin
         // наличные
         if FSums.FCashSum > 0 then
         begin
-          Res := Tender2(FSums.FCashSum, FrontBase.Options.SparkCash, '', '');
+          Res := Tender2(FSums.FCashSum, Spark_Cash, '', '');
           if res <> 0 then
           begin
             ErrMessage(Res);
@@ -564,7 +565,7 @@ begin
       // кредитная карта
       if FSums.FCardSum > 0 then
       begin
-        Res := Tender2(FSums.FCardSum, FrontBase.Options.SparkCredit, '', '');
+        Res := Tender2(FSums.FCardSum, Spark_Credit, '', '');
         if res <> 0 then
         begin
           ErrMessage(Res);
@@ -576,7 +577,7 @@ begin
       // Безнал
       if (FSums.FCreditSum + FSums.FPersonalCardSum) > 0 then
       begin
-        Res := Tender2(FSums.FCreditSum + FSums.FPersonalCardSum, FrontBase.Options.SparkNoCash, '', '');
+        Res := Tender2(FSums.FCreditSum + FSums.FPersonalCardSum, Spark_NoCash, '', '');
         if res <> 0 then
         begin
           ErrMessage(Res);
@@ -591,7 +592,7 @@ begin
         // наличные
         if FSums.FCashSum > 0 then
         begin
-          Res := Tender2(FSums.FCashSum, FrontBase.Options.SparkCash, '', '');
+          Res := Tender2(FSums.FCashSum, Spark_Cash, '', '');
           if res <> 0 then
           begin
             ErrMessage(Res);
@@ -709,7 +710,15 @@ begin
   Res := InitDevice;
   if Res <> 0 then
   begin
-    ErrMessage(Res);
+    if (Res = 20) and (FLastErr = 20) then
+      //Требуется снятие Z1-отчета (принтер заблокирован)
+    else
+      ErrMessage(Res);
+
+    if Res = 20 then
+      FLastErr := 20
+    else
+      FLastErr := 0;
     exit;
   end;
   FLastErr := 0;
