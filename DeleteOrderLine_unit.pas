@@ -208,7 +208,7 @@ end;
 
 procedure TDeleteOrderLine.actOKUpdate(Sender: TObject);
 begin
-  actOK.Enabled := (DeleteClauseID <> -1);
+  actOK.Enabled := (DeleteClauseID <> -1) and (StrToCurr(lblQuantity.Caption) <> 0);
 end;
 
 procedure TDeleteOrderLine.btnCancelClick(Sender: TObject);

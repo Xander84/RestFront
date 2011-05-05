@@ -76,8 +76,6 @@ object DeleteOrderLine: TDeleteOrderLine
       ParentColor = False
       ParentFont = False
       Transparent = True
-      ExplicitLeft = 15
-      ExplicitTop = 14
       ExplicitHeight = 33
     end
     object lblQuantity: TLabel
@@ -135,7 +133,6 @@ object DeleteOrderLine: TDeleteOrderLine
       TabOrder = 0
       Version = '1.6.9.0'
       OnClick = btnAddQuantityClick
-      ExplicitLeft = 296
     end
     object btnRemoveQuantity: TAdvSmoothButton
       AlignWithMargins = True
@@ -170,7 +167,6 @@ object DeleteOrderLine: TDeleteOrderLine
       TabOrder = 1
       Version = '1.6.9.0'
       OnClick = btnRemoveQuantityClick
-      ExplicitLeft = 389
     end
   end
   object pnlBottom: TAdvPanel
