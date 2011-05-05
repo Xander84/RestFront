@@ -1101,14 +1101,33 @@ begin
 end;
 
 procedure TFrontBase.DeleteOrder(const ID: Integer);
+var
+  IsDelete: Boolean;
 begin
   FCheckSQL.Close;
   try
     if not FCheckSQL.Transaction.InTransaction then
       FCheckSQL.Transaction.StartTransaction;
 
-    FCheckSQL.SQL.Text := 'DELETE FROM GD_DOCUMENT DOC ' +
-      'WHERE DOC.ID = :ID ';
+    //Проверяем, вдруг у нас есть только записи об удалении
+    FCheckSQL.SQL.Text :=
+      ' SELECT FIRST(1) L.DOCUMENTKEY ' +
+      ' FROM USR$MN_ORDERLINE L ' +
+      ' WHERE L.USR$CAUSEDELETEKEY IS NOT NULL ' +
+      '   AND L.MASTERKEY = :ID ';
+    FCheckSQL.Params[0].AsInteger := ID;
+    FCheckSQL.ExecQuery;
+
+    IsDelete := FCheckSQL.Eof;
+    FCheckSQL.Close;
+    if not IsDelete then
+      FCheckSQL.SQL.Text :=
+        ' UPDATE USR$MN_ORDER R ' +
+        ' SET R.USR$PAY = 1 ' +
+        ' WHERE R.DOCUMENTKEY = :ID '
+    else
+      FCheckSQL.SQL.Text := 'DELETE FROM GD_DOCUMENT DOC ' +
+        'WHERE DOC.ID = :ID ';
     FCheckSQL.Params[0].AsInteger := ID;
     FCheckSQL.ExecQuery;
 
