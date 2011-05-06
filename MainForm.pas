@@ -714,7 +714,10 @@ begin
   // Поместим в заголовок окна и наименование приложения наименование организации
   Self.Caption := Format('%s - %s', [Self.Caption, FFrontBase.CompanyName]);
   Application.Title := Self.Caption;
-  Application.OnMessage := AppMessage;
+
+// В дезайнере столов также используется перехват сообщений
+// подумать над вопросом.
+//  Application.OnMessage := AppMessage;
 end;
 
 procedure TRestMainForm.FormDestroy(Sender: TObject);
