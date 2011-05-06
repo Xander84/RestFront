@@ -331,10 +331,12 @@ var
   Quantity, Price, SumDiscount: Currency;
   QuantityStr: String;
   PriceStr: String;
+  DoLog: Boolean;
 begin
   Result := False;
   Assert(Assigned(FFrontBase), 'FrontBase not Assigned');
 
+  DoLog := FFrontBase.DoFiscalLog;
   if FDriverInit then
   begin
     if Init then
@@ -356,6 +358,14 @@ begin
       ErrMessage(Res);
 
       Res := StartDocument(1, 1, StrToInt(DocNumber), FFrontBase.UserName);
+      if DoLog then
+      begin
+        WriteLogToFile('Старт чека номер ' + DocNumber, FFrontBase.UserName);
+        WriteLogToFile('Переменные: наличными ' + CurrToStr(FSums.FCashSum) +
+          ' безнал ' + CurrToStr(FSums.FCreditSum) +
+          ' кр.карта ' + CurrToStr(FSums.FCardSum) +
+          ' перс.карта ' + CurrToStr(FSums.FPersonalCardSum), FFrontBase.UserName);
+      end;
       if Res <> 0 then
       begin
         ErrMessage(Res);
@@ -390,6 +400,9 @@ begin
         if Quantity >= 0 then
         begin
           Res := Item(Round(Quantity), Round(Price), GoodName, 0);
+          if DoLog then
+            WriteLogToFile('Добавление товара ' + GoodName + ' кол-во ' +
+              CurrToStr(Quantity) + ' цена ' + CurrToStr(Price), FFrontBase.UserName);
           if Res <> 0 then
           begin
             ErrMessage(Res);
@@ -398,15 +411,19 @@ begin
           end;
         end;
 
-        if (SumDiscount > 0)  then
+        if (SumDiscount > 0) then
+        begin
+          Res := AbsoluteCorrectionText(-Round(SumDiscount), '');
+          if DoLog then
+            WriteLogToFile('Корректировка суммы ' + CurrToStr(-Round(SumDiscount)), FFrontBase.UserName);
+          if Res <> 0 then
           begin
-            Res := AbsoluteCorrectionText(-Round(SumDiscount), '');
-            if Res <> 0 then
-            begin
-              ErrMessage(Res);
-              CancelDocument;
-              exit;
-            end;
+            ErrMessage(Res);
+            CancelDocument;
+            if DoLog then
+              WriteLogToFile('Отмена документа строка 411', FFrontBase.UserName);
+            exit;
+          end;
         end;
         DocLine.Next;
       end;
@@ -415,10 +432,15 @@ begin
       if FSums.FCardSum > 0 then
       begin
         Res := Tender2(FSums.FCardSum, Spark_Credit, '', '');
-        if res <> 0 then
+        if DoLog then
+          WriteLogToFile('Сумма по кредитной карте ' + CurrToStr(FSums.FCardSum) +
+            ' счетчик ' + IntToStr(Spark_Credit), FFrontBase.UserName);
+        if Res <> 0 then
         begin
           ErrMessage(Res);
           Res := CancelDocument;
+          if DoLog then
+            WriteLogToFile('Отмена документа строка 428', FFrontBase.UserName);
           if Res = 0 then
             exit;
         end;
@@ -427,10 +449,15 @@ begin
       if (FSums.FCreditSum + FSums.FPersonalCardSum) > 0 then
       begin
         Res := Tender2(FSums.FCreditSum + FSums.FPersonalCardSum, Spark_NoCash, '', '');
-        if res <> 0 then
+        if DoLog then
+          WriteLogToFile('Сумма по безналу ' + CurrToStr(FSums.FCreditSum + FSums.FPersonalCardSum) +
+            ' счетчик ' + IntToStr(Spark_NoCash), FFrontBase.UserName);
+        if Res <> 0 then
         begin
           ErrMessage(Res);
           Res := CancelDocument;
+          if DoLog then
+            WriteLogToFile('Отмена документа строка 443', FFrontBase.UserName);
           if Res = 0 then
             exit;
         end;
@@ -442,35 +469,48 @@ begin
         if FSums.FCashSum > 0 then
         begin
           Res := Tender2(FSums.FCashSum, Spark_Cash, '', '');
-          if res <> 0 then
+          if DoLog then
+            WriteLogToFile('Сумма наличными ' + CurrToStr(FSums.FCashSum) +
+              ' счетчик ' + IntToStr(Spark_Cash), FFrontBase.UserName);
+          if Res <> 0 then
           begin
             ErrMessage(Res);
             Res := CancelDocument;
+            if DoLog then
+              WriteLogToFile('Отмена документа строка 461', FFrontBase.UserName);
             if Res = 0 then
               exit;
           end;
         end;
 
         Res := EndDocument;
-        if Res = 0 then
-        begin
-          Res := GetDeviceInfo(102);
-          if Res <> 0 then
-          begin
-            StartDocument(1, 1, StrToInt(DocNumber), FFrontBase.UserName);
-            Res := CancelDocument;
-          end
-        end;
+        if DoLog then
+          WriteLogToFile('Закрытие фискального документа', FFrontBase.UserName);
+//        if Res = 0 then
+//        begin
+//          Res := GetDeviceInfo(102);
+//          if Res <> 0 then
+//          begin
+//            WriteLogToFile('Документ остался открытым! Строка 472, код ' + IntToStr(Res), FFrontBase.UserName);
+//            StartDocument(1, 1, StrToInt(DocNumber), FFrontBase.UserName);
+//            Res := CancelDocument;
+//            WriteLogToFile('Создание чека отмены ', FFrontBase.UserName);
+//          end
+//        end;
       end;
       if Res = 0 then
         Result := True
       else begin
         ErrMessage(Res);
         Res := GetDeviceInfo(102);
+        if DoLog then
+          WriteLogToFile('Документ остался открытым! Строка 486, код ' + IntToStr(Res), FFrontBase.UserName);
         if Res = 0 then
           Result := True
         else begin
           Res := EndDocument;
+          if DoLog then
+            WriteLogToFile('Закрытие фискального документа, строка 491', FFrontBase.UserName);
           if Res <> 0 then
           begin
             ErrMessage(Res);
@@ -479,18 +519,26 @@ begin
 
           if Res <> 0 then
           begin
+            if DoLog then
+              WriteLogToFile('Документ остался открытым! Строка 496, код ' + IntToStr(Res), FFrontBase.UserName);
             ErrMessage(Res);
             Res := EndDocument;
+            if DoLog then
+              WriteLogToFile('Закрытие фискального документа, строка 503', FFrontBase.UserName);
             if Res = 0 then
               Result := True
             else begin
-               Res := GetDeviceInfo(102);
-               if Res <> 0 then
-               begin
-                 CancelDocument;
-                 Result := False;
-               end else
-                 Result := True;
+              Res := GetDeviceInfo(102);
+              if Res <> 0 then
+              begin
+                if DoLog then
+                  WriteLogToFile('Документ остался открытым! Строка 508, код ' + IntToStr(Res), FFrontBase.UserName);
+                CancelDocument;
+                if DoLog then
+                  WriteLogToFile('Создание чека отмены, строка 512 ', FFrontBase.UserName);
+                Result := False;
+              end else
+                Result := True;
             end;
           end;
         end;

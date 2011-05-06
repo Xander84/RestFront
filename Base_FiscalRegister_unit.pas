@@ -1,8 +1,8 @@
-unit Base_FiscalRegister_unit;
+п»їunit Base_FiscalRegister_unit;
 
 {
-  базовый интерфейс, который реальзует ф-ционал абстрактного
-  фискального регистратора
+  Р±Р°Р·РѕРІС‹Р№ РёРЅС‚РµСЂС„РµР№СЃ, РєРѕС‚РѕСЂС‹Р№ СЂРµР°Р»СЊР·СѓРµС‚ С„-С†РёРѕРЅР°Р» Р°Р±СЃС‚СЂР°РєС‚РЅРѕРіРѕ
+  С„РёСЃРєР°Р»СЊРЅРѕРіРѕ СЂРµРіРёСЃС‚СЂР°С‚РѕСЂР°
 }
 
 interface
@@ -11,66 +11,124 @@ uses
   Classes, Windows, kbmMemTable, DB, Front_DataBase_Unit;
 
 const
-  // тип оплаты
-  // 0 нал
-  // 1 карта
-  // 2 безнал
+  // С‚РёРї РѕРїР»Р°С‚С‹
+  // 0 РЅР°Р»
+  // 1 РєР°СЂС‚Р°
+  // 2 Р±РµР·РЅР°Р»
   cn_paytype_cash = 0;
   cn_paytype_credit = 1;
   cn_paytype_noncash = 2;
   cn_paytype_personalcard = 3;
 
 type
-  // структура оплаты
+  // СЃС‚СЂСѓРєС‚СѓСЂР° РѕРїР»Р°С‚С‹
   TSaleSums = packed record
-    // сумма наличных
+    // СЃСѓРјРјР° РЅР°Р»РёС‡РЅС‹С…
     FCashSum: Currency;
-    // сумма по карточке
+    // СЃСѓРјРјР° РїРѕ РєР°СЂС‚РѕС‡РєРµ
     FCardSum: Currency;
-    // сумма по безналу
+    // СЃСѓРјРјР° РїРѕ Р±РµР·РЅР°Р»Сѓ
     FCreditSum: Currency;
-    // сумма сдачи
+    // СЃСѓРјРјР° СЃРґР°С‡Рё
     FChangeSum: Currency;
-    // по личной карточке
+    // РїРѕ Р»РёС‡РЅРѕР№ РєР°СЂС‚РѕС‡РєРµ
     FPersonalCardSum: Currency;
+  end;
+
+  // СЃС‚СЂСѓРєС‚СѓСЂР° СЂРµРіРёСЃС‚СЂРѕРІ РЅР°РєРѕРїР»РµРЅРёСЏ Р¤Р 
+  TRegisterStucture = record
+    //РґРµРЅРµР¶РЅС‹Рµ СЃСЂРµРґСЃС‚РІР° РЅР° СЃС‡РµС‚С‡РёРєР°С…
+    Summ1: Currency;
+    Summ2: Currency;
+    Summ3: Currency;
+    Summ4: Currency;
+    Summ5: Currency;
+    Summ6: Currency;
+    Summ7: Currency;
+    Summ8: Currency;
+    //РЅРѕРјРµСЂ РїРѕСЃР»РµРґРЅРµРіРѕ Z РѕС‚С‡РµС‚Р°
+    LastNumber: Integer;
+    //РёС‚РѕРі РїСЂРѕРґР°Р¶
+    TotalSumm: Currency;
+    //РєРѕР»-РІРѕ РІРѕР·РІСЂР°С‚РѕРІ
+    ReturnCount: Integer;
+    //СЃСѓРјРјР° РІРѕР·РІСЂР°С‚РѕРІ
+    ReturnSumm: Currency;
+    //РєРѕР»-РІРѕ Р°РЅРЅСѓР»РёСЂРѕРІР°РЅРёР№
+    CancelCount: Integer;
+    //СЃСѓРјРјР° Р°РЅРЅСѓР»РёСЂРѕРІР°РЅРёР№
+    CancelSumm: Currency;
+    //РєРѕР»-РІРѕ РЅР°С†РµРЅРѕРє
+    IncreaseCount: Integer;
+    //СЃСѓРјРјР° РЅР°С†РµРЅРѕРє
+    IncreaseSumm: Currency;
+    //РєРѕР»-РІРѕ СЃРєРёРґРѕРє
+    DiscountCount: Integer;
+    //СЃСѓРјРјР° СЃРєРёРґРѕРє
+    DiscountSumm: Currency;
+    //РєРѕР»-РІРѕ РІРЅРµСЃРµРЅРёР№
+    PayInCount: Integer;
+    //СЃСѓРјРјР° РІРЅРµСЃРµРЅРёР№
+    PayInSumm: Currency;
+    //РєРѕР»-РІРѕ РІС‹РїР»Р°С‚
+    PayOutCount: Integer;
+    //СЃСѓРјРјР° РІС‹РїР»Р°С‚
+    PayOutSumm: Currency;
+    //cСѓРјРјР° РЅР°Р»РѕРіРѕРІ РїРѕ СЃС‚Р°РІРєР°Рј
+    TaxSum1: Currency;
+    TaxSum2: Currency;
+    TaxSum3: Currency;
+    TaxSum4: Currency;
+    //РєРѕР»-РІРѕ РѕС‚РјРµРЅ С‡РµРєР°
+    CancelCheckCount: Integer;
+    //СЃСѓРјРјР° РѕС‚РјРµРЅ С‡РµРєР°
+    CancelCheckSumm: Currency;
+    //РєРѕР»-РІРѕ Р°РІР°СЂРёР№РЅС‹С… РѕС‚РјРµРЅ С‡РµРєР°
+    AlarmCancelCount: Integer;
+    //СЃСѓРјРјР° Р°РІР°СЂРёР№РЅС‹С… РѕС‚РјРµРЅ С‡РµРєР°
+    AlarmCancelSumm: Currency;
+
+
+
+
   end;
 
   IBaseFiscalRegister = interface
   ['{308C2D25-B5F7-4801-B8E4-F09E92B7AFBA}']
-    // Проверка устройства
+    // РџСЂРѕРІРµСЂРєР° СѓСЃС‚СЂРѕР№СЃС‚РІР°
     function CheckDeviceInfo: Boolean;
-    // Инициализация
+    // РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ
     function Init: Boolean;
-    // Печать чека
+    // РџРµС‡Р°С‚СЊ С‡РµРєР°
     function PrintCheck(const Doc, DocLine, PayLine: TkbmMemTable; const FSums: TSaleSums): Boolean;
-    //Выплата за возвращенный товар. Печатается чек возврата с указанием суммы и вида оплаты.
-    //Никакой информации о возвращенном товаре чек не содержит.
+    //Р’С‹РїР»Р°С‚Р° Р·Р° РІРѕР·РІСЂР°С‰РµРЅРЅС‹Р№ С‚РѕРІР°СЂ. РџРµС‡Р°С‚Р°РµС‚СЃСЏ С‡РµРє РІРѕР·РІСЂР°С‚Р° СЃ СѓРєР°Р·Р°РЅРёРµРј СЃСѓРјРјС‹ Рё РІРёРґР° РѕРїР»Р°С‚С‹.
+    //РќРёРєР°РєРѕР№ РёРЅС„РѕСЂРјР°С†РёРё Рѕ РІРѕР·РІСЂР°С‰РµРЅРЅРѕРј С‚РѕРІР°СЂРµ С‡РµРє РЅРµ СЃРѕРґРµСЂР¶РёС‚.
     function ReturnGoodMoney(const FSums: TSaleSums): Boolean;
-    // Установка рабочей базы
+    // РЈСЃС‚Р°РЅРѕРІРєР° СЂР°Р±РѕС‡РµР№ Р±Р°Р·С‹
     procedure SetFrontBase(const Value: TFrontBase);
     function GetFrontBase: TFrontBase;
     property FrontBase: TFrontBase read GetFrontBase write SetFrontBase;
 
-    //отчет Z1 с гашением
+    //РѕС‚С‡РµС‚ Z1 СЃ РіР°С€РµРЅРёРµРј
     function PrintZ1ReportWithCleaning: Boolean;
-    //отчет Z2 с гашением
+    //РѕС‚С‡РµС‚ Z2 СЃ РіР°С€РµРЅРёРµРј
  //   function PrintZ2ReportWithCleaning: Boolean;
-    //отчет X1 без гашения
+    //РѕС‚С‡РµС‚ X1 Р±РµР· РіР°С€РµРЅРёСЏ
     function PrintX1ReportWithOutCleaning: Boolean;
-    //отчет X2 без гашения
+    //РѕС‚С‡РµС‚ X2 Р±РµР· РіР°С€РµРЅРёСЏ
  //   function PrintX2ReportWithOutCleaning: Boolean;
-    // открытие денежного ящика    
+    // РѕС‚РєСЂС‹С‚РёРµ РґРµРЅРµР¶РЅРѕРіРѕ СЏС‰РёРєР°    
     procedure OpenDrawer;
-    // закрытие сессии (печать Z отчета)
+    // Р·Р°РєСЂС‹С‚РёРµ СЃРµСЃСЃРёРё (РїРµС‡Р°С‚СЊ Z РѕС‚С‡РµС‚Р°)
     procedure EndSession;
-    // открыте смены
+    // РѕС‚РєСЂС‹С‚Рµ СЃРјРµРЅС‹
     function OpenDay: Boolean;
-    //деньги в кассу
+    //РґРµРЅСЊРіРё РІ РєР°СЃСЃСѓ
     procedure MoneyIn(const Sum: Currency);
-    //деньги из кассы
+    //РґРµРЅСЊРіРё РёР· РєР°СЃСЃС‹
     procedure MoneyOut(const Sum: Currency);
     function GetDocumentNumber: Integer;
-    //возврат ошибки
+    //РІРѕР·РІСЂР°С‚ РѕС€РёР±РєРё
 //    procedure ErrMessage(Err: Integer);
 
     function Get_Self: Integer;
@@ -112,10 +170,41 @@ type
   procedure SavePayment(const ContactKey, DocID: Integer; const PayLine: TkbmMemTable;
     const FrontBase: TFrontBase; const FSums: TSaleSums);
 
+  procedure WriteLogToFile(const Str, UserName: String);
+
 implementation
 
 uses
-  SysUtils;
+  SysUtils, Forms;
+
+
+procedure WriteLogToFile(const Str, UserName: String);
+const
+  LogFileName = 'FiscalLog.txt';
+
+var
+  LStrings: TStrings;
+  FullFileName: String;
+begin
+  try
+    LStrings := TStringList.Create;
+    try
+      FullFileName := ExtractFileDir(Application.ExeName)+ '\' + LogFileName;
+      if FileExists(FullFileName) then
+        LStrings.LoadFromFile(FullFileName);
+      LStrings.Add('----------------'#13#10 + DateTimeToStr(Now) + #13#10 +
+        'РџРѕР»СЊР·РѕРІР°С‚РµР»СЊ: ' + UserName + #13#10 + Str);
+      try
+        LStrings.SaveToFile(FullFileName);
+      except
+      end;
+    finally
+      LStrings.Free;
+    end;
+  except
+
+  end;
+end;
 
 procedure SavePayment(const ContactKey, DocID: Integer; const PayLine: TkbmMemTable;
   const FrontBase: TFrontBase; const FSums: TSaleSums);
@@ -224,7 +313,7 @@ begin
   except
     on E: Exception do
     begin
-      raise Exception.Create('Ошибка при сохранении чека ' + E.Message);
+      raise Exception.Create('РћС€РёР±РєР° РїСЂРё СЃРѕС…СЂР°РЅРµРЅРёРё С‡РµРєР° ' + E.Message);
       Result := False;
     end;
   end;

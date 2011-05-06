@@ -296,6 +296,7 @@ type
     FFiscalComPort: Integer;
     FCashNumber: Integer;
     FIsMainCash: Boolean;
+    FFiscalLog: Boolean;
 
     FOrderTypeKey: Integer;
     FCompanyKey: Integer;
@@ -466,6 +467,7 @@ type
     property CompanyKey: Integer read FCompanyKey;
     property CompanyName: String read FCompanyName;
     property ReadTransaction: TIBTransaction read GetReadTransaction;
+    property DoFiscalLog: Boolean read FFiscalLog;
   end;
 
   procedure GetHeaderTable(var DS: TkbmMemTable);
@@ -2406,6 +2408,7 @@ procedure TFrontBase.InitDB;
 var
   I: Integer;
 begin
+  FFiscalLog := False;
   for I := 0 to ParamCount - 1 do
   begin
     if UpperCase(ParamStr(I)) = '/SN' then
@@ -2414,6 +2417,8 @@ begin
       FIBName := ParamStr(I + 1)
     else if UpperCase(ParamStr(I)) = '/PASSWORD' then
       FIBPassword := ParamStr(I + 1)
+    else if UpperCase(ParamStr(I)) = '/FL' then
+      FFiscalLog := True;
   end;
 
   try
