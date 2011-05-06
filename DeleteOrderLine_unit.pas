@@ -6,21 +6,23 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, kbmMemTable, DB, Front_DataBase_Unit, Contnrs, StdCtrls,
   ExtCtrls, ActnList, FrontData_Unit, AdvSmoothButton, AdvPanel,
-  AdvSmoothToggleButton, AdvStyleIF, BaseFrontForm_Unit;
+  AdvSmoothToggleButton, AdvStyleIF, BaseFrontForm_Unit, AdvSmoothTouchKeyBoard;
 
 type
   TDeleteOrderLine = class(TBaseFrontForm)
-    pnlTop: TAdvPanel;
-    pnlBottom: TAdvPanel;
-    pnlMain: TAdvPanel;
-    lblQuantityLabel: TLabel;
-    lblQuantity: TLabel;
     alMain: TActionList;
     actOK: TAction;
-    btnOK: TAdvSmoothButton;
-    btnCancel: TAdvSmoothButton;
+    Panel1: TPanel;
+    pnlTop: TAdvPanel;
+    lblQuantityLabel: TLabel;
+    lblQuantity: TLabel;
     btnAddQuantity: TAdvSmoothButton;
     btnRemoveQuantity: TAdvSmoothButton;
+    pnlBottom: TAdvPanel;
+    btnOK: TAdvSmoothButton;
+    btnCancel: TAdvSmoothButton;
+    pnlMain: TAdvPanel;
+    TouchKeyBoard: TAdvSmoothTouchKeyBoard;
     procedure FormCreate(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure btnAddQuantityClick(Sender: TObject);
@@ -28,19 +30,19 @@ type
     procedure actOKExecute(Sender: TObject);
     procedure actOKUpdate(Sender: TObject);
     procedure btnCancelClick(Sender: TObject);
+    procedure TouchKeyBoardKeyClick(Sender: TObject; Index: Integer);
   private
     DeleteCauseList: TkbmMemTable;
     FFrontBase: TFrontBase;
     FQuantity: Currency;
     FDeleteClauseID: Integer;
-
     //
     FLastLeftButton          : Integer;
     FLastTopButton           : Integer;
     FDeleteClauseButtonNumber: Integer;
     //
     FButtonList : TObjectList;
-
+    FCanDevide: Boolean;
 
     procedure SetFrontBase(Value: TFrontBase);
 
@@ -50,20 +52,21 @@ type
     function GetRemoveQuantity: Currency;
 
     procedure DeleteButtonOnClick(Sender: TObject);
+    procedure SetCanDevided(const Value: Boolean);
   public
+    constructor CreateWithFrontBase(AOwner: TComponent; FBase: TFrontBase);
+
     property FrontBase: TFrontBase read FFrontBase write SetFrontBase;
     property Quantity: Currency read FQuantity write FQuantity;
     property RemoveQuantity: Currency read GetRemoveQuantity;
     property DeleteClauseID: Integer read FDeleteClauseID write FDeleteClauseID;
-    constructor CreateWithFrontBase(AOwner: TComponent; FBase: TFrontBase);
-
+    property CanDevided: Boolean read FCanDevide write SetCanDevided;
   end;
 
 var
   DeleteOrderLine: TDeleteOrderLine;
 
 implementation
-
 
 {$R *.dfm}
 
@@ -92,9 +95,48 @@ begin
   FButtonList.Free;
 end;
 
+procedure TDeleteOrderLine.SetCanDevided(const Value: Boolean);
+begin
+  FCanDevide := Value;
+  if not Value then
+    TouchKeyBoard.Keys[9].Caption := '';
+end;
+
 procedure TDeleteOrderLine.SetFrontBase(Value: TFrontBase);
 begin
   FFrontBase := Value;
+end;
+
+procedure TDeleteOrderLine.TouchKeyBoardKeyClick(Sender: TObject;
+  Index: Integer);
+var
+  I: Integer;
+  S: String;
+begin
+  with TouchKeyBoard.Keys.Items[Index] do
+  begin
+    if (SpecialKey = skNone) then
+    begin
+      if (Caption > '') then
+      begin
+        if lblQuantity.Caption = '0' then
+          lblQuantity.Caption := Caption[1]
+        else
+          lblQuantity.Caption := lblQuantity.Caption + Caption[1];
+      end;
+    end else
+    begin
+      I := Length(lblQuantity.Caption);
+      if I = 1 then
+        lblQuantity.Caption := '0'
+      else if I > 1 then
+      begin
+        S := lblQuantity.Caption;
+        Delete(S, I, 1);
+        lblQuantity.Caption := S;
+      end;
+    end;
+  end;
 end;
 
 constructor TDeleteOrderLine.CreateWithFrontBase(AOwner: TComponent;
@@ -103,6 +145,7 @@ begin
   inherited Create(AOwner);
   FrontBase := FBase;
   FQuantity := 0;
+  FCanDevide := False;
 
   FLastLeftButton := 8;
   FLastTopButton  := 8;

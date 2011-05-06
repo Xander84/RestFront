@@ -2330,6 +2330,7 @@ var
   Amount: Currency;
   FUserInfo: TUserInfo;
   FGoodInfo: TLogGoodInfo;
+  GoodKey: Integer;
 begin
   IsActionRun := True;
   btnOK.Enabled := False;
@@ -2377,6 +2378,12 @@ begin
 
           FDeleteForm := TDeleteOrderLine.CreateWithFrontBase(nil, FFrontBase);
           try
+            GoodKey := FLineTable.FieldByName('usr$goodkey').AsInteger;
+            if not FGoodDataSet.Locate('ID', GoodKey, []) then
+              FFrontBase.GetGoodByID(FGoodDataSet, GoodKey);
+            if FGoodDataSet.Locate('ID', GoodKey, []) then
+              FDeleteForm.CanDevided := (FGoodDataSet.FieldByName('BEDIVIDE').AsInteger = 1);
+
             FDeleteForm.Quantity := FLineTable.FieldByName('USR$QUANTITY').AsCurrency;
             FDeleteForm.ShowModal;
             if FDeleteForm.ModalResult = mrOK then
@@ -2413,6 +2420,7 @@ var
   Amount: Currency;
   FUserInfo: TUserInfo;
   FGoodInfo: TLogGoodInfo;
+  GoodKey: Integer;
 begin
   IsActionRun := True;
   btnOK.Enabled := False;
@@ -2436,6 +2444,12 @@ begin
           end;
           FDeleteForm := TDeleteOrderLine.CreateWithFrontBase(nil, FFrontBase);
           try
+            GoodKey := FLineTable.FieldByName('usr$goodkey').AsInteger;
+            if not FGoodDataSet.Locate('ID', GoodKey, []) then
+              FFrontBase.GetGoodByID(FGoodDataSet, GoodKey);
+            if FGoodDataSet.Locate('ID', GoodKey, []) then
+              FDeleteForm.CanDevided := (FGoodDataSet.FieldByName('BEDIVIDE').AsInteger = 1);
+
             FDeleteForm.Quantity := FLineTable.FieldByName('USR$QUANTITY').AsCurrency;
             FDeleteForm.ShowModal;
             if FDeleteForm.ModalResult = mrOK then
