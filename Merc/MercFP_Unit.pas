@@ -12,15 +12,15 @@ const
   cn_FontFlagHeaderLine3 = 3;   // 3-я строка заголовка
   cn_FontFlagHeaderLine4 = 3;   // 4-я строка заголовка
 
-  cn_FontFlagCashier = 3;       // кассир
-  cn_FontFlagSerialNumber = 3;  // серийный номер ККМ
-  cn_FontFlagDateTime = 3;      // текущие дата и время
-  cn_FontFlagDocNumber = 3;     // номер документа
-  cn_FontFlagReceiptNumber = 3; // номер чека
-  cn_FontFlagTaxPayerNumber = 3;// ИНН владельца
+  cn_FontFlagCashier = 0;       // кассир
+  cn_FontFlagSerialNumber = 0;  // серийный номер ККМ
+  cn_FontFlagDateTime = 0;      // текущие дата и время
+  cn_FontFlagDocNumber = 0;     // номер документа
+  cn_FontFlagReceiptNumber = 0; // номер чека
+  cn_FontFlagTaxPayerNumber = 0;// ИНН владельца
 
-  cn_FontFlagGoodName = 16;     // наименование ТМЦ
-  cn_FontFlagPosition = 3;      // продажа
+  cn_FontFlagGoodName = 0;     // наименование ТМЦ
+  cn_FontFlagPosition = 0;      // продажа
   cn_FontFlagTotal = 2;         // полная сумма чека
   cn_FontFlagPay = 2;           // уплаченная сумма
   cn_FontFlagChange = 2;        // сдача
@@ -216,6 +216,13 @@ begin
     begin
       ClearLastError;
       try
+        PortNum := 9;
+        BaudRate := 9600;
+        Password := '0000';
+        InternalTimeout := 500;
+        ExternalTimeout := 500;
+       // Active := 0;
+        RetryOperation := False;
         Open;
         
         if SetLastError then
@@ -279,7 +286,7 @@ begin
     while not DocLine.Eof do
     begin
       GoodName := DocLine.FieldByName('GOODNAME').AsString;
-      Quantity := DocLine.FieldByName('usr$quantity').AsCurrency * 1000;
+      Quantity := DocLine.FieldByName('usr$quantity').AsCurrency ;
       Price := DocLine.FieldByName('usr$costncu').AsCurrency;
       Summ := DocLine.FieldByName('usr$sumncuwithdiscount').AsCurrency;
       SumDiscount := Round(DocLine.FieldByName('usr$sumdiscount').AsCurrency  + 0.0001);
@@ -626,14 +633,11 @@ begin
   if FDriverInit then
   begin
     try
-      for I := 1 to 4 do
-      begin
-        AddHeaderLine(1, 3, 0, FIV + I - 1);
-        Res := not SetLastError;
-        Result := Res;
-        if not Res then
-          break;
-      end;
+      AddHeaderLine(1, 1, 0, 1);
+      AddHeaderLine(2, 2, 0, 2);
+      AddHeaderLine(3, 3, 0, 3);
+      AddHeaderLine(4, 4, 0, 4);
+      Result := not SetLastError;
     except
       ShowLastError;
     end;
@@ -863,7 +867,7 @@ begin
   if FDriverInit then
   begin
     try
-      FeedAndCut(LineCount, False);
+      FeedAndCut(LineCount, True);
       if SetLastError then
         exit;
       FIV := FIV + LineCount;
