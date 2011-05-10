@@ -216,7 +216,7 @@ begin
     begin
       ClearLastError;
       try
-        PortNum := 9;
+        PortNum := FFrontBase.FiscalComPort;
         BaudRate := 9600;
         Password := '0000';
         InternalTimeout := 500;
@@ -743,6 +743,7 @@ function TMercuryRegister.Sale(const Quantity, Price: Currency;
 var
   ToQuantity{, ToSumm, ToAdd}: Currency;
   FValueName: String;
+  TempGood:String;
   {R: Integer;}
 begin
   ClearLastError;
@@ -755,11 +756,12 @@ begin
 //      R := FRRoundOption;
       if SetLastError then
         exit;
-
+      TempGood := ' ' + CurrToStr(Price) + 'x' + CurrToStr(Quantity);
+      TempGood := Copy(GoodName, 1, 39 - Length(TempGood)) + TempGood;
 //      ToSumm := Round(ToQuantity * Price / R + 0.0000000001) * R;
 //      ToAdd := Summ - ToSumm;
       // print goodname
-      AddCustom(GoodName + ' x' + CurrToStr(Quantity), cn_FontFlagGoodName, 0, FIV);
+      AddCustom(TempGood , cn_FontFlagGoodName, 0, FIV);
       if SetLastError then
         exit;
       Inc(FIV);
@@ -769,8 +771,8 @@ begin
         begin
           if SumDiscount = 0 then
           begin
-            AddItem(0, Summ, False, DepNumber, BarCode,
-                0, Round(-1 * (ToQuantity * 1000)), 3, 0, ValueName,
+            AddItem(0, Summ, False, 1, BarCode,
+                0, -1, 0, 0, '',
                 cn_FontFlagPosition, 0, FIV, 0);
             if SetLastError then
               exit;
@@ -778,14 +780,14 @@ begin
 
           if SumDiscount <> 0 then
           begin
-            AddItem(0, Summ + SumDiscount, False, DepNumber, BarCode,
-                0, Round(-1 * (ToQuantity * 1000)), 3, 0, ValueName,
+            AddItem(0, Summ + SumDiscount, False, 1, BarCode,
+                0, -1, 0, 0, '',
                 cn_FontFlagPosition, 0, FIV, 0);
             if SetLastError then
               exit;
             Inc(FIV);
             //скидка
-            AddItem(2, -SumDiscount, False, DepNumber, BarCode,
+            AddItem(2, -SumDiscount, False, 1, BarCode,
                 0, 0, 3, 0, '',
                 cn_FontFlagPosition, 0, FIV, 0);
             if SetLastError then
@@ -793,16 +795,16 @@ begin
           end;
         end else // отмена позиции
         begin
-          AddItem(3, Summ, False, DepNumber, BarCode,
-              0, Round(-1 * (ToQuantity * 1000)), 3, 0, ValueName,
+          AddItem(3, Summ, False, 1, BarCode,
+              0, -1, 0, 0, '',
               cn_FontFlagPosition, 0, FIV, 0);
           if SetLastError then
             exit;
         end
       else if CurrentOper = 2 then // возврат
       begin
-        AddItem(0, Summ, False, DepNumber, BarCode,
-            0, Round(-1 * (ToQuantity * 1000)), 3, 0, ValueName,
+        AddItem(0, Summ, False, 1, BarCode,
+            0, -1, 0, 0, '',
             cn_FontFlagPosition, 0, FIV, 0);
         if SetLastError then
           exit;
