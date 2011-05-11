@@ -248,11 +248,13 @@ end;
 procedure TMercuryRegister.MoneyIn(const Sum: Currency);
 begin
   MoneyOperation(5, Sum);
+  Cut(0)
 end;
 
 procedure TMercuryRegister.MoneyOut(const Sum: Currency);
 begin
   MoneyOperation(6, Sum);
+  Cut(0)
 end;
 
 procedure TMercuryRegister.OpenDrawer;
@@ -335,7 +337,7 @@ begin
   begin
     ClearLastError;
     try
-      XReport(0);
+      XReport(1);
       if SetLastError then
         exit;
       Result := True;  
