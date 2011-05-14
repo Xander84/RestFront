@@ -217,10 +217,10 @@ begin
       ClearLastError;
       try
         PortNum := FFrontBase.FiscalComPort;
-        BaudRate := 9600;
+        BaudRate := 115200;
         Password := '0000';
-        InternalTimeout := 500;
-        ExternalTimeout := 500;
+        InternalTimeout := 1000;
+        ExternalTimeout := 1000;
        // Active := 0;
         RetryOperation := False;
         Open;
@@ -274,6 +274,7 @@ var
   GoodName: String;
   Quantity, Price, SumDiscount, Summ: Currency;
 begin
+  FIV := 0;
   Result := False;
   Assert(Assigned(FFrontBase), 'FrontBase not Assigned');
 
@@ -302,7 +303,7 @@ begin
     Close(FSums.FCashSum, FSums.FCardSum, (FSums.FCreditSum + FSums.FPersonalCardSum));
     if SetLastError then
       exit;
-    Cut(0);
+  //  Cut(0);
     Result := True;
 
     if Result then
@@ -454,8 +455,8 @@ begin
       CloseFiscalDoc;
       if SetLastError then
         exit;
-      if not Feed(5) then
-        exit;
+   //   if not Feed(5) then
+   //     exit;
       Result := True;
     except
       ShowLastError;
@@ -578,42 +579,49 @@ begin
     try
       FIV := 1;
       // клише
-      if not PrintTop then
-        exit;
-      FIV := 5;
-      // печать серийного номера ККМ
-      AddSerialNumber(cn_FontFlagSerialNumber, 0, FIV);
-      if SetLastError then
-        exit;
-      Inc(FIV);
-      // печать текущих даты и времени
-      AddDateTime(cn_FontFlagDateTime, 0, FIV);
-      if SetLastError then
-        exit;
-      Inc(FIV);
-      // печать информации об операторе
-      AddOperInfo(1, cn_FontFlagCashier, 0, FIV);
-      if SetLastError then
-        exit;
 
-      if not PrintCashier then
+        if not PrintTop then
+          exit;
+        FIV := 2;
+      // печать информации об операторе
+      AddOperInfo(0, cn_FontFlagCashier, 0, FIV);
+      if SetLastError then
         exit;
-      Inc(FIV);
+        Inc(FIV);
+        // печать серийного номера ККМ
+        AddSerialNumber(cn_FontFlagSerialNumber, 0, FIV);
+        if SetLastError then
+          exit;
+        Inc(FIV);
+       // печать ИНН
+       AddTaxPayerNumber(cn_FontFlagTaxPayerNumber, 0, FIV);
+       if SetLastError then
+         exit;
+       Inc(FIV);
+
+        // печать текущих даты и времени
+        AddDateTime(cn_FontFlagDateTime, 0, FIV);
+        if SetLastError then
+          exit;
+        Inc(FIV);
+
+
+
+   //   if not PrintCashier then
+   //     exit;
+   //   Inc(FIV);
       // печать номера документа
-      AddDocNumber(cn_FontFlagDocNumber, 0, FIV);
-      if SetLastError then
-        exit;
-      Inc(FIV);
-      // печать номера чека
-      AddReceiptNumber(cn_FontFlagReceiptNumber, 0, FIV);
-      if SetLastError then
-        exit;
-      Inc(FIV);
-      // печать ИНН
-      AddTaxPayerNumber(cn_FontFlagTaxPayerNumber, 0, FIV);
-      if SetLastError then
-        exit;
-      FIV := FIV + 2;
+
+        AddDocNumber(cn_FontFlagDocNumber, 0, FIV);
+           if SetLastError then
+             exit;
+           Inc(FIV);
+           // печать номера чека
+           AddReceiptNumber(cn_FontFlagReceiptNumber, 0, FIV);
+           if SetLastError then
+             exit;
+           FIV := FIV + 2;
+
 
       if not Print then
         exit;
@@ -636,9 +644,11 @@ begin
   begin
     try
       AddHeaderLine(1, 1, 0, 1);
-      AddHeaderLine(2, 2, 0, 2);
-      AddHeaderLine(3, 3, 0, 3);
-      AddHeaderLine(4, 4, 0, 4);
+        {
+        AddHeaderLine(2, 2, 0, 2);
+            AddHeaderLine(3, 3, 0, 3);
+            AddHeaderLine(4, 4, 0, 4);
+    }
       Result := not SetLastError;
     except
       ShowLastError;
@@ -653,7 +663,7 @@ begin
   if FDriverInit then
   begin
     try
-      AddCustom(FFrontBase.UserName, cn_FontFlagCashier, 8, FIV);
+      AddCustom(Copy(FFrontBase.UserName,1,39), cn_FontFlagCashier, 8, FIV);
       Result := not SetLastError;
     except
       ShowLastError;
@@ -670,10 +680,12 @@ begin
     if FDriverInit then
     begin
       try
-        PrintFiscalDocBuffer;
-        if SetLastError then
-          exit;
-        FIV := 0;
+
+          PrintFiscalDocBuffer;
+               if SetLastError then
+                 exit;
+               FIV := 0;
+
         Result := True;
       except
         ShowLastError;
@@ -710,8 +722,8 @@ begin
       CloseFiscalDoc;
       if SetLastError then
         exit;
-      if not Feed(5) then
-        exit;
+    //  if not Feed(5) then
+    //    exit;
       Result := True;
     except
       ShowLastError;
