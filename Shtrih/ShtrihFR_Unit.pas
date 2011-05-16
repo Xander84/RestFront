@@ -342,7 +342,8 @@ begin
 
       Self.Summ1 := FSums.FCashSum;
       Self.Summ2 := (FSums.FCreditSum + FSums.FPersonalCardSum);
-      Self.Summ3 := FSums.FCardSum;
+      Self.Summ4 := FSums.FCardSum;
+      //Summ3 - тара
 
       StringForPrinting := '';
       CloseCheck;
