@@ -60,7 +60,7 @@ begin
   while True do
   begin
     GetShortECRStatus;
-    Sleep(250);
+    Sleep(500);
     case ECRAdvancedMode of
       // Бумага есть, ФР не в фазе печати операции
       0:
@@ -71,23 +71,24 @@ begin
       // Пассивное отсутствие бумаги, ККМ не в фазе печати операции
       1:
         begin
-          Touch_MessageBox('Внимание', 'Бумага закончилась!', MB_OK or MB_ICONEXCLAMATION);
+          Touch_MessageBox('Внимание', 'Бумага закончилась!', MB_OK, mtWarning);
           Result := True;
           exit;
         end;
       // Активное отсутствие бумаги  ККМ в фазе печати операции
       2:
         begin
-          Touch_MessageBox('Внимание', 'Бумага закончилась, заправьте новый рулон!', MB_OK or MB_ICONEXCLAMATION);
+          Touch_MessageBox('Внимание', 'Бумага закончилась, заправьте новый рулон!', MB_OK, mtWarning);
         end;
       // После активного отсутствия бумаги, ККМ ждет команду
       3:
         begin
           ContinuePrint;
+          Sleep(500);
           if ResultCode <> 0 then
           begin
-            CancelCheck;
             ErrMessage(ResultCode);
+            CancelCheck;
             Result := False;
           end else
             Result := True;
@@ -108,6 +109,7 @@ begin
         end;
     else
       begin
+        Sleep(500);
         if ResultCode <> 0 then
         begin
           ErrMessage(ResultCode);
@@ -151,7 +153,7 @@ var
 begin
   if Err <> 0 then
   begin
-    ErrStr := WideCharToString(PWideChar(ResultCodeDescription));
+    ErrStr := ResultCodeDescription;
     Touch_MessageBox('Внимание', ErrStr, MB_OK, mtWarning);
   end;
 end;
@@ -265,8 +267,8 @@ begin
       Res := ResultCode;
       if Res <> 0 then
       begin
-        CancelCheck;
         ErrMessage(Res);
+        CancelCheck;
         exit;
       end;
 
@@ -296,8 +298,8 @@ begin
           Res := ResultCode;
           if Res <> 0 then
           begin
-            CancelCheck;
             ErrMessage(Res);
+            CancelCheck;
             exit;
           end;
           if DocLine.FieldByName('usr$persdiscount').AsCurrency <> 0 then
@@ -330,8 +332,8 @@ begin
         Res := ResultCode;
         if Res <> 0 then
         begin
-          CancelCheck;
           ErrMessage(Res);
+          CancelCheck;
           exit;
         end;
       end;
@@ -349,8 +351,8 @@ begin
       Res := ResultCode;
       if Res <> 0 then
       begin
-        CancelCheck;
         ErrMessage(Res);
+        CancelCheck;
       end else
         Result := True;
 

@@ -58,7 +58,7 @@ constructor TFiscalRegister.Create;
 begin
   inherited;
 
-  FLastFiscalType := 0;
+  FLastFiscalType := 100;
   FFiscalRegister := nil;
   FInit := False;
 end;
