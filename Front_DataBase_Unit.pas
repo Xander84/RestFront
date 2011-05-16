@@ -2376,6 +2376,8 @@ begin
 end;
 
 procedure TFrontBase.GetAllUserList(const MemTable: TkbmMemTable);
+const
+  cn_adminID = 150001;
 begin
   FReadSQL.Close;
   MemTable.Close;
@@ -2386,7 +2388,8 @@ begin
       if not FReadSQL.Transaction.InTransaction then
         FReadSQL.Transaction.StartTransaction;
 
-      FReadSQL.SQL.Text := 'SELECT ID, NAME FROM GD_USER ORDER BY NAME';
+      FReadSQL.SQL.Text := 'SELECT ID, NAME FROM GD_USER WHERE ID <> :ID ORDER BY NAME';
+      FReadSQL.Params[0].AsInteger := cn_adminID;
       FReadSQL.ExecQuery;
       while not FReadSQL.EOF do
       begin

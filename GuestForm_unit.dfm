@@ -54,7 +54,6 @@ object GuestForm: TGuestForm
     StatusBar.ColorTo = 16374724
     StatusBar.GradientDirection = gdVertical
     Styler = FrontData.FrontPanelStyler
-    ExplicitHeight = 126
     FullHeight = 0
     object Bevel1: TBevel
       Left = 5

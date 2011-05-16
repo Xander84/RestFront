@@ -32,7 +32,7 @@ object RestMainForm: TRestMainForm
       Top = 0
       Width = 934
       Height = 721
-      ActivePage = tsPassWord
+      ActivePage = tsMain
       ActiveFont.Charset = DEFAULT_CHARSET
       ActiveFont.Color = clWindowText
       ActiveFont.Height = -11
@@ -1201,7 +1201,7 @@ object RestMainForm: TRestMainForm
               Top = 0
               Width = 325
               Height = 660
-              ActivePage = tsTablesDesigner
+              ActivePage = tsMenu
               ActiveFont.Charset = DEFAULT_CHARSET
               ActiveFont.Color = clWindowText
               ActiveFont.Height = -11
@@ -1645,7 +1645,7 @@ object RestMainForm: TRestMainForm
             Top = 0
             Width = 609
             Height = 701
-            ActivePage = tsManagerPage
+            ActivePage = tsOrderInfo
             ActiveFont.Charset = DEFAULT_CHARSET
             ActiveFont.Color = clWindowText
             ActiveFont.Height = -11
@@ -2898,7 +2898,7 @@ object RestMainForm: TRestMainForm
         Top = 1
         Width = 80
         Height = 719
-        ActivePage = tsOrderButton
+        ActivePage = tsFunctionButton
         ActiveFont.Charset = DEFAULT_CHARSET
         ActiveFont.Color = clWindowText
         ActiveFont.Height = -11
@@ -3297,7 +3297,7 @@ object RestMainForm: TRestMainForm
             TabOrder = 5
             Version = '1.6.9.0'
           end
-          object btnKeyBoard: TAdvSmoothButton
+          object btnEditGuestCount: TAdvSmoothButton
             AlignWithMargins = True
             Left = 3
             Top = 337
@@ -3305,7 +3305,7 @@ object RestMainForm: TRestMainForm
             Height = 54
             Margins.Top = 1
             Margins.Bottom = 1
-            Action = actKeyBoard
+            Action = actEditGuestCount
             Align = alTop
             Appearance.PictureAlignment = taCenter
             Appearance.Font.Charset = DEFAULT_CHARSET
@@ -3714,7 +3714,6 @@ object RestMainForm: TRestMainForm
             ParentFont = False
             TabOrder = 4
             Version = '1.6.9.0'
-            ExplicitTop = 330
           end
           object btnUnblockTable: TAdvSmoothToggleButton
             AlignWithMargins = True
@@ -3753,7 +3752,6 @@ object RestMainForm: TRestMainForm
             Action = actUnblockTable
             Align = alTop
             TabOrder = 5
-            ExplicitTop = 386
           end
           object btnSwapWaiter: TAdvSmoothButton
             AlignWithMargins = True
@@ -3791,7 +3789,6 @@ object RestMainForm: TRestMainForm
             ParentFont = False
             TabOrder = 6
             Version = '1.6.9.0'
-            ExplicitTop = 330
           end
           object btnSwapTable: TAdvSmoothToggleButton
             AlignWithMargins = True
@@ -3830,7 +3827,6 @@ object RestMainForm: TRestMainForm
             Action = actSwapTable
             Align = alTop
             TabOrder = 7
-            ExplicitTop = 274
           end
           object btnEditMenu: TAdvSmoothButton
             AlignWithMargins = True
@@ -3868,7 +3864,6 @@ object RestMainForm: TRestMainForm
             ParentFont = False
             TabOrder = 8
             Version = '1.6.9.0'
-            ExplicitTop = 274
           end
         end
         object tsManagerInfoButton: TAdvTabSheet
@@ -4729,6 +4724,12 @@ object RestMainForm: TRestMainForm
       Hint = #1052#1077#1085#1102
       OnExecute = actEditMenuExecute
       OnUpdate = actEditMenuUpdate
+    end
+    object actEditGuestCount: TAction
+      Category = 'menu'
+      Caption = #1043#1086#1089#1090#1080
+      OnExecute = actEditGuestCountExecute
+      OnUpdate = actEditGuestCountUpdate
     end
   end
   object dsMain: TDataSource

@@ -24,9 +24,10 @@ type
     procedure btnCancelClick(Sender: TObject);
   private
     function GetGuestCount: Integer;
+    procedure SetGuestCount(const Value: Integer);
   public
      procedure AddGuestCount(const Count: Integer);
-     property GuestCount: Integer read GetGuestCount;
+     property GuestCount: Integer read GetGuestCount write SetGuestCount;
   end;
 
 var
@@ -34,6 +35,8 @@ var
 
 implementation
 
+uses
+  TouchMessageBoxForm_Unit;
 
 {$R *.dfm}
 
@@ -88,9 +91,21 @@ begin
   Result := StrToInt(lblGuestCount.Caption);
 end;
 
+procedure TGuestForm.SetGuestCount(const Value: Integer);
+begin
+  lblGuestCount.Caption := IntToStr(Value);
+end;
+
 procedure TGuestForm.btnOKClick(Sender: TObject);
 begin
-  ModalResult := mrOk;
+  if lblGuestCount.Caption <> '' then
+  begin
+    if StrToInt(lblGuestCount.Caption) >= FrontBase.Options.MinGuestCount then
+      ModalResult := mrOk
+    else
+      Touch_MessageBox('Внимание', 'Необходимо указать кол-во гостей.', MB_OK, mtWarning);
+  end else
+    Touch_MessageBox('Внимание', 'Необходимо указать кол-во гостей.', MB_OK, mtWarning);
 end;
 
 procedure TGuestForm.btnCancelClick(Sender: TObject);

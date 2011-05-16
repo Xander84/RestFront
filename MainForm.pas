@@ -134,7 +134,7 @@ type
     btnCutCheck: TAdvSmoothButton;
     btnPreCheck: TAdvSmoothButton;
     btnModification: TAdvSmoothButton;
-    btnKeyBoard: TAdvSmoothButton;
+    btnEditGuestCount: TAdvSmoothButton;
     btnDiscount: TAdvSmoothButton;
     btnPay: TAdvSmoothButton;
     btnDevide: TAdvSmoothButton;
@@ -231,6 +231,7 @@ type
     btnToggleInternalKeyboard: TAdvSmoothButton;
     actEditMenu: TAction;
     btnEditMenu: TAdvSmoothButton;
+    actEditGuestCount: TAction;
 
     // Проверка введёного пароля
     procedure actPassEnterExecute(Sender: TObject);
@@ -322,6 +323,8 @@ type
     procedure btnToggleInternalKeyboardClick(Sender: TObject);
     procedure actEditMenuExecute(Sender: TObject);
     procedure actEditMenuUpdate(Sender: TObject);
+    procedure actEditGuestCountExecute(Sender: TObject);
+    procedure actEditGuestCountUpdate(Sender: TObject);
   private
     // Компонент обращения к БД
     FFrontBase: TFrontBase;
@@ -660,7 +663,7 @@ begin
   btnCutCheck.Picture := FrontData.RestPictureContainer.FindPicture('document_break');
   btnPreCheck.Picture := FrontData.RestPictureContainer.FindPicture('document_info');
   btnModification.Picture := FrontData.RestPictureContainer.FindPicture('application_form_edit');
-  btnKeyBoard.Picture := FrontData.RestPictureContainer.FindPicture('keyboard');
+  btnEditGuestCount.Picture := FrontData.RestPictureContainer.FindPicture('group_edit');
   btnDiscount.Picture := FrontData.RestPictureContainer.FindPicture('percent');
   btnPay.Picture := FrontData.RestPictureContainer.FindPicture('money');
   btnDevide.Picture := FrontData.RestPictureContainer.FindPicture('decimal');
@@ -1421,6 +1424,7 @@ begin
   begin
     FGuestForm := TGuestForm.Create(nil);
     try
+      FGuestForm.FrontBase := FFrontBase;
       FGuestForm.ShowModal;
       if FGuestForm.ModalResult = mrOK then
         FGuestCount := FGuestForm.GuestCount
@@ -1482,6 +1486,7 @@ begin
     begin
       FGuestForm := TGuestForm.Create(nil);
       try
+        FGuestForm.FrontBase := FFrontBase;
         FGuestForm.ShowModal;
         if FGuestForm.ModalResult = mrOK then
           FGuestCount := FGuestForm.GuestCount
@@ -3047,8 +3052,8 @@ begin
           FFrontBase.GetUserOrders(-1, FOrderDataSet);
 
           CreateOrderButtonList;
-          CreateMenuButtonList;
-          AddPopularGoods;
+//          CreateMenuButtonList;
+//          AddPopularGoods;
 
           SetCloseTimerActive(not FFrontBase.Options.NoPassword);
           tmrTables.Enabled := False;
@@ -3134,8 +3139,8 @@ begin
           end
           else
             CreateHallButtonList;
-          CreateMenuButtonList;
-          AddPopularGoods;
+//          CreateMenuButtonList;
+//          AddPopularGoods;
 
           dxfDesigner.EditControl := nil;
           dxfDesigner.Active := False;
@@ -3235,6 +3240,9 @@ begin
         pnlChoose.Visible := True;
         FPayed := False;
         tmrTables.Enabled := False;
+
+        CreateMenuButtonList;
+        AddPopularGoods;
 
         // Информация о заказе
         lblOrderInfoUserName.Caption := FFrontBase.GetNameWaiterOnID(FHeaderTable.FieldByName('usr$respkey').AsInteger, True, False);
@@ -4436,6 +4444,42 @@ begin
       Inc(Step);
     end;
   end;
+end;
+
+procedure TRestMainForm.actEditGuestCountExecute(Sender: TObject);
+var
+  FForm: TGuestForm;
+begin
+  IsActionRun := True;
+  btnOK.Enabled := False;
+  btnCancel3.Enabled := False;
+  try
+    FForm := TGuestForm.Create(nil);
+    try
+      FForm.FrontBase := FFrontBase;
+      FForm.GuestCount := FHeaderTable.FieldByName('USR$GUESTCOUNT').AsInteger;
+      FForm.ShowModal;
+      if FForm.ModalResult = mrOk then
+      begin
+        if FHeaderTable.State = dsBrowse then
+          FHeaderTable.Edit;
+
+        FHeaderTable.FieldByName('USR$GUESTCOUNT').AsInteger := FForm.GuestCount;
+        FHeaderTable.Post;
+      end;
+    finally
+      FForm.Free;
+    end;
+  finally
+    IsActionRun := False;
+    btnOK.Enabled := True;
+    btnCancel3.Enabled := True;
+  end;
+end;
+
+procedure TRestMainForm.actEditGuestCountUpdate(Sender: TObject);
+begin
+  actEditGuestCount.Enabled := FHeaderTable.FieldByName('usr$timecloseorder').IsNull and (not FViewMode) and (not IsActionRun);
 end;
 
 procedure TRestMainForm.actEditMenuExecute(Sender: TObject);
