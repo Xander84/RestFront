@@ -75,6 +75,9 @@ end;
 procedure TOrderNumber.FormCreate(Sender: TObject);
 begin
   edtNumber.Color := pnlMain.Color;
+
+  btnOK.Picture := FrontData.RestPictureContainer.FindPicture('tick');
+  btnCancel.Picture := FrontData.RestPictureContainer.FindPicture('cross');
 end;
 
 end.

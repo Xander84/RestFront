@@ -2538,11 +2538,12 @@ begin
         FSQL.ExecQuery;
         if not FSQL.EOF then
           GetLogicDate := FSQL.FieldByName('Ldate').AsDateTime;
+        FSQL.Close;
       except
         raise;
       end;
     finally
-      FSQL.Close;
+      FSQL.Free;
     end;
   end;
 end;

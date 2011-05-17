@@ -72,7 +72,7 @@ object OrderNumber: TOrderNumber
       ParentColor = False
       ParentFont = False
       Transparent = True
-      ExplicitTop = 7
+      ExplicitWidth = 153
     end
     object edtNumber: TEdit
       Left = 10
@@ -272,11 +272,13 @@ object OrderNumber: TOrderNumber
       Top = 440
       Width = 196
       Height = 57
+      Appearance.PictureAlignment = taCenter
       Appearance.Font.Charset = DEFAULT_CHARSET
       Appearance.Font.Color = clWindowText
       Appearance.Font.Height = -13
       Appearance.Font.Name = 'Times New Roman'
       Appearance.Font.Style = [fsBold]
+      Appearance.Layout = blPictureTop
       Status.Caption = '0'
       Status.Appearance.Fill.Color = clRed
       Status.Appearance.Fill.ColorMirror = clNone
@@ -303,11 +305,13 @@ object OrderNumber: TOrderNumber
       Top = 440
       Width = 196
       Height = 57
+      Appearance.PictureAlignment = taCenter
       Appearance.Font.Charset = DEFAULT_CHARSET
       Appearance.Font.Color = clWindowText
       Appearance.Font.Height = -13
       Appearance.Font.Name = 'Times New Roman'
       Appearance.Font.Style = [fsBold]
+      Appearance.Layout = blPictureTop
       Status.Caption = '0'
       Status.Appearance.Fill.Color = clRed
       Status.Appearance.Fill.ColorMirror = clNone

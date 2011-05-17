@@ -50,11 +50,6 @@ const
   }
 
 type
-  { TCrackScrollingWinControl = class helper for TScrollingWinControl
-    protected
-    procedure CreateWnd;
-    end; }
-
   TRestState = (
     rsPass,                    // окно с паролем
     rsOrderMenu,               // окно с заказами
@@ -327,11 +322,14 @@ type
     procedure actEditGuestCountUpdate(Sender: TObject);
   private
     // Компонент обращения к БД
-    FFrontBase: TFrontBase;
-    // Фискальный
+    // Объявлен в базовом классе форм TBaseFrontForm
+    // FFrontBase: TFrontBase;
+
+    // Класс работы с ФР
     FFiscal: TFiscalRegister;
-    // FR4
+    // Класс работы с FR4
     FReport: TRestReport;
+    // Класс логирования во внешнюю БД
     FLogManager: TLogManager;
     // Наборы данных
     FOrderDataSet: TkbmMemTable;
