@@ -20,6 +20,9 @@ const
   mn_personalcardDBID = 1604829035;
 
 type
+  // тип оплаты: продажа или возврат
+  TSaleType = (ptSale, ptReturn);
+
   TSellParamForm = class(TBaseFrontForm)
     pnlMain: TAdvPanel;
     lblToPay: TLabel;
@@ -95,6 +98,7 @@ type
     FIsValidPayment: Boolean;
     FNoFiscalPayment: Boolean;
     FCashNoFiscal: Integer;
+    FSaleType: TSaleType;
 
     procedure SetSumToPay(const Value: Currency);
     procedure SetFiscalRegister(const Value: TFiscalRegister);
@@ -117,6 +121,7 @@ type
     property FiscalRegistry: TFiscalRegister read FFiscalRegiter write SetFiscalRegister;
     property Doc: TkbmMemTable read FDoc write SetDoc;
     property DocLine: TkbmMemTable read FDocLine write SetDocLine;
+    property SaleType: TSaleType read FSaleType write FSaleType;
   end;
 
 var
@@ -231,6 +236,7 @@ begin
   FPersonalCardID := FFrontBase.GetIDByRUID(mn_personalcardXID, mn_personalcardDBID);
   Assert(FPersonalCardID <> -1, 'Invalid RUID');
   FCashNoFiscal := FFrontBase.GetCashFiscalType;
+  FSaleType := ptSale;
 
   FFrontBase.GetPaymentsCount(CardCount, NoCashCount, PercCardCount, FCreditID, FPersonalCardID);
   btnCardPay.Enabled := (CardCount > 0);
@@ -401,6 +407,11 @@ begin
     exit;
   end;
   FSums.FChangeSum := FChange;
+  if (FSaleType = ptReturn) and (FChange <> 0)  then
+  begin
+    Touch_MessageBox('¬нимание', 'ѕри возврате сдачи не может быть!', MB_OK, mtWarning);
+    exit;
+  end;
 
   FPrinting := True;
   Ev := TouchKeyBoard.OnKeyClick;
@@ -415,24 +426,31 @@ begin
         FInBrowse := True;
         try
           if FNoFiscalPayment then
-            FFiscalRegiter.InitFiscalRegister(4)
+            FFiscalRegiter.InitFiscalRegister(Reg_Test)
           else
             FFiscalRegiter.InitFiscalRegister(FFrontBase.CashCode);
           FFiscalRegiter.OpenDrawer;
-          if FFiscalRegiter.PrintCheck(Doc, DocLine, dsPayLine, FSums) then
+          if FSaleType = ptSale then
           begin
-            if FFrontBase.Options.PrintCopyCheck then
+            if FFiscalRegiter.PrintCheck(Doc, DocLine, dsPayLine, FSums) then
             begin
-              FReport := TRestReport.Create(Self);
-              FReport.FrontBase := FFrontBase;
-              try
-                FReport.PrintAfterSalePreCheck(FDoc.FieldByName('ID').AsInteger, FSums);
-              finally
-                FReport.Free;
+              if FFrontBase.Options.PrintCopyCheck then
+              begin
+                FReport := TRestReport.Create(Self);
+                FReport.FrontBase := FFrontBase;
+                try
+                  FReport.PrintAfterSalePreCheck(FDoc.FieldByName('ID').AsInteger, FSums);
+                finally
+                  FReport.Free;
+                end;
               end;
+              Self.ModalResult := mrOk;
             end;
-
-            Self.ModalResult := mrOk;
+          end else
+          if FSaleType = ptReturn then
+          begin
+            if FFiscalRegiter.ReturnCheck(Doc, DocLine, dsPayLine, FSums) then
+              Self.ModalResult := mrOk;
           end;
         finally
           FInBrowse := False;

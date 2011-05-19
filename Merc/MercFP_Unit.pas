@@ -19,7 +19,7 @@ const
   cn_FontFlagReceiptNumber = 0; // номер чека
   cn_FontFlagTaxPayerNumber = 0;// ИНН владельца
 
-  cn_FontFlagGoodName = 0;     // наименование ТМЦ
+  cn_FontFlagGoodName = 0;      // наименование ТМЦ
   cn_FontFlagPosition = 0;      // продажа
   cn_FontFlagTotal = 2;         // полная сумма чека
   cn_FontFlagPay = 2;           // уплаченная сумма
@@ -91,6 +91,7 @@ type
     function CheckDeviceInfo: Boolean;
     function Init: Boolean;
     function PrintCheck(const Doc, DocLine, PayLine: TkbmMemTable; const FSums: TSaleSums): Boolean;
+    function ReturnCheck(const Doc, DocLine, PayLine: TkbmMemTable; const FSums: TSaleSums): Boolean;
     function ReturnGoodMoney(const FSums: TSaleSums): Boolean;
 
     function PrintZ1ReportWithCleaning: Boolean;
@@ -217,7 +218,7 @@ begin
       ClearLastError;
       try
         PortNum := FFrontBase.FiscalComPort;
-        BaudRate := 115200;
+        BaudRate := 115200; //9600
         Password := '0000';
         InternalTimeout := 1000;
         ExternalTimeout := 1000;
@@ -280,7 +281,7 @@ begin
 
   if FDriverInit then
   begin
-    OpenCheck(1);
+    OpenCheck(motSale);
     if SetLastError then
       exit;
 
@@ -375,6 +376,71 @@ function TMercuryRegister.PrintZ2ReportWithCleaning: Boolean;
 begin
   Result := False;
   Touch_MessageBox('Внимание', 'Данный вид отчёта не поддерживается', MB_OK, mtError);
+end;
+
+function TMercuryRegister.ReturnCheck(const Doc, DocLine, PayLine: TkbmMemTable;
+  const FSums: TSaleSums): Boolean;
+var
+  TotalDiscount: Currency;
+  GoodName: String;
+  Quantity, Price, SumDiscount, Summ: Currency;
+begin
+  FIV := 0;
+  Result := False;
+  Assert(Assigned(FFrontBase), 'FrontBase not Assigned');
+
+  if FDriverInit then
+  begin
+    OpenReceipt(motRefund);
+//    OpenCheck(1);
+    if SetLastError then
+      exit;
+
+    DocLine.First;
+    TotalDiscount := 0;
+    while not DocLine.Eof do
+    begin
+      GoodName := DocLine.FieldByName('GOODNAME').AsString;
+      Quantity := DocLine.FieldByName('usr$quantity').AsCurrency ;
+      Price := DocLine.FieldByName('usr$costncu').AsCurrency;
+      Summ := -DocLine.FieldByName('usr$sumncuwithdiscount').AsCurrency;
+      SumDiscount := Round(DocLine.FieldByName('usr$sumdiscount').AsCurrency  + 0.0001);
+      TotalDiscount := TotalDiscount + SumDiscount;
+
+      Sale(Quantity, Price, GoodName, Summ, 1, 0, '', SumDiscount);
+
+      DocLine.Next;
+    end;
+
+    Close(FSums.FCashSum, FSums.FCardSum, (FSums.FCreditSum + FSums.FPersonalCardSum));
+    if SetLastError then
+      exit;
+  //  Cut(0);
+    Result := True;
+
+    if Result then
+    begin
+    // сохраняем чек
+      if Doc.State <> dsEdit then
+        Doc.Edit;
+      Doc.FieldByName('USR$WHOPAYOFFKEY').AsInteger := FFrontBase.ContactKey;
+      Doc.FieldByName('USR$PAY').AsInteger := 1;
+      Doc.FieldByName('USR$REGISTER').AsString := IntToStr(FFrontBase.CashNumber);
+      Doc.FieldByName('USR$LOGICDATE').AsDateTime := FFrontBase.GetLogicDate;
+      Doc.FieldByName('USR$SYSNUM').AsInteger := GetDocumentNumber;
+      if Doc.FieldByName('usr$timecloseorder').IsNull then
+        Doc.FieldByName('usr$timecloseorder').AsDateTime := Now;
+      try
+        SavePayment(FFrontBase.ContactKey, Doc.FieldByName('ID').AsInteger,
+          PayLine, FFrontBase, FSums);
+      except
+        {TODO: Issue 50}
+      end;
+      Doc.Post;
+    end;
+
+  end else
+    Touch_MessageBox('Внимание', 'Не установлен драйвер для ФР!', MB_OK, mtError);
 end;
 
 function TMercuryRegister.ReturnGoodMoney(const FSums: TSaleSums): Boolean;
@@ -579,10 +645,9 @@ begin
     try
       FIV := 1;
       // клише
-
-        if not PrintTop then
-          exit;
-        FIV := 2;
+      if not PrintTop then
+        exit;
+      FIV := 2;
       // печать информации об операторе
       AddOperInfo(0, cn_FontFlagCashier, 0, FIV);
       if SetLastError then
@@ -634,9 +699,9 @@ begin
 end;
 
 function TMercuryRegister.PrintTop: Boolean;
-var
+{var
   I : Integer;
-  Res: Boolean;
+  Res: Boolean;}
 begin
   ClearLastError;
   Result := False;
@@ -648,7 +713,7 @@ begin
         AddHeaderLine(2, 2, 0, 2);
             AddHeaderLine(3, 3, 0, 3);
             AddHeaderLine(4, 4, 0, 4);
-    }
+        }
       Result := not SetLastError;
     except
       ShowLastError;
@@ -755,7 +820,7 @@ function TMercuryRegister.Sale(const Quantity, Price: Currency;
   BarCode: Integer; const ValueName: String;
   const SumDiscount: Currency): Boolean;
 var
-  ToQuantity{, ToSumm, ToAdd}: Currency;
+  {ToQuantity, ToSumm, ToAdd: Currency;}
   FValueName: String;
   TempGood:String;
   {R: Integer;}
@@ -765,7 +830,7 @@ begin
   if FDriverInit then
   begin
     try
-      ToQuantity := 1;
+//      ToQuantity := 1;
       FValueName := Copy(ValueName, 1, 5);
 //      R := FRRoundOption;
       if SetLastError then

@@ -174,11 +174,10 @@ type
     tsEmpty: TAdvTabSheet;
     actKassirInfo: TAction;
     btnKassa: TAdvSmoothButton;
-    btnPrintIncomeReport: TAdvSmoothButton;
+    btnViewReports: TAdvSmoothButton;
     tmrClose: TTimer;
     tsTablePage: TAdvTabSheet;
     sbTable: TScrollBox;
-    btnCheckRegister: TAdvSmoothButton;
     btnShowKeyboard2: TAdvSmoothButton;
     btnCancel1: TAdvSmoothButton;
     btnCancel2: TAdvSmoothButton;
@@ -210,9 +209,7 @@ type
     actSwapWaiter: TAction;
     btnUnblockTable: TAdvSmoothToggleButton;
     grScrollBar: TScrollBar;
-    btnPrintBiilsCopy: TAdvSmoothButton;
     actSwapTable: TAction;
-    btnRealizationReport: TAdvSmoothButton;
     pnlPassword: TGridPanel;
     edPassword: TEdit;
     btnOKPass: TAdvSmoothButton;
@@ -227,6 +224,8 @@ type
     actEditMenu: TAction;
     btnEditMenu: TAdvSmoothButton;
     actEditGuestCount: TAction;
+    btnReturnCheck: TAdvSmoothButton;
+    actReturnCheck: TAction;
 
     // Проверка введёного пароля
     procedure actPassEnterExecute(Sender: TObject);
@@ -291,9 +290,8 @@ type
       var Params: TColCellParamsEh; var Processed: Boolean);
     procedure actKassirInfoExecute(Sender: TObject);
     procedure actKassirInfoUpdate(Sender: TObject);
-    procedure btnPrintIncomeReportClick(Sender: TObject);
+    procedure btnViewReportsClick(Sender: TObject);
     procedure tmrCloseTimer(Sender: TObject);
-    procedure btnCheckRegisterClick(Sender: TObject);
     procedure tablePopupMenuPopup(Sender: TObject);
     procedure actCashFormUpdate(Sender: TObject);
     procedure sbTableGesture(Sender: TObject; const EventInfo: TGestureEventInfo; var Handled: Boolean);
@@ -310,8 +308,6 @@ type
     procedure actSwapWaiterUpdate(Sender: TObject);
     procedure actSwapTableExecute(Sender: TObject);
     procedure actSwapTableUpdate(Sender: TObject);
-    procedure btnPrintBiilsCopyClick(Sender: TObject);
-    procedure btnRealizationReportClick(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure actUnblockTableUpdate(Sender: TObject);
     procedure btnDeleteTableClick(Sender: TObject);
@@ -320,6 +316,8 @@ type
     procedure actEditMenuUpdate(Sender: TObject);
     procedure actEditGuestCountExecute(Sender: TObject);
     procedure actEditGuestCountUpdate(Sender: TObject);
+    procedure actReturnCheckExecute(Sender: TObject);
+    procedure actReturnCheckUpdate(Sender: TObject);
   private
     // Компонент обращения к БД
     // Объявлен в базовом классе форм TBaseFrontForm
@@ -525,8 +523,8 @@ uses
   ChooseDiscountCardForm_Unit, EditReportForm_Unit,
   GDIPPictureContainer, IB, GDIPFill, CashForm_Unit,
   TouchMessageBoxForm_Unit, Base_FiscalRegister_unit,
-  ReturneyMoneyForm_Unit, frmSwapOrder_unit, rfOrder_unit, ChooseEmplFrom_Unit,
-  rfChooseForm_Unit, rfUtils_unit, frmEditMenu_unit;
+  ReturneyMoneyForm_Unit, frmSwapOrder_unit, rfOrder_unit, frmReportList_unit,
+  rfChooseForm_Unit, rfUtils_unit, frmEditMenu_unit, frmViewOrder_unit;
 
 {$R *.dfm}
 
@@ -2433,7 +2431,6 @@ begin
     begin
       if (FLineTable.FieldByName('OLDQUANTITY').IsNull) and (FHeaderTable.FieldByName('USR$MN_PRINTDATE').IsNull) then
         FLineTable.Delete
-
       else
       begin
         // удалять может только пользователь с правами менеджера
@@ -2874,6 +2871,7 @@ begin
       FForm := TSellParamForm.CreateWithFrontBase(nil, FFrontBase);
       SetCloseTimerActive(false);
       try
+        FForm.SaleType := ptSale;
         FForm.FiscalRegistry := FFiscal;
         FForm.Doc := FHeaderTable;
         FForm.DocLine := FLineTable;
@@ -3573,28 +3571,6 @@ begin
   end;
 end;
 
-procedure TRestMainForm.btnCheckRegisterClick(Sender: TObject);
-var
-  FForm: TChooseEmpl;
-begin
-//  FReport.PrintCheckRegister(xDateBegin.Date, xDateEnd.Date);
-  FForm := TChooseEmpl.Create(nil);
-  SetCloseTimerActive(False);
-  try
-    FForm.FrontBase := FFrontBase;
-    FForm.FillEmployees;
-    FForm.ShowModal;
-    if FForm.ModalResult = mrOk then
-    begin
-      FReport.PrintCheckRegisterEmpl(xDateBegin.Date, xDateEnd.Date, FForm.EmplKey,
-        FForm.RespKey);
-    end;
-  finally
-    SetCloseTimerActive(not FFrontBase.Options.NoPassword);
-    FForm.Free;
-  end;
-end;
-
 procedure TRestMainForm.btnDeleteTableClick(Sender: TObject);
 begin
   dxfDesigner.Active := (not btnDeleteTable.Down);
@@ -4030,11 +4006,6 @@ begin
   CreateUserList;
 end;
 
-procedure TRestMainForm.btnPrintBiilsCopyClick(Sender: TObject);
-begin
-  FReport.PrintCopyChecks(xDateBegin.Date, xDateEnd.Date);
-end;
-
 procedure TRestMainForm.btnPrintCopyCheckClick(Sender: TObject);
 var
   FSum: TSaleSums;
@@ -4049,14 +4020,21 @@ begin
   FReport.PrintAfterSalePreCheck(FHeaderInfoTable.FieldByName('ID').AsInteger, FSum);
 end;
 
-procedure TRestMainForm.btnPrintIncomeReportClick(Sender: TObject);
+procedure TRestMainForm.btnViewReportsClick(Sender: TObject);
+var
+  FForm: TReportForm;
 begin
-  FReport.PrintIncomeReport(xDateBegin.Date, xDateEnd.Date);
-end;
-
-procedure TRestMainForm.btnRealizationReportClick(Sender: TObject);
-begin
-  FReport.PrintRealization(xDateBegin.Date, xDateEnd.Date);
+  SetCloseTimerActive(False);
+  FForm := TReportForm.Create(nil);
+  try
+    FForm.FrontBase := FFrontBase;
+    FForm.DateBegin := xDateBegin.Date;
+    FForm.DateEnd := xDateEnd.Date;
+    FForm.ShowModal;
+  finally
+    SetCloseTimerActive(not FFrontBase.Options.NoPassword);
+    FForm.Free;
+  end;
 end;
 
 procedure TRestMainForm.btnToggleInternalKeyboardClick(Sender: TObject);
@@ -4549,6 +4527,32 @@ begin
     end;
 {$ENDIF MSWINDOWS}
   {end;}
+end;
+
+procedure TRestMainForm.actReturnCheckExecute(Sender: TObject);
+var
+  FForm: TViewOrder;
+begin
+  SetCloseTimerActive(False);
+  FForm := TViewOrder.Create(nil);
+  try
+    FForm.FrontBase := FFrontBase;
+    FForm.FiscalRegistry := FFiscal;
+    FForm.OrderID := FHeaderInfoTable.FieldByName('DOCUMENTKEY').AsInteger;
+    FForm.ShowModal;
+  finally
+    SetCloseTimerActive(not FFrontBase.Options.NoPassword);
+    FForm.Free;
+  end;
+end;
+
+procedure TRestMainForm.actReturnCheckUpdate(Sender: TObject);
+begin
+  if Assigned(FHeaderInfoTable) then
+    actReturnCheck.Enabled := (not FHeaderInfoTable.IsEmpty) and
+      (FHeaderInfoTable.FieldByName('USR$PAY').AsInteger = 1)
+  else
+    actReturnCheck.Enabled := False;
 end;
 
 procedure TRestMainForm.actReturnGoodSumExecute(Sender: TObject);

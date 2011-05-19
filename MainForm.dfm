@@ -32,7 +32,7 @@ object RestMainForm: TRestMainForm
       Top = 0
       Width = 934
       Height = 721
-      ActivePage = tsMain
+      ActivePage = tsManagerInfo
       ActiveFont.Charset = DEFAULT_CHARSET
       ActiveFont.Color = clWindowText
       ActiveFont.Height = -11
@@ -1645,7 +1645,7 @@ object RestMainForm: TRestMainForm
             Top = 0
             Width = 609
             Height = 701
-            ActivePage = tsOrderInfo
+            ActivePage = tsTablePage
             ActiveFont.Charset = DEFAULT_CHARSET
             ActiveFont.Color = clWindowText
             ActiveFont.Height = -11
@@ -4140,7 +4140,7 @@ object RestMainForm: TRestMainForm
             Version = '1.6.9.0'
             OnClick = btnAllChecClick
           end
-          object btnPrintIncomeReport: TAdvSmoothButton
+          object btnViewReports: TAdvSmoothButton
             AlignWithMargins = True
             Left = 3
             Top = 377
@@ -4170,56 +4170,18 @@ object RestMainForm: TRestMainForm
             Status.Appearance.Font.Name = 'Tahoma'
             Status.Appearance.Font.Style = []
             Bevel = False
-            Caption = #1054#1090#1095#1077#1090' '#1087#1086' '#1074#1099#1088#1091#1095#1082#1077
+            Caption = #1054#1090#1095#1077#1090#1099
             Color = 14922381
             DisabledColor = clBlack
             ParentFont = False
             TabOrder = 8
             Version = '1.6.9.0'
-            OnClick = btnPrintIncomeReportClick
-          end
-          object btnCheckRegister: TAdvSmoothButton
-            AlignWithMargins = True
-            Left = 3
-            Top = 433
-            Width = 74
-            Height = 54
-            Margins.Top = 1
-            Margins.Bottom = 1
-            Align = alTop
-            Appearance.PictureAlignment = taCenter
-            Appearance.Font.Charset = DEFAULT_CHARSET
-            Appearance.Font.Color = clWindowText
-            Appearance.Font.Height = -9
-            Appearance.Font.Name = 'Tahoma'
-            Appearance.Font.Style = [fsBold]
-            Appearance.Layout = blPictureTop
-            Status.Caption = '0'
-            Status.Appearance.Fill.Color = clRed
-            Status.Appearance.Fill.ColorMirror = clNone
-            Status.Appearance.Fill.ColorMirrorTo = clNone
-            Status.Appearance.Fill.GradientType = gtSolid
-            Status.Appearance.Fill.BorderColor = clGray
-            Status.Appearance.Fill.Rounding = 0
-            Status.Appearance.Fill.ShadowOffset = 0
-            Status.Appearance.Font.Charset = DEFAULT_CHARSET
-            Status.Appearance.Font.Color = clWhite
-            Status.Appearance.Font.Height = -11
-            Status.Appearance.Font.Name = 'Tahoma'
-            Status.Appearance.Font.Style = []
-            Bevel = False
-            Caption = #1056#1077#1077#1089#1090#1088' '#1089#1095#1077#1090#1086#1074
-            Color = 14922381
-            DisabledColor = clBlack
-            ParentFont = False
-            TabOrder = 9
-            Version = '1.6.9.0'
-            OnClick = btnCheckRegisterClick
+            OnClick = btnViewReportsClick
           end
           object btnPrintCopyCheck: TAdvSmoothButton
             AlignWithMargins = True
             Left = 3
-            Top = 601
+            Top = 433
             Width = 74
             Height = 54
             Margins.Top = 1
@@ -4250,18 +4212,19 @@ object RestMainForm: TRestMainForm
             Color = 14922381
             DisabledColor = clBlack
             ParentFont = False
-            TabOrder = 10
+            TabOrder = 9
             Version = '1.6.9.0'
             OnClick = btnPrintCopyCheckClick
           end
-          object btnPrintBiilsCopy: TAdvSmoothButton
+          object btnReturnCheck: TAdvSmoothButton
             AlignWithMargins = True
             Left = 3
-            Top = 489
+            Top = 498
             Width = 74
             Height = 54
-            Margins.Top = 1
+            Margins.Top = 10
             Margins.Bottom = 1
+            Action = actReturnCheck
             Align = alTop
             Appearance.PictureAlignment = taCenter
             Appearance.Font.Charset = DEFAULT_CHARSET
@@ -4284,51 +4247,13 @@ object RestMainForm: TRestMainForm
             Status.Appearance.Font.Name = 'Tahoma'
             Status.Appearance.Font.Style = []
             Bevel = False
-            Caption = #1050#1086#1087#1080#1080' '#1089#1095#1077#1090#1086#1074' '#1079#1072' '#1087#1077#1088#1080#1086#1076
             Color = 14922381
             DisabledColor = clBlack
             ParentFont = False
-            TabOrder = 11
+            TabOrder = 10
             Version = '1.6.9.0'
-            OnClick = btnPrintBiilsCopyClick
-          end
-          object btnRealizationReport: TAdvSmoothButton
-            AlignWithMargins = True
-            Left = 3
-            Top = 545
-            Width = 74
-            Height = 54
-            Margins.Top = 1
-            Margins.Bottom = 1
-            Align = alTop
-            Appearance.PictureAlignment = taCenter
-            Appearance.Font.Charset = DEFAULT_CHARSET
-            Appearance.Font.Color = clWindowText
-            Appearance.Font.Height = -9
-            Appearance.Font.Name = 'Tahoma'
-            Appearance.Font.Style = [fsBold]
-            Appearance.Layout = blPictureTop
-            Status.Caption = '0'
-            Status.Appearance.Fill.Color = clRed
-            Status.Appearance.Fill.ColorMirror = clNone
-            Status.Appearance.Fill.ColorMirrorTo = clNone
-            Status.Appearance.Fill.GradientType = gtSolid
-            Status.Appearance.Fill.BorderColor = clGray
-            Status.Appearance.Fill.Rounding = 0
-            Status.Appearance.Fill.ShadowOffset = 0
-            Status.Appearance.Font.Charset = DEFAULT_CHARSET
-            Status.Appearance.Font.Color = clWhite
-            Status.Appearance.Font.Height = -11
-            Status.Appearance.Font.Name = 'Tahoma'
-            Status.Appearance.Font.Style = []
-            Bevel = False
-            Caption = #1040#1082#1090' '#1088#1077#1072#1083#1080#1079#1072#1094#1080#1080
-            Color = 14922381
-            DisabledColor = clBlack
-            ParentFont = False
-            TabOrder = 12
-            Version = '1.6.9.0'
-            OnClick = btnRealizationReportClick
+            ExplicitLeft = -1
+            ExplicitTop = 642
           end
         end
         object tsEmpty: TAdvTabSheet
@@ -4731,6 +4656,12 @@ object RestMainForm: TRestMainForm
       OnExecute = actEditGuestCountExecute
       OnUpdate = actEditGuestCountUpdate
     end
+    object actReturnCheck: TAction
+      Category = 'menu'
+      Caption = #1042#1086#1079#1074#1088#1072#1090' '#1095#1077#1082#1072
+      OnExecute = actReturnCheckExecute
+      OnUpdate = actReturnCheckUpdate
+    end
   end
   object dsMain: TDataSource
     Left = 480
@@ -4843,8 +4774,8 @@ object RestMainForm: TRestMainForm
     OnPopup = tablePopupMenuPopup
     MenuStyler = MenuOfficeStyler
     Version = '2.5.3.1'
-    Left = 272
-    Top = 224
+    Left = 424
+    Top = 328
   end
   object MenuOfficeStyler: TAdvMenuOfficeStyler
     AntiAlias = aaNone
@@ -4932,8 +4863,8 @@ object RestMainForm: TRestMainForm
     NotesFont.Style = []
     UseSystemFont = False
     MenuBorderColor = 9841920
-    Left = 352
-    Top = 224
+    Left = 520
+    Top = 328
   end
   object tmrTables: TTimer
     Enabled = False

@@ -26,6 +26,7 @@ type
     function CheckDeviceInfo: Boolean;
     function Init: Boolean;
     function PrintCheck(const Doc, DocLine, PayLine: TkbmMemTable; const FSums: TSaleSums): Boolean;
+    function ReturnCheck(const Doc, DocLine, PayLine: TkbmMemTable; const FSums: TSaleSums): Boolean;
     function ReturnGoodMoney(const FSums: TSaleSums): Boolean;
 
     function PrintZ1ReportWithCleaning: Boolean;
@@ -143,8 +144,7 @@ end;
 
 procedure TShtrihFR.EndSession;
 begin
-  if FDriverInit then
-    Init;
+  PrintZ1ReportWithCleaning;
 end;
 
 procedure TShtrihFR.ErrMessage(Err: Integer);
@@ -424,6 +424,161 @@ function TShtrihFR.PrintZ2ReportWithCleaning: Boolean;
 begin
   Result := False;
   Touch_MessageBox('Внимание', 'Данный вид отчёта не поддерживается', MB_OK, mtError);
+end;
+
+function TShtrihFR.ReturnCheck(const Doc, DocLine, PayLine: TkbmMemTable;
+  const FSums: TSaleSums): Boolean;
+var
+  Res: Integer;
+  DocNumber, WaiterName: String;
+  WasDiscount: Boolean;
+  TotalDiscount: Currency;
+  GoodName, DiscName: String;
+  Quantity, Price, SumDiscount: Currency;
+begin
+  Result := False;
+  Assert(Assigned(FFrontBase), 'FrontBase not Assigned');
+
+  if FDriverInit then
+  begin
+    if Init then
+    begin
+      if not CheckFiscalState then
+        exit;
+
+      DocNumber := Doc.FieldByName('NUMBER').AsString;
+      DocNumber := StringReplace(DocNumber, '.', '', [rfReplaceAll]);
+      DocNumber := StringReplace(DocNumber, ',', '', [rfReplaceAll]);
+      if Length(DocNumber) > 5 then
+        Delete(DocNumber, 5, Length(DocNumber));
+
+      WaiterName := FFrontBase.GetNameWaiterOnID(Doc.FieldByName('usr$respkey').AsInteger, False, False);
+
+      UseReceiptRibbon := True;
+      StringForPrinting := 'Открыт - ' + DateToStr(Date) + ' ' + TimeToStr(Time);
+      PrintString;
+      StringForPrinting := 'Закрыт - ' + DateToStr(Date) + ' ' + TimeToStr(Time);
+      PrintString;
+      StringForPrinting := 'Кассир - ' + WaiterName;
+      PrintString;
+      if not CheckFiscalState then
+        exit;
+
+      Res := ResultCode;
+      if Res <> 0 then
+      begin
+        ErrMessage(Res);
+        CancelCheck;
+        exit;
+      end;
+
+      TotalDiscount := 0;
+      WasDiscount := False;
+
+      DocLine.First;
+      while not DocLine.Eof do
+      begin
+        GoodName := DocLine.FieldByName('GOODNAME').AsString;
+        Quantity := -DocLine.FieldByName('usr$quantity').AsCurrency;
+        Price := DocLine.FieldByName('usr$costncu').AsCurrency;
+        SumDiscount := Round(-DocLine.FieldByName('usr$sumdiscount').AsCurrency  + 0.0001);
+        TotalDiscount := TotalDiscount + SumDiscount;
+
+        if Quantity >= 0 then
+        begin
+          Self.Quantity := Quantity;
+          Self.Price := Price;
+
+          Delete(GoodName, 40, Length(GoodName) - 40);
+          StringForPrinting := GoodName;
+          ReturnSale;
+          if not CheckFiscalState then
+            exit;
+
+          Res := ResultCode;
+          if Res <> 0 then
+          begin
+            ErrMessage(Res);
+            CancelCheck;
+            exit;
+          end;
+          if DocLine.FieldByName('usr$persdiscount').AsCurrency <> 0 then
+            WasDiscount := True;
+        end;
+        DocLine.Next;
+      end;
+
+      if TotalDiscount <> 0 then
+      begin
+        if WasDiscount then
+          DiscName := 'Скидка'
+        else
+          DiscName := 'Округление';
+
+        StringForPrinting := DiscName + ' ' + CurrToStr(TotalDiscount);
+        Summ1 := Abs(TotalDiscount);
+        if TotalDiscount > 0 then
+        begin
+          Discount;
+          if not CheckFiscalState then
+            exit;
+        end else
+        begin
+          Charge;
+          if not CheckFiscalState then
+            exit;
+        end;
+
+        Res := ResultCode;
+        if Res <> 0 then
+        begin
+          ErrMessage(Res);
+          CancelCheck;
+          exit;
+        end;
+      end;
+
+      CheckSubTotal;
+
+      Self.Summ1 := FSums.FCashSum;
+      Self.Summ2 := (FSums.FCreditSum + FSums.FPersonalCardSum);
+      Self.Summ4 := FSums.FCardSum;
+      //Summ3 - тара
+
+      StringForPrinting := '';
+      CloseCheck;
+      if not CheckFiscalState then
+        exit;
+      Res := ResultCode;
+      if Res <> 0 then
+      begin
+        ErrMessage(Res);
+        CancelCheck;
+      end else
+        Result := True;
+
+      if Result then
+      begin
+        // сохраняем чек
+        if Doc.State <> dsEdit then
+          Doc.Edit;
+        Doc.FieldByName('USR$WHOPAYOFFKEY').AsInteger := FFrontBase.ContactKey;
+        Doc.FieldByName('USR$PAY').AsInteger := 1;
+        Doc.FieldByName('USR$REGISTER').AsString := IntToStr(FFrontBase.CashNumber);
+        Doc.FieldByName('USR$LOGICDATE').AsDateTime := FFrontBase.GetLogicDate;
+        Doc.FieldByName('USR$SYSNUM').AsInteger := GetDocumentNumber;
+        if Doc.FieldByName('usr$timecloseorder').IsNull then
+          Doc.FieldByName('usr$timecloseorder').AsDateTime := Now;
+        try
+          SavePayment(FFrontBase.ContactKey, Doc.FieldByName('ID').AsInteger,
+            PayLine, FFrontBase, FSums);
+        except
+          {TODO: Issue 50}
+        end;
+        Doc.Post;
+      end;
+    end;
+  end;
 end;
 
 function TShtrihFR.ReturnGoodMoney(const FSums: TSaleSums): Boolean;

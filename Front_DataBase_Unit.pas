@@ -191,7 +191,7 @@ const
     ' join usr$mn_orderline ol on ol.documentkey = doc.id       '+
     ' join gd_good g on g.id = ol.usr$goodkey                   '+
     ' WHERE ol.masterkey = :id and                              '+
-    '   ol.usr$quantity > 0 and ol.usr$causedeletekey IS NULL   '+
+    '   ol.usr$quantity <> 0 and ol.usr$causedeletekey IS NULL   '+
     ' ORDER BY doc.id ';
 
 
@@ -372,7 +372,7 @@ type
       const CreditID, PCID: Integer);
     function GetCashFiscalType: Integer;
 
-    function CreateNewOrder(const HeaderTable, LineTable, ModifyTable: TkbmMemTable; out OrderKey: Integer): Boolean;
+    function CreateNewOrder(const HeaderTable, LineTable, ModifyTable: TkbmMemTable; out OrderKey: Integer; const RevertQuantity: Boolean = False): Boolean;
     function SaveAndReloadOrder(const HeaderTable, LineTable, ModifyTable: TkbmMemTable; OrderKey: Integer): Boolean;
     // Если OrderKey = -1 то новый заказ
     function GetOrder(const HeaderTable, LineTable, ModifyTable: TkbmMemTable; OrderKey: Integer): Boolean;
@@ -424,7 +424,7 @@ type
     function GetNameWaiterOnID(const ID: Integer; WithGroup, TwoRows: Boolean): String;
 
     function SavePayment(const ContactKey, OrderKey, PayKindKey, PersonalCardKey: Integer;
-      Sum: Currency): Boolean;
+      Sum: Currency; Revert: Boolean = False): Boolean;
 
     //1. Отмена пречека
     //2. Перенос блюда
@@ -637,7 +637,8 @@ begin
 end;
 
 function TFrontBase.CreateNewOrder(const HeaderTable,
-  LineTable, ModifyTable: TkbmMemTable; out OrderKey: Integer): Boolean;
+  LineTable, ModifyTable: TkbmMemTable; out OrderKey: Integer;
+  const RevertQuantity: Boolean = False): Boolean;
 var
   InsDoc, InsOrder, InsOrderLine, InsModify, DelModify, UpdParent:TIBSQL;
   updOrder, updDoc, UpdOrderLine: TIBSQL;
@@ -964,12 +965,21 @@ begin
               InsDoc.ExecQuery;
 
               InsOrderLine.ParamByName('masterkey').AsInteger := MasterID;
-              InsOrderLine.ParamByName('usr$quantity').AsCurrency := LineTable.FieldByName('usr$quantity').AsCurrency;
+              if RevertQuantity then
+              begin
+                InsOrderLine.ParamByName('usr$quantity').AsCurrency := -LineTable.FieldByName('usr$quantity').AsCurrency;
+                InsOrderLine.ParamByName('usr$sumncu').AsCurrency := -LineTable.FieldByName('usr$sumncu').AsCurrency;
+                InsOrderLine.ParamByName('usr$sumncuwithdiscount').AsCurrency := -LineTable.FieldByName('usr$sumncuwithdiscount').AsCurrency;
+                InsOrderLine.ParamByName('usr$costncuwithdiscount').AsCurrency := -LineTable.FieldByName('usr$costncuwithdiscount').AsCurrency;
+              end else
+              begin
+                InsOrderLine.ParamByName('usr$quantity').AsCurrency := LineTable.FieldByName('usr$quantity').AsCurrency;
+                InsOrderLine.ParamByName('usr$sumncu').AsCurrency := LineTable.FieldByName('usr$sumncu').AsCurrency;
+                InsOrderLine.ParamByName('usr$sumncuwithdiscount').AsCurrency := LineTable.FieldByName('usr$sumncuwithdiscount').AsCurrency;
+                InsOrderLine.ParamByName('usr$costncuwithdiscount').AsCurrency := LineTable.FieldByName('usr$costncuwithdiscount').AsCurrency;
+              end;
               InsOrderLine.ParamByName('usr$costncu').AsCurrency := LineTable.FieldByName('usr$costncu').AsCurrency;
               InsOrderLine.ParamByName('usr$goodkey').Value := LineTable.FieldByName('usr$goodkey').Value;
-              InsOrderLine.ParamByName('usr$sumncuwithdiscount').AsCurrency := LineTable.FieldByName('usr$sumncuwithdiscount').AsCurrency;
-              InsOrderLine.ParamByName('usr$sumncu').AsCurrency := LineTable.FieldByName('usr$sumncu').AsCurrency;
-              InsOrderLine.ParamByName('usr$costncuwithdiscount').AsCurrency := LineTable.FieldByName('usr$costncuwithdiscount').AsCurrency;
               InsOrderLine.ParamByName('usr$sumdiscount').AsCurrency := LineTable.FieldByName('usr$sumdiscount').AsCurrency;
               InsOrderLine.ParamByName('usr$persdiscount').AsCurrency := LineTable.FieldByName('usr$persdiscount').AsCurrency;
               InsOrderLine.ParamByName('usr$causedeletekey').Value := LineTable.FieldByName('usr$causedeletekey').Value;
@@ -3113,7 +3123,7 @@ begin
 end;
 
 function TFrontBase.SavePayment(const ContactKey, OrderKey,
-  PayKindKey, PersonalCardKey: Integer; Sum: Currency): Boolean;
+  PayKindKey, PersonalCardKey: Integer; Sum: Currency; Revert: Boolean): Boolean;
 var
   FSQL: TIBSQL;
 begin
@@ -3134,7 +3144,7 @@ begin
     '    :usr$orderkey, ' +
     '    :usr$paykindkey, ' +
     '    :usr$sumncu, ' +
-    '    :usr$datetime, ' +
+    '    current_timestamp, ' +
     '    :usr$perscardkey ) ';
   try
     if not FCheckTransaction.InTransaction then
@@ -3144,12 +3154,16 @@ begin
       FSQL.ParamByName('editorkey').AsInteger := ContactKey;
       FSQL.ParamByName('usr$orderkey').AsInteger := OrderKey;
       FSQL.ParamByName('usr$paykindkey').AsInteger := PayKindKey;
-      FSQL.ParamByName('usr$sumncu').AsCurrency := Sum;
-      FSQL.ParamByName('usr$datetime').AsDateTime := Now;
+      if Revert then
+        FSQL.ParamByName('usr$sumncu').AsCurrency := -Sum
+      else
+        FSQL.ParamByName('usr$sumncu').AsCurrency := Sum;
+
       if PersonalCardKey > 0 then
         FSQL.ParamByName('usr$perscardkey').AsInteger := PersonalCardKey
       else
         FSQL.ParamByName('usr$perscardkey').Clear;
+
       FSQL.ExecQuery;
     except
       FCheckTransaction.Rollback;

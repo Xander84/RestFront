@@ -162,6 +162,12 @@
 			<DCCReference Include="forms\frmMenuLine_unit.pas">
 				<Form>MenuLine</Form>
 			</DCCReference>
+			<DCCReference Include="forms\frmViewOrder_unit.pas">
+				<Form>ViewOrder</Form>
+			</DCCReference>
+			<DCCReference Include="forms\frmReportList_unit.pas">
+				<Form>ReportForm</Form>
+			</DCCReference>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>

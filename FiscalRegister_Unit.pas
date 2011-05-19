@@ -12,10 +12,11 @@ uses
 }
 
 const
-  Reg_Shtrih   = 0;
-  Reg_Merc     = 2;
+  Reg_Shtrih = 0;
+  Reg_Merc = 2;
   Reg_Spark617 = 3;
-  Reg_Test     = 4;
+  Reg_Test = 4;
+  Reg_Unknown = 100;
 
 type
   TFiscalRegister = class(TObject)
@@ -30,7 +31,7 @@ type
 
     procedure InitFiscalRegister(const FiscalType: Integer);
     procedure MoneyIn;
-    procedure MoneyOut;    
+    procedure MoneyOut;
     procedure OpenDrawer;
     procedure PrintReportWithCleaning;
     procedure PrintReportWithOutCleaning;
@@ -39,7 +40,10 @@ type
     procedure EndDay;
     procedure EndSession;
 
-    function PrintCheck(const Doc, DocLine, PayLine: TkbmMemTable; const FSums: TSaleSums): Boolean;
+    function PrintCheck(const Doc, DocLine, PayLine: TkbmMemTable;
+      const FSums: TSaleSums): Boolean;
+    function ReturnCheck(const Doc, DocLine, PayLine: TkbmMemTable;
+      const FSums: TSaleSums): Boolean;
     function ReturnGoodMoney(const FSums: TSaleSums): Boolean;
 
     property FrontBase: TFrontBase read FFrontBase write FFrontBase;
@@ -58,7 +62,7 @@ constructor TFiscalRegister.Create;
 begin
   inherited;
 
-  FLastFiscalType := 100;
+  FLastFiscalType := Reg_Unknown;
   FFiscalRegister := nil;
   FInit := False;
 end;
@@ -82,11 +86,13 @@ begin
 
   if FFrontBase.IsMainCash then
   begin
-    if Touch_MessageBox('Внимание',  'Закрыть день?', MB_YESNO, mtConfirmation) = IDYES then
+    if Touch_MessageBox('Внимание', 'Закрыть день?', MB_YESNO, mtConfirmation)
+      = IDYES then
       FFrontBase.CanCloseDay;
-
-  end else
-    Touch_MessageBox('Внимание', 'Закрыть день можно только на главной кассе', MB_OK, mtWarning);
+  end
+  else
+    Touch_MessageBox('Внимание', 'Закрыть день можно только на главной кассе',
+      MB_OK, mtWarning);
 end;
 
 procedure TFiscalRegister.EndSession;
@@ -112,39 +118,40 @@ begin
     end;
 
     case FiscalType of
-      Reg_Shtrih: //Штрих-ФР
-      begin
-        FFiscalRegister := TShtrihFR.Create(nil);
-        FFiscalRegister.FrontBase := FFrontBase;
-        FFiscalRegister.Init;
-      end;
+      Reg_Shtrih: // Штрих-ФР
+        begin
+          FFiscalRegister := TShtrihFR.Create(nil);
+          FFiscalRegister.FrontBase := FFrontBase;
+          FFiscalRegister.Init;
+        end;
 
-      Reg_Merc: //Гепард
-      begin
-        FFiscalRegister := TMercuryRegister.Create(nil);
-        FFiscalRegister.FrontBase := FFrontBase;
-        FFiscalRegister.Init;
-      end;
+      Reg_Merc: // Гепард
+        begin
+          FFiscalRegister := TMercuryRegister.Create(nil);
+          FFiscalRegister.FrontBase := FFrontBase;
+          FFiscalRegister.Init;
+        end;
 
-      Reg_Spark617: //Спарк 617 ТФ
-      begin
-        FFiscalRegister := TSpark617Register.Create(nil);
-        FFiscalRegister.FrontBase := FFrontBase;
-        FFiscalRegister.Init;
-      end;
+      Reg_Spark617: // Спарк 617 ТФ
+        begin
+          FFiscalRegister := TSpark617Register.Create(nil);
+          FFiscalRegister.FrontBase := FFrontBase;
+          FFiscalRegister.Init;
+        end;
 
       Reg_Test: // для тестов
-      begin
-        FFiscalRegister := TAbstractFiscalRegister.Create;
-        FFiscalRegister.FrontBase := FFrontBase;
-      end;
+        begin
+          FFiscalRegister := TAbstractFiscalRegister.Create;
+          FFiscalRegister.FrontBase := FFrontBase;
+        end;
 
     else
-      raise Exception.Create('Данный тип кассы не поддерживается');
+      Touch_MessageBox('Внимание', 'Данный тип кассы не поддерживается', MB_OK, mtWarning);
     end;
 
-    FInit := True;  
-  end else
+    FInit := True;
+  end
+  else
     FInit := True;
 end;
 
@@ -190,13 +197,13 @@ begin
     FFiscalRegister.OpenDrawer;
 end;
 
-function TFiscalRegister.PrintCheck(const Doc, DocLine,
-  PayLine: TkbmMemTable; const FSums: TSaleSums): Boolean;
+function TFiscalRegister.PrintCheck(const Doc, DocLine, PayLine: TkbmMemTable;
+  const FSums: TSaleSums): Boolean;
 begin
   if Assigned(FFiscalRegister) then
     Result := FFiscalRegister.PrintCheck(Doc, DocLine, PayLine, FSums)
   else
-{ TODO : Подумать над результатом }
+    { TODO : Подумать над результатом }
     Result := True;
 end;
 
@@ -210,6 +217,16 @@ procedure TFiscalRegister.PrintReportWithOutCleaning;
 begin
   if Assigned(FFiscalRegister) then
     FFiscalRegister.PrintX1ReportWithOutCleaning;
+end;
+
+function TFiscalRegister.ReturnCheck(const Doc, DocLine, PayLine: TkbmMemTable;
+  const FSums: TSaleSums): Boolean;
+begin
+  if Assigned(FFiscalRegister) then
+    Result := FFiscalRegister.ReturnCheck(Doc, DocLine, PayLine, FSums)
+  else
+    { TODO : Подумать над результатом }
+    Result := True;
 end;
 
 function TFiscalRegister.ReturnGoodMoney(const FSums: TSaleSums): Boolean;
@@ -226,11 +243,12 @@ begin
 
   if FFrontBase.IsMainCash then
   begin
-    if Touch_MessageBox('Внимание',  'Открыть день?', MB_YESNO, mtConfirmation) = IDYES then
+    if Touch_MessageBox('Внимание', 'Открыть день?', MB_YESNO, mtConfirmation) = IDYES then
       FFrontBase.CanOpenDay;
-
-  end else
-    Touch_MessageBox('Внимание', 'Открыть день можно только на главной кассе', MB_OK, mtWarning);
+  end
+  else
+    Touch_MessageBox('Внимание', 'Открыть день можно только на главной кассе',
+      MB_OK, mtWarning);
 end;
 
 procedure TFiscalRegister.StartSession;
@@ -240,8 +258,9 @@ begin
   begin
     if Assigned(FFiscalRegister) then
       FFiscalRegister.OpenDay;
-  end else
-  if (FFrontBase.CashCode = Reg_Spark617) or (FFrontBase.CashCode = Reg_Shtrih) then
+  end
+  else if (FFrontBase.CashCode = Reg_Spark617) or
+    (FFrontBase.CashCode = Reg_Shtrih) then
     if Assigned(FFiscalRegister) then
       FFiscalRegister.Init;
 end;

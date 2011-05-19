@@ -27,6 +27,7 @@ type
     function CheckDeviceInfo: Boolean;
     function Init: Boolean;
     function PrintCheck(const Doc, DocLine, PayLine: TkbmMemTable; const FSums: TSaleSums): Boolean;
+    function ReturnCheck(const Doc, DocLine, PayLine: TkbmMemTable; const FSums: TSaleSums): Boolean;
     function ReturnGoodMoney(const FSums: TSaleSums): Boolean;
 
     function PrintZ1ReportWithCleaning: Boolean;
@@ -588,6 +589,211 @@ begin
     end;
     CheckDeviceInfo;
   end;
+end;
+
+function TSpark617Register.ReturnCheck(const Doc, DocLine,
+  PayLine: TkbmMemTable; const FSums: TSaleSums): Boolean;
+var
+  Res: Integer;
+  DocNumber, WaiterName: String;
+  DocStr: Integer;
+//  WasDiscount: Boolean;
+  TotalDiscount: Currency;
+  GoodName{, DiscName}: String;
+  Quantity, Price, SumDiscount: Currency;
+  QuantityStr: String;
+  PriceStr: String;
+begin
+  Result := False;
+  Assert(Assigned(FFrontBase), 'FrontBase not Assigned');
+
+  if FDriverInit then
+  begin
+    if Init then
+    begin
+      SetClerk(FFrontBase.UserName);
+
+      DocNumber := Doc.FieldByName('NUMBER').AsString;
+      DocNumber := StringReplace(DocNumber, '.', '', [rfReplaceAll]);
+      DocNumber := StringReplace(DocNumber, ',', '', [rfReplaceAll]);
+      if Length(DocNumber) > 5 then
+        Delete(DocNumber, 5, Length(DocNumber));
+      try
+        DocStr := StrToInt(DocNumber);
+      except
+        DocStr := 0;
+      end;
+      WaiterName := FFrontBase.GetNameWaiterOnID(Doc.FieldByName('usr$respkey').AsInteger, False, False);
+      Res := SetExtraDocData(DocStr, 0, 0, WaiterName);
+      ErrMessage(Res);
+
+      Res := StartDocument(2, 1, StrToInt(DocNumber), FFrontBase.UserName);
+      if Res <> 0 then
+      begin
+        ErrMessage(Res);
+        CancelDocument;
+        exit;
+      end;
+
+      TotalDiscount := 0;
+
+      DocLine.First;
+      while not DocLine.Eof do
+      begin
+        GoodName := DocLine.FieldByName('GOODNAME').AsString;
+        QuantityStr := CurrToStr(-DocLine.FieldByName('usr$quantity').AsCurrency);
+        PriceStr := CurrToStr(DocLine.FieldByName('usr$costncu').AsCurrency);
+        if Length(GoodName) > 35 then
+          Delete(GoodName, 36, Length(GoodName))
+        else
+        begin
+          while Length(GoodName) < 34 do
+            GoodName := GoodName + ' ';
+          GoodName := GoodName + '.';
+        end;
+        GoodName := GoodName + QuantityStr + 'x' + PriceStr;
+
+        Quantity := 1000;
+        Price := -DocLine.FieldByName('usr$sumncu').AsCurrency;
+        SumDiscount := DocLine.FieldByName('usr$sumncu').AsCurrency +
+          DocLine.FieldByName('usr$sumncuwithdiscount').AsCurrency;
+        TotalDiscount := TotalDiscount + SumDiscount;
+
+        if Quantity >= 0 then
+        begin
+          Res := Item(Round(Quantity), Round(Price), GoodName, 0);
+          if Res <> 0 then
+          begin
+            ErrMessage(Res);
+            CancelDocument;
+            exit;
+          end;
+        end;
+
+        if (SumDiscount > 0) then
+        begin
+          Res := AbsoluteCorrectionText(-Round(SumDiscount), '');
+          if Res <> 0 then
+          begin
+            ErrMessage(Res);
+            CancelDocument;
+            exit;
+          end;
+        end;
+        DocLine.Next;
+      end;
+
+      // кредитная карта
+      if FSums.FCardSum > 0 then
+      begin
+        Res := Tender2(FSums.FCardSum, Spark_Credit, '', '');
+        if Res <> 0 then
+        begin
+          ErrMessage(Res);
+          Res := CancelDocument;
+          if Res = 0 then
+            exit;
+        end;
+      end;
+      // Безнал
+      if (FSums.FCreditSum + FSums.FPersonalCardSum) > 0 then
+      begin
+        Res := Tender2(FSums.FCreditSum + FSums.FPersonalCardSum, Spark_NoCash, '', '');
+        if Res <> 0 then
+        begin
+          ErrMessage(Res);
+          Res := CancelDocument;
+          if Res = 0 then
+            exit;
+        end;
+      end;
+      Res := GetDeviceInfo(102);   //проверяем документ еще открыт ?
+      if Res <> 0 then
+      begin
+        // наличные
+        if FSums.FCashSum > 0 then
+        begin
+          Res := Tender2(FSums.FCashSum, Spark_Cash, '', '');
+          if Res <> 0 then
+          begin
+            ErrMessage(Res);
+            Res := CancelDocument;
+            if Res = 0 then
+              exit;
+          end;
+        end;
+
+        Res := EndDocument;
+//        if Res = 0 then
+//        begin
+//          Res := GetDeviceInfo(102);
+//          if Res <> 0 then
+//          begin
+//            WriteLogToFile('Документ остался открытым! Строка 472, код ' + IntToStr(Res), FFrontBase.UserName);
+//            StartDocument(1, 1, StrToInt(DocNumber), FFrontBase.UserName);
+//            Res := CancelDocument;
+//            WriteLogToFile('Создание чека отмены ', FFrontBase.UserName);
+//          end
+//        end;
+      end;
+      if Res = 0 then
+        Result := True
+      else begin
+        ErrMessage(Res);
+        Res := GetDeviceInfo(102);
+        if Res = 0 then
+          Result := True
+        else begin
+          Res := EndDocument;
+          if Res <> 0 then
+          begin
+            ErrMessage(Res);
+            Res := GetDeviceInfo(102);
+          end;
+
+          if Res <> 0 then
+          begin
+            ErrMessage(Res);
+            Res := EndDocument;
+            if Res = 0 then
+              Result := True
+            else begin
+              Res := GetDeviceInfo(102);
+              if Res <> 0 then
+              begin
+                CancelDocument;
+                Result := False;
+              end else
+                Result := True;
+            end;
+          end;
+        end;
+      end;
+
+      if Result then
+      begin
+      // сохраняем чек
+        if Doc.State <> dsEdit then
+          Doc.Edit;
+        Doc.FieldByName('USR$WHOPAYOFFKEY').AsInteger := FFrontBase.ContactKey;
+        Doc.FieldByName('USR$PAY').AsInteger := 1;
+        Doc.FieldByName('USR$REGISTER').AsString := IntToStr(FFrontBase.CashNumber);
+        Doc.FieldByName('USR$LOGICDATE').AsDateTime := FFrontBase.GetLogicDate;
+        Doc.FieldByName('USR$SYSNUM').AsInteger := GetDocumentNumber;
+        if Doc.FieldByName('usr$timecloseorder').IsNull then
+          Doc.FieldByName('usr$timecloseorder').AsDateTime := Now;
+        try
+          SavePayment(FFrontBase.ContactKey, Doc.FieldByName('ID').AsInteger,
+            PayLine, FFrontBase, FSums);
+        except
+          {TODO: Issue 50}
+        end;
+        Doc.Post;
+      end;
+    end else
+      Touch_MessageBox('Внимание', 'Ошибка инициализации ФР ''Спарк 617ТФ''!', MB_OK or MB_ICONEXCLAMATION);
+  end else
+    Touch_MessageBox('Внимание', 'Не установлен драйвер для ФР ''Спарк 617ТФ''!', MB_OK or MB_ICONEXCLAMATION);
 end;
 
 function TSpark617Register.ReturnGoodMoney(const FSums: TSaleSums): Boolean;

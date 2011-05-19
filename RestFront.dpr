@@ -52,7 +52,9 @@ uses
   frmEditUsers_unit in 'forms\frmEditUsers_unit.pas' {EditUsers},
   rfChooseForm_Unit in 'forms\rfChooseForm_Unit.pas' {ChooseForm},
   frmEditMenu_unit in 'forms\frmEditMenu_unit.pas' {EditMenu},
-  frmMenuLine_unit in 'forms\frmMenuLine_unit.pas' {MenuLine};
+  frmMenuLine_unit in 'forms\frmMenuLine_unit.pas' {MenuLine},
+  frmViewOrder_unit in 'forms\frmViewOrder_unit.pas' {ViewOrder},
+  frmReportList_unit in 'forms\frmReportList_unit.pas' {ReportForm};
 
 {$R *.res}
 

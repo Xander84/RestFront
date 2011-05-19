@@ -101,6 +101,10 @@ type
     function Init: Boolean;
     // Печать чека
     function PrintCheck(const Doc, DocLine, PayLine: TkbmMemTable; const FSums: TSaleSums): Boolean;
+    // возврат чека
+    // при возврате создаётся заказ с отрицательным кол-вом товара
+    // в таблицу оплаты идёт оплата с отрицательным значением
+    function ReturnCheck(const Doc, DocLine, PayLine: TkbmMemTable; const FSums: TSaleSums): Boolean;
     //Выплата за возвращенный товар. Печатается чек возврата с указанием суммы и вида оплаты.
     //Никакой информации о возвращенном товаре чек не содержит.
     function ReturnGoodMoney(const FSums: TSaleSums): Boolean;
@@ -112,11 +116,11 @@ type
     //отчет Z1 с гашением
     function PrintZ1ReportWithCleaning: Boolean;
     //отчет Z2 с гашением
- //   function PrintZ2ReportWithCleaning: Boolean;
+//    function PrintZ2ReportWithCleaning: Boolean;
     //отчет X1 без гашения
     function PrintX1ReportWithOutCleaning: Boolean;
     //отчет X2 без гашения
- //   function PrintX2ReportWithOutCleaning: Boolean;
+//    function PrintX2ReportWithOutCleaning: Boolean;
     // открытие денежного ящика    
     procedure OpenDrawer;
     // закрытие сессии (печать Z отчета)
@@ -146,6 +150,7 @@ type
     function CheckDeviceInfo: Boolean;
     function Init: Boolean;
     function PrintCheck(const Doc, DocLine, PayLine: TkbmMemTable; const FSums: TSaleSums): Boolean;
+    function ReturnCheck(const Doc, DocLine, PayLine: TkbmMemTable; const FSums: TSaleSums): Boolean;
     function ReturnGoodMoney(const FSums: TSaleSums): Boolean;
     function PrintZ1ReportWithCleaning: Boolean;
  //   function PrintZ2ReportWithCleaning: Boolean;
@@ -168,15 +173,14 @@ type
   end;
 
   procedure SavePayment(const ContactKey, DocID: Integer; const PayLine: TkbmMemTable;
-    const FrontBase: TFrontBase; const FSums: TSaleSums);
+    const FrontBase: TFrontBase; const FSums: TSaleSums; Revert: Boolean = False);
 
   procedure WriteLogToFile(const Str, UserName: String);
 
 implementation
 
 uses
-  SysUtils, Forms;
-
+  SysUtils, Forms, TouchMessageBoxForm_Unit, Dialogs;
 
 procedure WriteLogToFile(const Str, UserName: String);
 const
@@ -207,7 +211,7 @@ begin
 end;
 
 procedure SavePayment(const ContactKey, DocID: Integer; const PayLine: TkbmMemTable;
-  const FrontBase: TFrontBase; const FSums: TSaleSums);
+  const FrontBase: TFrontBase; const FSums: TSaleSums; Revert: Boolean);
 var
   FRubPayTypeKey: Integer;
 begin
@@ -222,11 +226,11 @@ begin
         if PayLine.FieldByName('USR$PAYTYPEKEY').AsInteger <> FRubPayTypeKey then
           FrontBase.SavePayment(ContactKey, DocID,
             PayLine.FieldByName('USR$PAYTYPEKEY').AsInteger,
-            PayLine.FieldByName('USR$PERSONALCARDKEY').AsInteger, PayLine.FieldByName('SUM').AsCurrency)
+            PayLine.FieldByName('USR$PERSONALCARDKEY').AsInteger, PayLine.FieldByName('SUM').AsCurrency, Revert)
         else
           FrontBase.SavePayment(ContactKey, DocID,
             PayLine.FieldByName('USR$PAYTYPEKEY').AsInteger,
-            PayLine.FieldByName('USR$PERSONALCARDKEY').AsInteger, (PayLine.FieldByName('SUM').AsCurrency - FSums.FChangeSum));
+            PayLine.FieldByName('USR$PERSONALCARDKEY').AsInteger, (PayLine.FieldByName('SUM').AsCurrency - FSums.FChangeSum), Revert);
 
         PayLine.Next;
       end;
@@ -237,7 +241,6 @@ begin
     PayLine.EnableControls;
   end;
 end;
-
 
 { TAbstractFiscalRegister }
 
@@ -313,7 +316,7 @@ begin
   except
     on E: Exception do
     begin
-      raise Exception.Create('Ошибка при сохранении чека ' + E.Message);
+      Touch_MessageBox('Внимание', 'Ошибка при сохранении чека ' + E.Message, MB_OK, mtError);
       Result := False;
     end;
   end;
@@ -336,6 +339,33 @@ begin
     Result := 0
   else
     Result := E_NOINTERFACE;
+end;
+
+function TAbstractFiscalRegister.ReturnCheck(const Doc, DocLine,
+  PayLine: TkbmMemTable; const FSums: TSaleSums): Boolean;
+begin
+  try
+    if Doc.State <> dsEdit then
+      Doc.Edit;
+    Doc.FieldByName('USR$WHOPAYOFFKEY').AsInteger := FFrontBase.ContactKey;
+    Doc.FieldByName('USR$PAY').AsInteger := 1;
+    Doc.FieldByName('USR$LOGICDATE').AsDateTime := FFrontBase.GetLogicDate;
+    Doc.FieldByName('USR$SYSNUM').AsInteger := 0;
+    if Doc.FieldByName('usr$timecloseorder').IsNull then
+      Doc.FieldByName('usr$timecloseorder').AsDateTime := Now;
+
+    SavePayment(FFrontBase.ContactKey, Doc.FieldByName('ID').AsInteger,
+      PayLine, FFrontBase, FSums, True);
+
+    Doc.Post;
+    Result := True;
+  except
+    on E: Exception do
+    begin
+      Touch_MessageBox('Внимание', 'Ошибка при сохранении чека ' + E.Message, MB_OK, mtError);
+      Result := False;
+    end;
+  end;
 end;
 
 function TAbstractFiscalRegister.ReturnGoodMoney(const FSums: TSaleSums): Boolean;
