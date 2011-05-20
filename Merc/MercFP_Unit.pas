@@ -218,7 +218,7 @@ begin
       ClearLastError;
       try
         PortNum := FFrontBase.FiscalComPort;
-        BaudRate := 115200; //9600
+        BaudRate := 115200;   // 9600
         Password := '0000';
         InternalTimeout := 1000;
         ExternalTimeout := 1000;
@@ -281,9 +281,11 @@ begin
 
   if FDriverInit then
   begin
-    OpenCheck(motSale);
-    if SetLastError then
-      exit;
+    try
+      OpenCheck(motSale)
+    except
+      SetLastError;
+    end;
 
     DocLine.First;
     TotalDiscount := 0;
@@ -391,17 +393,21 @@ begin
 
   if FDriverInit then
   begin
-    OpenReceipt(motRefund);
-//    OpenCheck(1);
-    if SetLastError then
-      exit;
+    try
+      if (FSums.FCardSum + FSums.FCreditSum + FSums.FPersonalCardSum) <> 0 then
+        OpenCheck(motRefundCashless)
+      else
+        OpenCheck(motRefund);
+    except
+      SetLastError;
+    end;
 
     DocLine.First;
     TotalDiscount := 0;
     while not DocLine.Eof do
     begin
       GoodName := DocLine.FieldByName('GOODNAME').AsString;
-      Quantity := DocLine.FieldByName('usr$quantity').AsCurrency ;
+      Quantity := -DocLine.FieldByName('usr$quantity').AsCurrency;
       Price := DocLine.FieldByName('usr$costncu').AsCurrency;
       Summ := -DocLine.FieldByName('usr$sumncuwithdiscount').AsCurrency;
       SumDiscount := Round(DocLine.FieldByName('usr$sumdiscount').AsCurrency  + 0.0001);
@@ -500,7 +506,7 @@ begin
         exit;
 
       Inc(FIV);
-      if CurrentOper = 1 then
+      if CurrentOper = motSale then
       begin
         // печать уплаченной суммы
         if Summ3 > 0 then
@@ -526,6 +532,8 @@ begin
       Result := True;
     except
       ShowLastError;
+      //отменяем фискальный документ
+      Cancel;
     end;
   end
 end;
@@ -772,7 +780,7 @@ begin
         exit;
 
       Inc(FIV);
-      if CurrentOper = 1 then
+      if CurrentOper = motSale then
       begin
         AddPay(mptCash, Summ, 0, '', cn_FontFlagPay, 0, FIV, 0);
         if SetLastError then
@@ -792,9 +800,10 @@ begin
       Result := True;
     except
       ShowLastError;
+      //отменяем фискальный документ
+      Cancel;
     end;
   end
-
 end;
 
 function TMercuryRegister.Feed(const LineCount: Integer): Boolean;
@@ -845,12 +854,12 @@ begin
         exit;
       Inc(FIV);
 
-      if CurrentOper = 1 then // продажа
+      if CurrentOper = motSale then // продажа
         if Quantity >= 0 then
         begin
           if SumDiscount = 0 then
           begin
-            AddItem(0, Summ, False, 1, BarCode,
+            AddItem(mitItem, Summ, False, 1, BarCode,
                 0, -1, 0, 0, '',
                 cn_FontFlagPosition, 0, FIV, 0);
             if SetLastError then
@@ -859,14 +868,14 @@ begin
 
           if SumDiscount <> 0 then
           begin
-            AddItem(0, Summ + SumDiscount, False, 1, BarCode,
+            AddItem(mitItem, Summ + SumDiscount, False, 1, BarCode,
                 0, -1, 0, 0, '',
                 cn_FontFlagPosition, 0, FIV, 0);
             if SetLastError then
               exit;
             Inc(FIV);
             //скидка
-            AddItem(2, -SumDiscount, False, 1, BarCode,
+            AddItem(mitAmountAdj, -SumDiscount, False, 1, BarCode,
                 0, 0, 3, 0, '',
                 cn_FontFlagPosition, 0, FIV, 0);
             if SetLastError then
@@ -874,15 +883,15 @@ begin
           end;
         end else // отмена позиции
         begin
-          AddItem(3, Summ, False, 1, BarCode,
+          AddItem(mitVoidItem, Summ, False, 1, BarCode,
               0, -1, 0, 0, '',
               cn_FontFlagPosition, 0, FIV, 0);
           if SetLastError then
             exit;
         end
-      else if CurrentOper = 2 then // возврат
+      else if (CurrentOper = motRefund) or (CurrentOper = motRefundCashless) then // возврат
       begin
-        AddItem(0, Summ, False, 1, BarCode,
+        AddItem(mitItem, Summ, False, 1, BarCode,
             0, -1, 0, 0, '',
             cn_FontFlagPosition, 0, FIV, 0);
         if SetLastError then
@@ -890,8 +899,11 @@ begin
       end;
       Inc(FIV);
 
-      if not Print then
-        exit;
+      if CurrentOper = motSale then
+      begin
+        if not Print then
+          exit;
+      end;
       Result := True;
     except
       ShowLastError;
