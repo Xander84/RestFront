@@ -199,8 +199,12 @@ end;
 
 function TMercuryRegister.GetDocumentNumber: Integer;
 begin
-  // не нашёл общего счетчика документов
-  Result := 0;
+  try
+    QueryLastDocInfo;
+    Result := LastDocNumber;
+  except
+    Result := 0;
+  end;
 end;
 
 function TMercuryRegister.GetFrontBase: TFrontBase;
@@ -218,7 +222,7 @@ begin
       ClearLastError;
       try
         PortNum := FFrontBase.FiscalComPort;
-        BaudRate := 115200;   // 9600
+        BaudRate := 115200;//9600
         Password := '0000';
         InternalTimeout := 1000;
         ExternalTimeout := 1000;
