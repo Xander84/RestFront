@@ -222,7 +222,7 @@ begin
       ClearLastError;
       try
         PortNum := FFrontBase.FiscalComPort;
-        BaudRate := 115200;//9600
+        BaudRate := FFrontBase.BaudRate;
         Password := '0000';
         InternalTimeout := 1000;
         ExternalTimeout := 1000;

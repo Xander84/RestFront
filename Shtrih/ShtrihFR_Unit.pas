@@ -413,6 +413,7 @@ begin
   begin
     if Touch_MessageBox('Внимание',
       'Вы действительно хотите снять отчет с гашением Z1?', MB_YESNO, mtConfirmation) = IDYES then
+    begin
       if ResultCode <> 0 then
       begin
         ErrMessage(ResultCode);

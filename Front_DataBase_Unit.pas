@@ -292,11 +292,13 @@ type
     FUserName: String;
     FUserGroup: Integer;
 
+{ TODO : Наверное стоит вынести данные свойства в базовый класс ФР }
     FCashCode: Integer;
     FFiscalComPort: Integer;
     FCashNumber: Integer;
     FIsMainCash: Boolean;
     FFiscalLog: Boolean;
+    FBaudRate: Integer;
 
     FOrderTypeKey: Integer;
     FCompanyKey: Integer;
@@ -313,6 +315,7 @@ type
     function GetDisplay: TDisplay;
     function GetCashCode: Integer;
     function GetFiscalComPort: Integer;
+    function GetBaudRate: Integer;
     function GetCashNumber: Integer;
     function GetIsMainCash: Boolean;
     function GetServerName: String;
@@ -462,6 +465,7 @@ type
     property FiscalComPort: Integer read GetFiscalComPort;
     property CashNumber: Integer read GetCashNumber;
     property IsMainCash: Boolean read GetIsMainCash;
+    property BaudRate: Integer read GetBaudRate;
     property ServerName: String read GetServerName;
     property QueryList: TgsQueryList read FQueryList;
     property CompanyKey: Integer read FCompanyKey;
@@ -2417,6 +2421,13 @@ begin
   end;
 end;
 
+function TFrontBase.GetBaudRate: Integer;
+begin
+  if not (FBaudRate > 0) then
+    GetCashInfo;
+  Result := FBaudRate;
+end;
+
 procedure TFrontBase.InitDB;
 var
   I: Integer;
@@ -2988,7 +2999,8 @@ begin
       FReadSQL.SQL.Text :=
         ' select ' +
         '   first(1) ' +
-        '   s.usr$cashcode as code, s.USR$COMPORT as comport, s.usr$cashnumber as number, s.id ' +
+        '   s.usr$cashcode as code, s.USR$COMPORT as comport, ' +
+        '   s.usr$cashnumber as number, s.USR$BAUDRATE as baudrate, s.id ' +
         ' from ' +
         '   usr$mn_pointofsaleset  s  ' +
         ' where ' +
@@ -3005,12 +3017,14 @@ begin
         FFiscalComPort := FReadSQL.FieldByName('comport').AsInteger;
         FCashNumber := FReadSQL.FieldByName('number').AsInteger;
         FIsMainCash := True;
+        FBaudRate := FReadSQL.FieldByName('baudrate').AsInteger;
       end else
       begin
         FCashCode := -1;
         FFiscalComPort := -1;
         FCashNumber := -1;
         FIsMainCash := False;
+        FBaudRate := -1;
       end;
     except
       raise;
