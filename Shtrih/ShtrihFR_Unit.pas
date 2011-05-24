@@ -61,7 +61,7 @@ begin
   while True do
   begin
     GetShortECRStatus;
-    Sleep(500);
+    Sleep(200);
     case ECRAdvancedMode of
       // Бумага есть, ФР не в фазе печати операции
       0:
@@ -85,7 +85,7 @@ begin
       3:
         begin
           ContinuePrint;
-          Sleep(500);
+          Sleep(2000);
           if ResultCode <> 0 then
           begin
             ErrMessage(ResultCode);
@@ -347,8 +347,6 @@ begin
 
       StringForPrinting := '';
       CloseCheck;
-      if not CheckFiscalState then
-        exit;
       Res := ResultCode;
       if Res <> 0 then
       begin
@@ -388,6 +386,11 @@ begin
   begin
     if Touch_MessageBox('Внимание', 'Вы действительно хотите снять отчет X1?', MB_YESNO, mtConfirmation) = IDYES then
     begin
+      if ResultCode <> 0 then
+      begin
+        ErrMessage(ResultCode);
+        CancelCheck;
+      end;
       PrintReportWithoutCleaning;
       if ResultCode = 0 then
         Result := True
@@ -410,7 +413,11 @@ begin
   begin
     if Touch_MessageBox('Внимание',
       'Вы действительно хотите снять отчет с гашением Z1?', MB_YESNO, mtConfirmation) = IDYES then
-    begin
+      if ResultCode <> 0 then
+      begin
+        ErrMessage(ResultCode);
+        CancelCheck;
+      end;
       PrintReportWithCleaning;
       if ResultCode = 0 then
         Result := True
