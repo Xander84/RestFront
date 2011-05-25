@@ -958,12 +958,17 @@ begin
       FGoodLastLeftButton := btnFirstTop;
       pnlMainGood.Visible := True;
 
-      FGoodDataSet.First;
-      while not FGoodDataSet.Eof do
-      begin
-        AddGoodButton;
+      LockWindowUpdate(Handle);
+      try
+        FGoodDataSet.First;
+        while not FGoodDataSet.Eof do
+        begin
+          AddGoodButton;
 
-        FGoodDataSet.Next;
+          FGoodDataSet.Next;
+        end;
+      finally
+        LockWindowUpdate(0);
       end;
     end;
   end
@@ -1220,12 +1225,17 @@ begin
   FFrontBase.GetGoodList(FGoodDataSet, MenuKey, GroupKey);
   if FGoodDataSet.Active then
   begin
-    FGoodDataSet.First;
-    while not FGoodDataSet.Eof do
-    begin
-      AddGoodButton;
+    LockWindowUpdate(Handle);
+    try
+      FGoodDataSet.First;
+      while not FGoodDataSet.Eof do
+      begin
+        AddGoodButton;
 
-      FGoodDataSet.Next;
+        FGoodDataSet.Next;
+      end;
+    finally
+      LockWindowUpdate(0);
     end;
   end;
 end;
@@ -1235,12 +1245,17 @@ begin
   FFrontBase.GetGroupList(FGroupDataSet, MenuKey);
   if FGroupDataSet.Active then
   begin
-    FGroupDataSet.First;
-    while not FGroupDataSet.Eof do
-    begin
-      AddGroupButton;
+    LockWindowUpdate(Handle);
+    try
+      FGroupDataSet.First;
+      while not FGroupDataSet.Eof do
+      begin
+        AddGroupButton;
 
-      FGroupDataSet.Next;
+        FGroupDataSet.Next;
+      end;
+    finally
+      LockWindowUpdate(0)
     end;
   end;
 end;
