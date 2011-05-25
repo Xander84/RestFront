@@ -2190,6 +2190,8 @@ begin
                     end;
 
                 else
+                  if FLineTable.IsEmpty then
+                    FFrontBase.DeleteOrder(FHeaderTable.FieldByName('ID').AsInteger);
                   RestFormState := rsOrderMenu;
                 end;
               end;
@@ -3011,7 +3013,7 @@ begin
           tsTablePage.Visible := False;
           pnlRight.Visible := False;
           btnSwapTable.Visible := False;
-          btnUnblockTable.Visible := False;
+          btnUnblockTable.Visible := True;
           RemoveGoodButton;
           RemoveGroupButton;
           RemoveOrderButton;
@@ -4167,8 +4169,8 @@ begin
 
   // Сбросим таймер выхода из окна зала
   SetCloseTimerActive(not FFrontBase.Options.NoPassword);
-
-  if btnUnblockTable.Down then      // Если активен режим разблокировки стола
+  // Если активен режим разблокировки стола
+  if btnUnblockTable.Down then
   begin
     // Запросим ввод пароля пользователем
     UserInfo := FFrontBase.CheckUserPasswordWithForm;
@@ -4272,6 +4274,7 @@ end;
 procedure TRestMainForm.OrderButtonOnClick(Sender: TObject);
 var
   MenuOrderButton: TButton;
+  UserInfo: TUserInfo;
 begin
   // Если смена не открыта не даем редактировать заказ
   if not FFrontBase.CheckForSession then
@@ -4279,30 +4282,49 @@ begin
 
   // В поле Tag храним ID связанного заказа
   MenuOrderButton := TButton(Sender);
-  // Если заказ заблокирован, то позволяем зайти в него только с того же компьютера
-  if FFrontBase.OrderIsLocked(MenuOrderButton.Tag) {and (Order.ComputerName <> FFrontBase.GetLocalComputerName)} then
+  // Если активен режим разблокировки стола
+  if btnUnblockTable.Down then
   begin
-    Touch_MessageBox('Внимание', 'Заказ редактируется на другом рабочем месте!', MB_OK, mtWarning);
-    Exit;
-  end;
-
-  FFrontBase.GetOrder(FHeaderTable, FLineTable, FModificationDataSet, MenuOrderButton.Tag);
-  FFrontBase.LockUserOrder(MenuOrderButton.Tag);
-  if not Assigned(dsMain.DataSet) then
-    dsMain.DataSet := FLineTable
+    // Запросим ввод пароля пользователем
+    UserInfo := FFrontBase.CheckUserPasswordWithForm;
+    if UserInfo.CheckedUserPassword then
+    begin
+      if (UserInfo.UserInGroup and FFrontBase.Options.ManagerGroupMask) <> 0 then
+      begin
+        FFrontBase.UnLockUserOrder(MenuOrderButton.Tag);
+        Touch_MessageBox('Разблокировка стола', Format('Заказ %s разблокирован.', [MenuOrderButton.Caption]), MB_OK, mtInformation);
+      end
+      else
+        Touch_MessageBox('Внимание', cn_dontManagerPermission, MB_OK, mtWarning);
+    end;
+    btnUnblockTable.Down := False;
+  end
   else
   begin
-    // для обнулений значений в гриде
-    dsMain.DataSet := nil;
-    dsMain.DataSet := FLineTable;
+    // Если заказ заблокирован, то позволяем зайти в него только с того же компьютера
+    if FFrontBase.OrderIsLocked(MenuOrderButton.Tag) {and (Order.ComputerName <> FFrontBase.GetLocalComputerName)} then
+    begin
+      Touch_MessageBox('Внимание', 'Заказ редактируется на другом рабочем месте!', MB_OK, mtWarning);
+      Exit;
+    end;
+    FFrontBase.GetOrder(FHeaderTable, FLineTable, FModificationDataSet, MenuOrderButton.Tag);
+    FFrontBase.LockUserOrder(MenuOrderButton.Tag);
+    if not Assigned(dsMain.DataSet) then
+      dsMain.DataSet := FLineTable
+    else
+    begin
+      // для обнулений значений в гриде
+      dsMain.DataSet := nil;
+      dsMain.DataSet := FLineTable;
+    end;
+    RestFormState := rsMenuInfo;
+    // если заказ закрыт, то оставляем отмену пречека, иначе просто пречек
+    if FHeaderTable.FieldByName('usr$timecloseorder').IsNull then
+      btnPreCheck.Action := actPreCheck
+    else
+      btnPreCheck.Action := actCancelPreCheck;
+    FLogManager.DoOrderLog(GetCurrentUserInfo, GetCurrentOrderInfo, ev_EnterOrder);
   end;
-  RestFormState := rsMenuInfo;
-  // если заказ закрыт, то оставляем отмену пречека, иначе просто пречек
-  if FHeaderTable.FieldByName('usr$timecloseorder').IsNull then
-    btnPreCheck.Action := actPreCheck
-  else
-    btnPreCheck.Action := actCancelPreCheck;
-  FLogManager.DoOrderLog(GetCurrentUserInfo, GetCurrentOrderInfo, ev_EnterOrder);
 end;
 
 procedure TRestMainForm.tmrCloseTimer(Sender: TObject);
