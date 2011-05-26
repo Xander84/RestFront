@@ -22,7 +22,7 @@ const
 
 type
   // структура оплаты
-  TSaleSums = packed record
+  TSaleSums = record
     // сумма наличных
     FCashSum: Currency;
     // сумма по карточке
@@ -42,55 +42,14 @@ type
     Summ2: Currency;
     Summ3: Currency;
     Summ4: Currency;
-    Summ5: Currency;
-    Summ6: Currency;
-    Summ7: Currency;
-    Summ8: Currency;
-    //номер последнего Z отчета
-    LastNumber: Integer;
-    //итог продаж
-    TotalSumm: Currency;
-    //кол-во возвратов
-    ReturnCount: Integer;
-    //сумма возвратов
-    ReturnSumm: Currency;
-    //кол-во аннулирований
-    CancelCount: Integer;
-    //сумма аннулирований
-    CancelSumm: Currency;
-    //кол-во наценок
-    IncreaseCount: Integer;
-    //сумма наценок
-    IncreaseSumm: Currency;
-    //кол-во скидок
-    DiscountCount: Integer;
-    //сумма скидок
-    DiscountSumm: Currency;
-    //кол-во внесений
-    PayInCount: Integer;
+    SummReturn1: Currency;
+    SummReturn2: Currency;
+    SummReturn3: Currency;
+    SummReturn4: Currency;
     //сумма внесений
     PayInSumm: Currency;
-    //кол-во выплат
-    PayOutCount: Integer;
     //сумма выплат
     PayOutSumm: Currency;
-    //cумма налогов по ставкам
-    TaxSum1: Currency;
-    TaxSum2: Currency;
-    TaxSum3: Currency;
-    TaxSum4: Currency;
-    //кол-во отмен чека
-    CancelCheckCount: Integer;
-    //сумма отмен чека
-    CancelCheckSumm: Currency;
-    //кол-во аварийных отмен чека
-    AlarmCancelCount: Integer;
-    //сумма аварийных отмен чека
-    AlarmCancelSumm: Currency;
-
-
-
-
   end;
 
   IBaseFiscalRegister = interface
@@ -115,12 +74,8 @@ type
 
     //отчет Z1 с гашением
     function PrintZ1ReportWithCleaning: Boolean;
-    //отчет Z2 с гашением
-//    function PrintZ2ReportWithCleaning: Boolean;
     //отчет X1 без гашения
     function PrintX1ReportWithOutCleaning: Boolean;
-    //отчет X2 без гашения
-//    function PrintX2ReportWithOutCleaning: Boolean;
     // открытие денежного ящика    
     procedure OpenDrawer;
     // закрытие сессии (печать Z отчета)
@@ -132,8 +87,8 @@ type
     //деньги из кассы
     procedure MoneyOut(const Sum: Currency);
     function GetDocumentNumber: Integer;
-    //возврат ошибки
-//    procedure ErrMessage(Err: Integer);
+    //информация по счетчикам
+    function GetRegisterInfo: TRegisterStucture;
 
     function Get_Self: Integer;
     property Self: Integer read Get_Self;
@@ -153,15 +108,14 @@ type
     function ReturnCheck(const Doc, DocLine, PayLine: TkbmMemTable; const FSums: TSaleSums): Boolean;
     function ReturnGoodMoney(const FSums: TSaleSums): Boolean;
     function PrintZ1ReportWithCleaning: Boolean;
- //   function PrintZ2ReportWithCleaning: Boolean;
     function PrintX1ReportWithOutCleaning: Boolean;
- //   function PrintX2ReportWithOutCleaning: Boolean;
     function OpenDay: Boolean;
     procedure MoneyIn(const Sum: Currency);
     procedure MoneyOut(const Sum: Currency);
     function GetDocumentNumber: Integer;
     procedure OpenDrawer;
     procedure EndSession;
+    function GetRegisterInfo: TRegisterStucture;
 
     { IInterface }
     function QueryInterface(const IID: TGUID; out Obj): HResult; virtual; stdcall;
@@ -174,6 +128,7 @@ type
 
   procedure SavePayment(const ContactKey, DocID: Integer; const PayLine: TkbmMemTable;
     const FrontBase: TFrontBase; const FSums: TSaleSums; Revert: Boolean = False);
+  procedure SaveRegisters(const RegStruct: TRegisterStucture; const FrontBase: TFrontBase);
 
   procedure WriteLogToFile(const Str, UserName: String);
 
@@ -206,7 +161,16 @@ begin
       LStrings.Free;
     end;
   except
+    //
+  end;
+end;
 
+procedure SaveRegisters(const RegStruct: TRegisterStucture; const FrontBase: TFrontBase);
+begin
+  with RegStruct do
+  begin
+    FrontBase.SaveRegisters(Summ1, Summ2, Summ3, Summ4, SummReturn1, SummReturn2,
+      SummReturn3, SummReturn4, PayInSumm, PayOutSumm);
   end;
 end;
 
@@ -262,6 +226,11 @@ end;
 function TAbstractFiscalRegister.GetFrontBase: TFrontBase;
 begin
   Result := FFrontBase;
+end;
+
+function TAbstractFiscalRegister.GetRegisterInfo: TRegisterStucture;
+begin
+
 end;
 
 function TAbstractFiscalRegister.Get_Self: Integer;

@@ -30,15 +30,14 @@ type
     function ReturnGoodMoney(const FSums: TSaleSums): Boolean;
 
     function PrintZ1ReportWithCleaning: Boolean;
-    function PrintZ2ReportWithCleaning: Boolean;
     function PrintX1ReportWithOutCleaning: Boolean;
-    function PrintX2ReportWithOutCleaning: Boolean;
     procedure OpenDrawer;
     procedure EndSession;
     function OpenDay: Boolean;
     procedure MoneyIn(const Sum: Currency);
     procedure MoneyOut(const Sum: Currency);
     function GetDocumentNumber: Integer;
+    function GetRegisterInfo: TRegisterStucture;
 
     property FrontBase: TFrontBase read GetFrontBase write SetFrontBase;
     property Self: Integer read Get_Self;
@@ -166,7 +165,12 @@ end;
 function TShtrihFR.GetDocumentNumber: Integer;
 begin
   try
-    Result := OpenDocumentNumber;
+    RegisterNumber := 152;
+    GetOperationReg;
+    if ResultCode = 0 then
+      Result := ContentsOfOperationRegister
+    else
+      Result := 0;
   except
     Result := 0;
   end;
@@ -175,6 +179,35 @@ end;
 function TShtrihFR.GetFrontBase: TFrontBase;
 begin
   Result := FFrontBase;
+end;
+
+function TShtrihFR.GetRegisterInfo: TRegisterStucture;
+
+  function GetResister(const RegNumber: Integer): Currency;
+  begin
+    try
+      RegisterNumber := RegNumber;
+      GetCashReg;
+      if ResultCode = 0 then
+        Result := ContentsOfCashRegister
+      else
+        Result := 0;
+    except
+      Result := 0;
+    end;
+  end;
+
+begin
+  Result.Summ1 := GetResister(193);
+  Result.Summ2 := GetResister(197);
+  Result.Summ3 := GetResister(201);
+  Result.Summ4 := GetResister(205);
+  Result.SummReturn1 := GetResister(195);
+  Result.SummReturn2 := GetResister(199);
+  Result.SummReturn3 := GetResister(203);
+  Result.SummReturn4 := GetResister(207);
+  Result.PayInSumm := GetResister(242);
+  Result.PayOutSumm := GetResister(243);
 end;
 
 function TShtrihFR.Init: Boolean;
@@ -400,12 +433,6 @@ begin
   end;
 end;
 
-function TShtrihFR.PrintX2ReportWithOutCleaning: Boolean;
-begin
-  Result := False;
-  Touch_MessageBox('Внимание', 'Данный вид отчёта не поддерживается', MB_OK, mtError);
-end;
-
 function TShtrihFR.PrintZ1ReportWithCleaning: Boolean;
 begin
   Result := False;
@@ -419,6 +446,9 @@ begin
         ErrMessage(ResultCode);
         CancelCheck;
       end;
+
+      SaveRegisters(GetRegisterInfo, FrontBase);
+
       PrintReportWithCleaning;
       if ResultCode = 0 then
         Result := True
@@ -426,12 +456,6 @@ begin
         ErrMessage(ResultCode);
     end;
   end;
-end;
-
-function TShtrihFR.PrintZ2ReportWithCleaning: Boolean;
-begin
-  Result := False;
-  Touch_MessageBox('Внимание', 'Данный вид отчёта не поддерживается', MB_OK, mtError);
 end;
 
 function TShtrihFR.ReturnCheck(const Doc, DocLine, PayLine: TkbmMemTable;

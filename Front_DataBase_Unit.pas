@@ -4,7 +4,8 @@ interface
 
 uses
   IBDatabase, Db, Classes, IBSQL, kbmMemTable, Base_Display_unit, Generics.Collections,
-  Pole_Display_Unit, IBQuery, IB, IBErrorCodes, IBServices, obj_QueryList, rfUser_unit, rfOrder_unit, RestTable_Unit;
+  Pole_Display_Unit, IBQuery, IB, IBErrorCodes, IBServices, obj_QueryList, rfUser_unit,
+  rfOrder_unit, RestTable_Unit;
 
 const
   MN_OrderXID = 147014509;
@@ -428,6 +429,9 @@ type
 
     function SavePayment(const ContactKey, OrderKey, PayKindKey, PersonalCardKey: Integer;
       Sum: Currency; Revert: Boolean = False): Boolean;
+
+    function SaveRegisters(const Summ1, Summ2, Summ3, Summ4, SummReturn1, SummReturn2,
+      SummReturn3, SummReturn4, PayInSumm, PayOutSumm: Currency): Boolean;
 
     //1. Отмена пречека
     //2. Перенос блюда
@@ -4433,50 +4437,48 @@ begin
   end;
 end;
 
-{function TFrontBase.GetServiceCheckOptions(const DocID: Integer;
-  out PrinterName: String; out PrnGrid: Integer): Boolean;
+function TFrontBase.SaveRegisters(const Summ1, Summ2, Summ3, Summ4, SummReturn1,
+  SummReturn2, SummReturn3, SummReturn4, PayInSumm,
+  PayOutSumm: Currency): Boolean;
+var
+  FSQL: TIBSQL;
 begin
   Result := False;
-  FReadSQL.Close;
+
+  FSQL := TIBSQL.Create(nil);
+  FSQL.Transaction := FCheckTransaction;
+  FSQL.SQL.Text :=
+    ' INSERT INTO USR$MN_REGISTERINFO(USR$DATE, USR$SUMM1, USR$SUMM2, USR$SUMM3, USR$SUMM4, ' +
+    '   USR$SUMMRETURN1, USR$SUMMRETURN2, USR$SUMMRETURN3, USR$SUMMRETURN4, ' +
+    '   USR$PAYINSUMM, USR$PAYOUTSUMM) ' +
+    ' VALUES (CURRENT_DATE, :SUMM1, :SUMM2, :SUMM3, :SUMM4, :SUMMRETURN1, :SUMMRETURN2, ' +
+    '   :SUMMRETURN3, :SUMMRETURN4, :PAYINSUMM, :PAYOUTSUMM) ';
   try
+    if not FCheckTransaction.InTransaction then
+      FCheckTransaction.StartTransaction;
     try
-      if not FReadSQL.Transaction.InTransaction then
-        FReadSQL.Transaction.StartTransaction;
-
-      FReadSQL.SQL.Text :=
-        'select ' +
-        '  DISTINCT   ' +
-        '  IIF(setprn.usr$concatchecks = 0, prn.id, null) as prngrid, prn.usr$divide,  ' +
-        '  setprn.usr$printername, setprn.usr$printerid, o.documentkey, setprn.USR$DOSPRINTER  ' +
-        'from   ' +
-        '  usr$mn_order o  ' +
-        '  join usr$mn_orderline l on o.documentkey = l.masterkey  ' +
-        '  join gd_document doc on doc.id = l.documentkey and doc.usr$mn_printdate is null  ' +
-        '  join gd_good g on g.id = l.usr$goodkey  ' +
-        '  join usr$mn_prngroup prn on prn.id = g.usr$prngroupkey  ' +
-        '  join usr$mn_prngroupset setprn on setprn.usr$prngroup = prn.id  ' +
-        'where o.documentkey = :docid  ' +
-        ' and setprn.usr$computername = :comp   ' +
-        ' and setprn.usr$kassa = 0   ' +
-        'order by  ' +
-        '  setprn.usr$printername, prn.id  ';
-      FReadSQL.ParamByName('docid').AsInteger := DocID;
-      FReadSQL.ParamByName('comp').AsString := GetLocalComputerName;
-      FReadSQL.ExecQuery;
-      if not FReadSQL.Eof then
-      begin
-        PrinterName := FReadSQL.FieldByName('usr$printername').AsString;
-        PrnGrid := FReadSQL.FieldByName('prngrid').AsInteger;
-
-        Result := True;
-      end;
+      FSQL.ParamByName('SUMM1').AsCurrency := Summ1;
+      FSQL.ParamByName('SUMM2').AsCurrency := Summ2;
+      FSQL.ParamByName('SUMM3').AsCurrency := Summ3;
+      FSQL.ParamByName('SUMM4').AsCurrency := Summ4;
+      FSQL.ParamByName('SUMMRETURN1').AsCurrency := SummReturn1;
+      FSQL.ParamByName('SUMMRETURN2').AsCurrency := SummReturn2;
+      FSQL.ParamByName('SUMMRETURN3').AsCurrency := SummReturn3;
+      FSQL.ParamByName('SUMMRETURN4').AsCurrency := SummReturn4;
+      FSQL.ParamByName('PAYINSUMM').AsCurrency := PayInSumm;
+      FSQL.ParamByName('PAYOUTSUMM').AsCurrency := PayOutSumm;
+      FSQL.ExecQuery;
+      Result := True;
     except
+      FCheckTransaction.Rollback;
       raise;
     end;
   finally
-    FReadSQL.Close;
+    if FCheckTransaction.InTransaction then
+      FCheckTransaction.Commit;
+    FSQL.Free;
   end;
-end;   }
+end;
 
 function TFrontBase.SaveReportTemplate(const Stream: TStream;
   const ID: Integer): Boolean;

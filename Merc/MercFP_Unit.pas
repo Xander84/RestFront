@@ -7,24 +7,24 @@ uses
   Base_FiscalRegister_unit;
 
 const
-  cn_FontFlagHeaderLine1 = 3;   // 1-я строка заголовка
-  cn_FontFlagHeaderLine2 = 3;   // 2-я строка заголовка
-  cn_FontFlagHeaderLine3 = 3;   // 3-я строка заголовка
-  cn_FontFlagHeaderLine4 = 3;   // 4-я строка заголовка
+  cn_FontFlagHeaderLine1 = 3; // 1-я строка заголовка
+  cn_FontFlagHeaderLine2 = 3; // 2-я строка заголовка
+  cn_FontFlagHeaderLine3 = 3; // 3-я строка заголовка
+  cn_FontFlagHeaderLine4 = 3; // 4-я строка заголовка
 
-  cn_FontFlagCashier = 0;       // кассир
-  cn_FontFlagSerialNumber = 0;  // серийный номер ККМ
-  cn_FontFlagDateTime = 0;      // текущие дата и время
-  cn_FontFlagDocNumber = 0;     // номер документа
+  cn_FontFlagCashier = 0; // кассир
+  cn_FontFlagSerialNumber = 0; // серийный номер ККМ
+  cn_FontFlagDateTime = 0; // текущие дата и время
+  cn_FontFlagDocNumber = 0; // номер документа
   cn_FontFlagReceiptNumber = 0; // номер чека
-  cn_FontFlagTaxPayerNumber = 0;// ИНН владельца
+  cn_FontFlagTaxPayerNumber = 0; // ИНН владельца
 
-  cn_FontFlagGoodName = 0;      // наименование ТМЦ
-  cn_FontFlagPosition = 0;      // продажа
-  cn_FontFlagTotal = 2;         // полная сумма чека
-  cn_FontFlagPay = 2;           // уплаченная сумма
-  cn_FontFlagChange = 2;        // сдача
-  cn_FontFlagDiscount = 2;      // скидка
+  cn_FontFlagGoodName = 0; // наименование ТМЦ
+  cn_FontFlagPosition = 0; // продажа
+  cn_FontFlagTotal = 2; // полная сумма чека
+  cn_FontFlagPay = 2; // уплаченная сумма
+  cn_FontFlagChange = 2; // сдача
+  cn_FontFlagDiscount = 2; // скидка
 
   FPrintEachPart = True;
 
@@ -38,7 +38,7 @@ type
     FLastErrorNumber: Integer;
     FLastErrorDescription: String;
     FLastWarning: String;
-    //вертикальное смещение строки на чековой ленте
+    // вертикальное смещение строки на чековой ленте
     FIV: Integer;
     FFRRoundOption: Integer;
 
@@ -49,7 +49,7 @@ type
     function SetLastError: Boolean;
     procedure ShowLastError;
 
-    //открытие чека, параметры соответствуют параметрам OpenFiscalDoc
+    // открытие чека, параметры соответствуют параметрам OpenFiscalDoc
     function OpenCheck(const CheckType: Integer): Boolean;
     // Отмена открытого чека
     function Cancel: Boolean;
@@ -70,17 +70,16 @@ type
     function Feed(const LineCount: Integer): Boolean;
     function Cut(const LineCount: Integer): Boolean;
 
-  { позиция чека
-    Quantity - кол-во (допускает 3 знака после запятой)
-    Price - цена
-    GoodName - наименование ТМЦ
-    Summ = Quantity * Price, округленная по правилам, установленным в кассовой системе
-    DepNumber - номер отдела
-    BarCode - шифр товара
-    ValueName - единица измерения }
-    function Sale(const Quantity, Price: Currency;
-      const GoodName: String; const Summ: Currency;
-      const DepNumber, BarCode: Integer;
+    { позиция чека
+      Quantity - кол-во (допускает 3 знака после запятой)
+      Price - цена
+      GoodName - наименование ТМЦ
+      Summ = Quantity * Price, округленная по правилам, установленным в кассовой системе
+      DepNumber - номер отдела
+      BarCode - шифр товара
+      ValueName - единица измерения }
+    function Sale(const Quantity, Price: Currency; const GoodName: String;
+      const Summ: Currency; const DepNumber, BarCode: Integer;
       const ValueName: String; const SumDiscount: Currency): Boolean;
     procedure SetFRRoundOption(const Value: Integer);
     function GetFRRoundOption: Integer;
@@ -90,14 +89,14 @@ type
 
     function CheckDeviceInfo: Boolean;
     function Init: Boolean;
-    function PrintCheck(const Doc, DocLine, PayLine: TkbmMemTable; const FSums: TSaleSums): Boolean;
-    function ReturnCheck(const Doc, DocLine, PayLine: TkbmMemTable; const FSums: TSaleSums): Boolean;
+    function PrintCheck(const Doc, DocLine, PayLine: TkbmMemTable;
+      const FSums: TSaleSums): Boolean;
+    function ReturnCheck(const Doc, DocLine, PayLine: TkbmMemTable;
+      const FSums: TSaleSums): Boolean;
     function ReturnGoodMoney(const FSums: TSaleSums): Boolean;
 
     function PrintZ1ReportWithCleaning: Boolean;
-    function PrintZ2ReportWithCleaning: Boolean;
     function PrintX1ReportWithOutCleaning: Boolean;
-    function PrintX2ReportWithOutCleaning: Boolean;
     procedure OpenDrawer;
     procedure EndSession;
     function OpenDay: Boolean;
@@ -105,17 +104,19 @@ type
     procedure MoneyOut(const Sum: Currency);
 
     function GetDocumentNumber: Integer;
+    function GetRegisterInfo: TRegisterStucture;
 
     property FrontBase: TFrontBase read GetFrontBase write SetFrontBase;
     property Self: Integer read Get_Self;
 
-    property FRRoundOption: Integer read GetFRRoundOption write SetFRRoundOption;
+    property FRRoundOption
+      : Integer read GetFRRoundOption write SetFRRoundOption;
   end;
 
 implementation
 
 uses
-  SysUtils, Math, Controls, TouchMessageBoxForm_Unit, Dialogs;
+  SysUtils, TouchMessageBoxForm_Unit, Dialogs;
 
 { TMercuryRegister }
 
@@ -139,7 +140,8 @@ begin
     FLastWarning := '';
 
     if CheckEcrStatus(3) > 0 then
-      FLastWarning := 'Фискальная память близка к концу (осталось менее 30 записей)';
+      FLastWarning :=
+        'Фискальная память близка к концу (осталось менее 30 записей)';
     if CheckEcrStatus(4) > 0 then
       AddToWarning('Фискальная память заполнена', NoError);
     if CheckDevStatus(1) > 0 then
@@ -173,13 +175,17 @@ begin
     if CheckDevStatus(15) > 0 then
       AddToWarning('принтер ожидает подкладной лист', NoError);
     if CheckDevStatus(16) > 0 then
-      AddToWarning('нет бумаги по данным датчика заправки подкладного листа', NoError);
+      AddToWarning('нет бумаги по данным датчика заправки подкладного листа',
+        NoError);
     if CheckDevStatus(17) > 0 then
-      AddToWarning('нет бумаги по данным датчика выброса подкладного листа', NoError);
+      AddToWarning('нет бумаги по данным датчика выброса подкладного листа',
+        NoError);
     if CheckDevStatus(22) > 0 then
       AddToWarning('конец бумаги или поднята печатающая головка', NoError);
     if CheckDevStatus(24) > 0 then
-      AddToWarning('принтер занят, находится в состоянии offline или произошла ошибка принтера', NoError);
+      AddToWarning(
+        'принтер занят, находится в состоянии offline или произошла ошибка принтера'
+          , NoError);
 
     Result := NoError;
   except
@@ -226,10 +232,10 @@ begin
         Password := '0000';
         InternalTimeout := 1000;
         ExternalTimeout := 1000;
-       // Active := 0;
+        // Active := 0;
         RetryOperation := False;
         Open;
-        
+
         if SetLastError then
           exit;
 
@@ -246,20 +252,21 @@ begin
         SetLastError;
       end;
     end;
-  end else
+  end
+  else
     Result := True;
 end;
 
 procedure TMercuryRegister.MoneyIn(const Sum: Currency);
 begin
-  MoneyOperation(5, Sum);
-  Cut(0)
+  MoneyOperation(motCashIn, Sum);
+//  Cut(0)
 end;
 
 procedure TMercuryRegister.MoneyOut(const Sum: Currency);
 begin
-  MoneyOperation(6, Sum);
-  Cut(0)
+  MoneyOperation(motCashOut, Sum);
+//  Cut(0)
 end;
 
 procedure TMercuryRegister.OpenDrawer;
@@ -272,8 +279,8 @@ begin
   end;
 end;
 
-function TMercuryRegister.PrintCheck(const Doc, DocLine,
-  PayLine: TkbmMemTable; const FSums: TSaleSums): Boolean;
+function TMercuryRegister.PrintCheck(const Doc, DocLine, PayLine: TkbmMemTable;
+  const FSums: TSaleSums): Boolean;
 var
   TotalDiscount: Currency;
   GoodName: String;
@@ -286,9 +293,7 @@ begin
   if FDriverInit then
   begin
     try
-      OpenCheck(motSale)
-    except
-      SetLastError;
+      OpenCheck(motSale) except SetLastError;
     end;
 
     DocLine.First;
@@ -296,10 +301,11 @@ begin
     while not DocLine.Eof do
     begin
       GoodName := DocLine.FieldByName('GOODNAME').AsString;
-      Quantity := DocLine.FieldByName('usr$quantity').AsCurrency ;
+      Quantity := DocLine.FieldByName('usr$quantity').AsCurrency;
       Price := DocLine.FieldByName('usr$costncu').AsCurrency;
       Summ := DocLine.FieldByName('usr$sumncuwithdiscount').AsCurrency;
-      SumDiscount := Round(DocLine.FieldByName('usr$sumdiscount').AsCurrency  + 0.0001);
+      SumDiscount := Round(DocLine.FieldByName('usr$sumdiscount')
+          .AsCurrency + 0.0001);
       TotalDiscount := TotalDiscount + SumDiscount;
 
       Sale(Quantity, Price, GoodName, Summ, 1, 0, '', SumDiscount);
@@ -307,20 +313,22 @@ begin
       DocLine.Next;
     end;
 
-    Close(FSums.FCashSum, FSums.FCardSum, (FSums.FCreditSum + FSums.FPersonalCardSum));
+    Close(FSums.FCashSum, FSums.FCardSum,
+      (FSums.FCreditSum + FSums.FPersonalCardSum));
     if SetLastError then
       exit;
-  //  Cut(0);
+    // Cut(0);
     Result := True;
 
     if Result then
     begin
-    // сохраняем чек
+      // сохраняем чек
       if Doc.State <> dsEdit then
         Doc.Edit;
       Doc.FieldByName('USR$WHOPAYOFFKEY').AsInteger := FFrontBase.ContactKey;
       Doc.FieldByName('USR$PAY').AsInteger := 1;
-      Doc.FieldByName('USR$REGISTER').AsString := IntToStr(FFrontBase.CashNumber);
+      Doc.FieldByName('USR$REGISTER').AsString := IntToStr
+        (FFrontBase.CashNumber);
       Doc.FieldByName('USR$LOGICDATE').AsDateTime := FFrontBase.GetLogicDate;
       Doc.FieldByName('USR$SYSNUM').AsInteger := GetDocumentNumber;
       if Doc.FieldByName('usr$timecloseorder').IsNull then
@@ -329,12 +337,13 @@ begin
         SavePayment(FFrontBase.ContactKey, Doc.FieldByName('ID').AsInteger,
           PayLine, FFrontBase, FSums);
       except
-        {TODO: Issue 50}
+        { TODO: Issue 50 }
       end;
       Doc.Post;
     end;
 
-  end else
+  end
+  else
     Touch_MessageBox('Внимание', 'Не установлен драйвер для ФР!', MB_OK, mtError);
 end;
 
@@ -348,17 +357,11 @@ begin
       XReport(1);
       if SetLastError then
         exit;
-      Result := True;  
+      Result := True;
     except
       ShowLastError;
     end;
   end;
-end;
-
-function TMercuryRegister.PrintX2ReportWithOutCleaning: Boolean;
-begin
-  Result := False;
-  Touch_MessageBox('Внимание', 'Данный вид отчёта не поддерживается', MB_OK, mtError);
 end;
 
 function TMercuryRegister.PrintZ1ReportWithCleaning: Boolean;
@@ -368,24 +371,19 @@ begin
   begin
     ClearLastError;
     try
+      SaveRegisters(GetRegisterInfo, FrontBase);
       ZReport(1);
       if SetLastError then
         exit;
-      Result := True;  
+      Result := True;
     except
       ShowLastError;
     end;
   end;
 end;
 
-function TMercuryRegister.PrintZ2ReportWithCleaning: Boolean;
-begin
-  Result := False;
-  Touch_MessageBox('Внимание', 'Данный вид отчёта не поддерживается', MB_OK, mtError);
-end;
-
-function TMercuryRegister.ReturnCheck(const Doc, DocLine, PayLine: TkbmMemTable;
-  const FSums: TSaleSums): Boolean;
+function TMercuryRegister.ReturnCheck(const Doc, DocLine,
+  PayLine: TkbmMemTable; const FSums: TSaleSums): Boolean;
 var
   TotalDiscount: Currency;
   GoodName: String;
@@ -414,7 +412,8 @@ begin
       Quantity := -DocLine.FieldByName('usr$quantity').AsCurrency;
       Price := DocLine.FieldByName('usr$costncu').AsCurrency;
       Summ := -DocLine.FieldByName('usr$sumncuwithdiscount').AsCurrency;
-      SumDiscount := Round(DocLine.FieldByName('usr$sumdiscount').AsCurrency  + 0.0001);
+      SumDiscount := Round(DocLine.FieldByName('usr$sumdiscount')
+          .AsCurrency + 0.0001);
       TotalDiscount := TotalDiscount + SumDiscount;
 
       Sale(Quantity, Price, GoodName, Summ, 1, 0, '', SumDiscount);
@@ -422,20 +421,22 @@ begin
       DocLine.Next;
     end;
 
-    Close(FSums.FCashSum, FSums.FCardSum, (FSums.FCreditSum + FSums.FPersonalCardSum));
+    Close(FSums.FCashSum, FSums.FCardSum,
+      (FSums.FCreditSum + FSums.FPersonalCardSum));
     if SetLastError then
       exit;
-  //  Cut(0);
+    // Cut(0);
     Result := True;
 
     if Result then
     begin
-    // сохраняем чек
+      // сохраняем чек
       if Doc.State <> dsEdit then
         Doc.Edit;
       Doc.FieldByName('USR$WHOPAYOFFKEY').AsInteger := FFrontBase.ContactKey;
       Doc.FieldByName('USR$PAY').AsInteger := 1;
-      Doc.FieldByName('USR$REGISTER').AsString := IntToStr(FFrontBase.CashNumber);
+      Doc.FieldByName('USR$REGISTER').AsString := IntToStr
+        (FFrontBase.CashNumber);
       Doc.FieldByName('USR$LOGICDATE').AsDateTime := FFrontBase.GetLogicDate;
       Doc.FieldByName('USR$SYSNUM').AsInteger := GetDocumentNumber;
       if Doc.FieldByName('usr$timecloseorder').IsNull then
@@ -444,12 +445,12 @@ begin
         SavePayment(FFrontBase.ContactKey, Doc.FieldByName('ID').AsInteger,
           PayLine, FFrontBase, FSums);
       except
-        {TODO: Issue 50}
+        { TODO: Issue 50 }
       end;
       Doc.Post;
     end;
-
-  end else
+  end
+  else
     Touch_MessageBox('Внимание', 'Не установлен драйвер для ФР!', MB_OK, mtError);
 end;
 
@@ -531,12 +532,12 @@ begin
       CloseFiscalDoc;
       if SetLastError then
         exit;
-   //   if not Feed(5) then
-   //     exit;
+      // if not Feed(5) then
+      // exit;
       Result := True;
     except
       ShowLastError;
-      //отменяем фискальный документ
+      // отменяем фискальный документ
       Cancel;
     end;
   end
@@ -631,14 +632,14 @@ begin
 
     ClearLastError;
     try
-      AddItem(0, Sum, False, 0, 0,
-              0, 0, 0, 0, '', cn_FontFlagPosition, 0, FIV, 0);
+      AddItem(0, Sum, False, 0, 0, 0, 0, 0, 0, '', cn_FontFlagPosition, 0, FIV,
+        0);
 
       if SetLastError then
         exit;
       Inc(FIV);
 
-      if Param = 5 then
+      if Param = motCashIn then
         Close(0)
       else
         Close(Sum);
@@ -664,41 +665,38 @@ begin
       AddOperInfo(0, cn_FontFlagCashier, 0, FIV);
       if SetLastError then
         exit;
-        Inc(FIV);
-        // печать серийного номера ККМ
-        AddSerialNumber(cn_FontFlagSerialNumber, 0, FIV);
-        if SetLastError then
-          exit;
-        Inc(FIV);
-       // печать ИНН
-       AddTaxPayerNumber(cn_FontFlagTaxPayerNumber, 0, FIV);
-       if SetLastError then
-         exit;
-       Inc(FIV);
+      Inc(FIV);
+      // печать серийного номера ККМ
+      AddSerialNumber(cn_FontFlagSerialNumber, 0, FIV);
+      if SetLastError then
+        exit;
+      Inc(FIV);
+      // печать ИНН
+      AddTaxPayerNumber(cn_FontFlagTaxPayerNumber, 0, FIV);
+      if SetLastError then
+        exit;
+      Inc(FIV);
 
-        // печать текущих даты и времени
-        AddDateTime(cn_FontFlagDateTime, 0, FIV);
-        if SetLastError then
-          exit;
-        Inc(FIV);
+      // печать текущих даты и времени
+      AddDateTime(cn_FontFlagDateTime, 0, FIV);
+      if SetLastError then
+        exit;
+      Inc(FIV);
 
-
-
-   //   if not PrintCashier then
-   //     exit;
-   //   Inc(FIV);
+      // if not PrintCashier then
+      // exit;
+      // Inc(FIV);
       // печать номера документа
 
-        AddDocNumber(cn_FontFlagDocNumber, 0, FIV);
-           if SetLastError then
-             exit;
-           Inc(FIV);
-           // печать номера чека
-           AddReceiptNumber(cn_FontFlagReceiptNumber, 0, FIV);
-           if SetLastError then
-             exit;
-           FIV := FIV + 2;
-
+      AddDocNumber(cn_FontFlagDocNumber, 0, FIV);
+      if SetLastError then
+        exit;
+      Inc(FIV);
+      // печать номера чека
+      AddReceiptNumber(cn_FontFlagReceiptNumber, 0, FIV);
+      if SetLastError then
+        exit;
+      FIV := FIV + 2;
 
       if not Print then
         exit;
@@ -711,9 +709,9 @@ begin
 end;
 
 function TMercuryRegister.PrintTop: Boolean;
-{var
+{ var
   I : Integer;
-  Res: Boolean;}
+  Res: Boolean; }
 begin
   ClearLastError;
   Result := False;
@@ -721,10 +719,10 @@ begin
   begin
     try
       AddHeaderLine(1, 1, 0, 1);
-        {
+      {
         AddHeaderLine(2, 2, 0, 2);
-            AddHeaderLine(3, 3, 0, 3);
-            AddHeaderLine(4, 4, 0, 4);
+        AddHeaderLine(3, 3, 0, 3);
+        AddHeaderLine(4, 4, 0, 4);
         }
       Result := not SetLastError;
     except
@@ -740,7 +738,7 @@ begin
   if FDriverInit then
   begin
     try
-      AddCustom(Copy(FFrontBase.UserName,1,39), cn_FontFlagCashier, 8, FIV);
+      AddCustom(Copy(FFrontBase.UserName, 1, 39), cn_FontFlagCashier, 8, FIV);
       Result := not SetLastError;
     except
       ShowLastError;
@@ -758,17 +756,18 @@ begin
     begin
       try
 
-          PrintFiscalDocBuffer;
-               if SetLastError then
-                 exit;
-               FIV := 0;
+        PrintFiscalDocBuffer;
+        if SetLastError then
+          exit;
+        FIV := 0;
 
         Result := True;
       except
         ShowLastError;
       end;
     end;
-  end else
+  end
+  else
     Result := True;
 end;
 
@@ -799,12 +798,12 @@ begin
       CloseFiscalDoc;
       if SetLastError then
         exit;
-    //  if not Feed(5) then
-    //    exit;
+      // if not Feed(5) then
+      // exit;
       Result := True;
     except
       ShowLastError;
-      //отменяем фискальный документ
+      // отменяем фискальный документ
       Cancel;
     end;
   end
@@ -829,31 +828,31 @@ begin
 end;
 
 function TMercuryRegister.Sale(const Quantity, Price: Currency;
-  const GoodName: String; const Summ: Currency; const DepNumber,
-  BarCode: Integer; const ValueName: String;
+  const GoodName: String; const Summ: Currency;
+  const DepNumber, BarCode: Integer; const ValueName: String;
   const SumDiscount: Currency): Boolean;
 var
-  {ToQuantity, ToSumm, ToAdd: Currency;}
+  { ToQuantity, ToSumm, ToAdd: Currency; }
   FValueName: String;
-  TempGood:String;
-  {R: Integer;}
+  TempGood: String;
+  { R: Integer; }
 begin
   ClearLastError;
   Result := False;
   if FDriverInit then
   begin
     try
-//      ToQuantity := 1;
+      // ToQuantity := 1;
       FValueName := Copy(ValueName, 1, 5);
-//      R := FRRoundOption;
+      // R := FRRoundOption;
       if SetLastError then
         exit;
       TempGood := ' ' + CurrToStr(Price) + 'x' + CurrToStr(Quantity);
       TempGood := Copy(GoodName, 1, 39 - Length(TempGood)) + TempGood;
-//      ToSumm := Round(ToQuantity * Price / R + 0.0000000001) * R;
-//      ToAdd := Summ - ToSumm;
+      // ToSumm := Round(ToQuantity * Price / R + 0.0000000001) * R;
+      // ToAdd := Summ - ToSumm;
       // print goodname
-      AddCustom(TempGood , cn_FontFlagGoodName, 0, FIV);
+      AddCustom(TempGood, cn_FontFlagGoodName, 0, FIV);
       if SetLastError then
         exit;
       Inc(FIV);
@@ -863,44 +862,40 @@ begin
         begin
           if SumDiscount = 0 then
           begin
-            AddItem(mitItem, Summ, False, 1, BarCode,
-                0, -1, 0, 0, '',
-                cn_FontFlagPosition, 0, FIV, 0);
+            AddItem(mitItem, Summ, False, 1, BarCode, 0, -1, 0, 0, '',
+              cn_FontFlagPosition, 0, FIV, 0);
             if SetLastError then
               exit;
           end;
 
           if SumDiscount <> 0 then
           begin
-            AddItem(mitItem, Summ + SumDiscount, False, 1, BarCode,
-                0, -1, 0, 0, '',
-                cn_FontFlagPosition, 0, FIV, 0);
+            AddItem(mitItem, Summ + SumDiscount, False, 1, BarCode, 0, -1, 0,
+              0, '', cn_FontFlagPosition, 0, FIV, 0);
             if SetLastError then
               exit;
             Inc(FIV);
-            //скидка
-            AddItem(mitAmountAdj, -SumDiscount, False, 1, BarCode,
-                0, 0, 3, 0, '',
-                cn_FontFlagPosition, 0, FIV, 0);
+            // скидка
+            AddItem(mitAmountAdj, -SumDiscount, False, 1, BarCode, 0, 0, 3, 0,
+              '', cn_FontFlagPosition, 0, FIV, 0);
             if SetLastError then
               exit;
           end;
-        end else // отмена позиции
+        end
+        else // отмена позиции
         begin
-          AddItem(mitVoidItem, Summ, False, 1, BarCode,
-              0, -1, 0, 0, '',
-              cn_FontFlagPosition, 0, FIV, 0);
+          AddItem(mitVoidItem, Summ, False, 1, BarCode, 0, -1, 0, 0, '',
+            cn_FontFlagPosition, 0, FIV, 0);
           if SetLastError then
             exit;
         end
-      else if (CurrentOper = motRefund) or (CurrentOper = motRefundCashless) then // возврат
-      begin
-        AddItem(mitItem, Summ, False, 1, BarCode,
-            0, -1, 0, 0, '',
+        else if (CurrentOper = motRefund) or (CurrentOper = motRefundCashless) then // возврат
+        begin
+          AddItem(mitItem, Summ, False, 1, BarCode, 0, -1, 0, 0, '',
             cn_FontFlagPosition, 0, FIV, 0);
-        if SetLastError then
-          exit;
-      end;
+          if SetLastError then
+            exit;
+        end;
       Inc(FIV);
 
       if CurrentOper = motSale then
@@ -953,8 +948,33 @@ begin
       FRRoundOption := 100;
 
     Result := FFRRoundOption;
-  end else
+  end
+  else
     Result := 0;
+end;
+
+function TMercuryRegister.GetRegisterInfo: TRegisterStucture;
+
+  function GetRegister(const RegNumber: Integer): Currency;
+  begin
+    try
+      Result := QueryCounter(RegNumber, True);
+    except
+      Result := 0;
+    end;
+  end;
+
+begin
+  Result.Summ1 := GetRegister(0);
+  Result.Summ2 := GetRegister(1);
+  Result.Summ3 := GetRegister(2);
+  Result.Summ4 := GetRegister(3);
+  Result.SummReturn1 := GetRegister(6);
+  Result.SummReturn2 := GetRegister(7);
+  Result.SummReturn3 := 0;
+  Result.SummReturn4 := 0;
+  Result.PayInSumm := GetRegister(9);
+  Result.PayOutSumm := GetRegister(10);
 end;
 
 function TMercuryRegister.Cut(const LineCount: Integer): Boolean;

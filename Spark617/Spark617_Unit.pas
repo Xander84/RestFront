@@ -14,6 +14,13 @@ type
     IsInit: Boolean;
     FLastErr: Integer;
 
+    // Наличные
+    Spark_Cash: Integer;
+    // Безнал
+    Spark_NoCash: Integer;
+    // Карты
+    Spark_Credit: Integer;
+
     function SetParams: Boolean;
     procedure ErrMessage(Err: Integer);
     procedure SetFrontBase(const Value: TFrontBase);
@@ -31,15 +38,14 @@ type
     function ReturnGoodMoney(const FSums: TSaleSums): Boolean;
 
     function PrintZ1ReportWithCleaning: Boolean;
- //   function PrintZ2ReportWithCleaning: Boolean;
     function PrintX1ReportWithOutCleaning: Boolean;
- //   function PrintX2ReportWithOutCleaning: Boolean;
     procedure OpenDrawer;
     procedure EndSession;
     function OpenDay: Boolean;
     procedure MoneyIn(const Sum: Currency);
     procedure MoneyOut(const Sum: Currency);
     function GetDocumentNumber: Integer;
+    function GetRegisterInfo: TRegisterStucture;
 
     property FrontBase: TFrontBase read GetFrontBase write SetFrontBase;
     property Self: Integer read Get_Self;
@@ -49,11 +55,6 @@ type
 implementation
 
 uses SysUtils, Controls, TouchMessageBoxForm_Unit;
-
-const
-  Spark_Cash   = 8;  // Наличные
-  Spark_NoCash = 7;  // Безнал
-  Spark_Credit = 1;  // Карты
 
  { TSpark617Register }
 
@@ -237,6 +238,10 @@ begin
     FDriverInit := False;
   end;
   IsInit := False;
+
+  Spark_Cash := 8;
+  Spark_NoCash := 7;
+  Spark_Credit := 1;
 end;
 
 destructor TSpark617Register.Destroy;
@@ -254,6 +259,7 @@ begin
   if FDriverInit then
   begin
     Init;
+    SaveRegisters(GetRegisterInfo, FrontBase);
     Res := Inherited EndSession;
     ErrMessage(Res);
   end;
@@ -265,7 +271,7 @@ var
 begin
   if Err <> 0 then
   begin
-    ErrStr := WideCharToString(PWideChar(GetErrorComment(Err)));
+    ErrStr := GetErrorComment(Err);
     Touch_MessageBox('Внимание', ErrStr, MB_OK or MB_ICONEXCLAMATION);
   end;
 end;
@@ -581,6 +587,8 @@ begin
     Init;
     if Touch_MessageBox('Внимание', 'Вы действительно хотите снять отчет с гашением Z1?', MB_YESNO) = IDYES then
     begin
+      SaveRegisters(GetRegisterInfo, FrontBase);
+
       Res := PrintReport(3);
       if Res = 0 then
         Result := True
@@ -875,29 +883,6 @@ begin
   end;
 end;
 
-{
-  function TSpark617Register.PrintZ2ReportWithCleaning: Boolean;
-  var
-    Res: Integer;
-  begin
-    Result := False;
-    if FDriverInit then
-    begin
-      Init;
-      if MessageBox(Application.Handle, 'Вы действительно хотите снять отчет с гашением Z2?',
-        'Внимание', MB_YESNO) = IDYES then
-      begin
-        Res := PrintReport(4);
-        if Res = 0 then
-          Result := True
-        else
-          ErrMessage(Res);
-      end;
-      CheckDeviceInfo;
-    end;
-  end;
-}
-
 function TSpark617Register.PrintX1ReportWithOutCleaning: Boolean;
 var
   Res: Integer;
@@ -917,29 +902,6 @@ begin
     CheckDeviceInfo;
   end;
 end;
-
-{
-  function TSpark617Register.PrintX2ReportWithOutCleaning: Boolean;
-  var
-    Res: Integer;
-  begin
-    Result := False;
-    if FDriverInit then
-    begin
-      Init;
-      if MessageBox(Application.Handle, 'Вы действительно хотите снять отчет X2?',
-        'Внимание', MB_YESNO) = IDYES then
-      begin
-        Res := PrintReport(2);
-        if Res = 0 then
-          Result := True
-        else
-          ErrMessage(Res);
-      end;
-      CheckDeviceInfo;
-    end;
-  end;
-}
 
 function TSpark617Register.SetParams: Boolean;
 var
@@ -982,11 +944,41 @@ end;
 procedure TSpark617Register.SetFrontBase(const Value: TFrontBase);
 begin
   FFrontBase := Value;
+  if FFrontBase <> nil then
+  begin
+    Spark_Cash := FFrontBase.Options.SparkCash;
+    Spark_NoCash := FFrontBase.Options.SparkNoCash;
+    Spark_Credit := FFrontBase.Options.SparkCredit;
+  end;
 end;
 
 function TSpark617Register.GetFrontBase: TFrontBase;
 begin
   Result := FFrontBase;
+end;
+
+function TSpark617Register.GetRegisterInfo: TRegisterStucture;
+
+  function GetRegister(const RegNumber: Integer): Currency;
+  begin
+    try
+      Result := GetDoubleDeviceInfo(RegNumber);
+    except
+      Result := 0;
+    end;
+  end;
+
+begin
+  Result.Summ1 := GetRegister((300 + Spark_Cash));
+  Result.Summ2 := GetRegister((300 + Spark_NoCash));
+  Result.Summ3 := GetRegister((300 + Spark_Credit));
+  Result.Summ4 := 0;
+  Result.SummReturn1 := GetRegister(312);
+  Result.SummReturn2 := 0;
+  Result.SummReturn3 := 0;
+  Result.SummReturn4 := 0;
+  Result.PayInSumm := GetRegister(320);
+  Result.PayOutSumm := GetRegister(322);
 end;
 
 function TSpark617Register.Get_Self: Integer;
