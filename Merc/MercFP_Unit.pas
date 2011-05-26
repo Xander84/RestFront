@@ -293,7 +293,9 @@ begin
   if FDriverInit then
   begin
     try
-      OpenCheck(motSale) except SetLastError;
+      OpenCheck(motSale);
+    except
+      SetLastError;
     end;
 
     DocLine.First;
@@ -304,8 +306,7 @@ begin
       Quantity := DocLine.FieldByName('usr$quantity').AsCurrency;
       Price := DocLine.FieldByName('usr$costncu').AsCurrency;
       Summ := DocLine.FieldByName('usr$sumncuwithdiscount').AsCurrency;
-      SumDiscount := Round(DocLine.FieldByName('usr$sumdiscount')
-          .AsCurrency + 0.0001);
+      SumDiscount := Round(DocLine.FieldByName('usr$sumdiscount').AsCurrency + 0.0001);
       TotalDiscount := TotalDiscount + SumDiscount;
 
       Sale(Quantity, Price, GoodName, Summ, 1, 0, '', SumDiscount);
@@ -327,8 +328,7 @@ begin
         Doc.Edit;
       Doc.FieldByName('USR$WHOPAYOFFKEY').AsInteger := FFrontBase.ContactKey;
       Doc.FieldByName('USR$PAY').AsInteger := 1;
-      Doc.FieldByName('USR$REGISTER').AsString := IntToStr
-        (FFrontBase.CashNumber);
+      Doc.FieldByName('USR$REGISTER').AsString := IntToStr(FFrontBase.CashNumber);
       Doc.FieldByName('USR$LOGICDATE').AsDateTime := FFrontBase.GetLogicDate;
       Doc.FieldByName('USR$SYSNUM').AsInteger := GetDocumentNumber;
       if Doc.FieldByName('usr$timecloseorder').IsNull then
@@ -412,8 +412,7 @@ begin
       Quantity := -DocLine.FieldByName('usr$quantity').AsCurrency;
       Price := DocLine.FieldByName('usr$costncu').AsCurrency;
       Summ := -DocLine.FieldByName('usr$sumncuwithdiscount').AsCurrency;
-      SumDiscount := Round(DocLine.FieldByName('usr$sumdiscount')
-          .AsCurrency + 0.0001);
+      SumDiscount := Round(DocLine.FieldByName('usr$sumdiscount').AsCurrency + 0.0001);
       TotalDiscount := TotalDiscount + SumDiscount;
 
       Sale(Quantity, Price, GoodName, Summ, 1, 0, '', SumDiscount);
@@ -435,8 +434,7 @@ begin
         Doc.Edit;
       Doc.FieldByName('USR$WHOPAYOFFKEY').AsInteger := FFrontBase.ContactKey;
       Doc.FieldByName('USR$PAY').AsInteger := 1;
-      Doc.FieldByName('USR$REGISTER').AsString := IntToStr
-        (FFrontBase.CashNumber);
+      Doc.FieldByName('USR$REGISTER').AsString := IntToStr(FFrontBase.CashNumber);
       Doc.FieldByName('USR$LOGICDATE').AsDateTime := FFrontBase.GetLogicDate;
       Doc.FieldByName('USR$SYSNUM').AsInteger := GetDocumentNumber;
       if Doc.FieldByName('usr$timecloseorder').IsNull then
