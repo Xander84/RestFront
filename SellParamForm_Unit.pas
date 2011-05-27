@@ -434,15 +434,20 @@ begin
           begin
             if FFiscalRegiter.PrintCheck(Doc, DocLine, dsPayLine, FSums) then
             begin
-              if FFrontBase.Options.PrintCopyCheck then
-              begin
-                FReport := TRestReport.Create(Self);
-                FReport.FrontBase := FFrontBase;
-                try
-                  FReport.PrintAfterSalePreCheck(FDoc.FieldByName('ID').AsInteger, FSums);
-                finally
-                  FReport.Free;
+              try
+                if FFrontBase.Options.PrintCopyCheck then
+                begin
+                  FReport := TRestReport.Create(Self);
+                  FReport.FrontBase := FFrontBase;
+                  try
+                    FReport.PrintAfterSalePreCheck(FDoc.FieldByName('ID').AsInteger, FSums);
+                  finally
+                    FReport.Free;
+                  end;
                 end;
+              except
+                on E: Exception do
+                  Touch_MessageBox('Внимание', 'Ошибка печати копии чека ' + E.Message, MB_OK, mtError);
               end;
               Self.ModalResult := mrOk;
             end;
