@@ -14,7 +14,7 @@ uses
   FrontLog_Unit, Grids, Menus, AddUserForm_unit, AdminForm_Unit,
   Buttons, RestTable_Unit, dxfDesigner, GestureMgr, AdvObj, AdvMenus, AdvMenuStylers,
   AdvSmoothToggleButton, pngimage, Generics.Collections, rfTableManager_unit,
-  rfUser_unit, jpeg;
+  rfUser_unit, AppEvnts;
 
 const
   btnHeight = 65;
@@ -385,7 +385,7 @@ type
     FUserOrderLastTop: Integer;
     FUserOrderButtonNumber: Integer;
     FMaxUserOrderButtonLeft: Integer;
-    { TODO : Переделать не через FPayed }
+{ TODO : Переделать не через FPayed }
     FPayed: Boolean;
     // Список объектов для уничтожения компонентов
     FMenuButtonList: TObjectList;
@@ -421,6 +421,7 @@ type
 
     FSplitForm: TSplitOrder;
     FMousePos: TPoint;
+    FFormEvent: TApplicationEvents;
 
     // Создание первичных наборов данных
     procedure CreateDataSets;
@@ -714,6 +715,8 @@ begin
   Self.Caption := Format('%s - %s', [Self.Caption, FFrontBase.CompanyName]);
   Application.Title := Self.Caption;
 
+  FFormEvent := TApplicationEvents.Create(Self);
+  FFormEvent.OnMessage := AppMessage;
 // В дезайнере столов также используется перехват сообщений
 // подумать над вопросом.
 //  Application.OnMessage := AppMessage;
@@ -769,6 +772,8 @@ begin
 
   // Менеджер столов зала
   FTableManager.Free;
+
+  FFormEvent.Free;
 end;
 
 procedure TRestMainForm.FormKeyDown(Sender: TObject; var Key: Word;

@@ -15,7 +15,7 @@ interface
 
 uses
   Classes, Graphics, Forms, Windows, Controls, Messages, Menus, SysUtils, IniFiles,
-  RestTable_Unit, Types;
+  RestTable_Unit, Types, AppEvnts;
 
 type
   TOrderInfo = class
@@ -60,6 +60,7 @@ type
     FPopupMenu: TPopupMenu;
     FEditingControls: TStrings;
     FEditControl: TWinControl;
+    FDesigenrEvent: TApplicationEvents;
     procedure SetStepToGrid(Value: Integer);
     procedure SetActive(Value: Boolean);
     procedure ApplicationMessages(var Msg: TMsg; var Handled: Boolean);
@@ -246,7 +247,9 @@ begin
     Items[4].Items[5].OnClick := PopupMenuClick;
   end;
 
-  Application.OnMessage := ApplicationMessages;
+  FDesigenrEvent := TApplicationEvents.Create(Self);
+  FDesigenrEvent.OnMessage := ApplicationMessages;
+//  Application.OnMessage := ApplicationMessages;
 end;
 
 destructor TdxfDesigner.Destroy;
@@ -254,9 +257,10 @@ begin
   FPopupMenu.Free;
   FEditingControls.Free;
   dxfDsCount.Delete(FForm);
+  FDesigenrEvent.Free;
   inherited;
-  if dxfDsCount.FList.Count = 0 then
-    Application.OnMessage := nil;
+//  if dxfDsCount.FList.Count = 0 then
+//    Application.OnMessage := nil;
 end;
 
 procedure TdxfDesigner.Notification(AComponent: TComponent; Operation: TOperation);
