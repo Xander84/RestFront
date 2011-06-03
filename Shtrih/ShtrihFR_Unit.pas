@@ -276,8 +276,27 @@ begin
   begin
     if Init then
     begin
-      if not CheckFiscalState then
+      //Если пришли в режиме продолжения печати, то допечатываем и выходим
+      GetShortECRStatus;
+      Sleep(200);
+      if ECRAdvancedMode = 3 then
+      begin
+        ContinuePrint;
+        Sleep(250);
+        if ResultCode <> 0 then
+        begin
+          CancelCheck;
+          ErrMessage(ResultCode);
+        end;
         exit;
+      end;
+
+      //если открыт документ, то делаем его закрытие и выходим
+      if ECRMode = 8 then
+      begin
+        CancelCheck;
+        exit;
+      end;
 
       DocNumber := Doc.FieldByName('NUMBER').AsString;
       DocNumber := StringReplace(DocNumber, '.', '', [rfReplaceAll]);
@@ -419,7 +438,7 @@ begin
   begin
     if Touch_MessageBox('Внимание', 'Вы действительно хотите снять отчет X1?', MB_YESNO, mtConfirmation) = IDYES then
     begin
-      if ResultCode <> 0 then
+      if (ResultCode <> 0) or (ECRMode = 8) then
       begin
         ErrMessage(ResultCode);
         CancelCheck;
@@ -441,7 +460,7 @@ begin
     if Touch_MessageBox('Внимание',
       'Вы действительно хотите снять отчет с гашением Z1?', MB_YESNO, mtConfirmation) = IDYES then
     begin
-      if ResultCode <> 0 then
+      if (ResultCode <> 0) or (ECRMode = 8) then
       begin
         ErrMessage(ResultCode);
         CancelCheck;
