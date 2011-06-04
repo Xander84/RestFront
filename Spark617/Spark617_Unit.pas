@@ -663,7 +663,7 @@ begin
 
         Quantity := 1000;
         Price := -DocLine.FieldByName('usr$sumncu').AsCurrency;
-        SumDiscount := DocLine.FieldByName('usr$sumncu').AsCurrency +
+        SumDiscount := -DocLine.FieldByName('usr$sumncu').AsCurrency +
           DocLine.FieldByName('usr$sumncuwithdiscount').AsCurrency;
         TotalDiscount := TotalDiscount + SumDiscount;
 

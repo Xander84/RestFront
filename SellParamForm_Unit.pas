@@ -94,7 +94,6 @@ type
     FDoc: TkbmMemTable;
     FDocLine: TkbmMemTable;
     FPayType: Integer;
-    dsPayLine: TkbmMemTable;
     FIsValidPayment: Boolean;
     FNoFiscalPayment: Boolean;
     FCashNoFiscal: Integer;
@@ -111,6 +110,7 @@ type
     procedure PrevSettings(const PayType: Integer; NeedLocate: Boolean = True);
   protected
     FPrinting: Boolean;
+    dsPayLine: TkbmMemTable;
     procedure CalcSums;
   public
     constructor CreateWithFrontBase(AOwner: TComponent; FBase: TFrontBase);
@@ -118,7 +118,7 @@ type
 
     property Sums: TSaleSums read FSums;
     property SumToPay: Currency read FSumToPay write SetSumToPay;
-    property FiscalRegistry: TFiscalRegister read FFiscalRegiter write SetFiscalRegister;
+    property FiscalRegiter: TFiscalRegister read FFiscalRegiter write SetFiscalRegister;
     property Doc: TkbmMemTable read FDoc write SetDoc;
     property DocLine: TkbmMemTable read FDocLine write SetDocLine;
     property SaleType: TSaleType read FSaleType write FSaleType;

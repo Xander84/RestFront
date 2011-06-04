@@ -114,7 +114,7 @@ begin
       FForm := TSellParamForm.CreateWithFrontBase(nil, FFrontBase);
       try
         FForm.SaleType := ptReturn;
-        FForm.FiscalRegistry := FFiscalRegiter;
+        FForm.FiscalRegiter := FFiscalRegiter;
         FForm.Doc := FHeaderTable;
         FForm.DocLine := FLineTable;
         FForm.SumToPay := FSumToPay;

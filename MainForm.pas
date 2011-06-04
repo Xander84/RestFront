@@ -1459,7 +1459,7 @@ begin
     FHeaderTable.Insert;
     FHeaderTable.FieldByName('NUMBER').AsString := FOrderNumber;
     FHeaderTable.FieldByName('USR$GUESTCOUNT').AsInteger := FGuestCount;
-    FHeaderTable.FieldByName('USR$TIMEORDER').Value := Time;
+    FHeaderTable.FieldByName('USR$TIMEORDER').Value := GetServerDateTime;
     if TableKey > 0 then
       FHeaderTable.FieldByName('USR$TABLEKEY').AsInteger := TableKey;
     FHeaderTable.FieldByName('USR$COMPUTERNAME').AsString := GetLocalComputerName;
@@ -1521,7 +1521,7 @@ begin
       FHeaderTable.Insert;
       FHeaderTable.FieldByName('NUMBER').AsString := FOrderNumber;
       FHeaderTable.FieldByName('USR$GUESTCOUNT').AsInteger := FGuestCount;
-      FHeaderTable.FieldByName('USR$TIMEORDER').Value := Time;
+      FHeaderTable.FieldByName('USR$TIMEORDER').Value := GetServerDateTime;
       if Table.ID > 0 then
         FHeaderTable.FieldByName('USR$TABLEKEY').AsInteger := Table.ID;
       FHeaderTable.FieldByName('USR$COMPUTERNAME').AsString := GetLocalComputerName;
@@ -2894,7 +2894,7 @@ begin
       SetCloseTimerActive(false);
       try
         FForm.SaleType := ptSale;
-        FForm.FiscalRegistry := FFiscal;
+        FForm.FiscalRegiter := FFiscal;
         FForm.Doc := FHeaderTable;
         FForm.DocLine := FLineTable;
         FForm.SumToPay := SumToPay;
@@ -4605,7 +4605,7 @@ begin
   begin
     FForm := TReturnMoneyForm.CreateWithFrontBase(nil, FFrontBase);
     try
-      FForm.FiscalRegistry := FFiscal;
+      FForm.FiscalRegiter := FFiscal;
       FForm.FrontBase := FFrontBase;
       FForm.Doc := FHeaderTable;
       FForm.DocLine := FLineTable;

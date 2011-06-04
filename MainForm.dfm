@@ -2898,7 +2898,7 @@ object RestMainForm: TRestMainForm
         Top = 1
         Width = 80
         Height = 719
-        ActivePage = tsFunctionButton
+        ActivePage = tsEmpty
         ActiveFont.Charset = DEFAULT_CHARSET
         ActiveFont.Color = clWindowText
         ActiveFont.Height = -11
@@ -4252,8 +4252,6 @@ object RestMainForm: TRestMainForm
             ParentFont = False
             TabOrder = 10
             Version = '1.6.9.0'
-            ExplicitLeft = -1
-            ExplicitTop = 642
           end
         end
         object tsEmpty: TAdvTabSheet
