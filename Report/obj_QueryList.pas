@@ -23,7 +23,7 @@ interface
 
 uses
   IBDatabase, SysUtils, Contnrs, IBQuery, Windows, Db, Classes,
-  gd_MultiStringList, IBCustomDataSet, DBClient;
+  gd_MultiStringList, IBCustomDataSet, DBClient, frxClass, frxDBSet;
 
 const
   QueryNotAssigned = 'Query not assigned';
@@ -54,10 +54,6 @@ type
   protected
     function GetStrFromFieldType(const AnFieldType: TFieldType): String;
   protected
-
-//    FCurrentField: TField;
-
-//    procedure AssignFields(const ADataSet: TDataSet);
     procedure CopyRecord(const ADataSet: TDataSet);
     procedure ClearFields;
     function  Get_Transaction: TIBTransaction;
@@ -134,11 +130,12 @@ type
     FDatabase: TIBDatabase;
     FTransaction: TIBTransaction;
     FQueryList: TList;
-//    FCurrentField: TField;
     FMasterDetail: TFourStringList;
     FTempMasterDetail: TFourStringList;
     FWasCreateTransaction: Boolean;
     FDataSourceList: TObjectList;
+    FReport: TfrxReport;
+    FReportDSList: TObjectList;
 
     function GetQuery(Index: Integer): TDataSet;
     function GetCount: Integer;
@@ -170,6 +167,7 @@ type
     property Query[Index: Integer]: TgsDataSet read Get_Query;
     property QueryByName[const Name: String]: TgsDataSet read Get_QueryByName;
     property Self: Integer read Get_Self;
+    property Report: TfrxReport read FReport write FReport;
 
     function  AddRealQuery(const AnRealQuery: TgsDataSet): Integer;
     procedure ClearObjectList;
@@ -188,7 +186,7 @@ type
     constructor Create;
     destructor Destroy; override;
 
-    procedure ViewResult;
+//    procedure ViewResult;
 
     property DataSet[const AnIndex: Integer]: TDataSet read GetDataSet;
     function DataSetByName(const AnName: String): TDataSet;
@@ -224,7 +222,7 @@ var
 implementation
 
 uses
-  IBSQL, TypInfo, IB, rp_dlgViewResult_unit, Variants;
+  IBSQL, TypInfo, IB, {rp_dlgViewResult_unit,} Variants;
 
 type
   TFieldCracker = class(TField);
@@ -501,6 +499,7 @@ begin
   FMasterDetail := TFourStringList.Create;
   FTempMasterDetail := TFourStringList.Create;
   FDataSourceList := TObjectList.Create;
+  FReportDSList := TObjectList.Create;
 end;
 
 destructor TgsQueryList.Destroy;
@@ -515,6 +514,7 @@ begin
   FreeAndNil(FMasterDetail);
   FreeAndNil(FTempMasterDetail);
   FreeAndNil(FDataSourceList);
+  FreeAndNil(FReportDSList);
 
   inherited Destroy;
 end;
@@ -522,6 +522,7 @@ end;
 function TgsQueryList.Add(const QueryName: String; MemQuery: Boolean): Integer;
 var
   Index: Integer;
+  FrxDBDataset: TfrxDBDataset;
 begin
   Result := -1;
   Index := GetIndexQueryByName(QueryName);
@@ -535,6 +536,15 @@ begin
     begin
       TgsDataSet(FQueryList.Items[Result]).Database := FDatabase;
       TgsDataSet(FQueryList.Items[Result]).Transaction := FTransaction;
+    end;
+    if Assigned(FReport) then
+    begin
+      FrxDBDataset := TfrxDBDataset.Create(nil);
+      FrxDBDataset.Name := QueryName;
+      FrxDBDataset.DataSet := TgsDataSet(FQueryList.Items[Result]).DataSet;
+      FReport.DataSets.Add(FrxDBDataset);
+      FReport.EnabledDataSets.Add(FrxDBDataset);
+      FReportDSList.Add(FrxDBDataset);
     end;
   except
     on E: Exception do
@@ -717,6 +727,7 @@ procedure TgsQueryList.MainInitialize;
 var
   I: Integer;
 begin
+  FReportDSList.Clear;
   for I := 0 to FQueryList.Count - 1 do
   begin
     TgsDataSet(FQueryList.Items[I]).Free;
@@ -726,7 +737,6 @@ begin
   FMasterDetail.Clear;
   FTempMasterDetail.Clear;
   FDataSourceList.Clear;
-//  FCurrentField := nil;
 end;
 
 function TgsQueryList.Get_Self: Integer;
@@ -1141,7 +1151,7 @@ begin
     Result := DataSet[I];
 end;
 
-procedure TReportResult.ViewResult;
+{procedure TReportResult.ViewResult;
 var
   I: Integer;
 begin
@@ -1157,7 +1167,7 @@ begin
   finally
     Free;
   end;
-end;
+end;     }
 
 procedure TReportResult.Clear;
 var

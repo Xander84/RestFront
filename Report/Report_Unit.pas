@@ -22,34 +22,10 @@ type
     destructor Destroy; override;
   end;
 
-  //класс обЄртка дл€ совместимости
+  //fake component
+  //класс обЄртка дл€ совместимости c Gedemin
   Tgs_fr4SingleReport = class(Tgs_fr4Report);
 
-{
-   ласс дл€ работы с FR4
-  будет иметь ф-ции:
-  - распечатать пречек
-  - распечатать сервисный чек
-  - распечатать чек отмены
-  будет формировать дл€ стандартных отчЄтов наборы данных
-  дл€ возможности редактировани€ будет добавл€ть переменные в FR4 дл€
-  ручного создани€ отчЄтов
-  должен иметь функции загрузить шаблон и сохранить шаблон
-  ф-ци€ загрузки шаблона должна иметь возможность сохран€ть шаблоны в список
-  дл€ быстрого доступа, при редактировнии список должен уничтожатьс€
-
-  1.	ѕречек
-  1.1.	Aura
-  1.2.	Epson подкладной (протестировать многостраничный отчет)
-  1.3.	Epson с обрезкой
-  2.	—ервисный чек
-  2.1.	Aura
-  2.2.	Epson с обрезкой
-  3.	–еестр счетов
-  3.1.	Aura
-  3.2.	Epson с обрезкой
-
-}
   TRestReport = class(TObject)
   private
     FFrontBase: TFrontBase;
@@ -101,7 +77,8 @@ const
 implementation
 
 uses
-  Windows, Forms, FrontData_Unit, obj_QueryList, TouchMessageBoxForm_Unit, rfUtils_unit;
+  Windows, Forms, FrontData_Unit, TouchMessageBoxForm_Unit, rfUtils_unit,
+  obj_QueryList;
 
 { Tgs_fr4Report }
 
@@ -269,45 +246,40 @@ begin
       Header.ParamByName('dockey').AsInteger := DocID;
       Header.Open;
 
+      MemTable.CreateTableAs(Header.DataSet, [mtcpoStructure]);
+      MemTable.FieldDefs.Add('NOW', ftDate, 0);
+      MemTable.FieldDefs.Add('NOWTIME', ftTime, 0);
+      MemTable.FieldDefs.Add('COMPRESSEDON', ftString, 5);
+      MemTable.FieldDefs.Add('RUSPAGE', ftString, 5);
+      MemTable.FieldDefs.Add('CUTPAGE', ftString, 15);
+      MemTable.FieldDefs.Add('DISKN', ftString, 60);
+      MemTable.CreateTable;
+      MemTable.Open;
 
-
-        MemTable.CreateTableAs(Header.DataSet, [mtcpoStructure]);
-        MemTable.FieldDefs.Add('NOW', ftDate, 0);
-        MemTable.FieldDefs.Add('NOWTIME', ftTime, 0);
-        MemTable.FieldDefs.Add('COMPRESSEDON', ftString, 5);
-        MemTable.FieldDefs.Add('RUSPAGE', ftString, 5);
-        MemTable.FieldDefs.Add('CUTPAGE', ftString, 15);
-        MemTable.FieldDefs.Add('DISKN', ftString, 60);
-        MemTable.CreateTable;
-        MemTable.Open;
-
-        Header.First;
-        while not Header.Eof do
+      Header.First;
+      while not Header.Eof do
+      begin
+        MemTable.Append;
+        I := 0;
+        while I <= Header.FieldCount - 1 do
         begin
-          MemTable.Append;
-          I := 0;
-          while I <= Header.FieldCount - 1 do
-          begin
-            MemTable.Fields[I].AsString := Header.Fields[I].AsString;
-            Inc(I);
-          end;
-
-          MemTable.FieldbyName('NOW').AsDateTime := Header.FieldByName('date1').AsDateTime;;
-          MemTable.FieldbyName('NOWTIME').AsDateTime := Header.FieldByName('close1').AsDateTime;
-          MemTable.FieldByName('COMPRESSEDON').AsVariant := ''; // 'chr(&H1D) + CHR(&H56) + CHR(&H01)
-          MemTable.FieldByName('RUSPAGE').AsVariant := '';
-          if Header.FieldByName('surname').AsString <> '' then
-            MemTable.FieldByNAme('DISKN').AsString := ' арточка:' + Header.FieldByName('cardnum').AsString +
-              #13#10 + Header.FieldByName('surname').AsString + ' ' +
-              Header.FieldByName('firstn').AsString + ' ' + Header.FieldByName('midle').AsString;
-
-          MemTable.Post;
-
-          Header.Next;
+          MemTable.Fields[I].AsString := Header.Fields[I].AsString;
+          Inc(I);
         end;
 
+        MemTable.FieldbyName('NOW').AsDateTime := Header.FieldByName('date1').AsDateTime;;
+        MemTable.FieldbyName('NOWTIME').AsDateTime := Header.FieldByName('close1').AsDateTime;
+        MemTable.FieldByName('COMPRESSEDON').AsVariant := ''; // 'chr(&H1D) + CHR(&H56) + CHR(&H01)
+        MemTable.FieldByName('RUSPAGE').AsVariant := '';
+        if Header.FieldByName('surname').AsString <> '' then
+          MemTable.FieldByNAme('DISKN').AsString := ' арточка:' + Header.FieldByName('cardnum').AsString +
+            #13#10 + Header.FieldByName('surname').AsString + ' ' +
+            Header.FieldByName('firstn').AsString + ' ' + Header.FieldByName('midle').AsString;
 
+        MemTable.Post;
 
+        Header.Next;
+      end;
 
       FrxDBDataset.Name := Header.DataSet.Name;
       FrxDBDataset.DataSet := TDataSet(Header.DataSet);
@@ -930,17 +902,17 @@ begin
 
       Header := BaseQueryList.Query[BaseQueryList.Add('Header', True)];
       Header.AddField('PAY', 'ftInteger', 0, False);
-      Header.AddField('c', 'FTFloat', 0, False);
-      Header.AddField('g', 'FTFloat', 0, False);
-      Header.AddField('t', 'FTString', 60, False);
-      Header.AddField('K', 'FTString', 60, False);
-      Header.AddField('p', 'FTFloat', 0, False);
-      Header.AddField('np', 'FTFloat', 0, False);
-      Header.AddField('PS', 'FTString', 20, False);
-      Header.AddField('COMPANY', 'FtString', 60, False);
-      Header.AddField('Db', 'FtDate', 0, False);
-      Header.AddField('De', 'FtDate', 0, False);
-      Header.AddField('Time', 'FtDateTime', 0, False);
+      Header.AddField('c', 'ftFloat', 0, False);
+      Header.AddField('g', 'ftFloat', 0, False);
+      Header.AddField('t', 'ftString', 60, False);
+      Header.AddField('K', 'ftString', 60, False);
+      Header.AddField('p', 'ftFloat', 0, False);
+      Header.AddField('np', 'ftFloat', 0, False);
+      Header.AddField('PS', 'ftString', 20, False);
+      Header.AddField('COMPANY', 'ftString', 60, False);
+      Header.AddField('Db', 'ftDate', 0, False);
+      Header.AddField('De', 'ftDate', 0, False);
+      Header.AddField('Time', 'ftDateTime', 0, False);
       Header.Open;
 
       while not Q.eof do
@@ -1141,7 +1113,6 @@ var
   Str: TStream;
   BaseQueryList: TgsQueryList;
   Header2, Header1, Header: TgsDataSet;
-  FrxDBDataset, FrxDBDataset1, FrxDBDataset2: TfrxDBDataset;
   FPrinterInfo: TPrinterInfo;
 begin
   Assert(Assigned(FFrontBase), 'FrontBase not assigned');
@@ -1157,11 +1128,9 @@ begin
     exit;
   end;
   FReport := Tgs_fr4SingleReport.Create(nil);
+  BaseQueryList.Report := FReport;
   try
     Str := TMemoryStream.Create;
-    FrxDBDataset := TfrxDBDataset.Create(nil);
-    FrxDBDataset1 := TfrxDBDataset.Create(nil);
-    FrxDBDataset2 := TfrxDBDataset.Create(nil);
     try
       Header2 := BaseQueryList.Query[BaseQueryList.Add('Report2', False)];
       Header2.SQL :=
@@ -1181,7 +1150,6 @@ begin
       Header2.ParamByName('begindate').AsDate := DateBegin;
       Header2.ParamByName('enddate').AsDate := DateEnd;
       Header2.Open;
-
 
       Header1 := BaseQueryList.Query[BaseQueryList.Add('Report', False)];
       Header1.SQL :=
@@ -1216,20 +1184,6 @@ begin
           FFrontBase.Options.CheckLine3 + ' ' + FFrontBase.Options.CheckLine4;
       Header.Post;
 
-      FrxDBDataset.Name := Header1.DataSet.Name;
-      FrxDBDataset.DataSet := Header1.DataSet;
-      FrxDBDataset1.Name := Header.DataSet.Name;;
-      FrxDBDataset1.DataSet := Header.DataSet;
-      FrxDBDataset2.Name := Header2.DataSet.Name;;
-      FrxDBDataset2.DataSet := Header2.DataSet;
-
-      FReport.DataSets.Add(FrxDBDataset);
-      FReport.DataSets.Add(FrxDBDataset1);
-      FReport.DataSets.Add(FrxDBDataset2);
-      FReport.EnabledDataSets.Add(FrxDBDataset);
-      FReport.EnabledDataSets.Add(FrxDBDataset1);
-      FReport.EnabledDataSets.Add(FrxDBDataset2);
-
       GetTemplateStreamByPrnIDAndType(rp_Realization, FPrinterInfo.PrinterID, Str);
       if Str.Size > 0 then
       begin
@@ -1255,13 +1209,11 @@ begin
         FReport.ShowPreparedReport;
       end;
     finally
-      FrxDBDataset.Free;
-      FrxDBDataset1.Free;
-      FrxDBDataset2.Free;
       Str.Free;
     end;
   finally
     FReport.Free;
+    BaseQueryList.Report := nil;
   end;
 end;
 

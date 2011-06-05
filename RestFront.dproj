@@ -129,13 +129,6 @@
 			</DCCReference>
 			<DCCReference Include="Report\gd_MultiStringList.pas"/>
 			<DCCReference Include="Report\obj_QueryList.pas"/>
-			<DCCReference Include="Report\rp_dlgViewResult_unit.pas">
-				<Form>dlgViewResult</Form>
-			</DCCReference>
-			<DCCReference Include="Report\rp_frmGrid_unit.pas">
-				<Form>frmGrid</Form>
-				<DesignClass>TFrame</DesignClass>
-			</DCCReference>
 			<DCCReference Include="Report\fs_iQueryListRTTI.pas"/>
 			<DCCReference Include="rfTableManager_unit.pas"/>
 			<DCCReference Include="PersonalCardForm_Unit.pas">

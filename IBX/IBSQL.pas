@@ -1713,6 +1713,7 @@ begin
   Result := StrToBcd(BCDStr);
 end;
 
+{$WARNINGS OFF}
 function TIBXSQLVAR.GetCharsetSize: Integer;
 begin
   case SQLVar.SQLSubtype and $FF of
@@ -1732,6 +1733,7 @@ begin
       Result := 1;
   end;
 end;
+{$WARNINGS ON}
 
 function TIBXSQLVAR.GetCodePage: Integer;
 begin
