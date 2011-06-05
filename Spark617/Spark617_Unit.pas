@@ -273,6 +273,7 @@ begin
   begin
     ErrStr := GetErrorComment(Err);
     Touch_MessageBox('Внимание', ErrStr, MB_OK or MB_ICONEXCLAMATION);
+    WriteLogToFile(ErrStr, FFrontBase.UserName);
   end;
 end;
 
@@ -585,16 +586,15 @@ begin
   if FDriverInit then
   begin
     Init;
-    if Touch_MessageBox('Внимание', 'Вы действительно хотите снять отчет с гашением Z1?', MB_YESNO) = IDYES then
-    begin
-      SaveRegisters(GetRegisterInfo, FrontBase);
 
-      Res := PrintReport(3);
-      if Res = 0 then
-        Result := True
-      else
-        ErrMessage(Res);
-    end;
+    SaveRegisters(GetRegisterInfo, FrontBase);
+
+    Res := PrintReport(3);
+    if Res = 0 then
+      Result := True
+    else
+      ErrMessage(Res);
+
     CheckDeviceInfo;
   end;
 end;
@@ -891,14 +891,13 @@ begin
   if FDriverInit then
   begin
     Init;
-    if Touch_MessageBox('Внимание', 'Вы действительно хотите снять отчет X1?', MB_YESNO) = IDYES then
-    begin
-      Res := PrintReport(1);
-      if Res = 0 then
-        Result := True
-      else
-        ErrMessage(Res);
-    end;
+
+    Res := PrintReport(1);
+    if Res = 0 then
+      Result := True
+    else
+      ErrMessage(Res);
+
     CheckDeviceInfo;
   end;
 end;

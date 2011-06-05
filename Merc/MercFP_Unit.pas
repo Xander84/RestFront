@@ -555,7 +555,10 @@ end;
 procedure TMercuryRegister.ShowLastError;
 begin
   if FLastErrorNumber <> 0 then
+  begin
     Touch_MessageBox('Внимание', FLastErrorDescription, MB_OK, mtWarning);
+    WriteLogToFile(FLastErrorDescription, FFrontBase.UserName);
+  end;
 end;
 
 function TMercuryRegister.OpenCheck(const CheckType: Integer): Boolean;

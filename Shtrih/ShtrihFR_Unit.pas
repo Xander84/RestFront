@@ -154,6 +154,7 @@ begin
   begin
     ErrStr := ResultCodeDescription;
     Touch_MessageBox('Внимание', ErrStr, MB_OK, mtWarning);
+    WriteLogToFile(ErrStr, FFrontBase.UserName);
   end;
 end;
 
@@ -436,19 +437,16 @@ begin
   Result := False;
   if FDriverInit then
   begin
-    if Touch_MessageBox('Внимание', 'Вы действительно хотите снять отчет X1?', MB_YESNO, mtConfirmation) = IDYES then
+    if (ResultCode <> 0) or (ECRMode = 8) then
     begin
-      if (ResultCode <> 0) or (ECRMode = 8) then
-      begin
-        ErrMessage(ResultCode);
-        CancelCheck;
-      end;
-      PrintReportWithoutCleaning;
-      if ResultCode = 0 then
-        Result := True
-      else
-        ErrMessage(ResultCode);
+      ErrMessage(ResultCode);
+      CancelCheck;
     end;
+    PrintReportWithoutCleaning;
+    if ResultCode = 0 then
+      Result := True
+    else
+      ErrMessage(ResultCode);
   end;
 end;
 
@@ -457,23 +455,19 @@ begin
   Result := False;
   if FDriverInit then
   begin
-    if Touch_MessageBox('Внимание',
-      'Вы действительно хотите снять отчет с гашением Z1?', MB_YESNO, mtConfirmation) = IDYES then
+    if (ResultCode <> 0) or (ECRMode = 8) then
     begin
-      if (ResultCode <> 0) or (ECRMode = 8) then
-      begin
-        ErrMessage(ResultCode);
-        CancelCheck;
-      end;
-
-      SaveRegisters(GetRegisterInfo, FrontBase);
-
-      PrintReportWithCleaning;
-      if ResultCode = 0 then
-        Result := True
-      else
-        ErrMessage(ResultCode);
+      ErrMessage(ResultCode);
+      CancelCheck;
     end;
+
+    SaveRegisters(GetRegisterInfo, FrontBase);
+
+    PrintReportWithCleaning;
+    if ResultCode = 0 then
+      Result := True
+    else
+      ErrMessage(ResultCode);
   end;
 end;
 

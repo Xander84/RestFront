@@ -149,8 +149,8 @@ begin
     LStrings := TStringList.Create;
     try
       FullFileName := ExtractFileDir(Application.ExeName)+ '\' + LogFileName;
-      if FileExists(FullFileName) then
-        LStrings.LoadFromFile(FullFileName);
+//      if FileExists(FullFileName) then
+//        LStrings.LoadFromFile(FullFileName);
       LStrings.Add('----------------'#13#10 + DateTimeToStr(Now) + #13#10 +
         'Пользователь: ' + UserName + #13#10 + Str);
       try

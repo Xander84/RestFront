@@ -98,7 +98,13 @@ end;
 procedure TFiscalRegister.EndSession;
 begin
   if Assigned(FFiscalRegister) then
-    FFiscalRegister.EndSession;
+  begin
+    if Touch_MessageBox('Внимание',
+      'Вы действительно хотите снять отчет с гашением Z1?', MB_YESNO, mtConfirmation) = IDYES then
+    begin
+      FFiscalRegister.EndSession;
+    end;
+  end;
 end;
 
 procedure TFiscalRegister.InitFiscalRegister(const FiscalType: Integer);
@@ -210,13 +216,24 @@ end;
 procedure TFiscalRegister.PrintReportWithCleaning;
 begin
   if Assigned(FFiscalRegister) then
-    FFiscalRegister.PrintZ1ReportWithCleaning;
+  begin
+    if Touch_MessageBox('Внимание',
+      'Вы действительно хотите снять отчет с гашением Z1?', MB_YESNO, mtConfirmation) = IDYES then
+    begin
+      FFiscalRegister.PrintZ1ReportWithCleaning;
+    end;
+  end;
 end;
 
 procedure TFiscalRegister.PrintReportWithOutCleaning;
 begin
   if Assigned(FFiscalRegister) then
-    FFiscalRegister.PrintX1ReportWithOutCleaning;
+  begin
+    if Touch_MessageBox('Внимание', 'Вы действительно хотите снять отчет X1?', MB_YESNO) = IDYES then
+    begin
+      FFiscalRegister.PrintX1ReportWithOutCleaning;
+    end;
+  end;
 end;
 
 function TFiscalRegister.ReturnCheck(const Doc, DocLine, PayLine: TkbmMemTable;
@@ -254,15 +271,14 @@ end;
 procedure TFiscalRegister.StartSession;
 begin
   InitFiscalRegister(FFrontBase.CashCode);
-  if FFrontBase.CashCode = Reg_Merc then
+  if Assigned(FFiscalRegister) then
   begin
-    if Assigned(FFiscalRegister) then
-      FFiscalRegister.OpenDay;
-  end
-  else if (FFrontBase.CashCode = Reg_Spark617) or
-    (FFrontBase.CashCode = Reg_Shtrih) then
-    if Assigned(FFiscalRegister) then
-      FFiscalRegister.Init;
+    if FFrontBase.CashCode = Reg_Merc then
+      FFiscalRegister.OpenDay
+    else if (FFrontBase.CashCode = Reg_Spark617) or
+      (FFrontBase.CashCode = Reg_Shtrih) then
+        FFiscalRegister.Init;
+  end;
 end;
 
 end.
