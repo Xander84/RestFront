@@ -23,7 +23,9 @@ type
       const PropName: String): Variant;
     procedure SetProp(Instance: TObject; ClassType: TClass;
       const PropName: String; Value: Variant);
-    function GetActiveQueryList: BaseQueryList;
+    function GetActiveQueryList(Instance: TObject; ClassType: TClass;
+      const MethodName: String; Caller: TfsMethodHelper): Variant;
+
   public
     constructor Create(AScript: TfsScript); override;
   end;
@@ -35,6 +37,7 @@ begin
   inherited Create(AScript);
   with AScript do
   begin
+    AddMethod('function GetBaseQueryList: BaseQueryList', GetActiveQueryList);
     with AddClass(TgsDataSet, 'TObject') do
     begin
       AddMethod('procedure Open', CallMethod);
@@ -106,7 +109,7 @@ begin
 
   if ClassType = BaseQueryList then
   begin
-    _TgsQueryList := GetActiveQueryList;
+    _TgsQueryList := BaseQueryList(Instance);
     if MethodName = 'QUERY.GET' then
       Result := Integer(_TgsQueryList.Query[Integer(Caller.Params[0])])
     else if MethodName = 'CLEAR' then
@@ -160,9 +163,10 @@ begin
   end;
 end;
 
-function TFunctions.GetActiveQueryList: BaseQueryList;
+function TFunctions.GetActiveQueryList(Instance: TObject; ClassType: TClass;
+  const MethodName: String; Caller: TfsMethodHelper): Variant;
 begin
-  Result := BaseQueryList(FrontData.BaseQueryList);
+  Result := Integer(FrontData.BaseQueryList);
 end;
 
 function TFunctions.GetProp(Instance: TObject; ClassType: TClass;
@@ -175,7 +179,7 @@ begin
 
   if ClassType = BaseQueryList then
   begin
-    _TgsQueryList := GetActiveQueryList;
+    _TgsQueryList := BaseQueryList(Instance);
     if PropName = 'COUNT' then
       Result := _TgsQueryList.Count
     else if PropName = 'SELF' then
