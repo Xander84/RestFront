@@ -37,6 +37,7 @@ procedure TEditReport.FormCreate(Sender: TObject);
 begin
   MemTable.FieldDefs.Add('ID', ftInteger, 0);
   MemTable.FieldDefs.Add('NAME', ftString, 40);
+  MemTable.FieldDefs.Add('USR$TYPE', ftInteger, 0);
   MemTable.CreateTable;
   MemTable.Open;
 
@@ -63,7 +64,8 @@ end;
 procedure TEditReport.btnEditClick(Sender: TObject);
 begin
   Assert(Assigned(FFrontBase), 'FrontBase not assigned');
-  FReport.EditTemplate(MemTable.FieldByName('ID').AsInteger);
+  FReport.EditTemplate(MemTable.FieldByName('ID').AsInteger,
+    MemTable.FieldByName('USR$TYPE').AsInteger);
 end;
 
 procedure TEditReport.btnOKClick(Sender: TObject);
@@ -73,7 +75,8 @@ end;
 
 procedure TEditReport.DBGrLeftDblClick(Sender: TObject);
 begin
-  FReport.EditTemplate(MemTable.FieldByName('ID').AsInteger);
+  FReport.EditTemplate(MemTable.FieldByName('ID').AsInteger,
+    MemTable.FieldByName('USR$TYPE').AsInteger);
 end;
 
 end.

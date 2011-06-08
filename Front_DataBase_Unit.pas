@@ -4758,12 +4758,13 @@ begin
       if not FReadSQL.Transaction.InTransaction then
         FReadSQL.Transaction.StartTransaction;
 
-      FReadSQL.SQL.Text := 'SELECT ID, USR$NAME FROM USR$MN_REPORT';
+      FReadSQL.SQL.Text := 'SELECT ID, USR$NAME, USR$TYPE FROM USR$MN_REPORT';
       FReadSQL.ExecQuery;
       while not FReadSQL.EOF do
       begin
         MemTable.Append;
         MemTable.FieldByName('ID').AsInteger := FReadSQL.FieldByName('ID').AsInteger;
+        MemTable.FieldByName('USR$TYPE').AsInteger := FReadSQL.FieldByName('USR$TYPE').AsInteger;
         MemTable.FieldByName('NAME').AsString := FReadSQL.FieldByName('USR$NAME').AsString;
         MemTable.Post;
         FReadSQL.Next;

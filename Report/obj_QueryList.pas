@@ -23,7 +23,7 @@ interface
 
 uses
   IBDatabase, SysUtils, Contnrs, IBQuery, Windows, Db, Classes,
-  gd_MultiStringList, IBCustomDataSet, DBClient, frxClass, frxDBSet;
+  gd_MultiStringList, IBCustomDataSet, DBClient, frxClass, frxDBSet, frxEngine;
 
 const
   QueryNotAssigned = 'Query not assigned';
@@ -145,10 +145,10 @@ type
     function  Get_Query(Index: Integer): TgsDataSet;
     function  Get_Count: Integer;
     function  Get_QueryByName(const Name: String): TgsDataSet;
-    function  ResultStream: OleVariant;
+//    function  ResultStream: OleVariant;
     procedure AddMasterDetail(const MasterTable: String; const MasterField: String;
                               const DetailTable: String; const DetailField: String);
-    procedure ResultMasterDetail;
+//    procedure ResultMasterDetail;
     procedure DeleteByName(const AName: String);
     procedure MainInitialize;
     procedure Commit;
@@ -173,7 +173,7 @@ type
     procedure ClearObjectList;
   end;
 
-type
+{type
   TReportResult = class(TStringList)
   private
     FMasterDetail: TFourStringList;
@@ -214,7 +214,7 @@ type
 
 procedure CompliteDataSetStream(const AnStream: TStream;
   const AnDataSet: TDataSet; const AnFetchBlob: Boolean = False);
-function GetFieldTypeFromStr(const AnTypeName: String): TFieldType;
+function GetFieldTypeFromStr(const AnTypeName: String): TFieldType;    }
 
 var
   gsQueryList: TgsQueryList;
@@ -523,6 +523,9 @@ function TgsQueryList.Add(const QueryName: String; MemQuery: Boolean): Integer;
 var
   Index: Integer;
   FrxDBDataset: TfrxDBDataset;
+  I, J: Integer;
+  FPage: TfrxReportPage;
+  Obj: TfrxComponent;
 begin
   Result := -1;
   Index := GetIndexQueryByName(QueryName);
@@ -545,6 +548,21 @@ begin
       FReport.DataSets.Add(FrxDBDataset);
       FReport.EnabledDataSets.Add(FrxDBDataset);
       FReportDSList.Add(FrxDBDataset);
+
+      for I := 0 to Report.PagesCount - 1 do
+        if Report.Pages[i] is TfrxReportPage then
+        begin
+        { set the current page }
+          FPage := TfrxReportPage(Report.Pages[I]);
+          for J := 0 to FPage.Objects.Count - 1 do
+          begin
+            Obj := FPage.Objects[J];
+            if Obj is TfrxDataBand then
+              if (TfrxDataBand(Obj).DataSetName = QueryName) and
+                (TfrxDataBand(Obj).DataSet = nil) then
+                TfrxDataBand(Obj).DataSet := FrxDBDataset;
+          end;
+        end;
     end;
   except
     on E: Exception do
@@ -598,7 +616,7 @@ begin
 end;
 
 {TODO переделать результат в TStream}
-function TgsQueryList.ResultStream: OleVariant;
+{function TgsQueryList.ResultStream: OleVariant;
 var
   J: Integer;
   LocReportResult: TReportResult;
@@ -641,7 +659,7 @@ begin
   finally
     LocReportResult.Free;
   end;
-end;
+end;     }
 
 function TgsQueryList.GetQuery(Index: Integer): TDataSet;
 begin
@@ -737,6 +755,8 @@ begin
   FMasterDetail.Clear;
   FTempMasterDetail.Clear;
   FDataSourceList.Clear;
+//  if Assigned(FReport) then
+//    FReport.DataSets.Clear;
 end;
 
 function TgsQueryList.Get_Self: Integer;
@@ -744,7 +764,7 @@ begin
   Result := Integer(Self);
 end;
 
-procedure TgsQueryList.ResultMasterDetail;
+{procedure TgsQueryList.ResultMasterDetail;
 var
   I, J, Index: Integer;
   MemTable: TgsDataSet;
@@ -817,7 +837,7 @@ begin
   for I := 0 to FMasterDetail.Count - 1 do
     AddMasterDetail(FMasterDetail.MasterTable[I], FMasterDetail.MasterField[I],
      FMasterDetail.DetailTable[I], FMasterDetail.DetailField[I]);
-end;
+end;           }
 
 procedure CompliteDataSetStream(const AnStream: TStream;
   const AnDataSet: TDataSet; const AnFetchBlob: Boolean = False);
@@ -1115,7 +1135,7 @@ end;
 
 {TReportResult}
 
-constructor TReportResult.Create;
+{constructor TReportResult.Create;
 begin
   inherited Create;
 
@@ -1151,7 +1171,7 @@ begin
     Result := DataSet[I];
 end;
 
-{procedure TReportResult.ViewResult;
+procedure TReportResult.ViewResult;
 var
   I: Integer;
 begin
@@ -1167,7 +1187,7 @@ begin
   finally
     Free;
   end;
-end;     }
+end;
 
 procedure TReportResult.Clear;
 var
@@ -1383,6 +1403,6 @@ function TReportResult.AddDataSet(const AnName: String;
 begin
   Result := AddObject(AnsiUpperCase(AnName), AnDataSet);
   DataSet[Result].Name := Strings[Result];
-end;
+end;             }
 
 end.

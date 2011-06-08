@@ -56,7 +56,7 @@ type
     procedure PrintCheckRegisterEmpl(const DateBegin, DateEnd: TDate; EmplKey, RespKey: Integer);
     procedure PrintCopyChecks(const DateBegin, DateEnd: TDate);
     procedure PrintRealization(const DateBegin, DateEnd: TDate);
-    function EditTemplate(const ID: Integer): Boolean;
+    function EditTemplate(const ID, TemplateType: Integer): Boolean;
     function ServiceCheckOptions(const OrderKey: Integer): Boolean;
 
     property FrontBase: TFrontBase read FFrontBase write FFrontBase;
@@ -116,23 +116,45 @@ begin
   inherited;
 end;
 
-function TRestReport.EditTemplate(const ID: Integer): Boolean;
+function TRestReport.EditTemplate(const ID, TemplateType : Integer): Boolean;
 var
   FReport: Tgs_fr4SingleReport;
   Str: TStream;
+  BaseQueryList: TgsQueryList;
+  FCompanyName: String;
 begin
   Result := False;
   Assert(Assigned(FFrontBase), 'FrontBase not assigned');
 
+  BaseQueryList := FrontData.BaseQueryList;
+  BaseQueryList.Clear;
   FReport := Tgs_fr4SingleReport.Create(nil);
   Str := TMemoryStream.Create;
   try
+    BaseQueryList.Report := FReport;
     FFrontBase.GetReportTemplate(Str, ID);
     if Str.Size > 0 then
     begin
       Str.Position := 0;
       FReport.LoadFromStream(Str);
     end;
+    FReport.DataSets.Clear;
+    FReport.EnabledDataSets.Clear;
+
+    case TemplateType of
+      rp_Realization:
+        begin
+          FReport.Variables.Clear;
+          FReport.Variables[' ' + cn_RestParam] := Null;
+          FReport.Variables.AddVariable(cn_RestParam, 'DateBegin', '''' + DateToStr(Now) + '''');
+          FReport.Variables.AddVariable(cn_RestParam, 'DateEnd', '''' + DateToStr(Now) + '''');
+          FCompanyName := FFrontBase.Options.CheckLine1 +
+            ' ' + FFrontBase.Options.CheckLine2 + ' ' +
+            FFrontBase.Options.CheckLine3 + ' ' + FFrontBase.Options.CheckLine4;
+          FReport.Variables.AddVariable(cn_RestParam, 'CompanyName', '''' + FCompanyName + '''');
+        end;
+    end;
+
     FReport.DesignReport;
 
     if Touch_MessageBox('Внимание', 'Сохранить шаблон?', MB_YESNO, mtConfirmation) = IDYES then
@@ -145,6 +167,7 @@ begin
       FFrontBase.SaveReportTemplate(Str, ID);
     end;
   finally
+    BaseQueryList.Report := nil;
     FReport.Free;
     Str.Free;
   end;
@@ -1132,7 +1155,7 @@ begin
   try
     Str := TMemoryStream.Create;
     try
-      Header2 := BaseQueryList.Query[BaseQueryList.Add('Report2', False)];
+{      Header2 := BaseQueryList.Query[BaseQueryList.Add('Report2', False)];
       Header2.SQL :=
         'select ' +
         '   pt.usr$name , ' +
@@ -1182,7 +1205,7 @@ begin
       Header.FieldbyName('CompanyName').AsString := FFrontBase.Options.CheckLine1 +
           ' ' + FFrontBase.Options.CheckLine2 + ' ' +
           FFrontBase.Options.CheckLine3 + ' ' + FFrontBase.Options.CheckLine4;
-      Header.Post;
+      Header.Post;     }
 
       GetTemplateStreamByPrnIDAndType(rp_Realization, FPrinterInfo.PrinterID, Str);
       if Str.Size > 0 then

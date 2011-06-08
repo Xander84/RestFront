@@ -102,6 +102,8 @@ var
   end;
 
 begin
+  Result := 0;
+
   if ClassType = BaseQueryList then
   begin
     _TgsQueryList := GetActiveQueryList;
