@@ -158,7 +158,7 @@ type
       const AnIsRealList: Boolean = False);
     destructor Destroy; override;
 
-    function  Add(const QueryName: String; MemQuery: Boolean): Integer;
+    function Add(const QueryName: String; MemQuery: Boolean): Integer;
     procedure Clear;
 
     property Count: Integer read GetCount;
@@ -544,6 +544,7 @@ begin
     begin
       FrxDBDataset := TfrxDBDataset.Create(nil);
       FrxDBDataset.Name := QueryName;
+      FrxDBDataset.UserName := QueryName;
       FrxDBDataset.DataSet := TgsDataSet(FQueryList.Items[Result]).DataSet;
       FReport.DataSets.Add(FrxDBDataset);
       FReport.EnabledDataSets.Add(FrxDBDataset);
@@ -558,8 +559,8 @@ begin
           begin
             Obj := FPage.Objects[J];
             if Obj is TfrxDataBand then
-              if (TfrxDataBand(Obj).DataSetName = QueryName) and
-                (TfrxDataBand(Obj).DataSet = nil) then
+              if (TfrxDataBand(Obj).DataSetName = QueryName) {and
+                (TfrxDataBand(Obj).DataSet = nil)} then
                 TfrxDataBand(Obj).DataSet := FrxDBDataset;
           end;
         end;

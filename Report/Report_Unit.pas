@@ -1135,8 +1135,8 @@ var
   FReport: Tgs_fr4SingleReport;
   Str: TStream;
   BaseQueryList: TgsQueryList;
-  Header2, Header1, Header: TgsDataSet;
   FPrinterInfo: TPrinterInfo;
+  FCompanyName: String;
 begin
   Assert(Assigned(FFrontBase), 'FrontBase not assigned');
 
@@ -1155,58 +1155,6 @@ begin
   try
     Str := TMemoryStream.Create;
     try
-{      Header2 := BaseQueryList.Query[BaseQueryList.Add('Report2', False)];
-      Header2.SQL :=
-        'select ' +
-        '   pt.usr$name , ' +
-        '   c.usr$name as groupname, ' +
-        '   sum(rc.summ) as ss  ' +
-        'from ' +
-        '  usr$mn_p_cashreport_kassa(:begindate, :enddate) rc ' +
-        '  left join  usr$mn_order o on rc.orderkey = o.documentkey ' +
-        '  left join usr$mn_kindtype kt on rc.kindtypekey = kt.id ' +
-        '  left join usr$inv_paytype pt on pt.id = kt.usr$paytypekey ' +
-        '  left join usr$mn_category c on c.id = rc.categorykey ' +
-        'group by ' +
-        '  1, 2 ' +
-        '  order by 2,1 ';
-      Header2.ParamByName('begindate').AsDate := DateBegin;
-      Header2.ParamByName('enddate').AsDate := DateEnd;
-      Header2.Open;
-
-      Header1 := BaseQueryList.Query[BaseQueryList.Add('Report', False)];
-      Header1.SQL :=
-        'select ' +
-        '   pt.usr$name , ' +
-        '   c.usr$name as groupname, ' +
-        '   sum(rc.summ) as ss  ' +
-        'from ' +
-        '  usr$mn_p_cashreport_kassa(:begindate, :enddate) rc ' +
-        '  left join  usr$mn_order o on rc.orderkey = o.documentkey ' +
-        '  left join usr$mn_kindtype kt on rc.kindtypekey = kt.id ' +
-        '  left join usr$inv_paytype pt on pt.id = kt.usr$paytypekey ' +
-        '  left join usr$mn_category c on c.id = rc.categorykey ' +
-        'group by ' +
-        '  1, 2 ' +
-        '  order by 1,2 ';
-      Header1.ParamByName('begindate').AsDate := DateBegin;
-      Header1.ParamByName('enddate').AsDate := DateEnd;
-      Header1.Open;
-
-      Header := BaseQueryList.Query[BaseQueryList.Add('Header', True)];
-      Header.AddField('FromDate', 'ftDate', 0, False);
-      Header.AddField('ToDate', 'ftDate', 0, False);
-      Header.AddField('CompanyName', 'ftString', 255, False);
-      Header.Open;
-
-      Header.Append;
-      Header.FieldByName('FromDAte').AsDateTime := DateBegin;
-      Header.FieldByName('ToDAte').AsDateTime := DateEnd;
-      Header.FieldbyName('CompanyName').AsString := FFrontBase.Options.CheckLine1 +
-          ' ' + FFrontBase.Options.CheckLine2 + ' ' +
-          FFrontBase.Options.CheckLine3 + ' ' + FFrontBase.Options.CheckLine4;
-      Header.Post;     }
-
       GetTemplateStreamByPrnIDAndType(rp_Realization, FPrinterInfo.PrinterID, Str);
       if Str.Size > 0 then
       begin
@@ -1221,11 +1169,14 @@ begin
           FReport.LoadFromStream(Str);
         end;
       end;
-
       FReport.Variables.Clear;
       FReport.Variables[' ' + cn_RestParam] := Null;
-      FReport.Variables.AddVariable(cn_RestParam, 'PARAM0', '''' + DateToStr(DateBegin) + '''');
-      FReport.Variables.AddVariable(cn_RestParam, 'PARAM1', '''' + DateToStr(DateEnd) + '''');
+      FReport.Variables.AddVariable(cn_RestParam, 'DateBegin', '''' + DateToStr(DateBegin) + '''');
+      FReport.Variables.AddVariable(cn_RestParam, 'DateEnd', '''' + DateToStr(DateEnd) + '''');
+      FCompanyName := FFrontBase.Options.CheckLine1 +
+        ' ' + FFrontBase.Options.CheckLine2 + ' ' +
+        FFrontBase.Options.CheckLine3 + ' ' + FFrontBase.Options.CheckLine4;
+      FReport.Variables.AddVariable(cn_RestParam, 'CompanyName', '''' + FCompanyName + '''');
       if FReport.PrepareReport then
       begin
         InitReportParams(FReport, PrinterName);
