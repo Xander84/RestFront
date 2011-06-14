@@ -21,7 +21,7 @@ object DeleteOrderLine: TDeleteOrderLine
   object Panel1: TPanel
     Left = 0
     Top = 0
-    Width = 469
+    Width = 473
     Height = 336
     Align = alLeft
     BevelOuter = bvNone
@@ -30,7 +30,7 @@ object DeleteOrderLine: TDeleteOrderLine
     object pnlTop: TAdvPanel
       Left = 0
       Top = 0
-      Width = 469
+      Width = 473
       Height = 60
       Align = alTop
       BevelOuter = bvNone
@@ -65,6 +65,7 @@ object DeleteOrderLine: TDeleteOrderLine
       StatusBar.ColorTo = 16374724
       StatusBar.GradientDirection = gdVertical
       Styler = FrontData.FrontPanelStyler
+      ExplicitWidth = 469
       FullHeight = 41
       object lblQuantityLabel: TLabel
         AlignWithMargins = True
@@ -85,13 +86,13 @@ object DeleteOrderLine: TDeleteOrderLine
         ParentColor = False
         ParentFont = False
         Transparent = True
-        ExplicitHeight = 33
+        ExplicitTop = 10
       end
       object lblQuantity: TLabel
         AlignWithMargins = True
         Left = 168
         Top = 13
-        Width = 140
+        Width = 65
         Height = 44
         Margins.Top = 13
         Align = alClient
@@ -104,14 +105,11 @@ object DeleteOrderLine: TDeleteOrderLine
         Font.Style = []
         ParentFont = False
         Transparent = True
-        ExplicitLeft = 175
-        ExplicitTop = 14
-        ExplicitWidth = 98
-        ExplicitHeight = 31
+        ExplicitWidth = 57
       end
       object btnAddQuantity: TAdvSmoothButton
         AlignWithMargins = True
-        Left = 314
+        Left = 239
         Top = 3
         Width = 73
         Height = 54
@@ -142,10 +140,12 @@ object DeleteOrderLine: TDeleteOrderLine
         TabOrder = 0
         Version = '1.6.9.0'
         OnClick = btnAddQuantityClick
+        ExplicitLeft = 250
+        ExplicitTop = 0
       end
       object btnRemoveQuantity: TAdvSmoothButton
         AlignWithMargins = True
-        Left = 393
+        Left = 318
         Top = 3
         Width = 73
         Height = 54
@@ -176,12 +176,48 @@ object DeleteOrderLine: TDeleteOrderLine
         TabOrder = 1
         Version = '1.6.9.0'
         OnClick = btnRemoveQuantityClick
+        ExplicitLeft = 249
+      end
+      object btnShowKeyBoard: TAdvSmoothButton
+        AlignWithMargins = True
+        Left = 397
+        Top = 3
+        Width = 73
+        Height = 54
+        Align = alRight
+        Appearance.PictureAlignment = taCenter
+        Appearance.Font.Charset = DEFAULT_CHARSET
+        Appearance.Font.Color = clWindowText
+        Appearance.Font.Height = -19
+        Appearance.Font.Name = 'Times New Roman'
+        Appearance.Font.Style = [fsBold]
+        Status.Caption = '0'
+        Status.Appearance.Fill.Color = clRed
+        Status.Appearance.Fill.ColorMirror = clNone
+        Status.Appearance.Fill.ColorMirrorTo = clNone
+        Status.Appearance.Fill.GradientType = gtSolid
+        Status.Appearance.Fill.BorderColor = clGray
+        Status.Appearance.Fill.Rounding = 0
+        Status.Appearance.Fill.ShadowOffset = 0
+        Status.Appearance.Font.Charset = DEFAULT_CHARSET
+        Status.Appearance.Font.Color = clWhite
+        Status.Appearance.Font.Height = -11
+        Status.Appearance.Font.Name = 'Tahoma'
+        Status.Appearance.Font.Style = []
+        Bevel = False
+        Color = 15195349
+        DisabledColor = clBlack
+        ParentFont = False
+        TabOrder = 2
+        Version = '1.6.9.0'
+        OnClick = btnShowKeyBoardClick
+        ExplicitLeft = 405
       end
     end
     object pnlBottom: TAdvPanel
       Left = 0
       Top = 276
-      Width = 469
+      Width = 473
       Height = 60
       Align = alBottom
       BevelOuter = bvNone
@@ -216,6 +252,7 @@ object DeleteOrderLine: TDeleteOrderLine
       StatusBar.ColorTo = 16374724
       StatusBar.GradientDirection = gdVertical
       Styler = FrontData.FrontPanelStyler
+      ExplicitWidth = 469
       FullHeight = 48
       object btnOK: TAdvSmoothButton
         Left = 8
@@ -251,7 +288,7 @@ object DeleteOrderLine: TDeleteOrderLine
         Version = '1.6.9.0'
       end
       object btnCancel: TAdvSmoothButton
-        Left = 276
+        Left = 284
         Top = 3
         Width = 186
         Height = 54
@@ -288,7 +325,7 @@ object DeleteOrderLine: TDeleteOrderLine
     object pnlMain: TAdvPanel
       Left = 0
       Top = 60
-      Width = 469
+      Width = 473
       Height = 216
       Align = alClient
       BevelOuter = bvNone
@@ -323,13 +360,14 @@ object DeleteOrderLine: TDeleteOrderLine
       StatusBar.ColorTo = 16374724
       StatusBar.GradientDirection = gdVertical
       Styler = FrontData.FrontPanelStyler
+      ExplicitWidth = 483
       FullHeight = 231
     end
   end
   object TouchKeyBoard: TAdvSmoothTouchKeyBoard
-    Left = 469
+    Left = 473
     Top = 0
-    Width = 311
+    Width = 307
     Height = 336
     AutoCompletion.Font.Charset = DEFAULT_CHARSET
     AutoCompletion.Font.Color = clWhite
@@ -353,7 +391,7 @@ object DeleteOrderLine: TDeleteOrderLine
         X = 3
         Y = 2
         Height = 83
-        Width = 102
+        Width = 101
         SubKeys = <>
       end
       item
@@ -362,10 +400,10 @@ object DeleteOrderLine: TDeleteOrderLine
         ShiftKeyValue = -1
         AltGrKeyValue = -1
         SpecialKey = skNone
-        X = 105
+        X = 104
         Y = 2
         Height = 83
-        Width = 102
+        Width = 101
         SubKeys = <>
       end
       item
@@ -374,10 +412,10 @@ object DeleteOrderLine: TDeleteOrderLine
         ShiftKeyValue = -1
         AltGrKeyValue = -1
         SpecialKey = skNone
-        X = 206
+        X = 203
         Y = 2
         Height = 83
-        Width = 102
+        Width = 101
         SubKeys = <>
       end
       item
@@ -389,7 +427,7 @@ object DeleteOrderLine: TDeleteOrderLine
         X = 3
         Y = 85
         Height = 83
-        Width = 102
+        Width = 101
         SubKeys = <>
       end
       item
@@ -398,10 +436,10 @@ object DeleteOrderLine: TDeleteOrderLine
         ShiftKeyValue = -1
         AltGrKeyValue = -1
         SpecialKey = skNone
-        X = 105
+        X = 104
         Y = 85
         Height = 83
-        Width = 102
+        Width = 101
         SubKeys = <>
       end
       item
@@ -410,10 +448,10 @@ object DeleteOrderLine: TDeleteOrderLine
         ShiftKeyValue = -1
         AltGrKeyValue = -1
         SpecialKey = skNone
-        X = 206
+        X = 203
         Y = 85
         Height = 83
-        Width = 102
+        Width = 101
         SubKeys = <>
       end
       item
@@ -425,7 +463,7 @@ object DeleteOrderLine: TDeleteOrderLine
         X = 3
         Y = 168
         Height = 83
-        Width = 102
+        Width = 101
         SubKeys = <>
       end
       item
@@ -434,10 +472,10 @@ object DeleteOrderLine: TDeleteOrderLine
         ShiftKeyValue = -1
         AltGrKeyValue = -1
         SpecialKey = skNone
-        X = 105
+        X = 104
         Y = 168
         Height = 83
-        Width = 102
+        Width = 101
         SubKeys = <>
       end
       item
@@ -446,10 +484,10 @@ object DeleteOrderLine: TDeleteOrderLine
         ShiftKeyValue = -1
         AltGrKeyValue = -1
         SpecialKey = skNone
-        X = 206
+        X = 203
         Y = 168
         Height = 83
-        Width = 102
+        Width = 101
         SubKeys = <>
       end
       item
@@ -461,7 +499,7 @@ object DeleteOrderLine: TDeleteOrderLine
         X = 3
         Y = 251
         Height = 83
-        Width = 102
+        Width = 101
         SubKeys = <>
       end
       item
@@ -470,10 +508,10 @@ object DeleteOrderLine: TDeleteOrderLine
         ShiftKeyValue = -1
         AltGrKeyValue = -1
         SpecialKey = skNone
-        X = 105
+        X = 104
         Y = 251
         Height = 83
-        Width = 102
+        Width = 101
         SubKeys = <>
       end
       item
@@ -483,10 +521,10 @@ object DeleteOrderLine: TDeleteOrderLine
         AltGrKeyValue = -1
         SpecialKey = skBackSpace
         Color = 10526880
-        X = 206
+        X = 203
         Y = 251
         Height = 83
-        Width = 102
+        Width = 101
         SubKeys = <>
       end>
     SmallFont.Charset = DEFAULT_CHARSET
@@ -502,6 +540,8 @@ object DeleteOrderLine: TDeleteOrderLine
     Font.Height = -21
     Font.Name = 'Times New Roman'
     Font.Style = []
+    ExplicitLeft = 484
+    ExplicitWidth = 295
   end
   object alMain: TActionList
     Left = 64
