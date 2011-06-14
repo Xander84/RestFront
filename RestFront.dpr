@@ -42,6 +42,7 @@ uses
   gd_MultiStringList in 'Report\gd_MultiStringList.pas',
   obj_QueryList in 'Report\obj_QueryList.pas',
   fs_iQueryListRTTI in 'Report\fs_iQueryListRTTI.pas',
+  RestTable_Unit in 'Components\RestTable_Unit.pas',
   rfTableManager_unit in 'rfTableManager_unit.pas',
   PersonalCardForm_Unit in 'PersonalCardForm_Unit.pas' {PersonalCardForm},
   TouchMessageBoxForm_Unit in 'TouchMessageBoxForm_Unit.pas' {TTouchMessageBox},

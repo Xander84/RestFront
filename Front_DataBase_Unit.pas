@@ -439,10 +439,7 @@ type
     function SaveOrderLog(const WaiterKey, ManagerKey, OrderKey, OrderLineKey, Operation: Integer): Boolean;
 
     //reports
-    function GetServiceCheckQuery(const Query: TIBQuery; const PrnGrID, DocID: Integer; const PrinterName: String): Boolean;
-//    function GetServiceCheckOptions(const DocID: Integer; out PrinterName: String; out PrnGrid: Integer): Boolean;
     function SavePrintDate(const ID: Integer): Boolean;
-    function GetPreCheckQuery(const Query: TIBQuery; const DocID: Integer): Boolean;
     function GetDeleteServiceCheckOptions(const DocID, MasterKey: Integer; out PrinterName: String;
       out PrnGrid, PrinterID: Integer): Boolean;
     function GetReportList(var MemTable: TkbmMemTable): Boolean;
@@ -4206,73 +4203,6 @@ begin
   end;
 end;
 
-function TFrontBase.GetServiceCheckQuery(const Query: TIBQuery;
-  const PrnGrID, DocID: Integer; const PrinterName: String): Boolean;
-var
-  S: String;
-begin
-  Result := False;
-  try
-    S :=
-      'select ' +
-      '  doc.documentdate, ' +
-      '  doc.number as NUM, ' +
-      '  comp.name compname, ' +
-      '  o.usr$guestcount guest,  ' +
-      '  con.name conname,        ' +
-      '  o.usr$timeorder as open1, ' +
-      '  g.alias,                  ' +
-      '  g.name as goodname,         ' +
-      '  prngr.usr$name as prngroupname,  ' +
-      '  setprn.usr$printername as printername,  ' +
-      '  '' *** '' || m.usr$name || '' ***'' as modifyname,  ' +
-      '  ol.documentkey as documentkey, ' +
-      '  ol.usr$quantity as q,           ' +
-      '  ol.usr$extramodify as extramodify, ' +
-      '  current_time as time1          ' +
-      'from                             ' +
-      '  gd_document doc                ' +
-      '  join usr$mn_order o on doc.id = o.documentkey and doc.id = :docid  ' +
-      '    and doc.usr$mn_printdate is null   ' +
-      '  join usr$mn_orderline ol on o.documentkey = ol.masterkey ' +
-      '  join gd_document docl on docl.id = ol.documentkey ' +
-      '     and docl.usr$mn_printdate is null  ' +
-      '  join gd_good g on g.id = ol.usr$goodkey  ' +
-      '  join usr$mn_prngroup prngr on prngr.id = g.usr$prngroupkey  ' +
-      '  join usr$mn_prngroupset setprn on setprn.usr$prngroup = prngr.id ' +
-      '  JOIN gd_contact comp ON comp.id = doc.companykey ' +
-      '  left join usr$cross509_157767346 cr on cr.usr$mn_orderlinekey = ol.documentkey  ' +
-      '  left join usr$mn_modify m on m.id = cr.usr$mn_modifykey ' +
-      '  LEFT JOIN usr$mn_p_getcontact_department(o.usr$respkey) cd ON 0 = 0  ' +
-      '  LEFT JOIN gd_contact con ON con.id = cd.peoplekey ' +
-      '  LEFT JOIN gd_contact dept ON dept.id = cd.departmentkey ' +
-      'where   ' +
-      '  setprn.usr$printername = :printername  ' +
-      '  and ol.usr$quantity + 0 > 0  ' +
-      '  and ol.usr$causedeletekey + 0 is null  ' +
-      '  and setprn.usr$computername = :COMP  ' +
-      '  and setprn.usr$kassa + 0 = 0 ';
-    if prngrid <> 0 then
-      S := S + '  and prngr.id = :prngrid ';
-    S := S +
-      'ORDER BY ' +
-      '  prngr.usr$name, ol.documentkey ';
-    Query.Database := FDataBase;
-    Query.SQL.Text := S;
-    Query.ParamByName('docid').AsInteger := DocID;
-    Query.ParambyName('printername').AsString := PrinterName;
-    Query.ParambyName('comp').AsString := GetLocalComputerName;
-    if prngrid <> 0 then
-      Query.ParambyName('prngrid').Value := PrnGrID;
-    Query.Open;
-
-    Result := True;
-  except
-    on E: Exception do
-      Touch_MessageBox('Внимание', 'Ошибка ' + E.Message, MB_OK, mtError);
-  end;
-end;
-
 procedure TFrontBase.GetTables(const MemTable: TkbmMemTable;
   const HallKey: Integer);
 begin
@@ -4571,50 +4501,6 @@ begin
       FCheckTransaction.Commit;
 
     FSQL.Free;
-  end;
-end;
-
-function TFrontBase.GetPreCheckQuery(const Query: TIBQuery;
-  const DocID: Integer): Boolean;
-begin
-  Result := False;
-  try
-    Query.Database := FDataBase;
-    Query.SQL.Text :=
-      '  SELECT comp.name compname, comp.address compadr, comp.city compcity,  ' +
-      '  g.alias a, g.name goodname, ol.usr$costncu C, ' +
-      '  con.name conname, doc.documentdate as docdate, doc.number docnum, ' +
-      '  o.usr$guestcount guest, o.usr$timeorder as open1, current_time as close1, current_timestamp as date1, ' +
-      '  o.usr$cash cash, d.usr$surname as surname, d.usr$middlename midle, d.usr$firstname firstn, d.USR$cardnum cardnum, ' +
-      '  SUM(ol.usr$sumncu) S, ' +
-      '  SUM(ol.usr$sumncuwithdiscount) SWD, ' +
-      '  SUM(ol.usr$sumdiscount) SD, ' +
-      '  Sum(ol.usr$quantity) q  ' +
-      '  FROM gd_document doc  ' +
-      '  JOIN usr$mn_order o ON o.documentkey = doc.id ' +
-      '    AND doc.id = :dockey ' +
-      '  JOIN usr$mn_orderline ol on ol.masterkey = o.documentkey  ' +
-      '  JOIN gd_good g ON g.id = ol.usr$goodkey  ' +
-      '  LEFT JOIN gd_contact comp ON comp.id = doc.companykey  ' +
-      '  LEFT JOIN usr$mn_p_getcontact_department(usr$respkey) cd ON 0 = 0  ' +
-      '  LEFT JOIN gd_contact con ON con.id = cd.peoplekey ' +
-      '  LEFT JOIN gd_contact dept ON dept.id = cd.departmentkey  ' +
-      '  left join usr$mn_discountcard d on d.id = o.usr$disccardkey ' +
-      '  where ol.usr$causedeletekey + 0 is null ' +
-      '  GROUP BY ' +
-      '  comp.name, comp.address, comp.city, ' +
-      '  g.name, g.alias, ol.usr$costncu, ' +
-      '  con.name, doc.documentdate, doc.number,  ' +
-      '  o.usr$guestcount, o.usr$timeorder, o.usr$timecloseorder, 13, ' +
-      '  o.usr$cash, d.usr$surname, d.usr$middlename, d.usr$firstname, d.USR$cardnum  ' +
-      '  having Sum(ol.usr$quantity) > 0 ';
-    Query.ParamByName('dockey').AsInteger := DocID;
-    Query.Open;
-
-    Result := True;
-  except
-    on E: Exception do
-      Touch_MessageBox('Внимание', 'Ошибка ' + E.Message, MB_OK, mtError);
   end;
 end;
 

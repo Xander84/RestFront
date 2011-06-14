@@ -12,7 +12,7 @@ type
 implementation
 
 type
-  BaseQueryList = class(TgsQueryList);
+  QueryList = class(TgsQueryList);
 
 type
   TFunctions = class(TfsRTTIModule)
@@ -37,7 +37,7 @@ begin
   inherited Create(AScript);
   with AScript do
   begin
-    AddMethod('function GetBaseQueryList: BaseQueryList', GetActiveQueryList);
+    AddMethod('function GetQueryList: QueryList', GetActiveQueryList);
     with AddClass(TgsDataSet, 'TObject') do
     begin
       AddMethod('procedure Open', CallMethod);
@@ -52,6 +52,7 @@ begin
       AddMethod('procedure Append', CallMethod);
       AddMethod('procedure Insert', CallMethod);
       AddMethod('procedure Edit', CallMethod);
+      AddMethod('procedure CreateDataSetAs(const AnDataSet: TgsDataSet)', CallMethod);
 
       AddMethod('function Eof: Boolean', CallMethod);
       AddMethod('function Bof: Boolean', CallMethod);
@@ -78,7 +79,7 @@ begin
       AddProperty('Tag', 'Integer', GetProp, SetProp);
     end;
 
-    with AddClass(BaseQueryList, 'TObject') do
+    with AddClass(QueryList, 'TObject') do
     begin
       AddProperty('Count', 'Integer', GetProp, nil);
       AddProperty('Self', 'Integer', GetProp, nil);
@@ -92,7 +93,7 @@ end;
 function TFunctions.CallMethod(Instance: TObject; ClassType: TClass;
   const MethodName: String; Caller: TfsMethodHelper): Variant;
 var
-  _TgsQueryList: BaseQueryList;
+  _TgsQueryList: QueryList;
   _TgsDataSet: TgsDataSet;
 
   function IntToLocateOptions(i: Integer): TLocateOptions;
@@ -107,9 +108,9 @@ var
 begin
   Result := 0;
 
-  if ClassType = BaseQueryList then
+  if ClassType = QueryList then
   begin
-    _TgsQueryList := BaseQueryList(Instance);
+    _TgsQueryList := QueryList(Instance);
     if MethodName = 'QUERY.GET' then
       Result := Integer(_TgsQueryList.Query[Integer(Caller.Params[0])])
     else if MethodName = 'CLEAR' then
@@ -122,6 +123,8 @@ begin
     _TgsDataSet := TgsDataSet(Instance);
     if MethodName = 'OPEN' then
       _TgsDataSet.Open
+    else if MethodName = 'CREATEDATASETAS' then
+      _TgsDataSet.CreateDataSetAs(TgsDataSet(Integer(Caller.Params[0])))
     else if MethodName = 'CLOSE' then
       _TgsDataSet.Close
     else if MethodName = 'FIRST' then
@@ -172,14 +175,14 @@ end;
 function TFunctions.GetProp(Instance: TObject; ClassType: TClass;
   const PropName: String): Variant;
 var
-  _TgsQueryList: BaseQueryList;
+  _TgsQueryList: QueryList;
   _TgsDataSet: TgsDataSet;
 begin
   Result := 0;
 
-  if ClassType = BaseQueryList then
+  if ClassType = QueryList then
   begin
-    _TgsQueryList := BaseQueryList(Instance);
+    _TgsQueryList := QueryList(Instance);
     if PropName = 'COUNT' then
       Result := _TgsQueryList.Count
     else if PropName = 'SELF' then

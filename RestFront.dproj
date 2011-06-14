@@ -32,7 +32,7 @@
 			<DCC_ExeOutput>D:\Front\DCU</DCC_ExeOutput>
 			<DCC_UnitAlias>WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;WinTypes=Windows;WinProcs=Windows;$(DCC_UnitAlias)</DCC_UnitAlias>
 			<DCC_BplOutput>D:\Front\DCU</DCC_BplOutput>
-			<DCC_Define>TMSUXTHEME;EUREKALOG;EUREKALOG_VER6;$(DCC_Define)</DCC_Define>
+			<DCC_Define>RESTFRONT;TMSUXTHEME;EUREKALOG;EUREKALOG_VER6;$(DCC_Define)</DCC_Define>
 			<DCC_Optimize>false</DCC_Optimize>
 			<DCC_N>true</DCC_N>
 			<DCC_K>false</DCC_K>
@@ -130,6 +130,7 @@
 			<DCCReference Include="Report\gd_MultiStringList.pas"/>
 			<DCCReference Include="Report\obj_QueryList.pas"/>
 			<DCCReference Include="Report\fs_iQueryListRTTI.pas"/>
+			<DCCReference Include="Components\RestTable_Unit.pas"/>
 			<DCCReference Include="rfTableManager_unit.pas"/>
 			<DCCReference Include="PersonalCardForm_Unit.pas">
 				<Form>PersonalCardForm</Form>
@@ -191,10 +192,10 @@
 					<VersionInfo>
 						<VersionInfo Name="IncludeVerInfo">True</VersionInfo>
 						<VersionInfo Name="AutoIncBuild">False</VersionInfo>
-						<VersionInfo Name="MajorVer">0</VersionInfo>
-						<VersionInfo Name="MinorVer">0</VersionInfo>
+						<VersionInfo Name="MajorVer">1</VersionInfo>
+						<VersionInfo Name="MinorVer">5</VersionInfo>
 						<VersionInfo Name="Release">0</VersionInfo>
-						<VersionInfo Name="Build">1</VersionInfo>
+						<VersionInfo Name="Build">0</VersionInfo>
 						<VersionInfo Name="Debug">False</VersionInfo>
 						<VersionInfo Name="PreRelease">False</VersionInfo>
 						<VersionInfo Name="Special">False</VersionInfo>
@@ -206,7 +207,7 @@
 					<VersionInfoKeys>
 						<VersionInfoKeys Name="CompanyName"/>
 						<VersionInfoKeys Name="FileDescription"/>
-						<VersionInfoKeys Name="FileVersion">0.0.0.1</VersionInfoKeys>
+						<VersionInfoKeys Name="FileVersion">1.5.0.0</VersionInfoKeys>
 						<VersionInfoKeys Name="InternalName"/>
 						<VersionInfoKeys Name="LegalCopyright"/>
 						<VersionInfoKeys Name="LegalTrademarks"/>

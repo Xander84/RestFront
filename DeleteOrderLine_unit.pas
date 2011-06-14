@@ -112,6 +112,7 @@ procedure TDeleteOrderLine.TouchKeyBoardKeyClick(Sender: TObject;
 var
   I: Integer;
   S: String;
+  IncrementedQuantity: Currency;
 begin
   with TouchKeyBoard.Keys.Items[Index] do
   begin
@@ -120,9 +121,14 @@ begin
       if (Caption > '') then
       begin
         if lblQuantity.Caption = '0' then
-          lblQuantity.Caption := Caption[1]
+          IncrementedQuantity := StrToCurr(Caption[1])
         else
-          lblQuantity.Caption := lblQuantity.Caption + Caption[1];
+          IncrementedQuantity := StrToCurr(lblQuantity.Caption + Caption[1]);
+
+        if IncrementedQuantity < FQuantity then
+          lblQuantity.Caption := CurrToStr(IncrementedQuantity)
+        else
+          lblQuantity.Caption := CurrToStr(FQuantity);
       end;
     end else
     begin

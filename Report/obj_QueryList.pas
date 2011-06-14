@@ -102,6 +102,7 @@ type
                        FieldSize: Integer; Required: Boolean);
     function ParamByName(const ParamName: String): TParam;
     function FieldByName(const FieldName: String): TField;
+    procedure CreateDataSetAs(const AnDataSet: TgsDataSet);
 
     property Database: TIBDatabase write SetDatabase;
     property Transaction: TIBTransaction write SetTransaction;
@@ -222,7 +223,7 @@ var
 implementation
 
 uses
-  IBSQL, TypInfo, IB, {rp_dlgViewResult_unit,} Variants;
+  IBSQL, TypInfo, IB, Variants;
 
 type
   TFieldCracker = class(TField);
@@ -559,8 +560,7 @@ begin
           begin
             Obj := FPage.Objects[J];
             if Obj is TfrxDataBand then
-              if (TfrxDataBand(Obj).DataSetName = QueryName) {and
-                (TfrxDataBand(Obj).DataSet = nil)} then
+              if AnsiCompareText(TfrxDataBand(Obj).DataSetName, QueryName) = 0 then
                 TfrxDataBand(Obj).DataSet := FrxDBDataset;
           end;
         end;
@@ -756,8 +756,11 @@ begin
   FMasterDetail.Clear;
   FTempMasterDetail.Clear;
   FDataSourceList.Clear;
-//  if Assigned(FReport) then
-//    FReport.DataSets.Clear;
+  if Assigned(FReport) then
+  begin
+    FReport.DataSets.Clear;
+    FReport.EnabledDataSets.Clear;
+  end;
 end;
 
 function TgsQueryList.Get_Self: Integer;
@@ -1121,6 +1124,22 @@ function TgsDataSet.CreateBlobStream(const Field: TField;
   Mode: TBlobStreamMode): TStream;
 begin
   Result := FDataSet.CreateBlobStream(Field, Mode);
+end;
+
+procedure TgsDataSet.CreateDataSetAs(const AnDataSet: TgsDataSet);
+var
+  I: Integer;
+begin
+  if FDataSet is TClientDataSet then
+  begin
+    for I := 0 to AnDataSet.FieldCount - 1 do
+    begin
+      FDataSet.FieldDefs.Add(AnDataSet.Fields[I].FieldName, AnDataSet.Fields[I].DataType,
+        AnDataSet.Fields[I].Size, False);
+    end;
+  end
+  else
+    raise Exception.Create('Method not supported for real dataset.');
 end;
 
 function TgsDataSet.Locate(const KeyFields: string; const KeyValues: Variant;

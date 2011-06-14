@@ -142,7 +142,6 @@ object DeleteOrderLine: TDeleteOrderLine
         TabOrder = 0
         Version = '1.6.9.0'
         OnClick = btnAddQuantityClick
-        ExplicitLeft = 288
       end
       object btnRemoveQuantity: TAdvSmoothButton
         AlignWithMargins = True
@@ -177,7 +176,6 @@ object DeleteOrderLine: TDeleteOrderLine
         TabOrder = 1
         Version = '1.6.9.0'
         OnClick = btnRemoveQuantityClick
-        ExplicitLeft = 367
       end
     end
     object pnlBottom: TAdvPanel
@@ -221,7 +219,7 @@ object DeleteOrderLine: TDeleteOrderLine
       FullHeight = 48
       object btnOK: TAdvSmoothButton
         Left = 8
-        Top = 4
+        Top = 3
         Width = 186
         Height = 54
         Action = actOK
@@ -254,7 +252,7 @@ object DeleteOrderLine: TDeleteOrderLine
       end
       object btnCancel: TAdvSmoothButton
         Left = 276
-        Top = 4
+        Top = 3
         Width = 186
         Height = 54
         Appearance.PictureAlignment = taCenter
@@ -325,7 +323,6 @@ object DeleteOrderLine: TDeleteOrderLine
       StatusBar.ColorTo = 16374724
       StatusBar.GradientDirection = gdVertical
       Styler = FrontData.FrontPanelStyler
-      ExplicitWidth = 466
       FullHeight = 231
     end
   end
@@ -505,10 +502,6 @@ object DeleteOrderLine: TDeleteOrderLine
     Font.Height = -21
     Font.Name = 'Times New Roman'
     Font.Style = []
-    ExplicitLeft = 504
-    ExplicitTop = 60
-    ExplicitWidth = 233
-    ExplicitHeight = 245
   end
   object alMain: TActionList
     Left = 64
