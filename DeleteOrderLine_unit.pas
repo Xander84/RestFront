@@ -23,6 +23,7 @@ type
     btnCancel: TAdvSmoothButton;
     pnlMain: TAdvPanel;
     TouchKeyBoard: TAdvSmoothTouchKeyBoard;
+    btnShowKeyBoard: TAdvSmoothButton;
     procedure FormCreate(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure btnAddQuantityClick(Sender: TObject);
@@ -31,6 +32,7 @@ type
     procedure actOKUpdate(Sender: TObject);
     procedure btnCancelClick(Sender: TObject);
     procedure TouchKeyBoardKeyClick(Sender: TObject; Index: Integer);
+    procedure btnShowKeyBoardClick(Sender: TObject);
   private
     DeleteCauseList: TkbmMemTable;
     FFrontBase: TFrontBase;
@@ -43,6 +45,8 @@ type
     //
     FButtonList : TObjectList;
     FCanDevide: Boolean;
+    FShowKeyBoard: Boolean;
+    FKeyBoardWidth: Integer;
 
     procedure SetFrontBase(Value: TFrontBase);
 
@@ -53,6 +57,7 @@ type
 
     procedure DeleteButtonOnClick(Sender: TObject);
     procedure SetCanDevided(const Value: Boolean);
+    procedure SetShowKeyBoard(const Value: Boolean);
   public
     constructor CreateWithFrontBase(AOwner: TComponent; FBase: TFrontBase);
 
@@ -61,6 +66,7 @@ type
     property RemoveQuantity: Currency read GetRemoveQuantity;
     property DeleteClauseID: Integer read FDeleteClauseID write FDeleteClauseID;
     property CanDevided: Boolean read FCanDevide write SetCanDevided;
+    property ShowKeyBoard: Boolean read FShowKeyBoard write SetShowKeyBoard;
   end;
 
 var
@@ -86,6 +92,10 @@ begin
   btnRemoveQuantity.Picture := FrontData.RestPictureContainer.FindPicture('delete');
   btnOK.Picture := FrontData.RestPictureContainer.FindPicture('tick');
   btnCancel.Picture := FrontData.RestPictureContainer.FindPicture('cross');
+  btnShowKeyBoard.Picture := FrontData.RestPictureContainer.FindPicture('keyboard');
+
+  FKeyBoardWidth := TouchKeyBoard.Width;
+  ShowKeyBoard := False;
 end;
 
 procedure TDeleteOrderLine.FormCloseQuery(Sender: TObject;
@@ -105,6 +115,16 @@ end;
 procedure TDeleteOrderLine.SetFrontBase(Value: TFrontBase);
 begin
   FFrontBase := Value;
+end;
+
+procedure TDeleteOrderLine.SetShowKeyBoard(const Value: Boolean);
+begin
+  FShowKeyBoard := Value;
+  TouchKeyBoard.Visible := Value;
+  if FShowKeyBoard then
+    Width := Width + FKeyBoardWidth
+  else
+    Width := Width - FKeyBoardWidth;
 end;
 
 procedure TDeleteOrderLine.TouchKeyBoardKeyClick(Sender: TObject;
@@ -235,6 +255,11 @@ begin
     lblQuantity.Caption := CurrToStr(DecrementedQuantity)
   else
     lblQuantity.Caption := '0';
+end;
+
+procedure TDeleteOrderLine.btnShowKeyBoardClick(Sender: TObject);
+begin
+  ShowKeyBoard := not FShowKeyBoard;
 end;
 
 function TDeleteOrderLine.GetRemoveQuantity: Currency;
