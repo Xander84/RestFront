@@ -421,6 +421,7 @@ type
     function GetReportTemplate(const Stream: TStream; const ID: Integer): Boolean;
     function SaveReportTemplate(const Stream: TStream; const ID: Integer): Boolean;
     procedure GetReportTemplateByPrnIDAndType(const ReportType, PrinterID: Integer; const Stream: TStream);
+    procedure GetCustomReportList(const MemTable: TkbmMemTable);
 
     function GetHallBackGround(const Stream: TStream; const HallKey: Integer): Boolean;
     procedure GetCashInfo;
@@ -1236,6 +1237,43 @@ begin
       Result := True;
     except
       Result := False;
+      raise;
+    end;
+  finally
+    FReadSQL.Close;
+  end;
+end;
+
+procedure TFrontBase.GetCustomReportList(const MemTable: TkbmMemTable);
+var
+  FPrinterID: Integer;
+begin
+  MemTable.Close;
+  MemTable.CreateTable;
+  MemTable.Open;
+  try
+    try
+      if not FReadSQL.Transaction.InTransaction then
+        FReadSQL.Transaction.StartTransaction;
+
+      FPrinterID := GetPrinterInfo.PrinterID;
+
+      FReadSQL.SQL.Text :=
+        ' SELECT ID, USR$NAME ' +
+        ' FROM USR$MN_REPORT R ' +
+        ' WHERE R.USR$TYPE = 9 ' +
+        '   AND (R.USR$PRNTYPEKEY IS NULL OR R.USR$PRNTYPEKEY = :PRNKEY) ';
+      FReadSQL.Params[0].AsInteger := FPrinterID;
+      FReadSQL.ExecQuery;
+      while not FReadSQL.EOF do
+      begin
+        MemTable.Append;
+        MemTable.FieldByName('ID').AsInteger := FReadSQL.FieldByName('ID').AsInteger;
+        MemTable.FieldByName('USR$NAME').AsString := FReadSQL.FieldByName('USR$NAME').AsString;
+        MemTable.Post;
+        FReadSQL.Next;
+      end;
+    except
       raise;
     end;
   finally

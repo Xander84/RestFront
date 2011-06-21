@@ -56,6 +56,7 @@ type
     procedure PrintRealization(const DateBegin, DateEnd: TDate);   // DONE
     function EditTemplate(const ID, TemplateType: Integer): Boolean;
     function ServiceCheckOptions(const OrderKey: Integer): Boolean;
+    procedure PrintCustomReport(const DateBegin, DateEnd: TDate; const TemplateID: Integer);
 
     property FrontBase: TFrontBase read FFrontBase write FFrontBase;
   end;
@@ -75,6 +76,8 @@ const
   rp_CopyCheck         = 7;   //DONE
   //акт реализации
   rp_Realization       = 8;   //DONE
+  //пользовательский отчет
+  rp_CustomReport      = 9;
 
 
 implementation
@@ -147,7 +150,7 @@ begin
     FReport.Variables.Clear;
     FReport.Variables[' ' + cn_RestParam] := Null;
     case TemplateType of
-      rp_Realization, rp_CopyCheck, rp_IncomeReport:
+      rp_Realization, rp_CopyCheck, rp_IncomeReport, rp_CustomReport:
         begin
           FReport.Variables.AddVariable(cn_RestParam, 'DateBegin', '''' + DateToStr(Now) + '''');
           FReport.Variables.AddVariable(cn_RestParam, 'DateEnd', '''' + DateToStr(Now) + '''');
@@ -407,6 +410,58 @@ begin
       begin
         InitReportParams(FReport, PrinterName);
         FReport.Print;
+      end;
+    finally
+      Str.Free;
+    end;
+  finally
+    BaseQueryList.Report := nil;
+    FReport.Free;
+  end;
+end;
+
+procedure TRestReport.PrintCustomReport(const DateBegin, DateEnd: TDate;
+  const TemplateID: Integer);
+var
+  FReport: Tgs_fr4SingleReport;
+  Str: TStream;
+  BaseQueryList: TgsQueryList;
+  FPrinterInfo: TPrinterInfo;
+  PrinterName, FCompanyName: String;
+begin
+  Assert(Assigned(FFrontBase), 'FrontBase not assigned');
+  BaseQueryList := FrontData.BaseQueryList;
+  BaseQueryList.Clear;
+
+  FPrinterInfo := FFrontBase.GetPrinterInfo;
+  PrinterName := FPrinterInfo.PrinterName;
+
+  FReport := Tgs_fr4SingleReport.Create(nil);
+  BaseQueryList.Report := FReport;
+  try
+    Str := TMemoryStream.Create;
+    try
+      FFrontBase.GetReportTemplate(Str, TemplateID);
+      if Str.Size > 0 then
+      begin
+        Str.Position := 0;
+        FReport.LoadFromStream(Str);
+      end;
+
+      FReport.DataSets.Clear;
+      FCompanyName := FFrontBase.Options.CheckLine1 +
+        ' ' + FFrontBase.Options.CheckLine2 + ' ' +
+        FFrontBase.Options.CheckLine3 + ' ' + FFrontBase.Options.CheckLine4;
+
+      FReport.Variables.Clear;
+      FReport.Variables[' ' + cn_RestParam] := Null;
+      FReport.Variables.AddVariable(cn_RestParam, 'DateBegin', '''' + DateToStr(DateBegin) + '''');
+      FReport.Variables.AddVariable(cn_RestParam, 'DateEnd', '''' + DateToStr(DateEnd) + '''');
+      FReport.Variables.AddVariable(cn_RestParam, 'CompanyName', '''' + FCompanyName + '''');
+      if FReport.PrepareReport then
+      begin
+        InitReportParams(FReport, PrinterName);
+        FReport.ShowPreparedReport;
       end;
     finally
       Str.Free;

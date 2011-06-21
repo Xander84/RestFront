@@ -61,7 +61,6 @@ object ReportForm: TReportForm
     StatusBar.ColorTo = 16374724
     StatusBar.GradientDirection = gdVertical
     Styler = FrontData.FrontPanelStyler
-    ExplicitTop = 316
     FullHeight = 0
     object btnOK: TAdvSmoothButton
       Left = 228
@@ -141,10 +140,6 @@ object ReportForm: TReportForm
     StatusBar.ColorTo = 16374724
     StatusBar.GradientDirection = gdVertical
     Styler = FrontData.FrontPanelStyler
-    ExplicitLeft = 136
-    ExplicitTop = 96
-    ExplicitWidth = 185
-    ExplicitHeight = 41
     FullHeight = 0
     object btnPrintIncomeReport: TAdvSmoothButton
       Left = 16
@@ -289,8 +284,8 @@ object ReportForm: TReportForm
     Color = 16640730
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
-    Font.Height = -16
-    Font.Name = 'Tahoma'
+    Font.Height = -11
+    Font.Name = 'MS Sans Serif'
     Font.Style = []
     ParentFont = False
     TabOrder = 2
@@ -323,7 +318,6 @@ object ReportForm: TReportForm
     StatusBar.ColorTo = 16374724
     StatusBar.GradientDirection = gdVertical
     Styler = FrontData.FrontPanelStyler
-    ExplicitWidth = 594
     FullHeight = 0
     object lblDateBegin: TLabel
       Left = 16
@@ -355,9 +349,9 @@ object ReportForm: TReportForm
     end
     object xDateBegin: TDateTimePicker
       Left = 139
-      Top = 8
+      Top = 13
       Width = 110
-      Height = 39
+      Height = 27
       Date = 40569.698956435180000000
       Time = 40569.698956435180000000
       Font.Charset = DEFAULT_CHARSET
@@ -369,10 +363,10 @@ object ReportForm: TReportForm
       TabOrder = 0
     end
     object xDateEnd: TDateTimePicker
-      Left = 422
-      Top = 8
+      Left = 419
+      Top = 13
       Width = 110
-      Height = 39
+      Height = 27
       Date = 40569.698956435180000000
       Time = 40569.698956435180000000
       Font.Charset = DEFAULT_CHARSET
