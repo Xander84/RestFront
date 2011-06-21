@@ -259,10 +259,10 @@ type
     procedure DoSimpleEvent(const Event: Integer);
     procedure DoSimpleLog(const UserInfo: TLogUserInfo; Event: Integer);
     procedure DoOrderLog(const UserInfo: TLogUserInfo;
-      OrderInfo: TLogOrderInfo; Event: Integer);
-    procedure DoOrderGoodLog(const UserInfo: TLogUserInfo; OrderInfo: TLogOrderInfo;
-      GoodInfo: TLogGoodInfo; Event: Integer);
-    procedure WriteLog(const UserInfo: TLogUserInfo; OrderInfo: TLogOrderInfo;
+      const OrderInfo: TLogOrderInfo; Event: Integer);
+    procedure DoOrderGoodLog(const UserInfo: TLogUserInfo; const OrderInfo: TLogOrderInfo;
+      const GoodInfo: TLogGoodInfo; Event: Integer);
+    procedure WriteLog(const UserInfo: TLogUserInfo; const OrderInfo: TLogOrderInfo;
       Event: Integer);
 
     property DatabaseName: String read FDataBaseName write SetDatabaseName;
@@ -453,7 +453,7 @@ begin
 end;
 
 procedure TLogManager.DoOrderGoodLog(const UserInfo: TLogUserInfo;
-  OrderInfo: TLogOrderInfo; GoodInfo: TLogGoodInfo; Event: Integer);
+  const OrderInfo: TLogOrderInfo; const GoodInfo: TLogGoodInfo; Event: Integer);
 var
   FSQL: TIBSQL;
   FTransaction: TIBTransaction;
@@ -502,7 +502,7 @@ begin
 end;
 
 procedure TLogManager.DoOrderLog(const UserInfo: TLogUserInfo;
-  OrderInfo: TLogOrderInfo; Event: Integer);
+  const OrderInfo: TLogOrderInfo; Event: Integer);
 var
   FSQL: TIBSQL;
   FTransaction: TIBTransaction;
@@ -701,7 +701,7 @@ begin
 end;
 
 procedure TLogManager.WriteLog(const UserInfo: TLogUserInfo;
-  OrderInfo: TLogOrderInfo; Event: Integer);
+  const OrderInfo: TLogOrderInfo; Event: Integer);
 begin
   //
 end;

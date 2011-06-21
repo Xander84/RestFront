@@ -334,8 +334,8 @@ type
     procedure CreateIBUser(const IBName, IBPass: String; ID: Integer);
     function IsComputerDBConnected(const ComputerName: String): Boolean;
 
-    function CheckUserPassword(UserID: Integer; UserPassword: String): Integer; //Возвращает ID Группы -1 Если не нашло
-    function LogIn(UserPassword: String): Boolean; //Возвращает ID Группы -1 Если не нашло
+    function CheckUserPassword(const UserID: Integer; const UserPassword: String): Integer; //Возвращает ID Группы -1 Если не нашло
+    function LogIn(const UserPassword: String): Boolean; //Возвращает ID Группы -1 Если не нашло
     function CheckUserPasswordWithForm: TUserInfo;
     function CheckForSession: Boolean;
 
@@ -404,7 +404,8 @@ type
     function GetDiscount(const DiscKey, GoodKey: Integer;
       DocDate: TDateTime; PersDiscount: Currency; LineTime: TTime): Currency;
     function GetDiscountList(const MemTable: TkbmMemTable): Boolean;
-    function GetDiscountCardInfo(const MemTable: TkbmMemTable; const CardID: Integer; LDate: TDateTime; Pass: String): Boolean;
+    function GetDiscountCardInfo(const MemTable: TkbmMemTable; const CardID: Integer;
+      const LDate: TDateTime; const Pass: String): Boolean;
     function CalcBonusSum(const DataSet: TDataSet; FLine: TkbmMemTable; var Bonus: Boolean; var PercDisc: Currency): Boolean;
     function GetPersonalCardInfo(const MemTable: TkbmMemTable;
       const Pass: String; const PersonalCardID: Integer): Boolean;
@@ -560,8 +561,8 @@ end;
 
 { TFrontBase }
 
-function TFrontBase.CheckUserPassword(UserID: Integer;
-  UserPassword: String): Integer;
+function TFrontBase.CheckUserPassword(const UserID: Integer;
+  const UserPassword: String): Integer;
 begin
   Result := -1;
   try
@@ -2542,7 +2543,7 @@ begin
   end;
 end;
 
-function TFrontBase.LogIn(UserPassword: String): Boolean;
+function TFrontBase.LogIn(const UserPassword: String): Boolean;
 begin
   Result := False;
   // Проверяем коннект к серверу
@@ -3988,8 +3989,8 @@ begin
   end;
 end;
 
-function TFrontBase.GetDiscountCardInfo(
-  const MemTable: TkbmMemTable; const CardID: Integer; LDate: TDateTime; Pass: String): Boolean;
+function TFrontBase.GetDiscountCardInfo(const MemTable: TkbmMemTable; const CardID: Integer;
+  const LDate: TDateTime; const Pass: String): Boolean;
 begin
   FReadSQL.Close;
   MemTable.Close;

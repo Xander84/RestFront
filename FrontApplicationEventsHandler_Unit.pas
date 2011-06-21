@@ -9,7 +9,7 @@ type
   TApplicationEventsHandler = class(TObject)
   private
     // code from http://stackoverflow.com/questions/397934/writing-to-the-event-log-in-delphi
-    procedure WriteToEventLog(Msg: string);
+    procedure WriteToEventLog(const Msg: string);
   public
     procedure ApplicationEventsException(Sender: TObject; E: Exception);
   end;
@@ -30,7 +30,7 @@ begin
   WriteToEventLog(E.Message);
 end;
 
-procedure TApplicationEventsHandler.WriteToEventLog(Msg: string);
+procedure TApplicationEventsHandler.WriteToEventLog(const Msg: string);
 var
   h: THandle;
   ss: array [0..0] of PChar;

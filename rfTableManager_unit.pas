@@ -393,9 +393,10 @@ procedure TrfTableManager.RefreshOrderData(const ATable: TRestTable = nil);
 var
   ibsql: TIBSQL;
   Table: TRestTable;
-  Order: TrfOrder;
 
   procedure RefreshSingleTable(CurTable: TRestTable);
+  var
+    Order: TrfOrder;
   begin
     // Если не было заказов на столе и нет в запросе, то не будем перерисовывать
     if (CurTable.OrderList.Count <> 0) or (not ibsql.Eof) then
