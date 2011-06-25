@@ -1,0 +1,74 @@
+“аблицы системы:
+
+GD_RUID
+
+gd_usercompany - текуща€ компани€
+
+GD_USERS - пользователи
+
+GD_USERGROUP - таблица групп пользователей
+
+gd_contact - таблица контактов
+
+GD_PEOPLE - сотрудники
+
+usr$mn_causedeleteorderline - причина удалени€ 
+
+gd_document - таблица документов
+
+USR$MN_MENUNAME - наименование меню
+
+usr$mn_menu - таблица шапки меню
+
+usr$mn_menuline - таблица позиции меню
+
+GD_GOOD - таблица товаров
+
+GD_GOODGROUP - таблица товарных групп
+
+USR$MN_ORDER - таблица шапки заказа
+
+USR$MN_ORDERLINE - таблица позиции заказа
+
+usr$mn_payment - оплаты
+
+USR$MN_KINDTYPE - типы форм оплаты
+
+usr$mn_pointofsaleset - настройка касс раб. станций
+
+USR$CROSS509_157767346 - таблица св€зи заказа и модификаторов на заказ
+
+USR$MN_REPORT - таблица отчетов 
+
+usr$mn_modify - таблица модификаторов заказа
+
+usr$mn_options - таблица параметров 
+
+GD_STORAGE_DATA - таблица хранилища
+
+usr$mn_prngroup - таблица групп печати
+
+usr$mn_prngroupset - таблица настройки групп сервис-печати
+
+USR$MN_SALEDEVICE - торговое оборудование (дисплей покупател€)
+
+USR$MN_REGISTERINFO - таблица регистров ‘–
+
+usr$mn_discountname - наименование скидок
+
+usr$mn_discounttype - тип скидки
+
+usr$mn_discountcard - дисконтные карты
+
+USR$MN_PERSONALCARD - персональные карты
+
+USR$MN_HALL - залы
+
+USR$MN_TABLE - столы
+
+usr$mn_tabletype - типы столов
+
+
+’ранимые процедуры:
+
+USR$MN_P_GETDISCOUNT - расчет скидки на позицию

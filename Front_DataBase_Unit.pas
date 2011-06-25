@@ -20,13 +20,6 @@ const
 
 //константы с запросами
 const
-  cst_UserPassword =
-    ' SELECT u.usr$groupkey ' +
-    ' FROM                  ' +
-    '   usr$users u         ' +
-    ' WHERE                 ' +
-    '   and u.usr$password = :Password ';
-
   cst_CauseDelete = 'SELECT * FROM usr$mn_causedeleteorderline';
 
   cst_GoodList =
@@ -334,7 +327,6 @@ type
     procedure CreateIBUser(const IBName, IBPass: String; ID: Integer);
     function IsComputerDBConnected(const ComputerName: String): Boolean;
 
-    function CheckUserPassword(const UserID: Integer; const UserPassword: String): Integer; //Возвращает ID Группы -1 Если не нашло
     function LogIn(const UserPassword: String): Boolean; //Возвращает ID Группы -1 Если не нашло
     function CheckUserPasswordWithForm: TUserInfo;
     function CheckForSession: Boolean;
@@ -342,7 +334,6 @@ type
     function GetNextID: Integer;
     function GetServerDateTime: TDateTime;
 
-    procedure GetUserList(const UserList: TStrings);
     { Получить заказы для переданного пользователя, если "user = -1" то возвращаем для текущего }
     procedure GetUserOrderList(const ContactKey: Integer; AOrderList: TList<TrfOrder>);
     function GetUserOrders(const ContactKey: Integer; var MemTable: TkbmMemTable): Boolean;
@@ -560,27 +551,6 @@ begin
 end;
 
 { TFrontBase }
-
-function TFrontBase.CheckUserPassword(const UserID: Integer;
-  const UserPassword: String): Integer;
-begin
-  Result := -1;
-  try
-    FReadSQL.Close;
-    if not FReadSQL.Transaction.InTransaction then
-      FReadSQL.Transaction.StartTransaction;
-
-    FReadSQL.SQL.Text := cst_UserPassword;
-    FReadSQL.ParamByName('Password').AsString := UserPassword;
-    FReadSQL.ExecQuery;
-    if not FReadSQL.EOF then
-      Result := FReadSQL.FieldByName('usr$groupKey').ASInteger;
-    FReadSQL.Close;
-  except
-    on E: Exception do
-      Touch_MessageBox('Внимание', 'Ошибка ' + E.Message, MB_OK, mtError);
-  end;
-end;
 
 constructor TFrontBase.Create;
 begin
@@ -2081,29 +2051,6 @@ begin
 
   except
     raise;
-  end;
-end;
-
-procedure TFrontBase.GetUserList(const UserList: TStrings);
-begin
-  UserList.Clear;
-  FReadSQL.Close;
-
-  if not FReadSQL.Transaction.InTransaction then
-    FReadSQL.Transaction.StartTransaction;
-
-  try
-    FReadSQL.SQL.Text :=
-      ' select u.id, u.usr$name FROM usr$users u WHERE u.disabled = 0 ORDER BY u.usr$name';
-
-    FReadSQL.ExecQuery;
-    while not FReadSQL.EOF do
-    begin
-      UserList.Add(FReadSQL.FieldByName('usr$name').AsString + '=' + FReadSQL.FieldByName('ID').AsString);
-      FReadSQL.Next;
-    end
-  finally
-    FReadSQL.Close;
   end;
 end;
 
