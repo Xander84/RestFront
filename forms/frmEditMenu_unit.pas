@@ -55,10 +55,12 @@ begin
 end;
 
 procedure TEditMenu.FormShow(Sender: TObject);
+var
+  FMenuCount: Integer;
 begin
   Assert(Assigned(FFrontBase), 'FrontBase not assigned');
 
-  FFrontBase.GetMenuList(MemTable);
+  FFrontBase.GetMenuList(MemTable, FMenuCount);
   MemTable.First;
 end;
 
