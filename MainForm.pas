@@ -423,6 +423,14 @@ type
     FMousePos: TPoint;
     FFormEvent: TApplicationEvents;
 
+    //начальные значения панели
+    FpnlRightWidth : Integer;
+    FbtnScrollDownWidth: Integer;
+    FbtnScrollUpLeft: Integer;
+    FbtnScrollUpWidth: Integer;
+
+    procedure RestorePanelWidth;
+
     // Создание первичных наборов данных
     procedure CreateDataSets;
     // режим заказов
@@ -618,6 +626,11 @@ begin
   FActiveHallButton := '';
 
   FMousePos := Point(0, 0);
+
+  FpnlRightWidth := pnlRight.Width;
+  FbtnScrollDownWidth := btnScrollDown.Width;
+  FbtnScrollUpLeft := btnScrollUp.Left;
+  FbtnScrollUpWidth := btnScrollUp.Width;
   
   CreateDataSets;
   RestFormState := rsPass;
@@ -687,16 +700,7 @@ begin
 
   MenuOfficeStyler.SetComponentStyle(GetFrontStyle);
   mainTouchKeyBoard.SetComponentStyle(GetFrontStyle);
-{$IFNDEF DEBUG}
-  if Screen.Width > 1024 then
-  begin
-    pnlRight.Width := pnlRight.Width * 2;
 
-    btnScrollDown.Width := btnScrollDown.Width * 2;
-    btnScrollUp.Left := btnScrollUp.Left * 2;
-    btnScrollUp.Width := btnScrollUp.Width * 2;
-  end;
-{$ENDIF}
   if Screen.Height > 768 then
   begin
     pnlMainGood.Height := pnlMainGood.Height + btnHeight;
@@ -1023,11 +1027,11 @@ begin
         TableType.Graphic := FTableManager.GetImageForType(TableType.TableTypeKey);
 
         TableType.Height := btnHeight;
-        {$IFNDEF DEBUG}
+(*        {$IFNDEF DEBUG}
         if Screen.Width > 1024 then
           TableType.Width := 4 * btnNewLong + 4
         else
-        {$ENDIF}
+        {$ENDIF}    *)
           TableType.Width := 2 * btnNewLong;
 
         FTableChooseLastTop := FTableChooseLastTop + btnHeight + btnFirstTop;
@@ -1162,11 +1166,13 @@ begin
     FButton.OnClick := HallButtonOnClick;
     FButton.Name := Format(btnHallsName, [FHallButtonNumber]);
     FButton.Height := btnHeight;
+(*
 {$IFNDEF DEBUG}
     if Screen.Width > 1024 then
       FButton.Width := 4 * btnNewLong + 4
     else
 {$ENDIF}
+*)
       FButton.Width := 2 * btnNewLong;
 
     FHallLastTop := FHallLastTop + btnHeight + btnFirstTop;
@@ -1361,15 +1367,23 @@ end;
 
 procedure TRestMainForm.CreateMenuButtonList;
 begin
-  FFrontBase.GetMenuList(FMenuDataSet);
+  FFrontBase.GetMenuList(FMenuDataSet, FMenuButtonCount);
+{$IFNDEF DEBUG}
+  if (FMenuButtonCount > 2) and (Screen.Width > 1024) then
+  begin
+    pnlRight.Width := pnlRight.Width * 2;
+
+    btnScrollDown.Width := btnScrollDown.Width * 2;
+    btnScrollUp.Left := btnScrollUp.Left * 2;
+    btnScrollUp.Width := btnScrollUp.Width * 2;
+  end;
+{$ENDIF}
   if FMenuDataSet.Active then
   begin
     FMenuDataSet.First;
     while not FMenuDataSet.Eof do
     begin
       AddMenuButton;
-      Inc(FMenuButtonCount);
-
       FMenuDataSet.Next;
     end;
   end;
@@ -3714,11 +3728,25 @@ begin
     btnSwapTable.Down := False;
     btnUnblockTable.Down := False;
   end;
+  RestorePanelWidth;
 end;
 
 procedure TRestMainForm.RemoveUserOrderButton;
 begin
   FUsersOrderButtonList.Clear;
+end;
+
+procedure TRestMainForm.RestorePanelWidth;
+begin
+{$IFNDEF DEBUG}
+  if Screen.Width > 1024 then
+  begin
+    pnlRight.Width := FpnlRightWidth;
+    btnScrollDown.Width := FbtnScrollDownWidth;
+    btnScrollUp.Left := FbtnScrollUpLeft;
+    btnScrollUp.Width := FbtnScrollUpWidth;
+  end;
+{$ENDIF}
 end;
 
 procedure TRestMainForm.actUsersUpExecute(Sender: TObject);

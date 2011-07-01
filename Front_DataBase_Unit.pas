@@ -345,13 +345,13 @@ type
     procedure GetUserList(const UserList: TStrings);
     { Получить заказы для переданного пользователя, если "user = -1" то возвращаем для текущего }
     procedure GetUserOrderList(const ContactKey: Integer; AOrderList: TList<TrfOrder>);
-    function GetUserOrders(const ContactKey: Integer; var MemTable: TkbmMemTable): Boolean;
+    function GetUserOrders(const ContactKey: Integer; const MemTable: TkbmMemTable): Boolean;
     function GetUserOrdersPrecheck(const ContactKey: Integer; const MemTable: TkbmMemTable;
       const WithPrecheck: Boolean):Boolean;
 
     function GetOrdersInfo(const HeaderTable, LineTable: TkbmMemTable; const DateBegin, DateEnd: TDate;
       const WithPreCheck, WithOutPreCheck, Payed, NotPayed: Boolean): Boolean;
-    function GetMenuList(const MemTable: TkbmMemTable): Boolean;
+    function GetMenuList(const MemTable: TkbmMemTable; var FMenuButtonCount: Integer): Boolean;
     procedure GetGoodByMenu(const MemTable: TkbmMemTable; const MenuKey: Integer);
     procedure UpdateMenuStopList(const MemTable: TkbmMemTable; const FChangeList: TList<Integer>);
     function GetGroupList(const MemTable: TkbmMemTable; const MenuKey: Integer): Boolean;
@@ -1473,7 +1473,8 @@ begin
   end;
 end;
 
-function TFrontBase.GetMenuList(const MemTable: TkbmMemTable): Boolean;
+function TFrontBase.GetMenuList(const MemTable: TkbmMemTable;
+  var FMenuButtonCount: Integer): Boolean;
 var
   LogicDate: TDateTime;
 begin
@@ -1498,6 +1499,7 @@ begin
         MemTable.FieldByName('NAME').AsString := FReadSQL.FieldByName('USR$NAME').AsString;
         MemTable.Post;
         FReadSQL.Next;
+        Inc(FMenuButtonCount);
       end;
       Result := True;
     except
@@ -2071,7 +2073,7 @@ begin
   end;
 end;
 
-function TFrontBase.GetUserOrders(const ContactKey: Integer; var MemTable: TkbmMemTable): Boolean;
+function TFrontBase.GetUserOrders(const ContactKey: Integer; const MemTable: TkbmMemTable): Boolean;
 begin
   FReadSQL.Close;
   MemTable.Close;
