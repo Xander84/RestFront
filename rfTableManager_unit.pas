@@ -3,7 +3,7 @@ unit rfTableManager_unit;
 interface
 
 uses
-  SysUtils, Classes, Contnrs, Controls, Generics.Collections,
+  SysUtils, Classes, Contnrs, Controls, Generics.Collections, Graphics, jpeg,
   Front_DataBase_Unit, RestTable_Unit, AdvMenus, pngimage, AdvGDIP, rfOrder_unit;
 
 type
@@ -13,7 +13,7 @@ type
     FDataBase: TFrontBase;
 
     // Объекты присваемые из главной формы
-    FTableImageDictionary: TDictionary<Integer, TPngImage>;
+    FTableImageDictionary: TDictionary<Integer, TGraphic>;
     FConditionImageDictionary: TDictionary<TRestTableCondition, TAdvGDIPPicture>;
     FTableButtonOnClick: TNotifyEvent;
     FTableButtonPopupMenu: TAdvPopupMenu;
@@ -36,7 +36,7 @@ type
     { Очистить список столов }
     procedure ClearTables;
 
-    function GetImageForType(const ATableType: Integer): TPngImage;
+    function GetImageForType(const ATableType: Integer): TGraphic;
     function GetImageForCondition(const ATableCondition: TRestTableCondition): TAdvGDIPPicture;
 
     { Добавить стол }
@@ -56,6 +56,11 @@ type
     property TableButtonOnClick: TNotifyEvent read FTableButtonOnClick write FTableButtonOnClick;
     property TableButtonPopupMenu: TAdvPopupMenu read FTableButtonPopupMenu write FTableButtonPopupMenu;
   end;
+
+const
+  jpeg_sig = $D8FF;
+  png_sig = $5089;
+
 
 implementation
 
@@ -86,7 +91,7 @@ begin
   FTablesList := TList<TRestTable>.Create;
   FToDeleteList := TList<Integer>.Create;
   // Список типов столов с изображениями
-  FTableImageDictionary := TDictionary<Integer, TPngImage>.Create;
+  FTableImageDictionary := TDictionary<Integer, TGraphic>.Create;
   // Список картинок для состояний столов
   FConditionImageDictionary := TDictionary<TRestTableCondition,TAdvGDIPPicture>.Create;
 
@@ -96,7 +101,7 @@ end;
 
 destructor TrfTableManager.Destroy;
 var
-  TableImage: TPngImage;
+  TableImage: TGraphic;
 begin
   // Список типов столов с изображениями
   for TableImage in FTableImageDictionary.Values do
@@ -152,7 +157,7 @@ begin
     Result := FConditionImageDictionary.Items[ATableCondition];
 end;
 
-function TrfTableManager.GetImageForType(const ATableType: Integer): TPngImage;
+function TrfTableManager.GetImageForType(const ATableType: Integer): TGraphic;
 begin
   // Изображение стола
   Result := nil;
@@ -186,7 +191,10 @@ end;
 procedure TrfTableManager.LoadImages;
 var
   ibsql: TIBSQL;
-  PngImage: TPngImage;
+  FpngImage: TPngImage;
+  FImage: TBitmap;
+  FjpgImage: TJPEGImage;
+  Sig: Word;
   Str: TStream;
 begin
   // Загрузка изображений столов
@@ -204,14 +212,37 @@ begin
         Str := TMemoryStream.Create;
         try
           ibsql.FieldByName('img').SaveToStream(Str);
-          Str.Position := 0;
-          PngImage := TPngImage.Create;
-          PngImage.LoadFromStream(Str);
+          if Str.Size > 2 then
+          begin
+            Str.Position := 0;
+            Str.Read(Sig, 2);
+
+            case Sig of
+              jpeg_sig:
+                begin
+                  Str.Position := 0;
+                  FjpgImage := TJPEGImage.Create;
+                  FjpgImage.LoadFromStream(Str);
+                  FTableImageDictionary.Add(ibsql.FieldByName('id').AsInteger, FjpgImage);
+                end;
+              png_sig:
+                begin
+                  Str.Position := 0;
+                  FpngImage := TPngImage.Create;
+                  FpngImage.LoadFromStream(Str);
+                  FTableImageDictionary.Add(ibsql.FieldByName('id').AsInteger, FpngImage);
+                end;
+            else
+              Str.Position := 0;
+              FImage := TBitmap.Create;
+              FImage.LoadFromStream(Str);
+              FTableImageDictionary.Add(ibsql.FieldByName('id').AsInteger, FImage);
+            end;
+          end;
         finally
           FreeAndNil(Str);
         end;
 
-        FTableImageDictionary.Add(ibsql.FieldByName('id').AsInteger, PngImage);
         ibsql.Next;
       end;
     finally
