@@ -24,6 +24,7 @@ const
   BTN_USERORDER_MARGIN = 0;
 
   minMenuButtonCount = 6;
+  pnlMultyple = 1.5;
   btnHalfWidth = 102;
   btnLongWidth = 215;
   btnNewLong = 155;
@@ -600,8 +601,8 @@ begin
 {$ELSE}
   if Screen.Width >= 1024 then
   begin
-    FminMenuButtonCount := minMenuButtonCount * 2;
-    btnBackToMenu.Width := 2 * (btnBackToMenu.Width + 1);
+    FminMenuButtonCount := Round(minMenuButtonCount * pnlMultyple);
+    btnBackToMenu.Width := Round(btnBackToMenu.Width * pnlMultyple) + 2;
   end
   else
     FminMenuButtonCount := minMenuButtonCount;
@@ -1115,12 +1116,21 @@ procedure TRestMainForm.AddGroupButton;
 var
   FButton: TAdvSmoothButton;
   FPanel: TAdvPanel;
+  FGroupButtonWidth: Integer;
 begin
   if FMenuButtonCount <= FminMenuButtonCount then
     FPanel := pnlExtraGoodGroup
   else
     FPanel := pnlGoodGroup;
 
+{$IFDEF DEBUG}
+  FGroupButtonWidth := btnHalfWidth;
+{$ELSE}
+  if Screen.Width > 1024 then
+    FGroupButtonWidth := btnHalfWidth + 13
+  else
+    FGroupButtonWidth := btnHalfWidth;
+{$ENDIF}
   // Создание кнопки
   FButton := TAdvSmoothButton.Create(pnlGood);
   FButton.Appearance.BeginUpdate;
@@ -1131,10 +1141,10 @@ begin
     FButton.OnClick := GroupButtonOnClick;
     FButton.Name := Format(btnGroupName, [FGroupButtonNumber]);
     FButton.Height := btnHeight;
-    FButton.Width := btnHalfWidth;
+    FButton.Width := FGroupButtonWidth;
 
     // проверяем, есть ли ещё место в ряду
-    if (FGroupLastLeftButton + btnHalfWidth) > FPanel.Width then
+    if (FGroupLastLeftButton + FGroupButtonWidth) > FPanel.Width then
     begin
       FGroupLastTop := FGroupLastTop + btnHeight + 2 { btnFirstTop } ;
       FGroupLastLeftButton := { btnFirstTop } 2 {$IFDEF NEW_TABCONTROL} + 4 {$ENDIF};
@@ -1149,15 +1159,12 @@ begin
     end;
 
     FButton.Tag := FGroupDataSet.FieldByName('ID').AsInteger;
-    { if Length(FGroupDataSet.FieldByName('NAME').AsString) > 16 then
-      FButton.Appearance.Font.Size := cn_ButtonSmallFontSize
-      else }
     FButton.Appearance.Font.Size := cn_ButtonSmallFontSize;
     FButton.Caption := FGroupDataSet.FieldByName('NAME').AsString;
   finally
     FButton.Appearance.EndUpdate;
   end;
-  FGroupLastLeftButton := FGroupLastLeftButton + btnHalfWidth + 2 { AdjustWidth(10) } ;
+  FGroupLastLeftButton := FGroupLastLeftButton + FGroupButtonWidth + 2;
   FGroupButtonList.Add(FButton);
   Inc(FGroupButtonNumber);
 end;
@@ -1414,11 +1421,11 @@ begin
 {$IFNDEF DEBUG}
   if (FMenuButtonCount > 2) and (Screen.Width > 1024) then
   begin
-    pnlRight.Width := pnlRight.Width * 2;
+    pnlRight.Width := Round(pnlRight.Width * pnlMultyple);
 
-    btnScrollDown.Width := btnScrollDown.Width * 2;
-    btnScrollUp.Left := btnScrollUp.Left * 2;
-    btnScrollUp.Width := btnScrollUp.Width * 2;
+    btnScrollDown.Width := Round(btnScrollDown.Width * pnlMultyple);
+    btnScrollUp.Left := Round(btnScrollUp.Left * pnlMultyple);
+    btnScrollUp.Width := Round(btnScrollUp.Width * pnlMultyple);
   end;
 {$ENDIF}
   if FMenuDataSet.Active then
