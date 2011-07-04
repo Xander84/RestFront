@@ -23,6 +23,7 @@ const
   BTN_USERORDER_WIDTH = 90;
   BTN_USERORDER_MARGIN = 0;
 
+  minMenuButtonCount = 6;
   btnHalfWidth = 102;
   btnLongWidth = 215;
   btnNewLong = 155;
@@ -428,6 +429,7 @@ type
     FbtnScrollDownWidth: Integer;
     FbtnScrollUpLeft: Integer;
     FbtnScrollUpWidth: Integer;
+    FminMenuButtonCount: Integer;
 
     procedure RestorePanelWidth;
 
@@ -593,6 +595,18 @@ begin
   btnNewOrder.Width := btnWidth;
   btnNewOrder.Height := btnHeight;
 
+{$IFDEF DEBUG}
+  FminMenuButtonCount := minMenuButtonCount;
+{$ELSE}
+  if Screen.Width >= 1024 then
+  begin
+    FminMenuButtonCount := minMenuButtonCount * 2;
+    btnBackToMenu.Width := 2 * (btnBackToMenu.Width + 1);
+  end
+  else
+    FminMenuButtonCount := minMenuButtonCount;
+{$ENDIF}
+
   // —крываем заголовки табов
   tsMain.TabVisible := False;
   tsPassWord.TabVisible := False;
@@ -721,9 +735,6 @@ begin
 
   FFormEvent := TApplicationEvents.Create(Self);
   FFormEvent.OnMessage := AppMessage;
-// ¬ дезайнере столов также используетс€ перехват сообщений
-// подумать над вопросом.
-//  Application.OnMessage := AppMessage;
 end;
 
 procedure TRestMainForm.FormDestroy(Sender: TObject);
@@ -1105,7 +1116,7 @@ var
   FButton: TAdvSmoothButton;
   FPanel: TAdvPanel;
 begin
-  if FMenuButtonCount <= 6 then
+  if FMenuButtonCount <= FminMenuButtonCount then
     FPanel := pnlExtraGoodGroup
   else
     FPanel := pnlGoodGroup;
@@ -1387,7 +1398,7 @@ begin
       FMenuDataSet.Next;
     end;
   end;
-  if FMenuButtonCount <= 6 then
+  if FMenuButtonCount <= FminMenuButtonCount then
   begin
     pnlExtraGoodGroup.Visible := True;
     if Screen.Width >= 1024 then
@@ -1609,7 +1620,7 @@ begin
   RemoveGroupButton;
   FMenuKey := FButton.Tag;
   CreateGroupButtonList(FMenuKey);
-  if FMenuButtonCount > 6 then
+  if FMenuButtonCount > FminMenuButtonCount then
     pcMenu.ActivePage := tsGroup;
 
   FGroupButton := pnlGood.FindComponent(Format(btnGroupName, [1]));
@@ -1920,7 +1931,7 @@ begin
   try
     if pcMenu.ActivePage = tsMenu then
     begin
-      if FMenuButtonCount > 6 then
+      if FMenuButtonCount > FminMenuButtonCount then
         ScrollControl(pnlMenu, True, FMenuFirstTop, FMenuLastTop)
       else
         ScrollControl(pnlExtraGoodGroup, True, FGroupFirstTop, FGroupLastTop);
@@ -1942,7 +1953,7 @@ procedure TRestMainForm.actScrollDownUpdate(Sender: TObject);
 begin
   if pcMenu.ActivePage = tsMenu then
   begin
-    if FMenuButtonCount > 6 then
+    if FMenuButtonCount > FminMenuButtonCount then
       actScrollDown.Enabled := (FMenuLastTop + btnHeight > pnlMenu.Height)
     else
       actScrollDown.Enabled := (FGroupLastTop + btnHeight > pnlExtraGoodGroup.Height);
@@ -1963,7 +1974,7 @@ begin
   try
     if pcMenu.ActivePage = tsMenu then
     begin
-      if FMenuButtonCount > 6 then
+      if FMenuButtonCount > FminMenuButtonCount then
         ScrollControl(pnlMenu, False, FMenuFirstTop, FMenuLastTop)
       else
         ScrollControl(pnlExtraGoodGroup, False, FGroupFirstTop, FGroupLastTop);
@@ -1985,7 +1996,7 @@ procedure TRestMainForm.actScrollUpUpdate(Sender: TObject);
 begin
   if pcMenu.ActivePage = tsMenu then
   begin
-    if FMenuButtonCount > 6 then
+    if FMenuButtonCount > FminMenuButtonCount then
       actScrollUp.Enabled := (FMenuFirstTop > 8)
     else
       actScrollUp.Enabled := (FGroupFirstTop > 8);

@@ -1201,7 +1201,7 @@ object RestMainForm: TRestMainForm
               Top = 0
               Width = 325
               Height = 660
-              ActivePage = tsMenu
+              ActivePage = tsGroup
               ActiveFont.Charset = DEFAULT_CHARSET
               ActiveFont.Color = clWindowText
               ActiveFont.Height = -11
@@ -1398,9 +1398,9 @@ object RestMainForm: TRestMainForm
                   Styler = FrontData.FrontPanelStyler
                   FullHeight = 58
                   object btnBackToMenu: TAdvSmoothButton
-                    Left = 14
+                    Left = 6
                     Top = 7
-                    Width = 212
+                    Width = 310
                     Height = 43
                     Action = actBackToMenu
                     Appearance.Font.Charset = DEFAULT_CHARSET
