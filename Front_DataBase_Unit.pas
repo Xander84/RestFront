@@ -354,7 +354,6 @@ type
     procedure DeleteOrder(const ID: Integer);
 
     procedure GetHallsInfo(const MemTable: TkbmMemTable);
-    procedure GetTablesInfo(const MemTable: TkbmMemTable; const HallKey: Integer);
     procedure GetTables(const MemTable: TkbmMemTable; const HallKey: Integer);
     // Список типов столов для редактора зала
     function GetTableTypeList: TList<TChooseTable>;
@@ -4220,53 +4219,6 @@ begin
       MemTable.FieldByName('USR$TYPE').AsInteger := FReadSQL.FieldByName('USR$TYPE').AsInteger;
       MemTable.FieldByName('USR$MAINTABLEKEY').AsInteger := FReadSQL.FieldByName('USR$MAINTABLEKEY').AsInteger;
       MemTable.FieldByName('ORDERKEY').AsInteger := 0;
-      MemTable.Post;
-
-      FReadSQL.Next;
-    end;
-  finally
-    FReadSQL.Close;
-  end;
-end;
-
-procedure TFrontBase.GetTablesInfo(const MemTable: TkbmMemTable;
-  const HallKey: Integer);
-begin
-  MemTable.Close;
-  MemTable.CreateTable;
-  MemTable.Open;
-
-  FReadSQL.Close;
-  try
-    FReadSQL.SQL.Text :=
-      'SELECT T.*, U.USR$RESPKEY, U.USR$ISLOCKED, U.DOCUMENTKEY, U.USR$COMPUTERNAME, DOC.NUMBER, CON.NAME, ' +
-      '  tt.usr$width, tt.usr$length ' +
-      'FROM USR$MN_TABLE T ' +
-      ' LEFT JOIN usr$mn_tabletype tt ON tt.id = t.usr$type ' +
-      ' LEFT JOIN USR$MN_ORDER U ON (U.USR$TABLEKEY = T.ID AND U.USR$PAY <> 1) ' +
-      ' LEFT JOIN GD_DOCUMENT DOC ON DOC.ID = U.DOCUMENTKEY ' +
-      ' LEFT JOIN GD_CONTACT CON ON CON.ID = U.USR$RESPKEY ' +
-      'WHERE T.USR$HALLKEY = :ID ' +
-      'ORDER BY U.DOCUMENTKEY, DOC.NUMBER ';
-    FReadSQL.Params[0].AsInteger := HallKey;
-    FReadSQL.ExecQuery;
-    while not FReadSQL.Eof do
-    begin
-      MemTable.Append;
-      MemTable.FieldByName('ID').AsInteger := FReadSQL.FieldByName('ID').AsInteger;
-      MemTable.FieldByName('USR$NUMBER').AsString := FReadSQL.FieldByName('USR$NUMBER').AsString;
-      MemTable.FieldByName('USR$POSY').AsFloat := FReadSQL.FieldByName('USR$POSY').AsFloat;
-      MemTable.FieldByName('USR$POSX').AsFloat := FReadSQL.FieldByName('USR$POSX').AsFloat;
-      MemTable.FieldByName('USR$WIDTH').AsFloat := FReadSQL.FieldByName('USR$WIDTH').AsFloat;
-      MemTable.FieldByName('USR$LENGTH').AsFloat := FReadSQL.FieldByName('USR$LENGTH').AsFloat;
-      MemTable.FieldByName('USR$TYPE').AsInteger := FReadSQL.FieldByName('USR$TYPE').AsInteger;
-      MemTable.FieldByName('USR$MAINTABLEKEY').AsInteger := FReadSQL.FieldByName('USR$MAINTABLEKEY').AsInteger;
-      MemTable.FieldByName('USR$RESPKEY').AsInteger := FReadSQL.FieldByName('USR$RESPKEY').AsInteger;
-      MemTable.FieldByName('ORDERKEY').AsInteger := FReadSQL.FieldByName('DOCUMENTKEY').AsInteger;
-      MemTable.FieldByName('ISLOCKED').AsInteger := FReadSQL.FieldByName('USR$ISLOCKED').AsInteger;
-      MemTable.FieldByName('USR$COMPUTERNAME').AsString := FReadSQL.FieldByName('USR$COMPUTERNAME').AsString;
-      MemTable.FieldByName('NUMBER').AsString := FReadSQL.FieldByName('NUMBER').AsString;
-      MemTable.FieldByName('RESPNAME').AsString := FReadSQL.FieldByName('NAME').AsString;
       MemTable.Post;
 
       FReadSQL.Next;

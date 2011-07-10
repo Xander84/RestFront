@@ -468,6 +468,7 @@ type
     procedure TableButtonOnClick(Sender: TObject);
     procedure SaveTablePositions;
     procedure AddChooseTables(const HallKey: Integer);
+    procedure InitTableManager;
     // меню
     procedure CreateMenuButtonList;
     procedure AddMenuButton;
@@ -721,14 +722,14 @@ begin
     pnlMainGood.Height := pnlMainGood.Height + btnHeight;
   end;
 
-  // Менеджер столов зала
-  FTableManager := TrfTableManager.Create(FFrontBase, sbTable);
-  FTableManager.TableButtonOnClick := TableButtonOnClick;
-  FTableManager.TableButtonPopupMenu := tablePopupMenu;
-
-  FActiveHallKey := -1;
   // Получим разницу локального времени и серверного
   FServerTimeLag := FFrontBase.GetServerDateTime - Now;
+
+  // Менеджер столов зала
+  if FFrontBase.Options.UseHalls then
+    InitTableManager;
+
+  FActiveHallKey := -1;
 
   // Поместим в заголовок окна и наименование приложения наименование организации
   Self.Caption := Format('%s - %s', [Self.Caption, FFrontBase.CompanyName]);
@@ -787,7 +788,8 @@ begin
   FChooseTableButtonList.Free;
 
   // Менеджер столов зала
-  FTableManager.Free;
+  if Assigned(FTableManager) then
+    FTableManager.Free;
 
   FFormEvent.Free;
 end;
@@ -1342,7 +1344,8 @@ procedure TRestMainForm.CreateHall(const HallKey: Integer);
               FImage.Free;
             end;
           end;
-        end;
+        end else
+          imgHallBackground.Picture := nil;
       end;
     finally
       Str.Free;
@@ -1361,7 +1364,7 @@ begin
       FActiveHallKey := HallKey;
     end;
     // Обновим информацию о заказах по списку столов
-    FTableManager.RefreshOrderData;
+    FTableManager.RefreshOrderData(FActiveHallKey);
   end
   else
   begin
@@ -1715,6 +1718,17 @@ begin
       tmrTables.Enabled := True;
   finally
     LockWindowUpdate(0);
+  end;
+end;
+
+procedure TRestMainForm.InitTableManager;
+begin
+  if not Assigned(FTableManager) then
+  begin
+    FTableManager := TrfTableManager.Create(FFrontBase, sbTable);
+    FTableManager.TableButtonOnClick := TableButtonOnClick;
+    FTableManager.TableButtonPopupMenu := tablePopupMenu;
+    FTableManager.ServerTimeLag := FServerTimeLag;
   end;
 end;
 
@@ -3241,6 +3255,8 @@ begin
       begin
         LockWindowUpdate(Handle);
         try
+          InitTableManager;
+
           FHallButtonNumber := 1;
           FHallLastTop := -(btnHeight);
           FTableChooseLastTop := -(btnHeight);
@@ -4465,7 +4481,7 @@ begin
     else if FHallsTable.RecordCount = 1 then
     begin
       // Обновим информацию о заказах по списку столов
-      FTableManager.RefreshOrderData;
+      FTableManager.RefreshOrderData(FActiveHallKey);
     end;
   finally
     LockWindowUpdate(0);

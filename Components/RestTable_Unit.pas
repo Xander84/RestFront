@@ -5,7 +5,7 @@ interface
 uses
   SysUtils, Classes, Controls, Graphics, Messages,
   pngimage, Buttons, Generics.Collections, Types,
-  Windows, Menus, rfOrder_unit;
+  Windows, Menus, rfOrder_unit, jpeg;
 
 type
   TRestTableCondition = (
@@ -14,7 +14,12 @@ type
     rtcFreeOther,
     rtcOccupied,
     rtcOccupiedOther,
-    rtcPreCheck);
+    rtcPreCheck,
+    rtcReservation);
+
+  TCrackJPEGImage = class(TJPEGImage);
+
+  TCrackBitmapImage = class(Graphics.TBitmap);
 
   TRestTable = class(TGraphicControl)
   private
@@ -45,6 +50,8 @@ type
 
     { Менеджер столов (все столы находятся в общем списке менеджера) }
     FManager: TObject;
+    FReservList: TList<TrfReservation>;
+    FDate: TDate;
 
     procedure SetPosX(const Value: Double);
     procedure SetPosY(const Value: Double);
@@ -100,7 +107,8 @@ type
     property OrderCount: Integer read GetOrderCount;
     // номер стола
     property Number: String read FNumber write FNumber;
-    property OrderList: TList<TrfOrder>read FOrderList;
+    property OrderList: TList<TrfOrder> read FOrderList;
+    property ReservList: TList<TrfReservation> read FReservList;
     property RespName: String read FRespName write FRespName;
     property NeedToInsert: Boolean read FNeedToInsert write FNeedToInsert;
 
@@ -108,6 +116,7 @@ type
     property Manager: TObject read FManager write FManager;
 
     property Graphic: TGraphic read FGraphic write SetGraphic;
+    property Date: TDate read FDate write FDate;
 
     property OnClick;
     property PopupMenu;
@@ -131,7 +140,7 @@ type
     property TableName: String read FTableName write SetTableName;
   end;
 
-procedure Register;
+//procedure Register;
 
 implementation
 
@@ -143,10 +152,12 @@ const
   MARK_MARGIN = 2;
   IMAGE_MARGIN = 6;
 
+{
 procedure Register;
 begin
   RegisterComponents('RestFront', [TRestTable]);
 end;
+}
 
 { TRestTable }
 
@@ -162,6 +173,7 @@ begin
   FTableConditionList := TList<TRestTableCondition>.Create;
   // Список заказов для этого стола
   FOrderList := TList<TrfOrder>.Create();
+  FReservList := TList<TrfReservation>.Create();
 
   Tag := 1;
   Self.Canvas.Font.Style := [fsBold];
@@ -173,6 +185,7 @@ begin
   FreeAndNil(FTableConditionList);
   ClearOrders;
   FreeAndNil(FOrderList);
+  FreeAndNil(FReservList);
   inherited;
 end;
 
@@ -253,11 +266,17 @@ end;
 procedure TRestTable.ClearOrders;
 var
   Order: TrfOrder;
+  Reserv: TrfReservation;
 begin
   for Order in FOrderList do
     if Assigned(Order) then
       Order.Free;
   FOrderList.Clear;
+
+  for Reserv in FReservList do
+    if Assigned(Reserv) then
+      Reserv.Free;
+  FReservList.Clear;
 
   FOrderKey := -1;
   FComputerName := '';
@@ -353,7 +372,11 @@ begin
   if Assigned(FGraphic) then
   begin
     if FGraphic is TPngImage then
-      TPngImage(FGraphic).Draw(ImgCanvas, FImageRect);
+      TPngImage(FGraphic).Draw(ImgCanvas, FImageRect)
+    else if FGraphic is TJPEGImage then
+      TCrackJPEGImage(FGraphic).Draw(ImgCanvas, FImageRect)
+    else if FGraphic is Graphics.TBitmap then
+      TCrackBitmapImage(FGraphic).Draw(ImgCanvas, FImageRect);
   end;
 
   // Рисуем номер стола
@@ -370,6 +393,7 @@ end;
 procedure TRestTable.RefreshTableCondition(const AContactKey: Integer);
 var
   Order: TrfOrder;
+  Reservation: TrfReservation;
   LocalResponsibleKey: Integer;
 begin
   try
@@ -402,6 +426,12 @@ begin
             FTableConditionList.Add(TRestTableCondition.rtcOccupiedOther);
         end;
       end;
+    end;
+    // бронирование
+    for Reservation in FReservList do
+    begin
+      if Reservation.ReservDate = FDate then
+        FTableConditionList.Add(TRestTableCondition.rtcReservation);
     end;
   finally
     // Перерисуем стол после обновления состояния
@@ -585,7 +615,6 @@ begin
   if FTableName <> '' then
   begin
     ImgCanvas.Brush.Style := bsClear;
-
     // Рисуем имя стола
     ImgCanvas.TextOut(0, 0, FTableName);
   end;

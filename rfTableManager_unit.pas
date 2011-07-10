@@ -18,11 +18,16 @@ type
     FTableButtonOnClick: TNotifyEvent;
     FTableButtonPopupMenu: TAdvPopupMenu;
     // Список столов
-    FTablesList: TList<TRestTable>;
+    FTablesList: TDictionary<Integer,TRestTable>;
     // Список Ид столов которые будут удалены из БД при сохранении
     FToDeleteList: TList<Integer>;
 
+    { Разница во времени между сервером и клиентом }
+    FServerTimeLag: Extended;
+
     procedure LoadImages;
+    { Получить время и дату поправленные с учетом разницы времени между сервером и клиентом }
+    function GetServerDateTime: TDateTime;
   public
     constructor Create(const Database: TFrontBase; const TableParent: TWinControl);
     destructor Destroy; override;
@@ -30,7 +35,10 @@ type
     { Загрузить столы из датасета }
     procedure LoadTables(const HallKey: Integer);
     { Обновить информацию о заказах на столах }
-    procedure RefreshOrderData(const ATable: TRestTable = nil);
+    // 1. Обновление одного стола
+    // 2. Обновление столов зала
+    procedure RefreshOrderData(const ATable: TRestTable = nil); overload;
+    procedure RefreshOrderData(const HallKey: Integer); overload;
     { Сохранить столы в БД }
     procedure SaveTables;
     { Очистить список столов }
@@ -50,11 +58,12 @@ type
     function GetOrder(const ATableKey, AOrderKey: Integer): TrfOrder;
 
     // Список столов
-    property TablesList: TList<TRestTable> read FTablesList;
+    property TablesList: TDictionary<Integer,TRestTable> read FTablesList;
 
     // Объекты присваемые из главной формы
     property TableButtonOnClick: TNotifyEvent read FTableButtonOnClick write FTableButtonOnClick;
     property TableButtonPopupMenu: TAdvPopupMenu read FTableButtonPopupMenu write FTableButtonPopupMenu;
+    property ServerTimeLag: Extended read FServerTimeLag write FServerTimeLag;
   end;
 
 const
@@ -78,7 +87,7 @@ procedure TrfTableManager.ClearTables;
 var
   Table: TRestTable;
 begin
-  for Table in FTablesList do
+  for Table in FTablesList.Values do
     if Assigned(Table) then
       Table.Free;
   FTablesList.Clear;
@@ -88,7 +97,7 @@ constructor TrfTableManager.Create(const Database: TFrontBase; const TableParent
 begin
   FDataBase := Database;
   FTableParent := TableParent;
-  FTablesList := TList<TRestTable>.Create;
+  FTablesList := TDictionary<Integer,TRestTable>.Create;
   FToDeleteList := TList<Integer>.Create;
   // Список типов столов с изображениями
   FTableImageDictionary := TDictionary<Integer, TGraphic>.Create;
@@ -121,6 +130,7 @@ function TrfTableManager.AddTable(const ATableNumber: String; const ADesignerTab
 begin
   // Создадим новый стол, копию переданного стола
   Result := TRestTable.Create(FTableParent);
+  Result.ID := FDataBase.GetNextID;
   Result.Parent := FTableParent;
   Result.Manager := Self;
 
@@ -129,7 +139,7 @@ begin
   Result.OrderKey := 0;
   Result.IsLocked := False;
   Result.Number := ATableNumber;
-  Result.NeedToInsert := true;
+  Result.NeedToInsert := True;
 
   // Относительная позиция и размеры стола
   Result.PosX := 50;
@@ -139,7 +149,7 @@ begin
   // Изображение стола
   Result.Graphic := ADesignerTable.Graphic;
 
-  FTablesList.Add(Result);
+  FTablesList.Add(Result.ID, Result);
 end;
 
 procedure TrfTableManager.DropTable(ATable: TRestTable);
@@ -147,22 +157,20 @@ begin
   // Сохраним ИД стола в список на удаление из БД
   FToDeleteList.Add(ATable.ID);
   // Удалим объект
-  FTablesList.Remove(ATable);
+  FTablesList.Remove(ATable.ID);
 end;
 
 function TrfTableManager.GetImageForCondition(const ATableCondition: TRestTableCondition): TAdvGDIPPicture;
 begin
-  Result := nil;
-  if FConditionImageDictionary.ContainsKey(ATableCondition) then
-    Result := FConditionImageDictionary.Items[ATableCondition];
+  if not FConditionImageDictionary.TryGetValue(ATableCondition, Result) then
+    Result := nil;
 end;
 
 function TrfTableManager.GetImageForType(const ATableType: Integer): TGraphic;
 begin
   // Изображение стола
-  Result := nil;
-  if FTableImageDictionary.ContainsKey(ATableType) then
-    Result := FTableImageDictionary.Items[ATableType];
+  if not FTableImageDictionary.TryGetValue(ATableType, Result) then
+    Result := nil;
 end;
 
 function TrfTableManager.GetOrder(const ATableKey, AOrderKey: Integer): TrfOrder;
@@ -175,22 +183,20 @@ begin
     Result := Table.GetOrder(AOrderKey);
 end;
 
-function TrfTableManager.GetTable(const ATableKey: Integer): TRestTable;
-var
-  Table: TRestTable;
+function TrfTableManager.GetServerDateTime: TDateTime;
 begin
-  for Table in FTablesList do
-    if Table.ID = ATableKey then
-    begin
-      Result := Table;
-      Exit;
-    end;
-  Result := nil;
+  Result := Now + FServerTimeLag;
+end;
+
+function TrfTableManager.GetTable(const ATableKey: Integer): TRestTable;
+begin
+  if not FTablesList.TryGetValue(ATableKey, Result) then
+    Result := nil;
 end;
 
 procedure TrfTableManager.LoadImages;
 var
-  ibsql: TIBSQL;
+  FSQL: TIBSQL;
   FpngImage: TPngImage;
   FImage: TBitmap;
   FjpgImage: TJPEGImage;
@@ -200,18 +206,18 @@ begin
   // Загрузка изображений столов
   if Assigned(FTableImageDictionary) then
   begin
-    ibsql := TIBSQL.Create(nil);
+    FSQL := TIBSQL.Create(nil);
     try
-      ibsql.Transaction := FDataBase.ReadTransaction;
-      ibsql.SQL.Text :=
+      FSQL.Transaction := FDataBase.ReadTransaction;
+      FSQL.SQL.Text :=
         ' SELECT id, usr$picture1 AS img FROM usr$mn_tabletype ';
-      ibsql.ExecQuery;
+      FSQL.ExecQuery;
 
-      while not ibsql.Eof do
+      while not FSQL.Eof do
       begin
         Str := TMemoryStream.Create;
         try
-          ibsql.FieldByName('img').SaveToStream(Str);
+          FSQL.FieldByName('img').SaveToStream(Str);
           if Str.Size > 2 then
           begin
             Str.Position := 0;
@@ -223,30 +229,30 @@ begin
                   Str.Position := 0;
                   FjpgImage := TJPEGImage.Create;
                   FjpgImage.LoadFromStream(Str);
-                  FTableImageDictionary.Add(ibsql.FieldByName('id').AsInteger, FjpgImage);
+                  FTableImageDictionary.Add(FSQL.FieldByName('id').AsInteger, FjpgImage);
                 end;
               png_sig:
                 begin
                   Str.Position := 0;
                   FpngImage := TPngImage.Create;
                   FpngImage.LoadFromStream(Str);
-                  FTableImageDictionary.Add(ibsql.FieldByName('id').AsInteger, FpngImage);
+                  FTableImageDictionary.Add(FSQL.FieldByName('id').AsInteger, FpngImage);
                 end;
             else
               Str.Position := 0;
               FImage := TBitmap.Create;
               FImage.LoadFromStream(Str);
-              FTableImageDictionary.Add(ibsql.FieldByName('id').AsInteger, FImage);
+              FTableImageDictionary.Add(FSQL.FieldByName('id').AsInteger, FImage);
             end;
           end;
         finally
-          FreeAndNil(Str);
+          Str.Free;
         end;
 
-        ibsql.Next;
+        FSQL.Next;
       end;
     finally
-      FreeAndNil(ibsql);
+      FSQL.Free;
     end;
   end;
 
@@ -257,12 +263,13 @@ begin
   FConditionImageDictionary.Add(rtcOccupied, FrontData.RestPictureContainer.FindPicture('user_small'));
   FConditionImageDictionary.Add(rtcOccupiedOther, FrontData.RestPictureContainer.FindPicture('bullet_delete'));
   FConditionImageDictionary.Add(rtcPreCheck, FrontData.RestPictureContainer.FindPicture('money_dollar_small'));
+  FConditionImageDictionary.Add(rtcReservation, FrontData.RestPictureContainer.FindPicture('session_idle_time'));
 end;
 
 procedure TrfTableManager.LoadTables(const HallKey: Integer);
 var
   NewTable: TRestTable;
-  ibsql: TIBSQL;
+  FSQL: TIBSQL;
   ParentDoubleBuffered: Boolean;
 begin
   ParentDoubleBuffered := FTableParent.DoubleBuffered;
@@ -271,10 +278,10 @@ begin
     // Очистим список столов
     ClearTables;
 
-    ibsql := TIBSQL.Create(nil);
+    FSQL := TIBSQL.Create(nil);
     try
-      ibsql.Transaction := FDataBase.ReadTransaction;
-      ibsql.SQL.Text :=
+      FSQL.Transaction := FDataBase.ReadTransaction;
+      FSQL.SQL.Text :=
         ' SELECT ' +
         '   t.id, t.usr$type, t.usr$number, ' +
         '   t.usr$posx, t.usr$posy, tt.usr$width, tt.usr$length ' +
@@ -283,26 +290,27 @@ begin
         '   LEFT JOIN usr$mn_tabletype tt ON tt.id = t.usr$type ' +
         ' WHERE ' +
         '   t.usr$hallkey = :id ';
-      ibsql.Params[0].AsInteger := HallKey;
-      ibsql.ExecQuery;
+      FSQL.Params[0].AsInteger := HallKey;
+      FSQL.ExecQuery;
 
       // Загрузим столы из данных запроса
-      while not ibsql.Eof do
+      while not FSQL.Eof do
       begin
         NewTable := TRestTable.Create(FTableParent);
         NewTable.Parent := FTableParent;
         NewTable.Manager := Self;
 
-        NewTable.ID := ibsql.FieldByName('ID').AsInteger;
-        NewTable.TableTypeKey := ibsql.FieldByName('USR$TYPE').AsInteger;
+        NewTable.HallKey := HallKey;
+        NewTable.ID := FSQL.FieldByName('ID').AsInteger;
+        NewTable.TableTypeKey := FSQL.FieldByName('USR$TYPE').AsInteger;
         // Относительная позиция кнопки в родителе
-        NewTable.PosX := ibsql.FieldByName('USR$POSX').AsFloat;
-        NewTable.PosY := ibsql.FieldByName('USR$POSY').AsFloat;
+        NewTable.PosX := FSQL.FieldByName('USR$POSX').AsFloat;
+        NewTable.PosY := FSQL.FieldByName('USR$POSY').AsFloat;
         // Размер кнопки относительно родительской панели
-        NewTable.RelativeWidth := ibsql.FieldByName('USR$WIDTH').AsFloat;
-        NewTable.RelativeHeight := ibsql.FieldByName('USR$LENGTH').AsFloat;
+        NewTable.RelativeWidth := FSQL.FieldByName('USR$WIDTH').AsFloat;
+        NewTable.RelativeHeight := FSQL.FieldByName('USR$LENGTH').AsFloat;
         // Номер стола и имя кассы
-        NewTable.Number := ibsql.FieldByName('USR$NUMBER').AsString;
+        NewTable.Number := FSQL.FieldByName('USR$NUMBER').AsString;
         //NewTable.ComputerName := ibsql.FieldByName('USR$COMPUTERNAME').AsString;
         // FButton.RespName := ibsql.FieldByName('RESPNAME').AsString;
 
@@ -316,12 +324,12 @@ begin
         // Присвоение изображения стола из списка изображений типов столов
         NewTable.Graphic := GetImageForType(NewTable.TableTypeKey);
 
-        FTablesList.Add(NewTable);
-        ibsql.Next;
+        FTablesList.Add(NewTable.ID, NewTable);
+        FSQL.Next;
       end;
-      ibsql.Close;
+      FSQL.Close;
     finally
-      FreeAndNil(ibsql);
+      FSQL.Free;
     end;
   finally
     FTableParent.DoubleBuffered := ParentDoubleBuffered;
@@ -332,63 +340,61 @@ procedure TrfTableManager.SaveTables;
 var
   I: Integer;
   Table: TRestTable;
-  ibsqlUpdate, ibsqlInsert, ibsqlDelete: TIBSQL;
-  WriteTransaction: TIBTransaction;
+  FSQLUpdate, FSQLInsert, FSQLDelete: TIBSQL;
+  FTransaction: TIBTransaction;
 
   procedure UpdateTable(const TableObj: TRestTable);
   begin
-    ibsqlUpdate.ParamByName('POSY').AsFloat := TableObj.PosY;
-    ibsqlUpdate.ParamByName('POSX').AsFloat := TableObj.PosX;
-    ibsqlUpdate.ParamByName('ID').AsInteger := TableObj.ID;
-    ibsqlUpdate.ExecQuery;
-    ibsqlUpdate.Close;
+    FSQLUpdate.ParamByName('POSY').AsFloat := TableObj.PosY;
+    FSQLUpdate.ParamByName('POSX').AsFloat := TableObj.PosX;
+    FSQLUpdate.ParamByName('ID').AsInteger := TableObj.ID;
+    FSQLUpdate.ExecQuery;
+    FSQLUpdate.Close;
   end;
 
   procedure InsertTable(const TableObj: TRestTable);
   begin
-    TableObj.ID := FDataBase.GetNextID;
-
-    ibsqlInsert.ParamByName('ID').AsInteger := TableObj.ID;
-    ibsqlInsert.ParamByName('NUMBER').AsString := TableObj.Number;
-    ibsqlInsert.ParamByName('POSY').AsFloat := TableObj.PosY;
-    ibsqlInsert.ParamByName('POSX').AsFloat := TableObj.PosX;
-    ibsqlInsert.ParamByName('HALLKEY').AsInteger := TableObj.HallKey;
-    ibsqlInsert.ParamByName('TYPEKEY').AsInteger := TableObj.TableTypeKey;
+    FSQLInsert.ParamByName('ID').AsInteger := TableObj.ID;
+    FSQLInsert.ParamByName('NUMBER').AsString := TableObj.Number;
+    FSQLInsert.ParamByName('POSY').AsFloat := TableObj.PosY;
+    FSQLInsert.ParamByName('POSX').AsFloat := TableObj.PosX;
+    FSQLInsert.ParamByName('HALLKEY').AsInteger := TableObj.HallKey;
+    FSQLInsert.ParamByName('TYPEKEY').AsInteger := TableObj.TableTypeKey;
     // ibsqlInsert.ParamByName('MAINTABLEKEY').AsInteger := TableObj.MainTableKey;
-    ibsqlInsert.ExecQuery;
-    ibsqlInsert.Close;
+    FSQLInsert.ExecQuery;
+    FSQLInsert.Close;
   end;
 
   procedure DeleteTable(const ID: Integer);
   begin
-    ibsqlDelete.ParamByName('id').AsInteger := ID;
-    ibsqlDelete.ExecQuery;
-    ibsqlDelete.Close;
+    FSQLDelete.ParamByName('id').AsInteger := ID;
+    FSQLDelete.ExecQuery;
+    FSQLDelete.Close;
   end;
 
 begin
-  WriteTransaction := TIBTransaction.Create(nil);
-  ibsqlUpdate := TIBSQL.Create(nil);
-  ibsqlInsert := TIBSQL.Create(nil);
-  ibsqlDelete := TIBSQL.Create(nil);
+  FTransaction := TIBTransaction.Create(nil);
+  FSQLUpdate := TIBSQL.Create(nil);
+  FSQLInsert := TIBSQL.Create(nil);
+  FSQLDelete := TIBSQL.Create(nil);
   try
-    WriteTransaction.DefaultDatabase := FDataBase.ReadTransaction.DefaultDatabase;
-    WriteTransaction.StartTransaction;
+    FTransaction.DefaultDatabase := FDataBase.ReadTransaction.DefaultDatabase;
+    FTransaction.StartTransaction;
     try
-      ibsqlUpdate.Transaction := WriteTransaction;
-      ibsqlUpdate.SQL.Text :=
+      FSQLUpdate.Transaction := FTransaction;
+      FSQLUpdate.SQL.Text :=
         ' UPDATE usr$mn_table t ' +
         ' SET t.usr$posy = :posy, ' +
         '     t.usr$posx = :posx  ' +
         ' WHERE t.id = :id ';
 
-      ibsqlInsert.Transaction := WriteTransaction;
-      ibsqlInsert.SQL.Text :=
+      FSQLInsert.Transaction := FTransaction;
+      FSQLInsert.SQL.Text :=
         ' INSERT INTO usr$mn_table(id, usr$number, usr$posy, usr$posx, usr$hallkey, usr$type, usr$maintablekey) ' +
         ' VALUES (:id, :number, :posy, :posx, :hallkey, :typekey, null) ';
 
-      ibsqlDelete.Transaction := WriteTransaction;
-      ibsqlDelete.SQL.Text :=
+      FSQLDelete.Transaction := FTransaction;
+      FSQLDelete.SQL.Text :=
         ' DELETE FROM usr$mn_table t WHERE t.id = :id ';
 
       // Обновление или вставка столов
@@ -406,23 +412,23 @@ begin
         DeleteTable(I);
       FToDeleteList.Clear;
 
-      if WriteTransaction.InTransaction then
-        WriteTransaction.Commit;
+      if FTransaction.InTransaction then
+        FTransaction.Commit;
     except
-      if WriteTransaction.InTransaction then
-        WriteTransaction.Rollback;
+      if FTransaction.InTransaction then
+        FTransaction.Rollback;
     end;
   finally
-    FreeAndNil(ibsqlDelete);
-    FreeAndNil(ibsqlInsert);
-    FreeAndNil(ibsqlUpdate);
-    FreeAndNil(WriteTransaction);
+    FSQLDelete.Free;
+    FSQLInsert.Free;
+    FSQLUpdate.Free;
+    FTransaction.Free;
   end;
 end;
 
 procedure TrfTableManager.RefreshOrderData(const ATable: TRestTable = nil);
 var
-  ibsql: TIBSQL;
+  FSQL: TIBSQL;
   Table: TRestTable;
 
   procedure RefreshSingleTable(CurTable: TRestTable);
@@ -430,19 +436,19 @@ var
     Order: TrfOrder;
   begin
     // Если не было заказов на столе и нет в запросе, то не будем перерисовывать
-    if (CurTable.OrderList.Count <> 0) or (not ibsql.Eof) then
+    if (CurTable.OrderList.Count <> 0) or (not FSQL.Eof) then
     begin
       // Удалим все заказы на столе
       CurTable.ClearOrders;
-      while not ibsql.Eof do
+      while not FSQL.Eof do
       begin
         // Добавим заказ в список заказов стола
-        Order := CurTable.AddOrder(ibsql.FieldByName('DOCUMENTKEY').AsInteger,
-          ibsql.FieldByName('NUMBER').AsString);
-        Order.TimeCloseOrder := ibsql.FieldByName('usr$timecloseorder').AsDateTime;
-        Order.ResponsibleKey := ibsql.FieldByName('usr$respkey').AsInteger;
-        Order.ComputerName := ibsql.FieldByName('usr$computername').AsString;
-        Order.IsLocked := (ibsql.FieldByName('islocked').AsInteger = 1);
+        Order := CurTable.AddOrder(FSQL.FieldByName('DOCUMENTKEY').AsInteger,
+          FSQL.FieldByName('NUMBER').AsString);
+        Order.TimeCloseOrder := FSQL.FieldByName('usr$timecloseorder').AsDateTime;
+        Order.ResponsibleKey := FSQL.FieldByName('usr$respkey').AsInteger;
+        Order.ComputerName := FSQL.FieldByName('usr$computername').AsString;
+        Order.IsLocked := (FSQL.FieldByName('islocked').AsInteger = 1);
 
         if CurTable.OrderKey <> Order.ID then
           CurTable.OrderKey := Order.ID;
@@ -450,7 +456,7 @@ var
         if CurTable.ComputerName <> Order.ComputerName then
           CurTable.ComputerName := Order.ComputerName;
 
-        ibsql.Next;
+        FSQL.Next;
       end;
     end;
     // Обновим состояние стола
@@ -458,11 +464,11 @@ var
   end;
 
 begin
-  ibsql := TIBSQL.Create(nil);
+  FSQL := TIBSQL.Create(nil);
   try
-    ibsql.Transaction := FDataBase.ReadTransaction;
+    FSQL.Transaction := FDataBase.ReadTransaction;
     // Список заказов для указанного стола
-    ibsql.SQL.Text :=
+    FSQL.SQL.Text :=
       ' SELECT ' +
       '   u.usr$respkey, ' +
       '   u.documentkey, ' +
@@ -482,24 +488,93 @@ begin
     // Обновлять переданный стол, или все столы
     if Assigned(ATable) then
     begin
-      ibsql.ParamByName('id').AsInteger := ATable.ID;
-      ibsql.ExecQuery;
+      FSQL.ParamByName('id').AsInteger := ATable.ID;
+      FSQL.ExecQuery;
       RefreshSingleTable(ATable);
-      ibsql.Close;
+      FSQL.Close;
     end
     else
     begin
       // Пройдем по всем столам и обновим заказы для них
-      for Table in FTablesList do
+      for Table in FTablesList.Values do
       begin
-        ibsql.ParamByName('id').AsInteger := Table.ID;
-        ibsql.ExecQuery;
+        Table.Date := GetServerDateTime;
+        FSQL.ParamByName('id').AsInteger := Table.ID;
+        FSQL.ExecQuery;
         RefreshSingleTable(Table);
-        ibsql.Close;
+        FSQL.Close;
       end;
     end;
   finally
-    FreeAndNil(ibsql);
+    FSQL.Free;
+  end;
+end;
+
+procedure TrfTableManager.RefreshOrderData(const HallKey: Integer);
+var
+  FSQL: TIBSQL;
+  Table: TRestTable;
+  Order: TrfOrder;
+begin
+  FSQL := TIBSQL.Create(nil);
+  try
+    for Table in FTablesList.Values do
+    begin
+      if Table.HallKey = HallKey then
+        Table.ClearOrders;
+    end;
+
+    FSQL.Transaction := FDataBase.ReadTransaction;
+    FSQL.SQL.Text :=
+      ' SELECT ' +
+      '   u.usr$respkey, ' +
+      '   u.documentkey, ' +
+      '   u.usr$timecloseorder, ' +
+      '   u.usr$computername, ' +
+      '   u.usr$islocked AS islocked, ' +
+      '   doc.number, ' +
+      '   con.name, t.id ' +
+      ' FROM ' +
+      '   usr$mn_table t ' +
+      '   JOIN usr$mn_order u ON u.usr$tablekey = t.id AND u.usr$pay <> 1 ' +
+      '   LEFT JOIN gd_document doc ON doc.id = u.documentkey ' +
+      '   LEFT JOIN gd_contact con ON con.id = u.usr$respkey ' +
+      ' WHERE ' +
+      '   t.usr$hallkey = :id ';
+    FSQL.Params[0].AsInteger := HallKey;
+    FSQL.ExecQuery;
+    while not FSQL.Eof do
+    begin
+      Table := GetTable(FSQL.FieldByName('ID').AsInteger);
+      if Assigned(Table) then
+      begin
+        Table.Date := GetServerDateTime;
+
+        // Добавим заказ в список заказов стола
+        Order := Table.AddOrder(FSQL.FieldByName('DOCUMENTKEY').AsInteger,
+          FSQL.FieldByName('NUMBER').AsString);
+        Order.TimeCloseOrder := FSQL.FieldByName('usr$timecloseorder').AsDateTime;
+        Order.ResponsibleKey := FSQL.FieldByName('usr$respkey').AsInteger;
+        Order.ComputerName := FSQL.FieldByName('usr$computername').AsString;
+        Order.IsLocked := (FSQL.FieldByName('islocked').AsInteger = 1);
+
+        if Table.OrderKey <> Order.ID then
+          Table.OrderKey := Order.ID;
+
+        if Table.ComputerName <> Order.ComputerName then
+          Table.ComputerName := Order.ComputerName;
+      end;
+      FSQL.Next;
+    end;
+    FSQL.Close;
+    //обновим состояние всех столов
+    for Table in FTablesList.Values do
+    begin
+      if Table.HallKey = HallKey then
+        Table.RefreshTableCondition(FDataBase.ContactKey);
+    end;
+  finally
+    FSQL.Free;
   end;
 end;
 

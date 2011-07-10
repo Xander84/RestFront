@@ -6,7 +6,9 @@ uses
   SysUtils;
 
 type
+  //Класс заказа по столу
   TrfOrder = class(TObject)
+  private
     FID: Integer;
     FNumber: String;
     FTimeClodeOrder: TDateTime;
@@ -23,6 +25,22 @@ type
     property ResponsibleKey: Integer read FResponsibleKey write FResponsibleKey;
     property ComputerName: String read FComputerName write FComputerName;
     property IsLocked: Boolean read FIsLocked write FIsLocked;
+  end;
+
+  //бронирование по столу
+  TrfReservation = class(TObject)
+  private
+    FID: Integer;
+    FNumber: String;
+    FReservTime: TTime;
+    FReservDate: TDate;
+  public
+    constructor Create(const AID: Integer); overload;
+
+    property ID: Integer read FID write FID;
+    property Number: String read FNumber write FNumber;
+    property ReservDate: TDate read FReservDate write FReservDate;
+    property ReservTime: TTime read FReservTime write FReservTime;
   end;
   
 implementation
@@ -47,6 +65,13 @@ begin
   FResponsibleKey := AFromOrder.ResponsibleKey;
   ComputerName := AFromOrder.ComputerName;
   IsLocked := AFromOrder.IsLocked;
+end;
+
+{ TrfReservation }
+
+constructor TrfReservation.Create(const AID: Integer);
+begin
+  FID := AID;
 end;
 
 end.
