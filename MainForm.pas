@@ -1292,73 +1292,13 @@ begin
 end;
 
 procedure TRestMainForm.CreateHall(const HallKey: Integer);
-
-  procedure LoadHallBackGround(const HallKey: Integer);
-  var
-    Str: TStream;
-    FpngImage: TPngImage;
-    FImage: TBitmap;
-    FjpgImage: TJPEGImage;
-    Sig: Word;
-  begin
-    Str := TMemoryStream.Create;
-    try
-      if FFrontBase.GetHallBackGround(Str, HallKey) then
-      begin
-        if Str.Size > 2 then
-        begin
-          //read sign
-          Str.Position := 0;
-          Str.Read(Sig, 2);
-
-          case Sig of
-            jpeg_sig:
-              begin
-                Str.Position := 0;
-                FjpgImage := TJPEGImage.Create;
-                try
-                  FjpgImage.LoadFromStream(Str);
-                  imgHallBackground.Picture.Assign(FjpgImage);
-                finally
-                  FjpgImage.Free;
-                end;
-              end;
-            png_sig:
-              begin
-                Str.Position := 0;
-                FpngImage := TPngImage.Create;
-                try
-                  FpngImage.LoadFromStream(Str);
-                  imgHallBackground.Picture.Assign(FpngImage);
-                finally
-                  FpngImage.Free;
-                end;
-              end;
-          else
-            Str.Position := 0;
-            FImage := TBitmap.Create;
-            try
-              FImage.LoadFromStream(Str);
-              imgHallBackground.Picture.Assign(FImage);
-            finally
-              FImage.Free;
-            end;
-          end;
-        end else
-          imgHallBackground.Picture := nil;
-      end;
-    finally
-      Str.Free;
-    end;
-  end;
-
 begin
   if FRestFormState = rsHallsPage then
   begin
     if FActiveHallKey <> HallKey then
     begin
       // Загрузим фон зала
-      LoadHallBackGround(HallKey);
+      FTableManager.LoadHallBackGround(HallKey);
       // Загрузить столы из датасета
       FTableManager.LoadTables(HallKey);
       FActiveHallKey := HallKey;
@@ -1368,7 +1308,7 @@ begin
   end
   else
   begin
-    LoadHallBackGround(HallKey);
+    FTableManager.LoadHallBackGround(HallKey);
     FTableManager.LoadTables(HallKey);
     FActiveHallKey := -1;
   end;
@@ -1729,6 +1669,7 @@ begin
     FTableManager.TableButtonOnClick := TableButtonOnClick;
     FTableManager.TableButtonPopupMenu := tablePopupMenu;
     FTableManager.ServerTimeLag := FServerTimeLag;
+    FTableManager.BackGroundImage := imgHallBackground;
   end;
 end;
 

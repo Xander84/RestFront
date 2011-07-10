@@ -4,7 +4,8 @@ interface
 
 uses
   SysUtils, Classes, Contnrs, Controls, Generics.Collections, Graphics, jpeg,
-  Front_DataBase_Unit, RestTable_Unit, AdvMenus, pngimage, AdvGDIP, rfOrder_unit;
+  Front_DataBase_Unit, RestTable_Unit, AdvMenus, pngimage, AdvGDIP, rfOrder_unit,
+  ExtCtrls;
 
 type
   TrfTableManager = class(TObject)
@@ -14,6 +15,7 @@ type
 
     // Объекты присваемые из главной формы
     FTableImageDictionary: TDictionary<Integer, TGraphic>;
+    FBackGroundImageDictionary: TDictionary<Integer, TGraphic>;
     FConditionImageDictionary: TDictionary<TRestTableCondition, TAdvGDIPPicture>;
     FTableButtonOnClick: TNotifyEvent;
     FTableButtonPopupMenu: TAdvPopupMenu;
@@ -24,6 +26,7 @@ type
 
     { Разница во времени между сервером и клиентом }
     FServerTimeLag: Extended;
+    FBackGroundImage: TImage;
 
     procedure LoadImages;
     { Получить время и дату поправленные с учетом разницы времени между сервером и клиентом }
@@ -32,6 +35,8 @@ type
     constructor Create(const Database: TFrontBase; const TableParent: TWinControl);
     destructor Destroy; override;
 
+    { Загрузить фон из }
+    procedure LoadHallBackGround(const HallKey: Integer);
     { Загрузить столы из датасета }
     procedure LoadTables(const HallKey: Integer);
     { Обновить информацию о заказах на столах }
@@ -45,6 +50,7 @@ type
     procedure ClearTables;
 
     function GetImageForType(const ATableType: Integer): TGraphic;
+    function GetBackGroundImage(const HallKey: Integer): TGraphic;
     function GetImageForCondition(const ATableCondition: TRestTableCondition): TAdvGDIPPicture;
 
     { Добавить стол }
@@ -64,6 +70,7 @@ type
     property TableButtonOnClick: TNotifyEvent read FTableButtonOnClick write FTableButtonOnClick;
     property TableButtonPopupMenu: TAdvPopupMenu read FTableButtonPopupMenu write FTableButtonPopupMenu;
     property ServerTimeLag: Extended read FServerTimeLag write FServerTimeLag;
+    property BackGroundImage: TImage read FBackGroundImage write FBackGroundImage;
   end;
 
 const
@@ -101,6 +108,7 @@ begin
   FToDeleteList := TList<Integer>.Create;
   // Список типов столов с изображениями
   FTableImageDictionary := TDictionary<Integer, TGraphic>.Create;
+  FBackGroundImageDictionary := TDictionary<Integer, TGraphic>.Create;
   // Список картинок для состояний столов
   FConditionImageDictionary := TDictionary<TRestTableCondition,TAdvGDIPPicture>.Create;
 
@@ -110,13 +118,18 @@ end;
 
 destructor TrfTableManager.Destroy;
 var
-  TableImage: TGraphic;
+  FImage: TGraphic;
 begin
   // Список типов столов с изображениями
-  for TableImage in FTableImageDictionary.Values do
-    if Assigned(TableImage) then
-      TableImage.Free;
+  for FImage in FTableImageDictionary.Values do
+    if Assigned(FImage) then
+      FImage.Free;
+  for FImage in FBackGroundImageDictionary.Values do
+    if Assigned(FImage) then
+      FImage.Free;
+
   FreeAndNil(FTableImageDictionary);
+  FreeAndNil(FBackGroundImageDictionary);
   // Список картинок для состояний столов (изображения не надо уничтожать, т.к. они находятся в датамодуле)
   FreeAndNil(FConditionImageDictionary);
 
@@ -160,6 +173,12 @@ begin
   FTablesList.Remove(ATable.ID);
 end;
 
+function TrfTableManager.GetBackGroundImage(const HallKey: Integer): TGraphic;
+begin
+  if not FBackGroundImageDictionary.TryGetValue(HallKey, Result) then
+    Result := nil;
+end;
+
 function TrfTableManager.GetImageForCondition(const ATableCondition: TRestTableCondition): TAdvGDIPPicture;
 begin
   if not FConditionImageDictionary.TryGetValue(ATableCondition, Result) then
@@ -194,6 +213,12 @@ begin
     Result := nil;
 end;
 
+procedure TrfTableManager.LoadHallBackGround(const HallKey: Integer);
+begin
+  if Assigned(FBackGroundImage) then
+    FBackGroundImage.Picture.Assign(GetBackGroundImage(HallKey));
+end;
+
 procedure TrfTableManager.LoadImages;
 var
   FSQL: TIBSQL;
@@ -212,7 +237,6 @@ begin
       FSQL.SQL.Text :=
         ' SELECT id, usr$picture1 AS img FROM usr$mn_tabletype ';
       FSQL.ExecQuery;
-
       while not FSQL.Eof do
       begin
         Str := TMemoryStream.Create;
@@ -248,7 +272,57 @@ begin
         finally
           Str.Free;
         end;
+        FSQL.Next;
+      end;
+    finally
+      FSQL.Free;
+    end;
+  end;
 
+  if Assigned(FBackGroundImageDictionary) then
+  begin
+    FSQL := TIBSQL.Create(nil);
+    try
+      FSQL.Transaction := FDataBase.ReadTransaction;
+      FSQL.SQL.Text :=
+        'SELECT ID, USR$BACKGROUNDPICTURE AS backgroundpicture '  +
+        'FROM USR$MN_HALL  ';
+      FSQL.ExecQuery;
+      while not FSQL.Eof do
+      begin
+        Str := TMemoryStream.Create;
+        try
+          FSQL.FieldByName('backgroundpicture').SaveToStream(Str);
+          if Str.Size > 2 then
+          begin
+            Str.Position := 0;
+            Str.Read(Sig, 2);
+
+            case Sig of
+              jpeg_sig:
+                begin
+                  Str.Position := 0;
+                  FjpgImage := TJPEGImage.Create;
+                  FjpgImage.LoadFromStream(Str);
+                  FBackGroundImageDictionary.Add(FSQL.FieldByName('id').AsInteger, FjpgImage);
+                end;
+              png_sig:
+                begin
+                  Str.Position := 0;
+                  FpngImage := TPngImage.Create;
+                  FpngImage.LoadFromStream(Str);
+                  FBackGroundImageDictionary.Add(FSQL.FieldByName('id').AsInteger, FpngImage);
+                end;
+            else
+              Str.Position := 0;
+              FImage := TBitmap.Create;
+              FImage.LoadFromStream(Str);
+              FBackGroundImageDictionary.Add(FSQL.FieldByName('id').AsInteger, FImage);
+            end;
+          end;
+        finally
+          Str.Free;
+        end;
         FSQL.Next;
       end;
     finally

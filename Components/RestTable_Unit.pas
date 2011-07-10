@@ -201,17 +201,20 @@ begin
   FOrderList.Add(AOrder);
   FOrderList.Sort(
     TComparer<TrfOrder>.Construct(
-      function (const L, R: TrfOrder): integer
+      function (const L, R: TrfOrder): Integer
       var
         LNumber, RNumber: Integer;
+        FPos: Integer;
       begin
-        if Pos('.', L.Number) > 0 then
-          LNumber := StrToIntDef(RightStr(L.Number, Length(L.Number) - Pos('.', L.Number)), L.ID)
+        FPos := Pos('.', L.Number);
+        if FPos > 0 then
+          LNumber := StrToIntDef(RightStr(L.Number, Length(L.Number) - FPos), L.ID)
         else
           LNumber := StrToIntDef(L.Number, L.ID);
 
-        if Pos('.', R.Number) > 0 then
-          RNumber := StrToIntDef(RightStr(R.Number, Length(R.Number) - Pos('.', R.Number)), R.ID)
+        FPos := Pos('.', R.Number);
+        if FPos > 0 then
+          RNumber := StrToIntDef(RightStr(R.Number, Length(R.Number) - FPos), R.ID)
         else
           RNumber := StrToIntDef(R.Number, R.ID);
 
