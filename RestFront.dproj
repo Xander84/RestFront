@@ -162,6 +162,12 @@
 			<DCCReference Include="forms\frmReportList_unit.pas">
 				<Form>ReportForm</Form>
 			</DCCReference>
+			<DCCReference Include="Contact\rfContactForm_Unit.pas">
+				<Form>Contact</Form>
+			</DCCReference>
+			<DCCReference Include="rfReservForm_Unit.pas">
+				<Form>ReservForm</Form>
+			</DCCReference>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>

@@ -53,7 +53,9 @@ uses
   frmEditMenu_unit in 'forms\frmEditMenu_unit.pas' {EditMenu},
   frmMenuLine_unit in 'forms\frmMenuLine_unit.pas' {MenuLine},
   frmViewOrder_unit in 'forms\frmViewOrder_unit.pas' {ViewOrder},
-  frmReportList_unit in 'forms\frmReportList_unit.pas' {ReportForm};
+  frmReportList_unit in 'forms\frmReportList_unit.pas' {ReportForm},
+  rfContactForm_Unit in 'Contact\rfContactForm_Unit.pas' {Contact},
+  rfReservForm_Unit in 'rfReservForm_Unit.pas' {ReservForm};
 
 {$R *.res}
 

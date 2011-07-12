@@ -504,6 +504,7 @@ procedure TrfTableManager.RefreshOrderData(const ATable: TRestTable = nil);
 var
   FSQL: TIBSQL;
   Table: TRestTable;
+  Reserv: TrfReservation;
 
   procedure RefreshSingleTable(CurTable: TRestTable);
   var
@@ -563,12 +564,35 @@ begin
     if Assigned(ATable) then
     begin
       FSQL.ParamByName('id').AsInteger := ATable.ID;
+      ATable.Date := GetServerDateTime;
       FSQL.ExecQuery;
       RefreshSingleTable(ATable);
       FSQL.Close;
+
+      FSQL.SQL.Text :=
+        ' SELECT ' +
+        '   R.ID, ' +
+        '   R.USR$RESERVDATE, ' +
+        '   R.USR$RESERVTIME, ' +
+        '   R.USR$DOCUMENTNUMBER ' +
+        ' FROM USR$MN_RESERVATION R ' +
+        ' WHERE R.USR$TABLEKEY = :ID  ' +
+        '  AND R.USR$PAYED <> 1 ';
+      FSQL.ParamByName('id').AsInteger := ATable.ID;
+      FSQL.ExecQuery;
+      while not FSQL.Eof do
+      begin
+        Reserv := ATable.AddReservation(FSQL.FieldByName('ID').AsInteger,
+          FSQL.FieldByName('USR$DOCUMENTDATE').AsString);
+        Reserv.ReservDate := FSQL.FieldByName('USR$RESERVDATE').AsDate;
+        Reserv.ReservTime := FSQL.FieldByName('USR$RESERVTIME').AsTime;
+
+        FSQL.Next;
+      end;
     end
     else
     begin
+      // Данный код сейчас не используется
       // Пройдем по всем столам и обновим заказы для них
       for Table in FTablesList.Values do
       begin
@@ -589,6 +613,7 @@ var
   FSQL: TIBSQL;
   Table: TRestTable;
   Order: TrfOrder;
+  Reserv: TrfReservation;
 begin
   FSQL := TIBSQL.Create(nil);
   try
@@ -641,6 +666,34 @@ begin
       FSQL.Next;
     end;
     FSQL.Close;
+
+    FSQL.SQL.Text :=
+    ' SELECT ' +
+    '   R.ID, ' +
+    '   R.USR$RESERVDATE, ' +
+    '   R.USR$RESERVTIME, ' +
+    '   R.USR$DOCUMENTNUMBER, ' +
+    '   R.USR$TABLEKEY ' +
+    ' FROM USR$MN_RESERVATION R ' +
+    ' JOIN USR$MN_TABLE T ON T.ID = R.USR$TABLEKEY ' +
+    ' WHERE T.USR$HALLKEY = :ID ' +
+    '   AND R.USR$PAYED <> 1 ';
+    FSQL.Params[0].AsInteger := HallKey;
+    FSQL.ExecQuery;
+    while not FSQL.Eof do
+    begin
+      Table := GetTable(FSQL.FieldByName('USR$TABLEKEY').AsInteger);
+      if Assigned(Table) then
+      begin
+        Reserv := Table.AddReservation(FSQL.FieldByName('ID').AsInteger,
+          FSQL.FieldByName('USR$DOCUMENTDATE').AsString);
+        Reserv.ReservDate := FSQL.FieldByName('USR$RESERVDATE').AsDate;
+        Reserv.ReservTime := FSQL.FieldByName('USR$RESERVTIME').AsTime;
+      end;
+      FSQL.Next;
+    end;
+    FSQL.Close;
+
     //обновим состояние всех столов
     for Table in FTablesList.Values do
     begin

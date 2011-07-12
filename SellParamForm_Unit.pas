@@ -243,6 +243,16 @@ begin
   btnCreditlPay.Enabled := (NoCashCount > 0);
   btnPersonalCard.Enabled := (PercCardCount > 0);
 
+  if not FFrontBase.GetUserRuleForPayment(FCreditID) then
+  begin
+    btnCardPay.Enabled := False;
+    btnCreditlPay.Enabled := False;
+  end;
+
+  if btnPersonalCard.Enabled then
+    btnPersonalCard.Enabled := FFrontBase.GetUserRuleForPayment(FPersonalCardID);
+  btnCashPay.Enabled := FFrontBase.GetUserRuleForPayment(FCashID);
+
   SetupAdvGrid(DBAdvGrMain);
   with DBAdvGrMain do
   begin
@@ -288,11 +298,15 @@ procedure TSellParamForm.edMainChange(Sender: TObject);
 begin
   if FCurrentPayType = -1 then
   begin
-    btnCashPay.Down := True;
-    FCurrentPayType := FFrontBase.GetIDByRUID(mn_RUBpaytypeXID, mn_RUBpaytypeDBID);
-    FCurrentPayName := 'Рубли';
-    FNoFiscal := FCashNoFiscal;//0;
-    FPayType := cn_paytype_cash;
+    if btnCashPay.Enabled then
+    begin
+      btnCashPay.Down := True;
+      FCurrentPayType := FFrontBase.GetIDByRUID(mn_RUBpaytypeXID, mn_RUBpaytypeDBID);
+      FCurrentPayName := 'Рубли';
+      FNoFiscal := FCashNoFiscal;//0;
+      FPayType := cn_paytype_cash;
+    end else
+      exit;
   end;
 
   FInInsert := True;

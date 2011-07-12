@@ -35,7 +35,7 @@ type
     FReservTime: TTime;
     FReservDate: TDate;
   public
-    constructor Create(const AID: Integer); overload;
+    constructor Create(const AID: Integer; const ANumber: String); overload;
 
     property ID: Integer read FID write FID;
     property Number: String read FNumber write FNumber;
@@ -69,9 +69,10 @@ end;
 
 { TrfReservation }
 
-constructor TrfReservation.Create(const AID: Integer);
+constructor TrfReservation.Create(const AID: Integer; const ANumber: String);
 begin
   FID := AID;
+  FNumber := ANumber;
 end;
 
 end.

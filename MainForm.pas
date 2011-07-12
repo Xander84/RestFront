@@ -228,6 +228,8 @@ type
     actEditGuestCount: TAction;
     btnReturnCheck: TAdvSmoothButton;
     actReturnCheck: TAction;
+    actRervTable: TAction;
+    btnReservationTable: TAdvSmoothToggleButton;
 
     // Проверка введёного пароля
     procedure actPassEnterExecute(Sender: TObject);
@@ -320,6 +322,8 @@ type
     procedure actEditGuestCountUpdate(Sender: TObject);
     procedure actReturnCheckExecute(Sender: TObject);
     procedure actReturnCheckUpdate(Sender: TObject);
+    procedure actRervTableExecute(Sender: TObject);
+    procedure actRervTableUpdate(Sender: TObject);
   private
     // Компонент обращения к БД
     // Объявлен в базовом классе форм TBaseFrontForm
@@ -537,7 +541,8 @@ uses
   GDIPPictureContainer, IB, GDIPFill, CashForm_Unit,
   TouchMessageBoxForm_Unit, Base_FiscalRegister_unit,
   ReturneyMoneyForm_Unit, frmSwapOrder_unit, rfOrder_unit, frmReportList_unit,
-  rfChooseForm_Unit, rfUtils_unit, frmEditMenu_unit, frmViewOrder_unit;
+  rfChooseForm_Unit, rfUtils_unit, frmEditMenu_unit, frmViewOrder_unit,
+  rfReservForm_Unit;
 
 {$R *.dfm}
 
@@ -2530,7 +2535,7 @@ end;
 procedure TRestMainForm.actManagerInfoUpdate(Sender: TObject);
 begin
   actManagerInfo.Enabled := ((FFrontBase.UserKey and FFrontBase.Options.ManagerGroupMask) <> 0)
-    and (not btnSwapTable.Down);
+    and (not btnSwapTable.Down) and (not btnReservationTable.Down);
 end;
 
 procedure TRestMainForm.actModificationExecute(Sender: TObject);
@@ -3735,6 +3740,7 @@ begin
     end;
     btnSwapTable.Down := False;
     btnUnblockTable.Down := False;
+    btnReservationTable.Down := False;
   end;
   RestorePanelWidth;
 end;
@@ -3774,8 +3780,9 @@ end;
 
 procedure TRestMainForm.actUnblockTableUpdate(Sender: TObject);
 begin
-  actSwapTable.Enabled := ((FFrontBase.UserKey and FFrontBase.Options.ManagerGroupMask) <> 0);
-  btnUnblockTable.Enabled := actSwapTable.Enabled;
+  actUnblockTable.Enabled := ((FFrontBase.UserKey and FFrontBase.Options.ManagerGroupMask) <> 0)
+    and (not btnSwapTable.Down) and (not btnReservationTable.Down);
+  btnUnblockTable.Enabled := actUnblockTable.Enabled;
 end;
 
 procedure TRestMainForm.actUsersDownExecute(Sender: TObject);
@@ -4266,6 +4273,11 @@ begin
       FSwapTableFrom.Checked := True;
     end;
   end
+  else if btnReservationTable.Down then  //бронирование стола
+  begin
+
+    btnReservationTable.Down := False;
+  end
   else
   begin
     Pt := CurrentRestTable.ClientToScreen(Point(0, 0));
@@ -4557,7 +4569,7 @@ end;
 procedure TRestMainForm.actEditMenuUpdate(Sender: TObject);
 begin
   actEditMenu.Enabled := ((FFrontBase.UserKey and FFrontBase.Options.ManagerGroupMask) <> 0)
-    and (not btnSwapTable.Down);
+    and (not btnSwapTable.Down) and (not btnReservationTable.Down);
 end;
 
 procedure TRestMainForm.actExitWindowsExecute(Sender: TObject);
@@ -4753,7 +4765,7 @@ end;
 procedure TRestMainForm.actAllChecksUpdate(Sender: TObject);
 begin
   actAllChecks.Enabled := ((FFrontBase.UserKey and FFrontBase.Options.ManagerGroupMask) <> 0)
-    and (not btnSwapTable.Down);
+    and (not btnSwapTable.Down) and (not btnReservationTable.Down);
 end;
 
 procedure TRestMainForm.actKassirInfoExecute(Sender: TObject);
@@ -4766,12 +4778,25 @@ procedure TRestMainForm.actKassirInfoUpdate(Sender: TObject);
 begin
   actKassirInfo.Enabled := (((FFrontBase.UserKey and FFrontBase.Options.KassaGroupMask) <> 0) or
     ((FFrontBase.UserKey and FFrontBase.Options.ManagerGroupMask) <> 0))
-    and (not btnSwapTable.Down);
+    and (not btnSwapTable.Down) and (not btnReservationTable.Down);
 end;
 
 procedure TRestMainForm.actRemoveQuantityUpdate(Sender: TObject);
 begin
   actRemoveQuantity.Enabled := FHeaderTable.FieldByName('usr$timecloseorder').IsNull and (not FViewMode) and (not IsActionRun);
+end;
+
+procedure TRestMainForm.actRervTableExecute(Sender: TObject);
+begin
+  inherited;
+  //
+end;
+
+procedure TRestMainForm.actRervTableUpdate(Sender: TObject);
+begin
+  actRervTable.Enabled := ((FFrontBase.UserKey and FFrontBase.Options.ManagerGroupMask) <> 0)
+    and (not btnSwapTable.Down);
+  btnReservationTable.Enabled := actRervTable.Enabled;
 end;
 
 procedure TRestMainForm.actDeletePositionUpdate(Sender: TObject);
@@ -4841,7 +4866,7 @@ procedure TRestMainForm.actCashFormUpdate(Sender: TObject);
 begin
   actCashForm.Enabled := (((FFrontBase.UserKey and FFrontBase.Options.KassaGroupMask) <> 0) or
     ((FFrontBase.UserKey and FFrontBase.Options.ManagerGroupMask) <> 0))
-    and (not btnSwapTable.Down);
+    and (not btnSwapTable.Down) and (not btnReservationTable.Down);
 end;
 
 procedure TRestMainForm.actGoodUpUpdate(Sender: TObject);
@@ -4865,7 +4890,8 @@ end;
 
 procedure TRestMainForm.actSwapTableUpdate(Sender: TObject);
 begin
-  actSwapTable.Enabled := ((FFrontBase.UserKey and FFrontBase.Options.ManagerGroupMask) <> 0);
+  actSwapTable.Enabled := ((FFrontBase.UserKey and FFrontBase.Options.ManagerGroupMask) <> 0)
+    and (not btnReservationTable.Down);
   btnSwapTable.Enabled := actSwapTable.Enabled;
 end;
 
@@ -4969,7 +4995,7 @@ end;
 procedure TRestMainForm.actSwapWaiterUpdate(Sender: TObject);
 begin
   actSwapWaiter.Enabled := ((FFrontBase.UserKey and FFrontBase.Options.ManagerGroupMask) <> 0)
-    and (not btnSwapTable.Down);
+    and (not btnSwapTable.Down) and (not btnReservationTable.Down);
 end;
 
 end.

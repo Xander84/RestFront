@@ -50,9 +50,6 @@ object RestMainForm: TRestMainForm
         ColorTo = 14986888
         TabColor = clBtnFace
         TabColorTo = clNone
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 0
         object mainTouchKeyBoard: TAdvSmoothTouchKeyBoard
           Left = 0
           Top = 472
@@ -1668,9 +1665,6 @@ object RestMainForm: TRestMainForm
               ColorTo = 14986888
               TabColor = clBtnFace
               TabColorTo = clNone
-              ExplicitTop = 0
-              ExplicitWidth = 0
-              ExplicitHeight = 0
               object btnNewOrder: TAdvSmoothButton
                 Left = 16
                 Top = 1
@@ -2616,9 +2610,6 @@ object RestMainForm: TRestMainForm
         ColorTo = clNone
         TabColor = clBtnFace
         TabColorTo = clNone
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 0
         object pnlManagerInfo: TPanel
           Left = 0
           Top = 0
@@ -2907,7 +2898,7 @@ object RestMainForm: TRestMainForm
         Top = 1
         Width = 80
         Height = 719
-        ActivePage = tsMainButton
+        ActivePage = tsOrderButton
         ActiveFont.Charset = DEFAULT_CHARSET
         ActiveFont.Color = clWindowText
         ActiveFont.Height = -11
@@ -3082,9 +3073,6 @@ object RestMainForm: TRestMainForm
           ImageIndex = 1
           TabColor = clBtnFace
           TabColorTo = clNone
-          ExplicitTop = 0
-          ExplicitWidth = 0
-          ExplicitHeight = 0
           object btnAddQuantity: TAdvSmoothButton
             AlignWithMargins = True
             Left = 3
@@ -3541,9 +3529,8 @@ object RestMainForm: TRestMainForm
           ImageIndex = 2
           TabColor = clBtnFace
           TabColorTo = clNone
-          ExplicitTop = 0
-          ExplicitWidth = 0
-          ExplicitHeight = 0
+          ExplicitLeft = -5
+          ExplicitTop = 15
           object btnCashForm: TAdvSmoothButton
             AlignWithMargins = True
             Left = 3
@@ -3733,7 +3720,7 @@ object RestMainForm: TRestMainForm
           object btnUnblockTable: TAdvSmoothToggleButton
             AlignWithMargins = True
             Left = 3
-            Top = 442
+            Top = 498
             Width = 74
             Height = 54
             Margins.Top = 1
@@ -3767,11 +3754,13 @@ object RestMainForm: TRestMainForm
             Action = actUnblockTable
             Align = alTop
             TabOrder = 5
+            ExplicitLeft = 1
+            ExplicitTop = 554
           end
           object btnSwapWaiter: TAdvSmoothButton
             AlignWithMargins = True
             Left = 3
-            Top = 386
+            Top = 442
             Width = 74
             Height = 54
             Margins.Top = 1
@@ -3804,6 +3793,7 @@ object RestMainForm: TRestMainForm
             ParentFont = False
             TabOrder = 6
             Version = '1.6.9.0'
+            ExplicitTop = 386
           end
           object btnSwapTable: TAdvSmoothToggleButton
             AlignWithMargins = True
@@ -3880,6 +3870,44 @@ object RestMainForm: TRestMainForm
             TabOrder = 8
             Version = '1.6.9.0'
           end
+          object btnReservationTable: TAdvSmoothToggleButton
+            AlignWithMargins = True
+            Left = 3
+            Top = 386
+            Width = 74
+            Height = 54
+            Margins.Top = 1
+            Margins.Bottom = 1
+            BorderColor = clGray
+            BevelWidth = 0
+            Appearance.PictureAlignment = taCenter
+            Appearance.Font.Charset = DEFAULT_CHARSET
+            Appearance.Font.Color = clWindowText
+            Appearance.Font.Height = -8
+            Appearance.Font.Name = 'Tahoma'
+            Appearance.Font.Style = [fsBold]
+            Appearance.Layout = blPictureTop
+            Appearance.Spacing = 0
+            HorizontalSpacing = 0
+            Version = '1.1.8.0'
+            Status.Caption = '0'
+            Status.Appearance.Fill.Color = clRed
+            Status.Appearance.Fill.ColorMirror = clNone
+            Status.Appearance.Fill.ColorMirrorTo = clNone
+            Status.Appearance.Fill.GradientType = gtSolid
+            Status.Appearance.Fill.BorderColor = clGray
+            Status.Appearance.Fill.Rounding = 0
+            Status.Appearance.Fill.ShadowOffset = 0
+            Status.Appearance.Font.Charset = DEFAULT_CHARSET
+            Status.Appearance.Font.Color = clWhite
+            Status.Appearance.Font.Height = -11
+            Status.Appearance.Font.Name = 'Tahoma'
+            Status.Appearance.Font.Style = []
+            ParentFont = False
+            Action = actRervTable
+            Align = alTop
+            TabOrder = 9
+          end
         end
         object tsManagerInfoButton: TAdvTabSheet
           Caption = 'tsManagerInfoButton'
@@ -3893,9 +3921,6 @@ object RestMainForm: TRestMainForm
           ParentFont = False
           TabColor = clBtnFace
           TabColorTo = clNone
-          ExplicitTop = 0
-          ExplicitWidth = 0
-          ExplicitHeight = 0
           object xDateBegin: TDateTimePicker
             AlignWithMargins = True
             Left = 3
@@ -4278,9 +4303,6 @@ object RestMainForm: TRestMainForm
           ColorTo = clNone
           TabColor = clBtnFace
           TabColorTo = clNone
-          ExplicitTop = 0
-          ExplicitWidth = 0
-          ExplicitHeight = 0
           object btnShowKeyboard2: TAdvSmoothButton
             AlignWithMargins = True
             Left = 3
@@ -4680,6 +4702,12 @@ object RestMainForm: TRestMainForm
       Caption = #1042#1086#1079#1074#1088#1072#1090' '#1095#1077#1082#1072
       OnExecute = actReturnCheckExecute
       OnUpdate = actReturnCheckUpdate
+    end
+    object actRervTable: TAction
+      Category = 'Hall'
+      Caption = #1041#1088#1086#1085#1080#1088#1086#1074#1072#1085#1080#1077' '#1089#1090#1086#1083#1072
+      OnExecute = actRervTableExecute
+      OnUpdate = actRervTableUpdate
     end
   end
   object dsMain: TDataSource

@@ -82,7 +82,10 @@ type
     procedure RefreshTableCondition(const AContactKey: Integer);
     { Добавить заказ }
     function AddOrder(const AID: Integer; const ANumber: String): TrfOrder; overload;
-    function AddOrder(AOrder: TrfOrder): TrfOrder; overload;
+    function AddOrder(const AOrder: TrfOrder): TrfOrder; overload;
+    { Добавить бронь }
+    function AddReservation(const AID: Integer; const ANumber: String): TrfReservation; overload;
+    function AddReservation(const AReserv: TrfReservation): TrfReservation; overload;
     { Получить заказ по ИД }
     function GetOrder(const AOrderKey: Integer): TrfOrder;
     { Уничтожить все объекты заказов и очистить список }
@@ -194,7 +197,7 @@ begin
   Result := Self.AddOrder(TrfOrder.Create(AID, ANumber));
 end;
 
-function TRestTable.AddOrder(AOrder: TrfOrder): TrfOrder;
+function TRestTable.AddOrder(const AOrder: TrfOrder): TrfOrder;
 begin
   Result := AOrder;
   // Добавим заказ в список
@@ -221,6 +224,42 @@ begin
         Result := LNumber - RNumber;
       end
     ));
+end;
+
+function TRestTable.AddReservation(
+  const AReserv: TrfReservation): TrfReservation;
+begin
+  Result := AReserv;
+
+  FReservList.Add(AReserv);
+  FReservList.Sort(
+    TComparer<TrfReservation>.Construct(
+      function (const L, R: TrfReservation): Integer
+      var
+        LNumber, RNumber: Integer;
+        FPos: Integer;
+      begin
+        FPos := Pos('.', L.Number);
+        if FPos > 0 then
+          LNumber := StrToIntDef(RightStr(L.Number, Length(L.Number) - FPos), L.ID)
+        else
+          LNumber := StrToIntDef(L.Number, L.ID);
+
+        FPos := Pos('.', R.Number);
+        if FPos > 0 then
+          RNumber := StrToIntDef(RightStr(R.Number, Length(R.Number) - FPos), R.ID)
+        else
+          RNumber := StrToIntDef(R.Number, R.ID);
+
+        Result := LNumber - RNumber;
+      end
+    ));
+end;
+
+function TRestTable.AddReservation(const AID: Integer;
+  const ANumber: String): TrfReservation;
+begin
+  Result := Self.AddReservation(TrfReservation.Create(AID, ANumber));
 end;
 
 procedure TRestTable.CalculateImageRect;

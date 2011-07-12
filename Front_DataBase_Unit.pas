@@ -365,6 +365,7 @@ type
     procedure GetPaymentsCount(var CardCount, NoCashCount, PercCardCount: Integer;
       const CreditID, PCID: Integer);
     function GetCashFiscalType: Integer;
+    function GetUserRuleForPayment(const PayKey: Integer): Boolean;
 
     function CreateNewOrder(const HeaderTable, LineTable, ModifyTable: TkbmMemTable; out OrderKey: Integer; const RevertQuantity: Boolean = False): Boolean;
     function SaveAndReloadOrder(const HeaderTable, LineTable, ModifyTable: TkbmMemTable; OrderKey: Integer): Boolean;
@@ -2294,6 +2295,38 @@ begin
   end;
 end;
 
+function TFrontBase.GetUserRuleForPayment(const PayKey: Integer): Boolean;
+var
+  FMask: Integer;
+begin
+  Result := True;
+
+  FReadSQL.Close;
+  try
+    if not FReadSQL.Transaction.InTransaction then
+      FReadSQL.Transaction.StartTransaction;
+
+    FReadSQL.SQL.Text :=
+      ' SELECT ' +
+      '   R.USR$GROUPKEY ' +
+      ' FROM USR$MN_PAYMENTRULES R ' +
+      ' WHERE R.USR$PAYTYPEKEY = :ID ';
+    FReadSQL.Params[0].AsInteger := PayKey;
+    FReadSQL.ExecQuery;
+    while not FReadSQL.Eof do
+    begin
+      FMask := GetGroupMask(FReadSQL.FieldByName('USR$GROUPKEY').AsInteger);
+      Result := ((FUserKey and FMask) <> 0);
+      if Result then
+        exit;
+
+      FReadSQL.Next;
+    end;
+  finally
+    FReadSQL.Close;
+  end;
+end;
+
 { Список всех пользователей фронта }
 procedure TFrontBase.GetWaiterList(AOrderList: TList<TrfUser>);
 var
@@ -3648,12 +3681,12 @@ begin
       FSQL.Close;
 
       FSQL.SQL.Text := ' UPDATE GD_USER ' +
-        ' SET NAME = :NAME, ' +
+        ' SET ' +
         '     PASSW = :PASS, ' +
         '     DISABLED = :DISABLED, ' +
         '     INGROUP = 1 ' +
         ' WHERE ID = :ID ';
-      FSQL.ParamByName('NAME').AsString := EmplTable.FieldByName('SURNAME').AsString;
+//      FSQL.ParamByName('NAME').AsString := EmplTable.FieldByName('SURNAME').AsString;
       FSQL.ParamByName('PASS').AsString := EmplTable.FieldByName('PASSW').AsString;
       if EmplTable.FieldByName('DISABLED').AsBoolean then
         FSQL.ParamByName('DISABLED').AsInteger := 1
