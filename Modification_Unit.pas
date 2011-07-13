@@ -175,37 +175,41 @@ var
 begin
   //Создание кнопки
   FButton := TAdvSmoothToggleButton.Create(Self);
-  FButton.Parent := pnlMain;
-  FButton.OnClick := ModifyButtonOnClick;
-  FButton.Name := Format('btnModification%d', [FModificationButtonNumber]);
-  FButton.GroupIndex := FModificationButtonNumber;
-  FButton.Height := btnHeight;
-  FButton.Width  := btnWidth;
-  FButton.Appearance.Font.Name := cn_FontType;
-  FButton.Appearance.Font.Size := cn_ButtonFontSize;
-  FButton.BevelWidth := 1;
-  FButton.BevelColor := clBlack;
-  FButton.SetComponentStyle(tsOffice2007Silver);
+  FButton.Appearance.BeginUpdate;
+  try
+    FButton.Parent := pnlMain;
+    FButton.OnClick := ModifyButtonOnClick;
+    FButton.Name := Format('btnModification%d', [FModificationButtonNumber]);
+    FButton.GroupIndex := FModificationButtonNumber;
+    FButton.Height := btnHeight;
+    FButton.Width  := btnWidth;
+    FButton.Appearance.Font.Name := cn_FontType;
+    FButton.Appearance.Font.Size := cn_ButtonFontSize;
+  //  FButton.BevelWidth := 1;
+  //  FButton.BevelColor := clBlack;
+  //  FButton.SetComponentStyle(tsOffice2007Silver);
+    SetButtonStyle(FButton);
+    //проверяем, есть ли ещё место в ряду
+    if (FLastLeftButton + btnWidth) > pnlMain.Width then
+    begin
+      FLastTopButton := FLastTopButton + btnHeight + 8;
+      FLastLeftButton := 8;
 
-  //проверяем, есть ли ещё место в ряду
-  if (FLastLeftButton + btnWidth) > pnlMain.Width then
-  begin
-    FLastTopButton := FLastTopButton + btnHeight + 8;
-    FLastLeftButton := 8;
+      FButton.Left := FLastLeftButton;
+      FButton.Top  := FLastTopButton;
+    end else
+    begin
+      FButton.Left := FLastLeftButton;
+      FButton.Top  := FLastTopButton;
+    end;
 
-    FButton.Left := FLastLeftButton;
-    FButton.Top  := FLastTopButton;
-  end else
-  begin
-    FButton.Left := FLastLeftButton;
-    FButton.Top  := FLastTopButton;
+    FButton.Tag := FModificationTable.FieldByName('ID').AsInteger;
+    FButton.Caption := FModificationTable.FieldByName('NAME').AsString;
+
+    FLastLeftButton := FLastLeftButton + btnWidth + 10;
+  finally
+    FButton.Appearance.EndUpdate;
   end;
-
-  FButton.Tag := FModificationTable.FieldByName('ID').AsInteger;
-  FButton.Caption := FModificationTable.FieldByName('NAME').AsString;
-
-  FLastLeftButton := FLastLeftButton + btnWidth + 10;
-
   FButtonList.Add(FButton);
   Inc(FModificationButtonNumber);
 end;

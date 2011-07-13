@@ -7,7 +7,7 @@ interface
 uses
   SysUtils, Windows, Classes, AdvPanel, AdvStyleIF, AdvSmoothButton,
   SysConst, Graphics, ImgList, Controls, AdvAppStyler, GDIPPictureContainer,
-  DBGridEh, AdvGrid, DBAdvGrid, Forms, obj_QueryList;
+  DBGridEh, AdvGrid, DBAdvGrid, Forms, obj_QueryList, AdvSmoothToggleButton;
 
 type
   TApplicationFile = (afApplicationData);
@@ -37,7 +37,8 @@ type
   function GetFrontStyle: TTMSStyle;
   procedure AdjustResolution(const FForm: TWinControl);
   function AdjustWidth(const FWidth: Integer): Integer;
-  procedure SetButtonStyle(const FButton: TAdvSmoothButton);
+  procedure SetButtonStyle(const FButton: TAdvSmoothButton); overload;
+  procedure SetButtonStyle(const FButton: TAdvSmoothToggleButton); overload;
 
 // настройки для гридов
 const
@@ -96,6 +97,17 @@ begin
   FButton.Appearance.Font.Style := [fsBold];
   FButton.Appearance.Font.Name := cn_FontType;
   FButton.DisabledColor := clGray;
+  FButton.Color := TColor($00E7DCD5);
+end;
+
+procedure SetButtonStyle(const FButton: TAdvSmoothToggleButton);
+begin
+  FButton.SetComponentStyle(tsTerminal);
+  FButton.BevelColor := clBlack{clSilver};
+  FButton.BevelWidth := 1;
+  FButton.Appearance.Font.Style := [fsBold];
+  FButton.Appearance.Font.Name := cn_FontType;
+//  FButton.DisabledColor := clGray;
   FButton.Color := TColor($00E7DCD5);
 end;
 
