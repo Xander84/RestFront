@@ -14,7 +14,7 @@ uses
   FrontLog_Unit, Grids, Menus, AddUserForm_unit, AdminForm_Unit,
   Buttons, RestTable_Unit, dxfDesigner, GestureMgr, AdvObj, AdvMenus, AdvMenuStylers,
   AdvSmoothToggleButton, pngimage, Generics.Collections, rfTableManager_unit,
-  rfUser_unit, AppEvnts, jpeg;
+  rfUser_unit, AppEvnts, jpeg, AdvOfficeStatusBar, DBSumLst;
 
 const
   btnHeight = 65;
@@ -63,10 +63,12 @@ type
     rsHallsPage,               // окно просмотра залов
     rsHallEdit);               // редактирование зала
 
+  TCrackDBSumListProducer = class(TDBSumListProducer);
+
   TRestMainForm = class(TBaseFrontForm)
     pnlMain: TPanel;
     pcMain: TAdvPageControl;
-    sbMain: TStatusBar;
+    sbMain: TAdvOfficeStatusBar;
     tsPassWord: TAdvTabSheet;
     tsMain: TAdvTabSheet;
     pnlRight: TAdvPanel;
@@ -2118,6 +2120,8 @@ begin
 
       rsManagerInfo:
         begin
+          FLineInfoTable.MasterSource := nil;
+          TCrackDBSumListProducer(DBGrInfoLine.SumList).ResetMasterInfo;
           dsHeaderInfo.DataSet := nil;
           dsLineInfo.DataSet := nil;
           FHeaderInfoTable.Close;
@@ -2213,6 +2217,8 @@ begin
 
       rsManagerInfo:
         begin
+          FLineInfoTable.MasterSource := nil;
+          TCrackDBSumListProducer(DBGrInfoLine.SumList).ResetMasterInfo;
           dsHeaderInfo.DataSet := nil;
           dsLineInfo.DataSet := nil;
           FHeaderInfoTable.Close;
@@ -3624,6 +3630,8 @@ end;
 
 procedure TRestMainForm.btnAllChecClick(Sender: TObject);
 begin
+  FLineInfoTable.MasterSource := nil;
+  TCrackDBSumListProducer(DBGrInfoLine.SumList).ResetMasterInfo;
   dsHeaderInfo.DataSet := nil;
   dsLineInfo.DataSet := nil;
   try
@@ -3640,6 +3648,8 @@ end;
 
 procedure TRestMainForm.btnWithPrecheckClick(Sender: TObject);
 begin
+  FLineInfoTable.MasterSource := nil;
+  TCrackDBSumListProducer(DBGrInfoLine.SumList).ResetMasterInfo;
   dsHeaderInfo.DataSet := nil;
   dsLineInfo.DataSet := nil;
   try
@@ -3651,6 +3661,8 @@ end;
 
 procedure TRestMainForm.btnWithoutPrecheckClick(Sender: TObject);
 begin
+  FLineInfoTable.MasterSource := nil;
+  TCrackDBSumListProducer(DBGrInfoLine.SumList).ResetMasterInfo;
   dsHeaderInfo.DataSet := nil;
   dsLineInfo.DataSet := nil;
   try
@@ -3676,6 +3688,8 @@ end;
 
 procedure TRestMainForm.btnPayedClick(Sender: TObject);
 begin
+  FLineInfoTable.MasterSource := nil;
+  TCrackDBSumListProducer(DBGrInfoLine.SumList).ResetMasterInfo;
   dsHeaderInfo.DataSet := nil;
   dsLineInfo.DataSet := nil;
   try
@@ -3687,6 +3701,8 @@ end;
 
 procedure TRestMainForm.btnNotPayedClick(Sender: TObject);
 begin
+  FLineInfoTable.MasterSource := nil;
+  TCrackDBSumListProducer(DBGrInfoLine.SumList).ResetMasterInfo;
   dsHeaderInfo.DataSet := nil;
   dsLineInfo.DataSet := nil;
   try
@@ -3714,6 +3730,8 @@ begin
 end;
 
 procedure TRestMainForm.AfterLoadManagerInfo;
+var
+  FDataSet: TDataSet;
 begin
   dsHeaderInfo.DataSet := FHeaderInfoTable;
   dsLineInfo.DataSet := FLineInfoTable;
@@ -3723,6 +3741,9 @@ begin
   FHeaderInfoTable.First;
   if DBGrInfoHeader.CanFocus then
     DBGrInfoHeader.SetFocus;
+  FDataSet := DBGrInfoLine.SumList.DataSet;
+  DBGrInfoLine.SumList.DataSet := nil;
+  DBGrInfoLine.SumList.DataSet := FDataSet;
 end;
 
 procedure TRestMainForm.AppMessage(var Msg: TMsg; var Handled: Boolean);
@@ -4473,7 +4494,7 @@ begin
           S := S + ', дата печати: ' + FLineTable.FieldByName('usr$mn_printdate').AsString;
       end;
   end;
-//  S := S + ' рабочий день: ' + DateToStr(FFrontBase.GetLogicDate);
+  S := S + ' рабочий день: ' + DateToStr(FFrontBase.GetLogicDate);
   sbMain.SimpleText := S;
   sbMain.Font.Style := [fsBold];
 end;

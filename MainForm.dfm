@@ -32,7 +32,7 @@ object RestMainForm: TRestMainForm
       Top = 0
       Width = 934
       Height = 721
-      ActivePage = tsMain
+      ActivePage = tsManagerInfo
       ActiveFont.Charset = DEFAULT_CHARSET
       ActiveFont.Color = clWindowText
       ActiveFont.Height = -11
@@ -1645,7 +1645,7 @@ object RestMainForm: TRestMainForm
             Top = 0
             Width = 609
             Height = 701
-            ActivePage = tsTablePage
+            ActivePage = tsOrderInfo
             ActiveFont.Charset = DEFAULT_CHARSET
             ActiveFont.Color = clWindowText
             ActiveFont.Height = -11
@@ -2642,14 +2642,17 @@ object RestMainForm: TRestMainForm
               Height = 293
               Align = alClient
               Flat = False
-              FooterColor = clWindow
+              FooterColor = clInfoBk
               FooterFont.Charset = DEFAULT_CHARSET
               FooterFont.Color = clWindowText
               FooterFont.Height = -11
               FooterFont.Name = 'MS Sans Serif'
               FooterFont.Style = []
+              FooterRowCount = 1
               Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit]
               ReadOnly = True
+              SumList.Active = True
+              SumList.VirtualRecords = True
               TabOrder = 0
               TitleFont.Charset = DEFAULT_CHARSET
               TitleFont.Color = clWindowText
@@ -2698,12 +2701,16 @@ object RestMainForm: TRestMainForm
                 item
                   EditButtons = <>
                   FieldName = 'USR$QUANTITY'
+                  Footer.FieldName = 'USR$QUANTITY'
+                  Footer.ValueType = fvtSum
                   Footers = <>
                   Title.Caption = #1050#1086#1083'-'#1074#1086
                 end
                 item
                   EditButtons = <>
                   FieldName = 'USR$SUMNCU'
+                  Footer.FieldName = 'USR$SUMNCU'
+                  Footer.ValueType = fvtSum
                   Footers = <>
                   Title.Caption = #1057#1091#1084#1084#1072
                 end
@@ -2728,6 +2735,8 @@ object RestMainForm: TRestMainForm
                 item
                   EditButtons = <>
                   FieldName = 'USR$SUMNCUWITHDISCOUNT'
+                  Footer.FieldName = 'USR$SUMNCUWITHDISCOUNT'
+                  Footer.ValueType = fvtSum
                   Footers = <>
                   Title.Caption = #1057#1091#1084#1084#1072' '#1089#1086' '#1089#1082#1080#1076#1082#1086#1081
                 end
@@ -2760,14 +2769,17 @@ object RestMainForm: TRestMainForm
               Height = 404
               Align = alClient
               Flat = False
-              FooterColor = clWindow
+              FooterColor = clInfoBk
               FooterFont.Charset = DEFAULT_CHARSET
               FooterFont.Color = clWindowText
               FooterFont.Height = -11
               FooterFont.Name = 'MS Sans Serif'
               FooterFont.Style = []
+              FooterRowCount = 1
               Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit]
               ReadOnly = True
+              SumList.Active = True
+              SumList.VirtualRecords = True
               TabOrder = 0
               TitleFont.Charset = DEFAULT_CHARSET
               TitleFont.Color = clWindowText
@@ -2803,6 +2815,8 @@ object RestMainForm: TRestMainForm
                 item
                   EditButtons = <>
                   FieldName = 'USR$SUMNCUWITHDISCOUNT'
+                  Footer.FieldName = 'USR$SUMNCUWITHDISCOUNT'
+                  Footer.ValueType = fvtSum
                   Footers = <>
                   Title.Caption = #1057#1091#1084#1084#1072' '#1089#1086' '#1089#1082#1080#1076#1082#1086#1081
                 end
@@ -2815,6 +2829,8 @@ object RestMainForm: TRestMainForm
                 item
                   EditButtons = <>
                   FieldName = 'USR$GUESTCOUNT'
+                  Footer.FieldName = 'USR$GUESTCOUNT'
+                  Footer.ValueType = fvtSum
                   Footers = <>
                   Title.Caption = #1050#1086#1083#1080#1095#1077#1089#1090#1074#1086' '#1075#1086#1089#1090#1077#1081
                 end
@@ -2877,19 +2893,118 @@ object RestMainForm: TRestMainForm
         end
       end
     end
-    object sbMain: TStatusBar
+    object sbMain: TAdvOfficeStatusBar
       Left = 0
       Top = 721
       Width = 1016
       Height = 19
+      AnchorHint = False
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clBtnText
       Font.Height = -11
       Font.Name = 'Tahoma'
-      Font.Style = []
-      Panels = <>
+      Font.Style = [fsBold]
+      Panels = <
+        item
+          AppearanceStyle = psLight
+          DateFormat = 'dd.MM.yyyy'
+          Progress.BackGround = clNone
+          Progress.Indication = piPercentage
+          Progress.Min = 0
+          Progress.Max = 100
+          Progress.Position = 0
+          Progress.Level0Color = clLime
+          Progress.Level0ColorTo = 14811105
+          Progress.Level1Color = clYellow
+          Progress.Level1ColorTo = 13303807
+          Progress.Level2Color = 5483007
+          Progress.Level2ColorTo = 11064319
+          Progress.Level3Color = clRed
+          Progress.Level3ColorTo = 13290239
+          Progress.Level1Perc = 70
+          Progress.Level2Perc = 90
+          Progress.BorderColor = clBlack
+          Progress.ShowBorder = False
+          Progress.Stacked = False
+          TimeFormat = 'h:mm:ss'
+          Width = 80
+        end
+        item
+          AppearanceStyle = psLight
+          DateFormat = 'dd.MM.yyyy'
+          Progress.BackGround = clNone
+          Progress.Indication = piPercentage
+          Progress.Min = 0
+          Progress.Max = 100
+          Progress.Position = 0
+          Progress.Level0Color = clLime
+          Progress.Level0ColorTo = 14811105
+          Progress.Level1Color = clYellow
+          Progress.Level1ColorTo = 13303807
+          Progress.Level2Color = 5483007
+          Progress.Level2ColorTo = 11064319
+          Progress.Level3Color = clRed
+          Progress.Level3ColorTo = 13290239
+          Progress.Level1Perc = 70
+          Progress.Level2Perc = 90
+          Progress.BorderColor = clBlack
+          Progress.ShowBorder = False
+          Progress.Stacked = False
+          TimeFormat = 'h:mm:ss'
+          Width = 100
+        end
+        item
+          AppearanceStyle = psLight
+          DateFormat = 'dd.MM.yyyy'
+          Progress.BackGround = clNone
+          Progress.Indication = piPercentage
+          Progress.Min = 0
+          Progress.Max = 100
+          Progress.Position = 0
+          Progress.Level0Color = clLime
+          Progress.Level0ColorTo = 14811105
+          Progress.Level1Color = clYellow
+          Progress.Level1ColorTo = 13303807
+          Progress.Level2Color = 5483007
+          Progress.Level2ColorTo = 11064319
+          Progress.Level3Color = clRed
+          Progress.Level3ColorTo = 13290239
+          Progress.Level1Perc = 70
+          Progress.Level2Perc = 90
+          Progress.BorderColor = clBlack
+          Progress.ShowBorder = False
+          Progress.Stacked = False
+          TimeFormat = 'h:mm:ss'
+          Width = 130
+        end
+        item
+          AppearanceStyle = psLight
+          DateFormat = 'dd.MM.yyyy'
+          Progress.BackGround = clNone
+          Progress.Indication = piPercentage
+          Progress.Min = 0
+          Progress.Max = 100
+          Progress.Position = 0
+          Progress.Level0Color = clLime
+          Progress.Level0ColorTo = 14811105
+          Progress.Level1Color = clYellow
+          Progress.Level1ColorTo = 13303807
+          Progress.Level2Color = 5483007
+          Progress.Level2ColorTo = 11064319
+          Progress.Level3Color = clRed
+          Progress.Level3ColorTo = 13290239
+          Progress.Level1Perc = 70
+          Progress.Level2Perc = 90
+          Progress.BorderColor = clBlack
+          Progress.ShowBorder = False
+          Progress.Stacked = False
+          TimeFormat = 'h:mm:ss'
+          Width = 50
+        end>
       SimplePanel = True
+      URLColor = clBlue
       UseSystemFont = False
+      Version = '1.3.0.2'
     end
     object pnlExtra: TPanel
       Left = 0
@@ -2904,7 +3019,7 @@ object RestMainForm: TRestMainForm
         Top = 1
         Width = 80
         Height = 719
-        ActivePage = tsFunctionButton
+        ActivePage = tsManagerInfoButton
         ActiveFont.Charset = DEFAULT_CHARSET
         ActiveFont.Color = clWindowText
         ActiveFont.Height = -11
@@ -3535,8 +3650,6 @@ object RestMainForm: TRestMainForm
           ImageIndex = 2
           TabColor = clBtnFace
           TabColorTo = clNone
-          ExplicitLeft = -5
-          ExplicitTop = 15
           object btnCashForm: TAdvSmoothButton
             AlignWithMargins = True
             Left = 3
@@ -3760,8 +3873,6 @@ object RestMainForm: TRestMainForm
             Action = actUnblockTable
             Align = alTop
             TabOrder = 5
-            ExplicitLeft = 1
-            ExplicitTop = 554
           end
           object btnSwapWaiter: TAdvSmoothButton
             AlignWithMargins = True
@@ -3799,7 +3910,6 @@ object RestMainForm: TRestMainForm
             ParentFont = False
             TabOrder = 6
             Version = '1.6.9.0'
-            ExplicitTop = 386
           end
           object btnSwapTable: TAdvSmoothToggleButton
             AlignWithMargins = True
