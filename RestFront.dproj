@@ -168,6 +168,9 @@
 			<DCCReference Include="rfReservForm_Unit.pas">
 				<Form>ReservForm</Form>
 			</DCCReference>
+			<DCCReference Include="forms\rfDiscountListForm_Unit.pas">
+				<Form>DiscountList</Form>
+			</DCCReference>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>

@@ -25,6 +25,7 @@ type
     btnOK: TAdvSmoothButton;
     btnDelete: TAdvSmoothButton;
     Bevel1: TBevel;
+    btnFindCard: TAdvSmoothButton;
     procedure btnChooseBonusClick(Sender: TObject);
     procedure btnDeleteClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -32,6 +33,7 @@ type
     procedure FormCreate(Sender: TObject);
     procedure btnOKClick(Sender: TObject);
     procedure usrg_lblCardCodeKeyPress(Sender: TObject; var Key: Char);
+    procedure btnFindCardClick(Sender: TObject);
   private
     FFrontBase: TFrontBase;
     FHeaderTable: TkbmMemTable;
@@ -49,13 +51,16 @@ type
     property Diskid: Integer read FDiskid write FDiskid;
   end;
 
+const
+  cn_dontManagerPermission = 'Данный пользователь не обладает правами менеджера!';
+
 var
   ChooseDiscountCard: TChooseDiscountCard;
 
 implementation
 
 uses
-  DevideForm_Unit, TouchMessageBoxForm_Unit, rfUtils_unit;
+  DevideForm_Unit, TouchMessageBoxForm_Unit, rfUtils_unit, rfDiscountListForm_Unit;
 
 {$R *.dfm}
 
@@ -105,6 +110,40 @@ begin
     usrg_lblCardCode.Text := '';
     usrg_lbBonusSum.Caption := '';
     usrg_lbBonusPay.Caption := '';
+  end;
+end;
+
+procedure TChooseDiscountCard.btnFindCardClick(Sender: TObject);
+var
+  FUserInfo: TUserInfo;
+  FForm: TDiscountList;
+  FCardCode: String;
+begin
+  FUserInfo := FFrontBase.CheckUserPasswordWithForm;
+  if FUserInfo.CheckedUserPassword then
+  begin
+    if (FUserInfo.UserInGroup and FFrontBase.Options.ManagerGroupMask) = 0 then
+    begin
+      Touch_MessageBox('Внимание', cn_dontManagerPermission, MB_OK, mtWarning);
+      exit;
+    end;
+
+    FForm := TDiscountList.Create(nil);
+    try
+      FForm.FrontBase := FFrontBase;
+      FForm.ShowModal;
+      if FForm.ModalResult = mrOk then
+      begin
+        FCardCode := FForm.CardCode;
+        if FCardCode <> '' then
+        begin
+          usrg_lblCardCode.Text := FCardCode;
+          PostMessage(usrg_lblCardCode.Handle, WM_KEYUP, Ord(#13), 0);
+        end;
+      end;
+    finally
+      FForm.Free;
+    end;
   end;
 end;
 
@@ -158,6 +197,7 @@ begin
   btnOK.Picture := FrontData.RestPictureContainer.FindPicture('tick');
   btnCancel.Picture := FrontData.RestPictureContainer.FindPicture('cross');
   btnDelete.Picture := FrontData.RestPictureContainer.FindPicture('cancel');
+  btnFindCard.Picture := FrontData.RestPictureContainer.FindPicture('group_edit');
 end;
 
 procedure TChooseDiscountCard.usrg_lblCardCodeKeyPress(Sender: TObject;

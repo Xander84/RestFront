@@ -395,6 +395,7 @@ type
     function GetDiscount(const DiscKey, GoodKey: Integer;
       DocDate: TDateTime; PersDiscount: Currency; LineTime: TTime): Currency;
     function GetDiscountList(const MemTable: TkbmMemTable): Boolean;
+    procedure GetDiscountCardList(const MemTable: TkbmMemTable);
     function GetDiscountCardInfo(const MemTable: TkbmMemTable; const CardID: Integer;
       const LDate: TDateTime; const Pass: String): Boolean;
     function CalcBonusSum(const DataSet: TDataSet; FLine: TkbmMemTable; var Bonus: Boolean; var PercDisc: Currency): Boolean;
@@ -673,7 +674,8 @@ const
     '       usr$discountkey,         ' +
     '       usr$bonussum,            ' +
     '       usr$tablekey,            ' +
-    '       usr$computername)        ' +
+    '       usr$computername,        ' +
+    '       USR$WHOPAYOFFKEY)        ' +
     '     values (                   ' +
     '       :documentkey,            ' +
     '       :usr$respkey,            ' +
@@ -687,7 +689,8 @@ const
     '       :usr$discountkey,        ' +
     '       :usr$bonussum,           ' +
     '       :usr$tablekey,           ' +
-    '       :usr$computername)       ';
+    '       :usr$computername,       ' +
+    '       :USR$WHOPAYOFFKEY)       ';
 
   OrderLineInsert =
     '  insert into usr$mn_orderline (    ' +
@@ -750,7 +753,8 @@ const
     '          USR$ISLOCKED = 0,                    ' +
     '          usr$tablekey = :usr$tablekey,        ' +
     '          usr$sysnum = :usr$sysnum,            ' +
-    '          usr$register = :usr$register         ' +
+    '          usr$register = :usr$register,        ' +
+    '          USR$WHOPAYOFFKEY = :USR$WHOPAYOFFKEY ' +
     '      where (documentkey = :documentkey)       ';
 
   UpdateOrderLine =
@@ -871,6 +875,7 @@ begin
           updOrder.ParamByName('usr$tablekey').AsInteger := HeaderTable.FieldByName('usr$tablekey').AsInteger;
           updOrder.ParamByName('usr$sysnum').AsInteger := HeaderTable.FieldByName('usr$sysnum').AsInteger;
           updOrder.ParamByName('usr$register').AsString := HeaderTable.FieldByName('usr$register').AsString;
+          updOrder.ParamByName('USR$WHOPAYOFFKEY').Value := HeaderTable.FieldByName('USR$WHOPAYOFFKEY').Value;
           updOrder.ExecQuery;
 
           updDoc.Close;
@@ -906,6 +911,7 @@ begin
             InsOrder.ParamByName('usr$computername').AsString := HeaderTable.FieldByName('USR$COMPUTERNAME').AsString
           else
             InsOrder.ParamByName('usr$computername').AsString := GetLocalComputerName;
+          InsOrder.ParamByName('USR$WHOPAYOFFKEY').Value := HeaderTable.FieldByName('USR$WHOPAYOFFKEY').Value;
           InsOrder.ExecQuery;
         end;
       end;
@@ -2610,7 +2616,8 @@ begin
           'm.usr$name, m.id, c.usr$mn_modifykey, c.usr$gd_goodkey ' +
           'FROM usr$mn_modify m ' +
           '  JOIN USR$CROSS36_416793598 c ON c.usr$mn_modifykey = m.id ' +
-          'WHERE c.usr$gd_goodkey = :goodkey ';
+          'WHERE c.usr$gd_goodkey = :goodkey ' +
+          'ORDER BY m.usr$name ';
         FReadSQL.ParamByName('goodkey').AsInteger := GoodKey;
         FReadSQL.ExecQuery;
         while not FReadSQL.Eof do
@@ -2630,7 +2637,8 @@ begin
           'LEFT JOIN usr$mn_modify m ON m.LB >= mn.LB ' +
           '  AND  m.RB <= mn.RB ' +
           'WHERE m.USR$ISGROUP <> 1 ' +
-          '  AND mn.ID = :modifygroupkey ';
+          '  AND mn.ID = :modifygroupkey ' +
+          'ORDER BY m.usr$name ';
         FReadSQL.ParamByName('modifygroupkey').AsInteger := ModifyGroupKey;
         FReadSQL.ExecQuery;
         while not FReadSQL.Eof do
@@ -3895,8 +3903,7 @@ begin
         'where documentkey = :id ';
       FReadSQL.Params[0].AsInteger := ID;
       FReadSQL.ExecQuery;
-      if FReadSQL.FieldByName('usr$pay').AsInteger = 1 then
-        Result := True;
+      Result := (FReadSQL.FieldByName('usr$pay').AsInteger = 1);
     except
       raise;
     end;
@@ -4038,6 +4045,42 @@ begin
       Result := True;
     except
       Result := False;
+      raise;
+    end;
+  finally
+    FReadSQL.Close;
+  end;
+end;
+
+procedure TFrontBase.GetDiscountCardList(const MemTable: TkbmMemTable);
+begin
+  FReadSQL.Close;
+  MemTable.Close;
+  MemTable.CreateTable;
+  MemTable.Open;
+  try
+    try
+      if not FReadSQL.Transaction.InTransaction then
+        FReadSQL.Transaction.StartTransaction;
+
+      FReadSQL.SQL.Text :=
+        ' SELECT ' +
+        '   C.USR$CODE, ' +
+        '   coalesce(c.usr$surname, '''') || '' '' || coalesce(c.usr$firstname, '''') || '' '' || coalesce(c.usr$middlename, '''') as contactname ' +
+        ' FROM ' +
+        '   USR$MN_DISCOUNTCARD C ' +
+        ' WHERE C.USR$CODE IS NOT NULL ' +
+        ' ORDER BY 2 ';
+      FReadSQL.ExecQuery;
+      while not FReadSQL.EOF do
+      begin
+        MemTable.Append;
+        MemTable.FieldByName('USR$CODE').AsString := FReadSQL.FieldByName('USR$CODE').AsString;
+        MemTable.FieldByName('NAME').AsString := FReadSQL.FieldByName('contactname').AsString;
+        MemTable.Post;
+        FReadSQL.Next;
+      end;
+    except
       raise;
     end;
   finally
@@ -4650,6 +4693,22 @@ begin
   if not FReadSQL.Transaction.InTransaction then
     FReadSQL.Transaction.StartTransaction;
   try
+    //проверить, если открытые заказы на логическую дату
+    FReadSQL.SQL.Text :=
+      ' SELECT COUNT(*) ' +
+      ' FROM USR$MN_ORDER R ' +
+      ' WHERE R.USR$PAY <> 1 ' +
+      '   AND R.USR$LOGICDATE = :LDATE ';
+    FReadSQL.Params[0].AsDate := GetLogicDate;
+    FReadSQL.ExecQuery;
+    if FReadSQL.Fields[0].AsInteger > 0 then
+    begin
+      if Touch_MessageBox('Внимание', 'Есть неоплаченные заказы. Продолжить?',
+        MB_YESNO, mtWarning) = IDNO then
+        exit;
+    end;
+    FReadSQL.Close;
+
     FReadSQL.SQL.Text :=
       'select max(op.usr$logicdate) as LDate ' +
       '  from usr$mn_options op ';

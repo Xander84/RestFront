@@ -1046,11 +1046,13 @@ begin
         TableType.Graphic := FTableManager.GetImageForType(TableType.TableTypeKey);
 
         TableType.Height := btnHeight;
-(*        {$IFNDEF DEBUG}
+(*
+{$IFNDEF DEBUG}
         if Screen.Width > 1024 then
           TableType.Width := 4 * btnNewLong + 4
         else
-        {$ENDIF}  *)
+{$ENDIF}
+*)
           TableType.Width := 2 * btnNewLong;
 
         FTableChooseLastTop := FTableChooseLastTop + btnHeight + btnFirstTop;
@@ -1480,6 +1482,8 @@ begin
 
     btnPreCheck.Action := actPreCheck;
     RestFormState := rsMenuInfo;
+
+    SaveCheck;
   end;
   FLogManager.DoSimpleEvent(ev_CreateNewOrder);
 end;
@@ -1719,6 +1723,7 @@ var
   S, ES: String;
   FGoodInfo: TLogGoodInfo;
   FChooseForm: TChooseForm;
+  FNeedDelete: Boolean;
 
 const
   cn_prnSQL = 'SELECT ID, USR$NAME FROM USR$MN_PRNGROUP';
@@ -1737,6 +1742,7 @@ begin
     exit;
   end;
 
+  FNeedDelete := False;
   GoodKey := TButton(Sender).Tag;
   S := '';
   ES := '';
@@ -1831,27 +1837,34 @@ begin
             else
               S := S + ', ' + ES;
           end;
-        end;
+        end
+        else if FForm.ModalResult = mrCancel then
+          FNeedDelete := True; // Issue 128
       finally
         FForm.Free;
       end;
     end;
-    FLineTable.Edit;
-    FLineTable.FieldByName('usr$goodkey').AsInteger := GoodKey;
-    FLineTable.FieldByName('GOODNAME').AsString := FGoodDataSet.FieldByName('NAME').AsString;
-    FLineTable.FieldByName('usr$quantity').AsInteger := 1;
-    FLineTable.FieldByName('usr$costncu').AsCurrency := FGoodDataSet.FieldByName('COST').AsCurrency;
-    FLineTable.FieldByName('MODIFYSTRING').AsString := S;
-    FLineTable.FieldByName('EXTRAMODIFY').AsString := ES;
-    FLineTable.FieldByName('USR$COMPUTERNAME').AsString := GetLocalComputerName;
-    FLineTable.Post;
+    if FNeedDelete then
+      FLineTable.Delete
+    else
+    begin
+      FLineTable.Edit;
+      FLineTable.FieldByName('usr$goodkey').AsInteger := GoodKey;
+      FLineTable.FieldByName('GOODNAME').AsString := FGoodDataSet.FieldByName('NAME').AsString;
+      FLineTable.FieldByName('usr$quantity').AsInteger := 1;
+      FLineTable.FieldByName('usr$costncu').AsCurrency := FGoodDataSet.FieldByName('COST').AsCurrency;
+      FLineTable.FieldByName('MODIFYSTRING').AsString := S;
+      FLineTable.FieldByName('EXTRAMODIFY').AsString := ES;
+      FLineTable.FieldByName('USR$COMPUTERNAME').AsString := GetLocalComputerName;
+      FLineTable.Post;
 
-    FGoodInfo.GoodID := GoodKey;
-    FGoodInfo.GoodName := FLineTable.FieldByName('GOODNAME').AsString;
-    FGoodInfo.Quantity := 1;
-    FGoodInfo.Sum := FGoodDataSet.FieldByName('COST').AsCurrency;
-    FLogManager.DoOrderGoodLog(GetCurrentUserInfo, GetCurrentOrderInfo, FGoodInfo, ev_AddGoodToOrder);
-    WritePos(FLineTable);
+      FGoodInfo.GoodID := GoodKey;
+      FGoodInfo.GoodName := FLineTable.FieldByName('GOODNAME').AsString;
+      FGoodInfo.Quantity := 1;
+      FGoodInfo.Sum := FGoodDataSet.FieldByName('COST').AsCurrency;
+      FLogManager.DoOrderGoodLog(GetCurrentUserInfo, GetCurrentOrderInfo, FGoodInfo, ev_AddGoodToOrder);
+      WritePos(FLineTable);
+    end;
   end;
   SaveAllOrder;
 end;
@@ -3307,8 +3320,8 @@ begin
         if not Assigned(FLineInfoTable) then
           FLineInfoTable := TkbmMemTable.Create(nil);
         // 2. проставить начальное значение кнопок выбора
-        xDateBegin.Date := GetServerDateTime;
-        xDateEnd.Date := GetServerDateTime;
+        xDateBegin.Date := FFrontBase.GetLogicDate;  //GetServerDateTime;
+        xDateEnd.Date := FFrontBase.GetLogicDate;  //GetServerDateTime;
         // 3. загрузить данные
         FFrontBase.GetOrdersInfo(FHeaderInfoTable, FLineInfoTable, xDateBegin.Date, xDateEnd.Date, False, False, False, False);
 
@@ -4460,7 +4473,9 @@ begin
           S := S + ', дата печати: ' + FLineTable.FieldByName('usr$mn_printdate').AsString;
       end;
   end;
+//  S := S + ' рабочий день: ' + DateToStr(FFrontBase.GetLogicDate);
   sbMain.SimpleText := S;
+  sbMain.Font.Style := [fsBold];
 end;
 
 procedure TRestMainForm.actUsersLeftExecute(Sender: TObject);

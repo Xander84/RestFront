@@ -325,10 +325,12 @@ end;
 
 procedure TModificationForm.actCancelUpdate(Sender: TObject);
 begin
-  if FModificationTable.IsEmpty then
+  //Issue 128
+  actCancel.Enabled := True;
+{  if FModificationTable.IsEmpty then
     actCancel.Enabled := True
   else
-    actCancel.Enabled := not (GoodKey <> -1);
+    actCancel.Enabled := not (GoodKey <> -1); }
 end;
 
 procedure TModificationForm.actGoodDownExecute(Sender: TObject);

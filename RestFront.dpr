@@ -55,7 +55,8 @@ uses
   frmViewOrder_unit in 'forms\frmViewOrder_unit.pas' {ViewOrder},
   frmReportList_unit in 'forms\frmReportList_unit.pas' {ReportForm},
   rfContactForm_Unit in 'Contact\rfContactForm_Unit.pas' {Contact},
-  rfReservForm_Unit in 'rfReservForm_Unit.pas' {ReservForm};
+  rfReservForm_Unit in 'rfReservForm_Unit.pas' {ReservForm},
+  rfDiscountListForm_Unit in 'forms\rfDiscountListForm_Unit.pas' {DiscountList};
 
 {$R *.res}
 

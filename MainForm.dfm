@@ -2882,8 +2882,14 @@ object RestMainForm: TRestMainForm
       Top = 721
       Width = 1016
       Height = 19
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clBtnText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
       Panels = <>
       SimplePanel = True
+      UseSystemFont = False
     end
     object pnlExtra: TPanel
       Left = 0
@@ -2898,7 +2904,7 @@ object RestMainForm: TRestMainForm
         Top = 1
         Width = 80
         Height = 719
-        ActivePage = tsOrderButton
+        ActivePage = tsFunctionButton
         ActiveFont.Charset = DEFAULT_CHARSET
         ActiveFont.Color = clWindowText
         ActiveFont.Height = -11
