@@ -29,14 +29,14 @@ implementation
 
 procedure TDiscountList.btnEditClick(Sender: TObject);
 begin
-  if not MemTable.IsEmpty then
-    FCardCode := MemTable.FieldByName('USR$CODE').AsString;
-  ModalResult := mrOk;
+  ModalResult := mrCancel;
 end;
 
 procedure TDiscountList.btnOKClick(Sender: TObject);
 begin
-  ModalResult := mrCancel;
+  if not MemTable.IsEmpty then
+    FCardCode := MemTable.FieldByName('USR$CODE').AsString;
+  ModalResult := mrOk;
 end;
 
 procedure TDiscountList.DBGrLeftDblClick(Sender: TObject);

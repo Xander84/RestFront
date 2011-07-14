@@ -232,6 +232,8 @@ type
     actReturnCheck: TAction;
     actRervTable: TAction;
     btnReservationTable: TAdvSmoothToggleButton;
+    btnChangeDocNumber: TAdvSmoothToggleButton;
+    actChangeDocNumber: TAction;
 
     // Проверка введёного пароля
     procedure actPassEnterExecute(Sender: TObject);
@@ -326,6 +328,7 @@ type
     procedure actReturnCheckUpdate(Sender: TObject);
     procedure actRervTableExecute(Sender: TObject);
     procedure actRervTableUpdate(Sender: TObject);
+    procedure actChangeDocNumberUpdate(Sender: TObject);
   private
     // Компонент обращения к БД
     // Объявлен в базовом классе форм TBaseFrontForm
@@ -566,12 +569,21 @@ begin
     begin
       FFrontBase.GetHallsInfo(FHallsTable);
       if FHallsTable.RecordCount > 0 then
-        RestFormState := rsHallsPage
+      begin
+        RestFormState := rsHallsPage;
+        actUnblockTable.Caption := 'Разблокиров. стол';
+      end
       else
+      begin
         RestFormState := rsOrderMenu;
+        actUnblockTable.Caption := 'Разблокиров. заказ';
+      end;
     end
     else
+    begin
       RestFormState := rsOrderMenu;
+      actUnblockTable.Caption := 'Разблокиров. заказ';
+    end;
     FBaseFormState := FRestFormState;
   end
   else
@@ -3085,6 +3097,8 @@ begin
           pnlRight.Visible := False;
           btnSwapTable.Visible := False;
           btnUnblockTable.Visible := True;
+          btnReservationTable.Visible := False;
+          btnChangeDocNumber.Visible := True;
           RemoveGoodButton;
           RemoveGroupButton;
           RemoveOrderButton;
@@ -3153,6 +3167,8 @@ begin
           pnlRight.Visible := True;
           btnSwapTable.Visible := True;
           btnUnblockTable.Visible := True;
+          btnReservationTable.Visible := True;
+          btnChangeDocNumber.Visible := False;
           RemoveGoodButton;
           RemoveGroupButton;
           RemoveOrderButton;
@@ -3777,6 +3793,7 @@ begin
     btnSwapTable.Down := False;
     btnUnblockTable.Down := False;
     btnReservationTable.Down := False;
+    btnChangeDocNumber.Down := False;
   end;
   RestorePanelWidth;
 end;
@@ -4379,6 +4396,8 @@ procedure TRestMainForm.OrderButtonOnClick(Sender: TObject);
 var
   MenuOrderButton: TButton;
   UserInfo: TUserInfo;
+  FOrderForm: TOrderNumber;
+  FOrderKey: Integer;
 begin
   // Если смена не открыта не даем редактировать заказ
   if not FFrontBase.CheckForSession then
@@ -4402,6 +4421,28 @@ begin
         Touch_MessageBox('Внимание', cn_dontManagerPermission, MB_OK, mtWarning);
     end;
     btnUnblockTable.Down := False;
+  end
+  else if btnChangeDocNumber.Down then
+  begin
+    FOrderForm := TOrderNumber.Create(nil);
+    try
+      FOrderForm.ShowModal;
+      if (FOrderForm.ModalResult = mrOK) and (FOrderForm.Number <> '') then
+      begin
+        FFrontBase.GetOrder(FHeaderTable, FLineTable, FModificationDataSet, MenuOrderButton.Tag);
+        FFrontBase.LockUserOrder(MenuOrderButton.Tag);
+
+        FHeaderTable.Edit;
+        FHeaderTable.FieldByName('NUMBER').AsString := FOrderForm.Number;
+        FHeaderTable.Post;
+
+        FFrontBase.CreateNewOrder(FHeaderTable, FLineTable, FModificationDataSet, FOrderKey);
+        RestFormState := rsOrderMenu;
+      end;
+    finally
+      FOrderForm.Free;
+    end;
+    btnChangeDocNumber.Down := False;
   end
   else
   begin
@@ -4905,6 +4946,13 @@ begin
   actCashForm.Enabled := (((FFrontBase.UserKey and FFrontBase.Options.KassaGroupMask) <> 0) or
     ((FFrontBase.UserKey and FFrontBase.Options.ManagerGroupMask) <> 0))
     and (not btnSwapTable.Down) and (not btnReservationTable.Down);
+end;
+
+procedure TRestMainForm.actChangeDocNumberUpdate(Sender: TObject);
+begin
+  actChangeDocNumber.Enabled := ((FFrontBase.UserKey and FFrontBase.Options.ManagerGroupMask) <> 0)
+    and (not btnSwapTable.Down);
+  btnChangeDocNumber.Enabled := actChangeDocNumber.Enabled;
 end;
 
 procedure TRestMainForm.actGoodUpUpdate(Sender: TObject);

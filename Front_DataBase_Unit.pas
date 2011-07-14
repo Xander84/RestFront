@@ -658,7 +658,8 @@ const
   DocUpdate =
     '  update gd_document          ' +
     '  set editorkey = :editorkey, ' +
-    '    editiondate = current_timestamp ' +
+    '    editiondate = current_timestamp, ' +
+    '    number = :number          ' +
     '  where id = :id              ';
 
   OrderInsert =
@@ -881,6 +882,7 @@ begin
 
           updDoc.Close;
           updDoc.ParamByName('ID').AsInteger := HeaderTable.FieldByName('ID').AsInteger;
+          updDoc.ParamByName('NUMBER').AsString := HeaderTable.FieldByName('NUMBER').AsString;
           updDoc.ParamByName('editorkey').AsInteger := FContactKey;
           updDoc.ExecQuery;
         end else

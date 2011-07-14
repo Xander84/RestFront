@@ -294,12 +294,16 @@ begin
     FMasterDataSet.AfterScroll := OldMasterAfterScroll;
   end;
   OldMasterAfterScroll := nil;
-  FMasterPropInfo := GetPropInfo(FDataSet.ClassInfo, 'MasterSource');
-  FMasterDataSet := GetMasterDataSet(FDataSet, FMasterPropInfo);
-  if Assigned(FMasterDataSet)
-    then OldMasterAfterScroll := FMasterDataSet.AfterScroll;
-  if Assigned(FMasterDataSet)
-    then FMasterDataSet.AfterScroll := MasterDataSetAfterScroll;
+  //Alexander
+  if Assigned(FDataSet) then
+  begin
+    FMasterPropInfo := GetPropInfo(FDataSet.ClassInfo, 'MasterSource');
+    FMasterDataSet := GetMasterDataSet(FDataSet, FMasterPropInfo);
+    if Assigned(FMasterDataSet)
+      then OldMasterAfterScroll := FMasterDataSet.AfterScroll;
+    if Assigned(FMasterDataSet)
+      then FMasterDataSet.AfterScroll := MasterDataSetAfterScroll;
+  end;
 end;
 
 procedure TDBSumListProducer.SetDataSetEvents;
