@@ -302,15 +302,17 @@ begin
     TotalDiscount := 0;
     while not DocLine.Eof do
     begin
-      GoodName := DocLine.FieldByName('GOODNAME').AsString;
-      Quantity := DocLine.FieldByName('usr$quantity').AsCurrency;
-      Price := DocLine.FieldByName('usr$costncu').AsCurrency;
-      Summ := DocLine.FieldByName('usr$sumncuwithdiscount').AsCurrency;
-      SumDiscount := Round(DocLine.FieldByName('usr$sumdiscount').AsCurrency + 0.0001);
-      TotalDiscount := TotalDiscount + SumDiscount;
+      if DocLine.FieldByName('USR$NOPRINT').AsInteger <> 1 then
+      begin
+        GoodName := DocLine.FieldByName('GOODNAME').AsString;
+        Quantity := DocLine.FieldByName('usr$quantity').AsCurrency;
+        Price := DocLine.FieldByName('usr$costncu').AsCurrency;
+        Summ := DocLine.FieldByName('usr$sumncuwithdiscount').AsCurrency;
+        SumDiscount := Round(DocLine.FieldByName('usr$sumdiscount').AsCurrency + 0.0001);
+        TotalDiscount := TotalDiscount + SumDiscount;
 
-      Sale(Quantity, Price, GoodName, Summ, 1, 0, '', SumDiscount);
-
+        Sale(Quantity, Price, GoodName, Summ, 1, 0, '', SumDiscount);
+      end;
       DocLine.Next;
     end;
 

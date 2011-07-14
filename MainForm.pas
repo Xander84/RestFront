@@ -867,6 +867,7 @@ begin
   FGoodDataSet.FieldDefs.Add('ISNEEDMODIFY', ftInteger, 0);
   FGoodDataSet.FieldDefs.Add('BEDIVIDE', ftInteger, 0);
   FGoodDataSet.FieldDefs.Add('PRNGROUPKEY', ftInteger, 0);
+  FGoodDataSet.FieldDefs.Add('NOPRINT', ftInteger, 0);
   FGoodDataSet.CreateTable;
   FGoodDataSet.Open;
 
@@ -1858,6 +1859,7 @@ begin
       FLineTable.FieldByName('MODIFYSTRING').AsString := S;
       FLineTable.FieldByName('EXTRAMODIFY').AsString := ES;
       FLineTable.FieldByName('USR$COMPUTERNAME').AsString := GetLocalComputerName;
+      FLineTable.FieldByName('USR$NOPRINT').AsInteger := FGoodDataSet.FieldByName('NOPRINT').AsInteger;
       FLineTable.Post;
 
       FGoodInfo.GoodID := GoodKey;

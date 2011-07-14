@@ -24,7 +24,7 @@ const
 
   cst_GoodList =
     ' SELECT g.id, g.name, mn.usr$cost, g.alias, g.USR$MODIFYGROUPKEY, g.USR$BEDIVIDE, ' +
-    '   g.USR$PRNGROUPKEY ' +
+    '   g.USR$PRNGROUPKEY, g.USR$NOPRINT ' +
     ' FROM usr$mn_menuline mn  ' +
     '   JOIN gd_good g on g.id = mn.usr$goodkey  ' +
     '   JOIN gd_goodgroup cg ON g.groupkey = cg.id  ' +
@@ -46,7 +46,7 @@ const
 
   cst_PopularGoodList =
     ' SELECT g.id, g.name, mn.usr$cost, g.alias, g.USR$MODIFYGROUPKEY, g.USR$BEDIVIDE, ' +
-    '   g.USR$PRNGROUPKEY ' +
+    '   g.USR$PRNGROUPKEY, g.USR$NOPRINT ' +
     ' FROM GD_GOOD G ' +
     ' JOIN GD_GOODGROUP GD ON GD.ID = G.GROUPKEY ' +
     ' JOIN usr$mn_menuline mn ON g.id = mn.usr$goodkey ' +
@@ -180,7 +180,7 @@ const
     '  ol.usr$doublebonus,                                      '+
     '  ol.usr$extramodify,                                      '+
     '  ol.usr$computername,                                     '+
-    '  g.name goodname                                          '+
+    '  g.name goodname, g.usr$noprint                           '+
     ' FROM gd_document doc                                      '+
     ' join usr$mn_orderline ol on ol.documentkey = doc.id       '+
     ' join gd_good g on g.id = ol.usr$goodkey                   '+
@@ -538,6 +538,7 @@ begin
   DS.FieldDefs.Add('EXTRAMODIFY', ftString, 60);
   DS.FieldDefs.Add('USR$COMPUTERNAME', ftString, 20);
   DS.FieldDefs.Add('creationdate', ftTimeStamp, 0);
+  DS.FieldDefs.Add('USR$NOPRINT', ftInteger, 0);
   DS.CreateTable;
 end;
 
@@ -1275,7 +1276,7 @@ var
 const
   cst_GoodByID =
     ' SELECT g.id, g.name, mn.usr$cost, g.alias, g.USR$MODIFYGROUPKEY, g.USR$BEDIVIDE, ' +
-    '   g.USR$PRNGROUPKEY ' +
+    '   g.USR$PRNGROUPKEY, g.USR$NOPRINT ' +
     ' FROM gd_good g ' +
     '   JOIN usr$mn_menuline mn ON mn.usr$goodkey = g.id ' +
     '   JOIN gd_goodgroup cg ON g.groupkey = cg.id ' +
@@ -1310,6 +1311,7 @@ begin
         MemTable.FieldByName('ISNEEDMODIFY').AsInteger := IsNeedModify(FSQL, FReadSQL.FieldByName('ID').AsInteger);
         MemTable.FieldByName('BEDIVIDE').AsInteger := FReadSQL.FieldByName('USR$BEDIVIDE').AsInteger;
         MemTable.FieldByName('PRNGROUPKEY').AsInteger := FReadSQL.FieldByName('USR$PRNGROUPKEY').AsInteger;
+        MemTable.FieldByName('NOPRINT').AsInteger := FReadSQL.FieldByName('USR$NOPRINT').AsInteger;
         MemTable.Post;
         FReadSQL.Next;
       end;
@@ -1393,6 +1395,7 @@ begin
         MemTable.FieldByName('ISNEEDMODIFY').AsInteger := IsNeedModify(FSQL, FReadSQL.FieldByName('ID').AsInteger);
         MemTable.FieldByName('BEDIVIDE').AsInteger := FReadSQL.FieldByName('USR$BEDIVIDE').AsInteger;
         MemTable.FieldByName('PRNGROUPKEY').AsInteger := FReadSQL.FieldByName('USR$PRNGROUPKEY').AsInteger;
+        MemTable.FieldByName('NOPRINT').AsInteger := FReadSQL.FieldByName('USR$NOPRINT').AsInteger;
         MemTable.Post;
         FReadSQL.Next;
       end;
@@ -1440,6 +1443,7 @@ begin
         MemTable.FieldByName('ISNEEDMODIFY').AsInteger := IsNeedModify(FSQL, FReadSQL.FieldByName('ID').AsInteger);
         MemTable.FieldByName('BEDIVIDE').AsInteger := FReadSQL.FieldByName('USR$BEDIVIDE').AsInteger;
         MemTable.FieldByName('PRNGROUPKEY').AsInteger := FReadSQL.FieldByName('USR$PRNGROUPKEY').AsInteger;
+        MemTable.FieldByName('NOPRINT').AsInteger := FReadSQL.FieldByName('USR$NOPRINT').AsInteger;
         MemTable.Post;
         FReadSQL.Next;
       end;
@@ -1647,6 +1651,7 @@ begin
           LineTable.FieldByName('STATEFIELD').AsInteger := 0;
           LineTable.FieldByName('EXTRAMODIFY').AsString := FReadSQL.FieldByName('usr$extramodify').AsString;
           LineTable.FieldByName('CREATIONDATE').AsDateTime := FReadSQL.FieldByName('CREATIONDATE').AsDateTime;
+          LineTable.FieldByName('USR$NOPRINT').AsInteger := FReadSQL.FieldByName('USR$NOPRINT').AsInteger;
           ES := LineTable.FieldByName('EXTRAMODIFY').AsString;
           LineTable.Post;
 

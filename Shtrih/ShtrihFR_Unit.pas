@@ -331,32 +331,35 @@ begin
       DocLine.First;
       while not DocLine.Eof do
       begin
-        GoodName := DocLine.FieldByName('GOODNAME').AsString;
-        Quantity := DocLine.FieldByName('usr$quantity').AsCurrency;
-        Price := DocLine.FieldByName('usr$costncu').AsCurrency;
-        SumDiscount := Round(DocLine.FieldByName('usr$sumdiscount').AsCurrency  + 0.0001);
-        TotalDiscount := TotalDiscount + SumDiscount;
-
-        if Quantity >= 0 then
+        if DocLine.FieldByName('USR$NOPRINT').AsInteger <> 1 then
         begin
-          Self.Quantity := Quantity;
-          Self.Price := Price;
+          GoodName := DocLine.FieldByName('GOODNAME').AsString;
+          Quantity := DocLine.FieldByName('usr$quantity').AsCurrency;
+          Price := DocLine.FieldByName('usr$costncu').AsCurrency;
+          SumDiscount := Round(DocLine.FieldByName('usr$sumdiscount').AsCurrency  + 0.0001);
+          TotalDiscount := TotalDiscount + SumDiscount;
 
-          Delete(GoodName, 40, Length(GoodName) - 40);
-          StringForPrinting := GoodName;
-          Sale;
-          if not CheckFiscalState then
-            exit;
-
-          Res := ResultCode;
-          if Res <> 0 then
+          if Quantity >= 0 then
           begin
-            ErrMessage(Res);
-            CancelCheck;
-            exit;
+            Self.Quantity := Quantity;
+            Self.Price := Price;
+
+            Delete(GoodName, 40, Length(GoodName) - 40);
+            StringForPrinting := GoodName;
+            Sale;
+            if not CheckFiscalState then
+              exit;
+
+            Res := ResultCode;
+            if Res <> 0 then
+            begin
+              ErrMessage(Res);
+              CancelCheck;
+              exit;
+            end;
+            if DocLine.FieldByName('usr$persdiscount').AsCurrency <> 0 then
+              WasDiscount := True;
           end;
-          if DocLine.FieldByName('usr$persdiscount').AsCurrency <> 0 then
-            WasDiscount := True;
         end;
         DocLine.Next;
       end;

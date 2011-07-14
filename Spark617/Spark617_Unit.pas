@@ -386,51 +386,54 @@ begin
       DocLine.First;
       while not DocLine.Eof do
       begin
-        GoodName := DocLine.FieldByName('GOODNAME').AsString;
-        QuantityStr := CurrToStr(DocLine.FieldByName('usr$quantity').AsCurrency);
-        PriceStr := CurrToStr(DocLine.FieldByName('usr$costncu').AsCurrency);
-        if Length(GoodName) > 35 then
-          Delete(GoodName, 36, Length(GoodName))
-        else
+        if DocLine.FieldByName('USR$NOPRINT').AsInteger <> 1 then
         begin
-          while Length(GoodName) < 34 do
-            GoodName := GoodName + ' ';
-          GoodName := GoodName + '.';
-        end;
-        GoodName := GoodName +  QuantityStr + 'x' + PriceStr;
-
-        Quantity := 1000;
-        Price := DocLine.FieldByName('usr$sumncu').AsCurrency;
-        SumDiscount := DocLine.FieldByName('usr$sumncu').AsCurrency -
-          DocLine.FieldByName('usr$sumncuwithdiscount').AsCurrency;
-        TotalDiscount := TotalDiscount + SumDiscount;
-
-        if Quantity >= 0 then
-        begin
-          Res := Item(Round(Quantity), Round(Price), GoodName, 0);
-          if DoLog then
-            WriteLogToFile('Добавление товара ' + GoodName + ' кол-во ' +
-              CurrToStr(Quantity) + ' цена ' + CurrToStr(Price), FFrontBase.UserName);
-          if Res <> 0 then
+          GoodName := DocLine.FieldByName('GOODNAME').AsString;
+          QuantityStr := CurrToStr(DocLine.FieldByName('usr$quantity').AsCurrency);
+          PriceStr := CurrToStr(DocLine.FieldByName('usr$costncu').AsCurrency);
+          if Length(GoodName) > 35 then
+            Delete(GoodName, 36, Length(GoodName))
+          else
           begin
-            ErrMessage(Res);
-            CancelDocument;
-            exit;
+            while Length(GoodName) < 34 do
+              GoodName := GoodName + ' ';
+            GoodName := GoodName + '.';
           end;
-        end;
+          GoodName := GoodName +  QuantityStr + 'x' + PriceStr;
 
-        if (SumDiscount > 0) then
-        begin
-          Res := AbsoluteCorrectionText(-Round(SumDiscount), '');
-          if DoLog then
-            WriteLogToFile('Корректировка суммы ' + CurrToStr(-Round(SumDiscount)), FFrontBase.UserName);
-          if Res <> 0 then
+          Quantity := 1000;
+          Price := DocLine.FieldByName('usr$sumncu').AsCurrency;
+          SumDiscount := DocLine.FieldByName('usr$sumncu').AsCurrency -
+            DocLine.FieldByName('usr$sumncuwithdiscount').AsCurrency;
+          TotalDiscount := TotalDiscount + SumDiscount;
+
+          if Quantity >= 0 then
           begin
-            ErrMessage(Res);
-            CancelDocument;
+            Res := Item(Round(Quantity), Round(Price), GoodName, 0);
             if DoLog then
-              WriteLogToFile('Отмена документа строка 411', FFrontBase.UserName);
-            exit;
+              WriteLogToFile('Добавление товара ' + GoodName + ' кол-во ' +
+                CurrToStr(Quantity) + ' цена ' + CurrToStr(Price), FFrontBase.UserName);
+            if Res <> 0 then
+            begin
+              ErrMessage(Res);
+              CancelDocument;
+              exit;
+            end;
+          end;
+
+          if (SumDiscount > 0) then
+          begin
+            Res := AbsoluteCorrectionText(-Round(SumDiscount), '');
+            if DoLog then
+              WriteLogToFile('Корректировка суммы ' + CurrToStr(-Round(SumDiscount)), FFrontBase.UserName);
+            if Res <> 0 then
+            begin
+              ErrMessage(Res);
+              CancelDocument;
+              if DoLog then
+                WriteLogToFile('Отмена документа строка 411', FFrontBase.UserName);
+              exit;
+            end;
           end;
         end;
         DocLine.Next;
