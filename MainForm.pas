@@ -4965,6 +4965,9 @@ var
           FFrontBase.SaveAndReloadOrder(FHeaderTable, FLineTable, FModificationDataSet, Order.ID);
           FFrontBase.UnLockUserOrder(Order.ID);
 
+{ TODO :
+Если мы находимся в режиме не залов,
+то надо обновить информацию }
           // Обновим пользователя в заказе на столе зала
           if Assigned(FTableManager) then
           begin

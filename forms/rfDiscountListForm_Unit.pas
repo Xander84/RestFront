@@ -52,6 +52,7 @@ begin
 
   MemTable.FieldDefs.Add('NAME', ftString, 120);
   MemTable.FieldDefs.Add('USR$CODE', ftString, 32);
+  MemTable.FieldDefs.Add('USR$PERCENT', ftString, 20);
   MemTable.CreateTable;
   MemTable.Open;
 

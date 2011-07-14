@@ -4070,10 +4070,11 @@ begin
 
       FReadSQL.SQL.Text :=
         ' SELECT ' +
-        '   C.USR$CODE, ' +
+        '   C.USR$CODE, dt.usr$percent, ' +
         '   coalesce(c.usr$surname, '''') || '' '' || coalesce(c.usr$firstname, '''') || '' '' || coalesce(c.usr$middlename, '''') as contactname ' +
         ' FROM ' +
         '   USR$MN_DISCOUNTCARD C ' +
+        '   LEFT JOIN usr$mn_discounttype dt ON c.usr$discountnamekey = dt.USR$DISCOUNTNAMEKEY ' +
         ' WHERE C.USR$CODE IS NOT NULL ' +
         ' ORDER BY 2 ';
       FReadSQL.ExecQuery;
@@ -4082,6 +4083,7 @@ begin
         MemTable.Append;
         MemTable.FieldByName('USR$CODE').AsString := FReadSQL.FieldByName('USR$CODE').AsString;
         MemTable.FieldByName('NAME').AsString := FReadSQL.FieldByName('contactname').AsString;
+        MemTable.FieldByName('USR$PERCENT').AsString := FReadSQL.FieldByName('USR$PERCENT').AsString;
         MemTable.Post;
         FReadSQL.Next;
       end;
