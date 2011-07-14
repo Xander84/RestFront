@@ -3732,8 +3732,6 @@ begin
 end;
 
 procedure TRestMainForm.AfterLoadManagerInfo;
-var
-  FDataSet: TDataSet;
 begin
   dsHeaderInfo.DataSet := FHeaderInfoTable;
   dsLineInfo.DataSet := FLineInfoTable;
@@ -3743,9 +3741,6 @@ begin
   FHeaderInfoTable.First;
   if DBGrInfoHeader.CanFocus then
     DBGrInfoHeader.SetFocus;
-  FDataSet := DBGrInfoLine.SumList.DataSet;
-  DBGrInfoLine.SumList.DataSet := nil;
-  DBGrInfoLine.SumList.DataSet := FDataSet;
 end;
 
 procedure TRestMainForm.AppMessage(var Msg: TMsg; var Handled: Boolean);
