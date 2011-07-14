@@ -2712,10 +2712,12 @@ begin
         FHeaderTable.FieldByName('usr$timecloseorder').AsDateTime := GetServerDateTime;
         FHeaderTable.Post;
         // ”кажем в заказе стола что был распечатен пречек
-        Order := FTableManager.GetOrder(FHeaderTable.FieldByName('usr$tablekey').AsInteger, FHeaderTable.FieldByName('ID').AsInteger);
-        if Assigned(Order) then
-          Order.TimeCloseOrder := FHeaderTable.FieldByName('usr$timecloseorder').AsDateTime;
-
+        if Assigned(FTableManager) then
+        begin
+          Order := FTableManager.GetOrder(FHeaderTable.FieldByName('usr$tablekey').AsInteger, FHeaderTable.FieldByName('ID').AsInteger);
+          if Assigned(Order) then
+            Order.TimeCloseOrder := FHeaderTable.FieldByName('usr$timecloseorder').AsDateTime;
+        end;
         SaveCheck;
         FPayed := True;
         actCancel.Execute;
@@ -2754,9 +2756,12 @@ begin
           FHeaderTable.Post;
 
           // ”кажем в заказе стола что пречек был отменен
-          Order := FTableManager.GetOrder(FHeaderTable.FieldByName('usr$tablekey').AsInteger, FHeaderTable.FieldByName('ID').AsInteger);
-          if Assigned(Order) then
-            Order.TimeCloseOrder := 0;
+          if Assigned(FTableManager) then
+          begin
+            Order := FTableManager.GetOrder(FHeaderTable.FieldByName('usr$tablekey').AsInteger, FHeaderTable.FieldByName('ID').AsInteger);
+            if Assigned(Order) then
+              Order.TimeCloseOrder := 0;
+          end;
         end;
         SaveCheck;
 
@@ -4464,8 +4469,8 @@ begin
     end
     else if FHallsTable.RecordCount = 1 then
     begin
-      // ќбновим информацию о заказах по списку столов
-      FTableManager.RefreshOrderData(FActiveHallKey);
+      if Assigned(FTableManager) then
+        FTableManager.RefreshOrderData(FActiveHallKey);
     end;
   finally
     LockWindowUpdate(0);
@@ -4961,13 +4966,16 @@ var
           FFrontBase.UnLockUserOrder(Order.ID);
 
           // ќбновим пользовател€ в заказе на столе зала
-          Table := FTableManager.GetTable(FHeaderTable.FieldByName('usr$tablekey').AsInteger);
-          if Assigned(Table) then
+          if Assigned(FTableManager) then
           begin
-            OrderInTable := Table.GetOrder(Order.ID);
-            if Assigned(OrderInTable) then
-              OrderInTable.ResponsibleKey := AUser.ID;
-            Table.RefreshTableCondition(FFrontBase.ContactKey);
+            Table := FTableManager.GetTable(FHeaderTable.FieldByName('usr$tablekey').AsInteger);
+            if Assigned(Table) then
+            begin
+              OrderInTable := Table.GetOrder(Order.ID);
+              if Assigned(OrderInTable) then
+                OrderInTable.ResponsibleKey := AUser.ID;
+              Table.RefreshTableCondition(FFrontBase.ContactKey);
+            end;
           end;
         end
         else
