@@ -56,7 +56,8 @@ uses
   frmReportList_unit in 'forms\frmReportList_unit.pas' {ReportForm},
   rfContactForm_Unit in 'Contact\rfContactForm_Unit.pas' {Contact},
   rfReservForm_Unit in 'rfReservForm_Unit.pas' {ReservForm},
-  rfDiscountListForm_Unit in 'forms\rfDiscountListForm_Unit.pas' {DiscountList};
+  rfDiscountListForm_Unit in 'forms\rfDiscountListForm_Unit.pas' {DiscountList},
+  rfNoCashGroupForm_Unit in 'rfNoCashGroupForm_Unit.pas' {rfNoCashGroup};
 
 {$R *.res}
 

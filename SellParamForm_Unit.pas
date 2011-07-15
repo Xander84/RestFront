@@ -130,7 +130,8 @@ var
 implementation
 
 uses
-  PayForm_Unit, TouchMessageBoxForm_Unit, Report_Unit, PersonalCardForm_Unit, rfUtils_unit;
+  PayForm_Unit, TouchMessageBoxForm_Unit, Report_Unit, PersonalCardForm_Unit,
+  rfUtils_unit, rfNoCashGroupForm_Unit;
 
 {$R *.dfm}
 
@@ -238,19 +239,21 @@ begin
   FCashNoFiscal := FFrontBase.GetCashFiscalType;
   FSaleType := ptSale;
 
-  FFrontBase.GetPaymentsCount(CardCount, NoCashCount, PercCardCount, FCreditID, FPersonalCardID);
+  FFrontBase.GetPaymentsCount(CardCount, NoCashCount, PercCardCount, FCashID, FPersonalCardID);
   btnCardPay.Enabled := (CardCount > 0);
   btnCreditlPay.Enabled := (NoCashCount > 0);
   btnPersonalCard.Enabled := (PercCardCount > 0);
 
-  if not FFrontBase.GetUserRuleForPayment(FCreditID) then
+{  if not FFrontBase.GetUserRuleForPayment(FCreditID) then
   begin
     btnCardPay.Enabled := False;
     btnCreditlPay.Enabled := False;
-  end;
+  end;      }
 
+  //есть ли права на оплату перс. картой
   if btnPersonalCard.Enabled then
     btnPersonalCard.Enabled := FFrontBase.GetUserRuleForPayment(FPersonalCardID);
+  //есть ли права на оплату наличностью.
   btnCashPay.Enabled := FFrontBase.GetUserRuleForPayment(FCashID);
 
   SetupAdvGrid(DBAdvGrMain);
@@ -642,53 +645,31 @@ end;
 
 procedure TSellParamForm.actCreditPayExecute(Sender: TObject);
 var
-  FForm: TPayForm;
+//  FForm: TPayForm;
+  FForm: TrfNoCashGroup;
 begin
   if btnCreditlPay.Down = False then
     btnCreditlPay.Down := True;
-  FForm := TPayForm.CreateWithFrontBase(nil, FFrontBase);
-  FForm.PayType := FCreditID;
-  FForm.IsPlCard := 0;
+
+  FForm := TrfNoCashGroup.Create(nil);
   try
-    if FFrontBase.GetPayKindType(FForm.PayFormDataSet,
-      FForm.PayType, FForm.IsPlCard) then
+    FForm.FrontBase := FFrontBase;
+    FForm.ShowModal;
+    if FForm.ModalResult = mrOK then
     begin
-      if FForm.PayFormDataSet.RecordCount > 0 then
+      FPersonalCardKey := -1;
+      FCurrentPayType := FForm.PayTypeKey;
+      FCurrentPayName := FForm.CurrentPayName;
+      FNoFiscal := FForm.NoFiscal;
+      FPayType := cn_paytype_noncash;
+      edMain.Text := '';
+      if dsPayLine.IsEmpty then
       begin
-        if FForm.PayFormDataSet.RecordCount = 1 then
-        begin
-          FPersonalCardKey := -1;
-          FCurrentPayType := FForm.PayFormDataSet.FieldByName('USR$PAYTYPEKEY').AsInteger;
-          FCurrentPayName := FForm.PayFormDataSet.FieldByName('USR$NAME').AsString;
-          FNoFiscal := FForm.PayFormDataSet.FieldByName('USR$NOFISCAL').AsInteger;
-          FPayType := cn_paytype_noncash;
-          edMain.Text := '';
-          if dsPayLine.IsEmpty then
-          begin
-            edMain.Text := CurrToStr(FSumToPay);
-            edMain.SelStart := Length(edMain.Text);
-          end;
-        end else
-        begin
-          FForm.ShowModal;
-          if FForm.ModalResult = mrOK then
-          begin
-            FPersonalCardKey := -1;
-            FCurrentPayType := FForm.PayFormDataSet.FieldByName('USR$PAYTYPEKEY').AsInteger;
-            FCurrentPayName := FForm.PayFormDataSet.FieldByName('USR$NAME').AsString;
-            FNoFiscal := FForm.PayFormDataSet.FieldByName('USR$NOFISCAL').AsInteger;
-            FPayType := cn_paytype_noncash;
-            edMain.Text := '';
-            if dsPayLine.IsEmpty then
-            begin
-              edMain.Text := CurrToStr(FSumToPay);
-              edMain.SelStart := Length(edMain.Text);
-            end;
-          end else
-            PrevSettings(FPayType);
-        end;
+        edMain.Text := CurrToStr(FSumToPay);
+        edMain.SelStart := Length(edMain.Text);
       end;
-    end;
+    end else
+      PrevSettings(FPayType);
   finally
     FForm.Free;
   end;

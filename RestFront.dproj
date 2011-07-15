@@ -171,6 +171,9 @@
 			<DCCReference Include="forms\rfDiscountListForm_Unit.pas">
 				<Form>DiscountList</Form>
 			</DCCReference>
+			<DCCReference Include="rfNoCashGroupForm_Unit.pas">
+				<Form>rfNoCashGroup</Form>
+			</DCCReference>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>

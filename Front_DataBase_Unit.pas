@@ -363,9 +363,10 @@ type
 
     function GetPayKindType(const MemTable: TkbmMemTable; const PayType: Integer; IsPlCard: Integer = 0): Boolean;
     procedure GetPaymentsCount(var CardCount, NoCashCount, PercCardCount: Integer;
-      const CreditID, PCID: Integer);
+      const CashID, PCID: Integer);
     function GetCashFiscalType: Integer;
     function GetUserRuleForPayment(const PayKey: Integer): Boolean;
+    procedure GetNoCashGroupList(const MemTable: TkbmMemTable);
 
     function CreateNewOrder(const HeaderTable, LineTable, ModifyTable: TkbmMemTable; out OrderKey: Integer; const RevertQuantity: Boolean = False): Boolean;
     function SaveAndReloadOrder(const HeaderTable, LineTable, ModifyTable: TkbmMemTable; OrderKey: Integer): Boolean;
@@ -2796,14 +2797,17 @@ begin
       if not FReadSQL.Transaction.InTransaction then
         FReadSQL.Transaction.StartTransaction;
 
-      S := ' SELECT USR$NAME, USR$PAYTYPEKEY, USR$NOFISCAL, ID FROM USR$MN_KINDTYPE ';
+      S := ' SELECT K.USR$NAME, K.USR$PAYTYPEKEY, K.USR$NOFISCAL, K.ID FROM USR$MN_KINDTYPE K ' +
+        ' LEFT JOIN USR$MN_PAYMENTRULES R ON R.USR$PAYTYPEKEY = K.USR$PAYTYPEKEY ';
       if IsPlCard = 1 then
       begin
-        FReadSQL.SQL.Text := S + ' WHERE USR$ISPLCARD = 1 ';
+        FReadSQL.SQL.Text := S + ' WHERE K.USR$ISPLCARD = 1 ' +
+          ' AND (R.USR$PAYTYPEKEY IS NULL OR (BIN_AND(g_b_shl(1, R.USR$GROUPKEY - 1), :FKEY) <> 0)) ';
+        FReadSQL.Params[0].AsInteger := FUserKey;
       end
       else
       begin
-        FReadSQL.SQL.Text := S + ' WHERE USR$PAYTYPEKEY = :paytype AND ((USR$ISPLCARD IS NULL) OR (USR$ISPLCARD = 0))';
+        FReadSQL.SQL.Text := S + ' WHERE K.USR$PAYTYPEKEY = :paytype AND ((K.USR$ISPLCARD IS NULL) OR (K.USR$ISPLCARD = 0))';
         FReadSQL.Params[0].AsInteger := PayType;
       end;
       FReadSQL.ExecQuery;
@@ -2828,7 +2832,7 @@ begin
 end;
 
 procedure TFrontBase.GetPaymentsCount(var CardCount, NoCashCount,
-  PercCardCount: Integer; const CreditID, PCID: Integer);
+  PercCardCount: Integer; const CashID, PCID: Integer);
 begin
   FReadSQL.Close;
 
@@ -2840,7 +2844,43 @@ begin
       if not FReadSQL.Transaction.InTransaction then
         FReadSQL.Transaction.StartTransaction;
 
+      //1. Запрос на персональные карты
       FReadSQL.SQL.Text :=
+        ' SELECT COUNT(*) AS PC_COUNT FROM USR$MN_KINDTYPE K ' +
+        ' WHERE K.USR$PAYTYPEKEY = :PCID ';
+      FReadSQL.Params[0].AsInteger := PCID;
+      FReadSQL.ExecQuery;
+      PercCardCount := FReadSQL.FieldByName('PC_COUNT').AsInteger;
+      FReadSQL.Close;
+
+      //2. Кредитные карты
+      FReadSQL.SQL.Text :=
+        ' SELECT ' +
+        '   SUM(IIF(R.USR$PAYTYPEKEY IS NULL OR (BIN_AND(g_b_shl(1, R.USR$GROUPKEY - 1), :FKEY) <> 0), 1, 0)) AS CARD_COUNT ' +
+        ' FROM USR$MN_KINDTYPE K' +
+        ' LEFT JOIN USR$MN_PAYMENTRULES R ON R.USR$PAYTYPEKEY = K.USR$PAYTYPEKEY ' +
+        ' WHERE K.USR$ISPLCARD = 1 ';
+      FReadSQL.Params[0].AsInteger := FUserKey;
+      FReadSQL.ExecQuery;
+      CardCount := FReadSQL.FieldByName('CARD_COUNT').AsInteger;
+      FReadSQL.Close;
+
+      //3. Различные формы безнала
+      FReadSQL.SQL.Text :=
+        ' SELECT ' +
+        '   SUM(IIF(R.USR$PAYTYPEKEY IS NULL OR (BIN_AND(g_b_shl(1, R.USR$GROUPKEY - 1), :FKEY) <> 0), 1, 0)) AS CREDIT_COUNT ' +
+        ' FROM USR$MN_KINDTYPE K' +
+        ' LEFT JOIN USR$MN_PAYMENTRULES R ON R.USR$PAYTYPEKEY = K.USR$PAYTYPEKEY ' +
+        ' WHERE COALESCE(K.USR$ISPLCARD, 0) = 0 AND K.USR$PAYTYPEKEY <> :PCID ' +
+        '   AND K.USR$PAYTYPEKEY <> :CASHID ';
+      FReadSQL.ParamByName('FKEY').AsInteger := FUserKey;
+      FReadSQL.ParamByName('PCID').AsInteger := PCID;
+      FReadSQL.ParamByName('CASHID').AsInteger := CashID;
+      FReadSQL.ExecQuery;
+      NoCashCount := FReadSQL.FieldByName('CREDIT_COUNT').AsInteger;
+      FReadSQL.Close;
+
+{      FReadSQL.SQL.Text :=
         'SELECT ' +
         '  SUM(IIF(/*K.usr$paytypekey = :creditID and*/ k.usr$isplcard = 1, 1, 0)) AS CARD_COUNT, ' +
         '  SUM(IIF(K.usr$paytypekey = :creditID and (COALESCE(usr$isplcard, 0) = 0), 1, 0)) AS CREDIT_COUNT, ' +
@@ -2852,7 +2892,7 @@ begin
       CardCount := FReadSQL.FieldByName('CARD_COUNT').AsInteger;
       NoCashCount := FReadSQL.FieldByName('CREDIT_COUNT').AsInteger;
       PercCardCount := FReadSQL.FieldByName('PC_COUNT').AsInteger;
-      FReadSQL.Close;
+      FReadSQL.Close;       }
     except
       raise;
     end;
@@ -5216,6 +5256,52 @@ begin
   except
     on E: Exception do
       Touch_MessageBox('Внимание', 'Ошибка ' + E.Message, MB_OK, mtError);
+  end;
+end;
+
+procedure TFrontBase.GetNoCashGroupList(const MemTable: TkbmMemTable);
+{ TODO : Сделать общие константы }
+const
+  mn_CashXID = 147142772;
+  mn_CashlDBID = 354772515;
+  mn_personalcardXID = 147733995;
+  mn_personalcardDBID = 1604829035;
+begin
+  FReadSQL.Close;
+  MemTable.Close;
+  MemTable.CreateTable;
+  MemTable.Open;
+  try
+    try
+      if not FReadSQL.Transaction.InTransaction then
+        FReadSQL.Transaction.StartTransaction;
+
+      FReadSQL.SQL.Text :=
+        ' SELECT DISTINCT P.ID, P.USR$NAME ' +
+        ' FROM USR$MN_KINDTYPE K' +
+        ' LEFT JOIN USR$MN_PAYMENTRULES R ON R.USR$PAYTYPEKEY = K.USR$PAYTYPEKEY ' +
+        ' LEFT JOIN USR$INV_PAYTYPE P ON K.USR$PAYTYPEKEY = P.ID ' +
+        ' WHERE COALESCE(K.USR$ISPLCARD, 0) = 0 AND K.USR$PAYTYPEKEY <> :PCID ' +
+        '   AND K.USR$PAYTYPEKEY <> :CASHID ' +
+        '   AND (R.USR$PAYTYPEKEY IS NULL OR (BIN_AND(g_b_shl(1, R.USR$GROUPKEY - 1), :FKEY) <> 0)) ';
+      FReadSQL.ParamByName('FKEY').AsInteger := FUserKey;
+      FReadSQL.ParamByName('PCID').AsInteger := GetIDByRUID(mn_personalcardXID, mn_personalcardDBID);
+      FReadSQL.ParamByName('CASHID').AsInteger := GetIDByRUID(mn_CashXID, mn_CashlDBID);
+      FReadSQL.ExecQuery;
+      while not FReadSQL.Eof do
+      begin
+        MemTable.Append;
+        MemTable.FieldByName('ID').AsInteger := FReadSQL.FieldByName('ID').AsInteger;
+        MemTable.FieldByName('NAME').AsString := FReadSQL.FieldByName('USR$NAME').AsString;
+        MemTable.Post;
+
+        FReadSQL.Next;
+      end;
+    except
+      raise;
+    end;
+  finally
+    FReadSQL.Close;
   end;
 end;
 
