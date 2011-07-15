@@ -329,6 +329,8 @@ type
     procedure actRervTableExecute(Sender: TObject);
     procedure actRervTableUpdate(Sender: TObject);
     procedure actChangeDocNumberUpdate(Sender: TObject);
+    procedure actKeyBoardUpdate(Sender: TObject);
+    procedure FormActivate(Sender: TObject);
   private
     // Компонент обращения к БД
     // Объявлен в базовом классе форм TBaseFrontForm
@@ -441,6 +443,8 @@ type
     FbtnScrollUpWidth: Integer;
     FminMenuButtonCount: Integer;
 
+    FReadyToShow: Boolean;
+
     procedure RestorePanelWidth;
 
     // Создание первичных наборов данных
@@ -528,7 +532,9 @@ type
     /// !!!!
     procedure OnAfterDelete(DataSet: TDataSet);
 
-    procedure AppMessage(var Msg: TMsg; var Handled: Boolean);    
+    procedure AppMessage(var Msg: TMsg; var Handled: Boolean);
+    procedure WMPosChange(var Message: TWMWINDOWPOSCHANGING);
+       message WM_WINDOWPOSCHANGING;
   public
     procedure AfterConstruction; override;
   end;
@@ -594,6 +600,16 @@ begin
     edPassword.Text := '';
     FLogManager.DoSimpleEvent(ev_invalidPass);
   end;
+end;
+
+procedure TRestMainForm.FormActivate(Sender: TObject);
+begin
+  inherited;
+{$IFDEF DEBUG}
+  FReadyToShow := False;
+{$ELSE}
+  FReadyToShow := True;
+{$ENDIF}
 end;
 
 procedure TRestMainForm.FormCreate(Sender: TObject);
@@ -756,6 +772,7 @@ begin
 
   FFormEvent := TApplicationEvents.Create(Self);
   FFormEvent.OnMessage := AppMessage;
+  FReadyToShow := False;
 end;
 
 procedure TRestMainForm.FormDestroy(Sender: TObject);
@@ -1017,10 +1034,8 @@ begin
   end
   else
   begin
+    //при выборе меню также выберется группа с товарами
     FButton := pnlGood.FindComponent(Format(btnMenuName, [1]));
-    if Assigned(FButton) then
-      TAdvSmoothButton(FButton).Click;
-    FButton := pnlGood.FindComponent(Format(btnGroupName, [1]));
     if Assigned(FButton) then
       TAdvSmoothButton(FButton).Click;
   end;
@@ -2654,6 +2669,11 @@ begin
   WinExec('osk.exe', 1);
 end;
 
+procedure TRestMainForm.actKeyBoardUpdate(Sender: TObject);
+begin
+  actKeyBoard.Enabled := False;
+end;
+
 procedure TRestMainForm.actCutCheckExecute(Sender: TObject);
 var
   FUserInfo: TUserInfo;
@@ -3913,6 +3933,18 @@ begin
   end;
 end;
 
+procedure TRestMainForm.WMPosChange(var Message: TWMWINDOWPOSCHANGING);
+begin
+  inherited;
+  if FReadyToShow then
+  begin
+    PWindowPos(TMessage(Message).lParam).Flags :=
+       PWindowPos(TMessage(Message).lParam).Flags or
+       SWP_NOMOVE or
+       SWP_NOSIZE;
+  end;
+end;
+
 procedure TRestMainForm.WritePos(DataSet: TDataSet);
 begin
   FFrontBase.Display.WritePos(DataSet.FieldByName('GOODNAME').AsString, DataSet.FieldByName('usr$quantity').AsCurrency,
@@ -4157,10 +4189,10 @@ end;
 
 procedure TRestMainForm.btnToggleInternalKeyboardClick(Sender: TObject);
 begin
-  if mainTouchKeyBoard.Visible then
+{  if mainTouchKeyBoard.Visible then
     mainTouchKeyBoard.Hide
   else
-    mainTouchKeyBoard.Show;
+    mainTouchKeyBoard.Show;  }
 end;
 
 procedure TRestMainForm.SplitButtonOnClick(Sender: TObject);

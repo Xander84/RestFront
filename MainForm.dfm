@@ -14,6 +14,7 @@ object RestMainForm: TRestMainForm
   KeyPreview = True
   OldCreateOrder = False
   Position = poDesktopCenter
+  OnActivate = FormActivate
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnKeyDown = FormKeyDown
@@ -32,7 +33,7 @@ object RestMainForm: TRestMainForm
       Top = 0
       Width = 934
       Height = 721
-      ActivePage = tsMain
+      ActivePage = tsPassWord
       ActiveFont.Charset = DEFAULT_CHARSET
       ActiveFont.Color = clWindowText
       ActiveFont.Height = -11
@@ -3019,7 +3020,7 @@ object RestMainForm: TRestMainForm
         Top = 1
         Width = 80
         Height = 719
-        ActivePage = tsOrderButton
+        ActivePage = tsMainButton
         ActiveFont.Charset = DEFAULT_CHARSET
         ActiveFont.Color = clWindowText
         ActiveFont.Height = -11
@@ -3873,7 +3874,6 @@ object RestMainForm: TRestMainForm
             Action = actUnblockTable
             Align = alTop
             TabOrder = 5
-            ExplicitTop = 498
           end
           object btnSwapWaiter: TAdvSmoothButton
             AlignWithMargins = True
@@ -4723,6 +4723,7 @@ object RestMainForm: TRestMainForm
       Category = 'menu'
       Caption = #1050#1083#1072#1074#1080#1072#1090#1091#1088#1072
       OnExecute = actKeyBoardExecute
+      OnUpdate = actKeyBoardUpdate
     end
     object actCutCheck: TAction
       Category = 'menu'
