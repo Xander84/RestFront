@@ -43,8 +43,8 @@ type
 // настройки для гридов
 const
   cn_FontSize = 16;
-  cn_EvenRowColor = TColor($00ECFFFF);//clInfoBk;
-  cn_OddRowColor = TColor($00F8E6D6);//clGradientActiveCaption;
+//  cn_EvenRowColor = TColor($00ECFFFF);//clInfoBk;
+//  cn_OddRowColor = TColor($00F8E6D6);//clGradientActiveCaption;
   cn_FontType = 'Tahoma';
   DATA_DIR = '..\data';
   APP_DATA_FILENAME = 'data.ini';
@@ -58,6 +58,10 @@ const
   GRID_FONT_SECTION_NAME = 'GRID_FONT';
   GRID_HEADER_FONT_SIZE = 'HEADER_FONT_SIZE';
   GRID_FONT_SIZE = 'FONT_SIZE';
+  GRID_EVEN_ROW_COLOR = 'GRID_EVEN_ROW_COLOR';
+  GRID_ODD_ROW_COLOR = 'GRID_ODD_ROW_COLOR';
+  GRID_PRINT_COLOR = 'GRID_PRINT_COLOR';
+  GRID_NO_PRINT_COLOR = 'GRID_NO_PRINT_COLOR';
   BTN_FONT_SECTION_NAME = 'BUTTON_FONT';
   BTN_SMALL_FONT_SIZE = 'BUTTON_SMALL_FONT_SIZE';
   BTN_FONT_SIZE = 'BTN_FONT_SIZE';
@@ -81,6 +85,10 @@ var
   cn_LodDataBasePath: String;
   cn_KeyBoardEnabled: Boolean;
   AppHandle: THandle;
+  cn_EvenRowColor: Integer;
+  cn_OddRowColor: Integer;
+  cn_GridPrintColor: Integer;
+  cn_GridNoPrintColor: Integer;
 
 implementation
 
@@ -333,6 +341,47 @@ begin
       end;
     end else
       FunctionFile.WriteInteger(GRID_FONT_SECTION_NAME, GRID_FONT_SIZE, 10);
+
+    if FunctionFile.ValueExists(GRID_FONT_SECTION_NAME, GRID_EVEN_ROW_COLOR) then
+    begin
+      try
+        cn_EvenRowColor := FunctionFile.ReadInteger(GRID_FONT_SECTION_NAME, GRID_EVEN_ROW_COLOR, TColor($00ECFFFF));
+      except
+        cn_EvenRowColor := TColor($00ECFFFF);
+      end;
+    end else
+      FunctionFile.WriteInteger(GRID_FONT_SECTION_NAME, GRID_EVEN_ROW_COLOR, TColor($00ECFFFF));
+
+    if FunctionFile.ValueExists(GRID_FONT_SECTION_NAME, GRID_ODD_ROW_COLOR) then
+    begin
+      try
+        cn_OddRowColor := FunctionFile.ReadInteger(GRID_FONT_SECTION_NAME, GRID_ODD_ROW_COLOR, TColor($00F8E6D6));
+      except
+        cn_OddRowColor := TColor($00F8E6D6);
+      end;
+    end else
+      FunctionFile.WriteInteger(GRID_FONT_SECTION_NAME, GRID_ODD_ROW_COLOR, TColor($00F8E6D6));
+
+    if FunctionFile.ValueExists(GRID_FONT_SECTION_NAME, GRID_PRINT_COLOR) then
+    begin
+      try
+        cn_GridPrintColor := FunctionFile.ReadInteger(GRID_FONT_SECTION_NAME, GRID_PRINT_COLOR, clBlue);
+      except
+        cn_GridPrintColor := clBlue;
+      end;
+    end else
+      FunctionFile.WriteInteger(GRID_FONT_SECTION_NAME, GRID_PRINT_COLOR, clBlue);
+
+    if FunctionFile.ValueExists(GRID_FONT_SECTION_NAME, GRID_NO_PRINT_COLOR) then
+    begin
+      try
+        cn_GridNoPrintColor := FunctionFile.ReadInteger(GRID_FONT_SECTION_NAME, GRID_NO_PRINT_COLOR, clGreen);
+      except
+        cn_GridNoPrintColor := clGreen;
+      end;
+    end else
+      FunctionFile.WriteInteger(GRID_FONT_SECTION_NAME, GRID_NO_PRINT_COLOR, clGreen);
+
 
     if FunctionFile.ValueExists(BTN_FONT_SECTION_NAME, BTN_SMALL_FONT_SIZE) then
     begin

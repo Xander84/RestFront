@@ -1,0 +1,59 @@
+1. DEFAULT_STYLE_IDENT - стиль фронта, тип строковый, принимает значения:
+    -tsOffice2003Blue
+    -tsOffice2003Silver
+    -tsOffice2003Olive
+    -tsOffice2003Classic
+    -tsOffice2007Luna
+    -tsOffice2007Obsidian
+    -tsWindowsVista
+    -tsWindows7
+    -tsTerminal
+    -tsTerminal
+ значение по умолчаниию - tsOffice2003Blue;
+
+2. RESOLUTION - устарело, отключено
+
+3. SHUTDOWN_ON_EXIT - выключение по завершении работы, тип булевый (можно заносить
+  true, false, 0, 1), значение по умолчанию False (0)
+
+4. SYS_KEYBOARD_ENABLED - доступ к клавиатуре на начальной форме, тип булевый, значение
+  по умолчанию True (1)
+
+5. HEADER_FONT_SIZE - размер шрифта для заголовка грида, значение 10.
+
+6. FONT_SIZE - размер шрифта для позиций грида, значение 10.
+
+7. GRID_EVEN_ROW_COLOR (GRID_ODD_ROW_COLOR) - чередующиеся цвета грида, значение типа integer
+
+8. GRID_PRINT_COLOR - цвет шрифта для распечатанных позиций, значение integer.
+
+9. GRID_NO_PRINT_COLOR - цвет шрифта не распечатанных позиций, значение integer.
+
+10. BUTTON_SMALL_FONT_SIZE - не работает.
+
+11. BTN_FONT_SIZE - не работает.
+
+12. LOG_DB_PATH - путь для базы логирования.
+
+
+Основные значения цветов:
+clBlack - 0
+clMaroon - 128
+clGreen - 32768 
+clOlive - 32896
+clNavy - 8388608
+clPurple - 8388736
+clTeal - 8421376
+clGray - 8421504
+clSilver - 12632256
+clRed - 255
+clLime - 65280
+clYellow - 65535
+clBlue - 16711680
+clFuchsia - 16711935
+clAqua - 16776960
+clLtGray - 12632256
+clDkGray - 8421504
+clWhite - 16777215
+
+

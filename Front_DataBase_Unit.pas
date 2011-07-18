@@ -5243,7 +5243,8 @@ begin
         ' LEFT JOIN USR$INV_PAYTYPE P ON K.USR$PAYTYPEKEY = P.ID ' +
         ' WHERE COALESCE(K.USR$ISPLCARD, 0) = 0 AND K.USR$PAYTYPEKEY <> :PCID ' +
         '   AND K.USR$PAYTYPEKEY <> :CASHID ' +
-        '   AND (R.USR$PAYTYPEKEY IS NULL OR (BIN_AND(g_b_shl(1, R.USR$GROUPKEY - 1), :FKEY) <> 0)) ';
+        '   AND (R.USR$PAYTYPEKEY IS NULL OR (BIN_AND(g_b_shl(1, R.USR$GROUPKEY - 1), :FKEY) <> 0)) ' +
+        ' ORDER BY 2 ';
       FReadSQL.ParamByName('FKEY').AsInteger := FUserKey;
       FReadSQL.ParamByName('PCID').AsInteger := GetIDByRUID(mn_personalcardXID, mn_personalcardDBID);
       FReadSQL.ParamByName('CASHID').AsInteger := GetIDByRUID(mn_CashXID, mn_CashlDBID);

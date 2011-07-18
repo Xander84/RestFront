@@ -4076,12 +4076,12 @@ begin
   end;
   if FLineTable.FieldByName('usr$mn_printdate').AsString = '' then
   begin
-    Params.Font.Color := clGreen;
+    Params.Font.Color := cn_GridNoPrintColor;
     Params.Font.Style := [fsBold];
   end
   else
   begin
-    Params.Font.Color := clBlue;
+    Params.Font.Color := cn_GridPrintColor;
     Params.Font.Style := [fsBold];
   end;
 end;
@@ -4110,12 +4110,12 @@ procedure TRestMainForm.DBGrMainColumns1GetCellParams(Sender: TObject; EditMode:
 begin
   if FLineTable.FieldByName('usr$mn_printdate').AsString = '' then
   begin
-    Params.Font.Color := clGreen;
+    Params.Font.Color := cn_GridNoPrintColor;
     Params.Font.Style := [fsBold];
   end
   else
   begin
-    Params.Font.Color := clBlue;
+    Params.Font.Color := cn_GridPrintColor;
     Params.Font.Style := [fsBold];
   end;
 end;
@@ -4128,12 +4128,12 @@ begin
 
   if FLineTable.FieldByName('usr$mn_printdate').AsString = '' then
   begin
-    Params.Font.Color := clGreen;
+    Params.Font.Color := cn_GridNoPrintColor;
     Params.Font.Style := [fsBold];
   end
   else
   begin
-    Params.Font.Color := clBlue;
+    Params.Font.Color := cn_GridPrintColor;
     Params.Font.Style := [fsBold];
   end;
 end;
@@ -4142,12 +4142,12 @@ procedure TRestMainForm.DBGrMainColumns3GetCellParams(Sender: TObject; EditMode:
 begin
   if FLineTable.FieldByName('usr$mn_printdate').AsString = '' then
   begin
-    Params.Font.Color := clGreen;
+    Params.Font.Color := cn_GridNoPrintColor;
     Params.Font.Style := [fsBold];
   end
   else
   begin
-    Params.Font.Color := clBlue;
+    Params.Font.Color := cn_GridPrintColor;
     Params.Font.Style := [fsBold];
   end;
 end;
