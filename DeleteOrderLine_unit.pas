@@ -135,8 +135,8 @@ end;
 procedure TDeleteOrderLine.TouchKeyBoardKeyClick(Sender: TObject;
   Index: Integer);
 var
-  I: Integer;
-  S: String;
+{  I: Integer;
+  S: String;  }
   IncrementedQuantity: Currency;
 begin
   try

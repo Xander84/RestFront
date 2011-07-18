@@ -6,7 +6,8 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, BaseFrontForm_Unit, FrontData_Unit, StdCtrls, ExtCtrls, AdvPanel,
   Front_DataBase_Unit, kbmMemTable, DB, DBCtrls, AdvSmoothButton, Mask, ActnList,
-  Grids, AdvObj, BaseGrid, AdvGrid, DBAdvGrid, AdvSmoothTouchKeyBoard;
+  Grids, AdvObj, BaseGrid, AdvGrid, DBAdvGrid, AdvSmoothTouchKeyBoard,
+  Generics.Collections;
 
 type
   TAddUserForm = class(TBaseFrontForm)
@@ -44,9 +45,11 @@ type
     procedure actAddUserUpdate(Sender: TObject);
     procedure dbePASSWKeyPress(Sender: TObject; var Key: Char);
     procedure edConfirmPassKeyPress(Sender: TObject; var Key: Char);
+    procedure FormDestroy(Sender: TObject);
   private
     FInsertMode: Boolean;
     FUserKey: Integer;
+    FGroupList: TList<Integer>;
   public
     property InsertMode: Boolean read FInsertMode write FInsertMode;
     property UserKey: Integer read FUserKey write FUserKey;
@@ -89,7 +92,7 @@ begin
   end else
   if FInsertMode then
   begin
-    if FFrontBase.UpdateUser(MainTable, UserGroupTable, FUserKey) then
+    if FFrontBase.UpdateUser(MainTable, UserGroupTable, FUserKey, FGroupList) then
       ModalResult := mrOk;
   end;
 end;
@@ -136,7 +139,15 @@ begin
 
   cbDisabled.Checked := False;
 
+  FGroupList := TList<Integer>.Create;
+
   SetupAdvGrid(dbrgMain);
+end;
+
+procedure TAddUserForm.FormDestroy(Sender: TObject);
+begin
+  FGroupList.Free;
+  inherited;
 end;
 
 procedure TAddUserForm.FormShow(Sender: TObject);
@@ -147,8 +158,9 @@ begin
   UserGroupTable.First;
   if FInsertMode then
   begin
-    FFrontBase.GetEditUserInfo(MainTable, UserGroupTable, FUserKey);
+    FFrontBase.GetEditUserInfo(MainTable, UserGroupTable, FUserKey, FGroupList);
     edConfirmPass.Text := MainTable.FieldByName('PASSW').AsString;
+    UserGroupTable.First;
   end;
 end;
 

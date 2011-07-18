@@ -406,8 +406,10 @@ type
     function GetDepartmentList(const MemTable: TkbmMemTable): Boolean;
     function GetUserGroupList(const MemTable: TkbmMemTable): Boolean;
     function AddUser(const EmplTable, GroupListTable: TkbmMemTable): Boolean;
-    function UpdateUser(const EmplTable, GroupListTable: TkbmMemTable; UserKey: Integer): Boolean;
-    procedure GetEditUserInfo(const EmplTable, GroupListTable: TkbmMemTable; UserKey: Integer);
+    function UpdateUser(const EmplTable, GroupListTable: TkbmMemTable; UserKey: Integer;
+      const FGroupList: TList<Integer>): Boolean;
+    procedure GetEditUserInfo(const EmplTable, GroupListTable: TkbmMemTable; UserKey: Integer;
+      const FGroupList: TList<Integer>);
     //работа с оборудованием
     procedure InitDisplay;
     function GetPrinterName: String;
@@ -2719,7 +2721,7 @@ begin
 end;
 
 procedure TFrontBase.GetEditUserInfo(const EmplTable,
-  GroupListTable: TkbmMemTable; UserKey: Integer);
+  GroupListTable: TkbmMemTable; UserKey: Integer; const FGroupList: TList<Integer>);
 var
   InGroup: Integer;
 begin
@@ -2769,7 +2771,9 @@ begin
           GroupListTable.Edit;
           GroupListTable.FieldByName('CHECKED').AsInteger := 1;
           GroupListTable.Post;
-        end;
+        end
+        else
+          FGroupList.Add(FReadSQL.FieldByName('ID').AsInteger);
         FReadSQL.Next;
       end;
       FReadSQL.Close;
@@ -3688,11 +3692,12 @@ begin
 end;
 
 function TFrontBase.UpdateUser(const EmplTable,
-  GroupListTable: TkbmMemTable; UserKey: Integer): Boolean;
+  GroupListTable: TkbmMemTable; UserKey: Integer; const FGroupList: TList<Integer>): Boolean;
 var
   FSQL: TIBSQL;
   Tr: TIBTransaction;
   ContactID: Integer;
+  I: Integer;
 begin
 // 1. Добавляем запись в GD_CONTACT
 // 2. Добавляем запись в GD_PEOPLE
@@ -3760,6 +3765,14 @@ begin
           FSQL.Close;
         end;
         GroupListTable.Next;
+      end;
+
+      for I := 0 to FGroupList.Count - 1 do
+      begin
+        FSQL.SQL.Text := Format('UPDATE GD_USER SET INGROUP = G_B_OR(ingroup, %d) WHERE id=%d',
+          [GetGroupMask(FGroupList.Items[I]), UserKey]);
+        FSQL.ExecQuery;
+        FSQL.Close;
       end;
 
       //удаление из группы администраторов
