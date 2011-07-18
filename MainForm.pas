@@ -4035,8 +4035,7 @@ begin
   // update grid footer
   DBGrMain.SumList.RecalcAll;
 
-  if FFrontBase.GetDeleteServiceCheckOptions(OldDetailID, MasterKey, PrinterName, PrnGrid, PrinterID) then
-    FReport.PrintDeleteServiceCheck(1, PrnGrid, MasterKey, DocumentKey, PrinterName, PrinterID);
+  FReport.DeleteServiceCheckOptions(OldDetailID, MasterKey, DocumentKey);
 end;
 
 { procedure TRestMainForm.OnFilterLine(DataSet: TDataSet;
@@ -4071,7 +4070,10 @@ begin
     Params.Font.Style := [fsBold];
   end
   else
-    Params.Font.Color := clGrayText;
+  begin
+    Params.Font.Color := clBlue;
+    Params.Font.Style := [fsBold];
+  end;
 end;
 
 procedure TRestMainForm.DBGrInfoHeaderAdvDrawDataCell(Sender: TCustomDBGridEh; Cell, AreaCell: TGridCoord; Column: TColumnEh;
@@ -4102,7 +4104,10 @@ begin
     Params.Font.Style := [fsBold];
   end
   else
-    Params.Font.Color := clGrayText;
+  begin
+    Params.Font.Color := clBlue;
+    Params.Font.Style := [fsBold];
+  end;
 end;
 
 procedure TRestMainForm.DBGrMainColumns2GetCellParams(Sender: TObject; EditMode: Boolean; Params: TColCellParamsEh);
@@ -4117,7 +4122,10 @@ begin
     Params.Font.Style := [fsBold];
   end
   else
-    Params.Font.Color := clGrayText;
+  begin
+    Params.Font.Color := clBlue;
+    Params.Font.Style := [fsBold];
+  end;
 end;
 
 procedure TRestMainForm.DBGrMainColumns3GetCellParams(Sender: TObject; EditMode: Boolean; Params: TColCellParamsEh);
@@ -4128,7 +4136,10 @@ begin
     Params.Font.Style := [fsBold];
   end
   else
-    Params.Font.Color := clGrayText;
+  begin
+    Params.Font.Color := clBlue;
+    Params.Font.Style := [fsBold];
+  end;
 end;
 
 procedure TRestMainForm.btnPrecheckOrdersClick(Sender: TObject);

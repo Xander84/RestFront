@@ -56,6 +56,8 @@ type
     procedure PrintRealization(const DateBegin, DateEnd: TDate);   // DONE
     function EditTemplate(const ID, TemplateType: Integer): Boolean;
     function ServiceCheckOptions(const OrderKey: Integer): Boolean;
+    function DeleteServiceCheckOptions(const DocID, MasterKey,
+      DocumentKey: Integer): Boolean;
     procedure PrintCustomReport(const DateBegin, DateEnd: TDate; const TemplateID: Integer);
 
     property FrontBase: TFrontBase read FFrontBase write FFrontBase;
@@ -821,7 +823,55 @@ begin
       Result := True;
       FSQL.Next;
     end;
+    FSQL.Close;
+  finally
+    FSQL.Free;
+  end;
+end;
 
+function TRestReport.DeleteServiceCheckOptions(const DocID, MasterKey,
+  DocumentKey: Integer): Boolean;
+var
+  FSQL: TIBSQL;
+begin
+  Result := False;
+
+  FSQL := TIBSQL.Create(nil);
+  FSQL.Transaction := FFrontBase.ReadTransaction;
+  try
+    FSQL.SQL.Text :=
+      'select ' +
+      '  DISTINCT setprn.id as prnid, ' +
+      '  IIF(setprn.usr$concatchecks = 0, prn.id, null) as prngrid, ' +
+      '  setprn.usr$printername,                                    ' +
+      '  o.documentkey, prn.usr$name, setprn.usr$PRINTERID          ' +
+      'from                                                         ' +
+      '  usr$mn_order o                                             ' +
+      '  join usr$mn_orderline l on o.documentkey = l.masterkey     ' +
+      '  join gd_document doc on doc.id = l.documentkey             ' +
+      '  join gd_good g on g.id = l.usr$goodkey                     ' +
+      '  join usr$mn_prngroup prn on prn.id = g.usr$prngroupkey     ' +
+      '  join usr$mn_prngroupset setprn on setprn.usr$prngroup = prn.id  ' +
+      'where                                                        ' +
+      ' o.documentkey = :masterkey                                  ' +
+      ' and l.documentkey = :docid                                  ' +
+      ' and setprn.usr$computername = :comp                         ' +
+      ' and setprn.usr$kassa = 0                                    ' +
+      'order by                                                     ' +
+      '  setprn.usr$printername,                                    ' +
+      '  prn.usr$name ';
+    FSQL.ParamByName('docid').AsInteger := DocID;
+    FSQL.ParamByName('masterkey').AsInteger := MasterKey;
+    FSQL.ParamByName('comp').AsString := GetLocalComputerName;
+    FSQL.ExecQuery;
+    while not FSQL.Eof do
+    begin
+      PrintDeleteServiceCheck(1, FSQL.FieldByName('prngrid').AsInteger, MasterKey, DocumentKey,
+        FSQL.FieldByName('usr$printername').AsString, FSQL.FieldByName('prnid').AsInteger);
+
+      Result := True;
+      FSQL.Next;
+    end;
     FSQL.Close;
   finally
     FSQL.Free;
