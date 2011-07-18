@@ -339,17 +339,8 @@ begin
           GoodName := DocLine.FieldByName('GOODNAME').AsString;
           QuantityStr := CurrToStr(DocLine.FieldByName('usr$quantity').AsCurrency);
           PriceStr := CurrToStr(DocLine.FieldByName('usr$costncu').AsCurrency);
-          if Length(GoodName) > 35 then
-            Delete(GoodName, 36, Length(GoodName))
-          else
-          begin
-            while Length(GoodName) < 34 do
-              GoodName := GoodName + ' ';
-            GoodName := GoodName + '.';
-          end;
-          GoodName := GoodName +  QuantityStr + 'x' + PriceStr;
 
-          GoodName := GoodName +  QuantityStr + 'x' + PriceStr;
+          GoodName := Copy(GoodName, 1, 40 - Length(' ' + QuantityStr + 'x' + PriceStr)) + ' ' +  QuantityStr + 'x' + PriceStr;
           Quantity := 1;
           Price := DocLine.FieldByName('usr$sumncu').AsCurrency;
           SumDiscount := DocLine.FieldByName('usr$sumncu').AsCurrency -
