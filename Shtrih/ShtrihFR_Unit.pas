@@ -269,9 +269,7 @@ var
   TotalDiscount: Currency;
   GoodName, DiscName: String;
   Quantity, Price, SumDiscount: Currency;
-  QuantityStr: String;
-  PriceStr: String;
-
+  QuantityStr, PriceStr: String;
 begin
   Result := False;
   Assert(Assigned(FFrontBase), 'FrontBase not Assigned');
@@ -339,26 +337,29 @@ begin
           GoodName := DocLine.FieldByName('GOODNAME').AsString;
           QuantityStr := CurrToStr(DocLine.FieldByName('usr$quantity').AsCurrency);
           PriceStr := CurrToStr(DocLine.FieldByName('usr$costncu').AsCurrency);
+          if Length(GoodName) > 35 then
+            Delete(GoodName, 36, Length(GoodName))
+          else
+          begin
+            while Length(GoodName) < 34 do
+              GoodName := GoodName + ' ';
+            GoodName := GoodName + '.';
+          end;
+          GoodName := GoodName + QuantityStr + 'x' + PriceStr;
 
-          GoodName := Copy(GoodName, 1, 40 - Length(' ' + QuantityStr + 'x' + PriceStr)) + ' ' +  QuantityStr + 'x' + PriceStr;
-          Quantity := 1;
+          Quantity := 1;//DocLine.FieldByName('usr$quantity').AsCurrency;
+          //Price := DocLine.FieldByName('usr$costncu').AsCurrency;
           Price := DocLine.FieldByName('usr$sumncu').AsCurrency;
           SumDiscount := DocLine.FieldByName('usr$sumncu').AsCurrency -
             DocLine.FieldByName('usr$sumncuwithdiscount').AsCurrency;
           TotalDiscount := TotalDiscount + SumDiscount;
-
-//          GoodName := DocLine.FieldByName('GOODNAME').AsString;
-//          Quantity := DocLine.FieldByName('usr$quantity').AsCurrency;
-//          Price := DocLine.FieldByName('usr$costncu').AsCurrency;
-//          SumDiscount := Round(DocLine.FieldByName('usr$sumdiscount').AsCurrency  + 0.0001);
-//          TotalDiscount := TotalDiscount + SumDiscount;
 
           if Quantity >= 0 then
           begin
             Self.Quantity := Quantity;
             Self.Price := Price;
 
-            Delete(GoodName, 40, Length(GoodName) - 40);
+            //Delete(GoodName, 40, Length(GoodName) - 40);
             StringForPrinting := GoodName;
             Sale;
             if not CheckFiscalState then
@@ -497,6 +498,7 @@ var
   TotalDiscount: Currency;
   GoodName, DiscName: String;
   Quantity, Price, SumDiscount: Currency;
+  QuantityStr, PriceStr: String;
 begin
   Result := False;
   Assert(Assigned(FFrontBase), 'FrontBase not Assigned');
@@ -541,9 +543,22 @@ begin
       while not DocLine.Eof do
       begin
         GoodName := DocLine.FieldByName('GOODNAME').AsString;
-        Quantity := -DocLine.FieldByName('usr$quantity').AsCurrency;
-        Price := DocLine.FieldByName('usr$costncu').AsCurrency;
-        SumDiscount := Round(-DocLine.FieldByName('usr$sumdiscount').AsCurrency  + 0.0001);
+        QuantityStr := CurrToStr(-DocLine.FieldByName('usr$quantity').AsCurrency);
+        PriceStr := CurrToStr(DocLine.FieldByName('usr$costncu').AsCurrency);
+        if Length(GoodName) > 35 then
+          Delete(GoodName, 36, Length(GoodName))
+        else
+        begin
+          while Length(GoodName) < 34 do
+            GoodName := GoodName + ' ';
+          GoodName := GoodName + '.';
+        end;
+        GoodName := GoodName + QuantityStr + 'x' + PriceStr;
+
+        Quantity := 1; //-DocLine.FieldByName('usr$quantity').AsCurrency;
+        Price := -DocLine.FieldByName('usr$sumncu').AsCurrency;
+        SumDiscount := -DocLine.FieldByName('usr$sumncu').AsCurrency +
+          DocLine.FieldByName('usr$sumncuwithdiscount').AsCurrency;
         TotalDiscount := TotalDiscount + SumDiscount;
 
         if Quantity >= 0 then
@@ -551,7 +566,7 @@ begin
           Self.Quantity := Quantity;
           Self.Price := Price;
 
-          Delete(GoodName, 40, Length(GoodName) - 40);
+          //Delete(GoodName, 40, Length(GoodName) - 40);
           StringForPrinting := GoodName;
           ReturnSale;
           if not CheckFiscalState then

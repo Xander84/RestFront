@@ -285,6 +285,8 @@ var
   TotalDiscount: Currency;
   GoodName: String;
   Quantity, Price, SumDiscount, Summ: Currency;
+  QuantityStr: String;
+  PriceStr: String;
 begin
   FIV := 0;
   Result := False;
@@ -305,10 +307,24 @@ begin
       if DocLine.FieldByName('USR$NOPRINT').AsInteger <> 1 then
       begin
         GoodName := DocLine.FieldByName('GOODNAME').AsString;
-        Quantity := DocLine.FieldByName('usr$quantity').AsCurrency;
-        Price := DocLine.FieldByName('usr$costncu').AsCurrency;
+
+        QuantityStr := CurrToStr(DocLine.FieldByName('usr$quantity').AsCurrency);
+        PriceStr := CurrToStr(DocLine.FieldByName('usr$costncu').AsCurrency);
+        if Length(GoodName) > 35 then
+          Delete(GoodName, 36, Length(GoodName))
+        else
+        begin
+          while Length(GoodName) < 34 do
+            GoodName := GoodName + ' ';
+          GoodName := GoodName + '.';
+        end;
+        GoodName := GoodName + QuantityStr + 'x' + PriceStr;
+
+        Quantity := 1; //DocLine.FieldByName('usr$quantity').AsCurrency;
+        Price := DocLine.FieldByName('usr$sumncu').AsCurrency;
         Summ := DocLine.FieldByName('usr$sumncuwithdiscount').AsCurrency;
-        SumDiscount := Round(DocLine.FieldByName('usr$sumdiscount').AsCurrency + 0.0001);
+        SumDiscount := DocLine.FieldByName('usr$sumncu').AsCurrency -
+          DocLine.FieldByName('usr$sumncuwithdiscount').AsCurrency;
         TotalDiscount := TotalDiscount + SumDiscount;
 
         Sale(Quantity, Price, GoodName, Summ, 1, 0, '', SumDiscount);
@@ -390,6 +406,8 @@ var
   TotalDiscount: Currency;
   GoodName: String;
   Quantity, Price, SumDiscount, Summ: Currency;
+  QuantityStr: String;
+  PriceStr: String;
 begin
   FIV := 0;
   Result := False;
@@ -411,10 +429,24 @@ begin
     while not DocLine.Eof do
     begin
       GoodName := DocLine.FieldByName('GOODNAME').AsString;
-      Quantity := -DocLine.FieldByName('usr$quantity').AsCurrency;
-      Price := DocLine.FieldByName('usr$costncu').AsCurrency;
+
+      QuantityStr := CurrToStr(-DocLine.FieldByName('usr$quantity').AsCurrency);
+      PriceStr := CurrToStr(DocLine.FieldByName('usr$costncu').AsCurrency);
+      if Length(GoodName) > 35 then
+        Delete(GoodName, 36, Length(GoodName))
+      else
+      begin
+        while Length(GoodName) < 34 do
+          GoodName := GoodName + ' ';
+        GoodName := GoodName + '.';
+      end;
+      GoodName := GoodName + QuantityStr + 'x' + PriceStr;
+
+      Quantity := 1; //-DocLine.FieldByName('usr$quantity').AsCurrency;
+      Price := -DocLine.FieldByName('usr$sumncu').AsCurrency;
       Summ := -DocLine.FieldByName('usr$sumncuwithdiscount').AsCurrency;
-      SumDiscount := Round(DocLine.FieldByName('usr$sumdiscount').AsCurrency + 0.0001);
+      SumDiscount := -DocLine.FieldByName('usr$sumncu').AsCurrency +
+        DocLine.FieldByName('usr$sumncuwithdiscount').AsCurrency;
       TotalDiscount := TotalDiscount + SumDiscount;
 
       Sale(Quantity, Price, GoodName, Summ, 1, 0, '', SumDiscount);

@@ -399,7 +399,7 @@ begin
               GoodName := GoodName + ' ';
             GoodName := GoodName + '.';
           end;
-          GoodName := GoodName +  QuantityStr + 'x' + PriceStr;
+          GoodName := GoodName + QuantityStr + 'x' + PriceStr;
 
           Quantity := 1000;
           Price := DocLine.FieldByName('usr$sumncu').AsCurrency;
