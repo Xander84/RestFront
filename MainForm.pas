@@ -2671,7 +2671,7 @@ end;
 
 procedure TRestMainForm.actKeyBoardUpdate(Sender: TObject);
 begin
-  actKeyBoard.Enabled := False;
+  actKeyBoard.Enabled := cn_KeyBoardEnabled;
 end;
 
 procedure TRestMainForm.actCutCheckExecute(Sender: TObject);
@@ -4189,10 +4189,13 @@ end;
 
 procedure TRestMainForm.btnToggleInternalKeyboardClick(Sender: TObject);
 begin
-{  if mainTouchKeyBoard.Visible then
-    mainTouchKeyBoard.Hide
-  else
-    mainTouchKeyBoard.Show;  }
+  if cn_KeyBoardEnabled then
+  begin
+    if mainTouchKeyBoard.Visible then
+      mainTouchKeyBoard.Hide
+    else
+      mainTouchKeyBoard.Show;
+  end;
 end;
 
 procedure TRestMainForm.SplitButtonOnClick(Sender: TObject);

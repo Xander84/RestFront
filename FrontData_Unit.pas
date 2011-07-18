@@ -54,6 +54,7 @@ const
   RES_IDENT = 'RESOLUTION';
   SYS_SECTION_NAME = 'SYSTEM_SECTION';
   SYS_SHUTDOWN_ON_EXIT = 'SHUTDOWN_ON_EXIT';
+  SYS_KEYBOARD_ENABLED = 'SYS_KEYBOARD_ENABLED';
   GRID_FONT_SECTION_NAME = 'GRID_FONT';
   GRID_HEADER_FONT_SIZE = 'HEADER_FONT_SIZE';
   GRID_FONT_SIZE = 'FONT_SIZE';
@@ -78,6 +79,7 @@ var
   cn_ButtonFontSize: Integer;
   cn_ButtonSmallFontSize: Integer;
   cn_LodDataBasePath: String;
+  cn_KeyBoardEnabled: Boolean;
   AppHandle: THandle;
 
 implementation
@@ -170,6 +172,7 @@ begin
   cn_Width := Screen.Width;
   cn_MainPercent := 100;
   cn_ShutDownOnExit := False;
+  cn_KeyBoardEnabled := True;
   cn_LodDataBasePath := '';
 
   ApStyler.Style := GetDefaultTheme;
@@ -227,6 +230,7 @@ begin
   try
     if FunctionFile.ValueExists(STYLE_SECTION_NAME, DEFAULT_STYLE_IDENT) then
     begin
+      //темы
       ValueText := FunctionFile.ReadString(STYLE_SECTION_NAME, DEFAULT_STYLE_IDENT, 'tsOffice2003Blue');
       if ValueText = 'tsOffice2003Blue' then
         Result := tsOffice2003Blue
@@ -252,6 +256,7 @@ begin
     end else
       FunctionFile.WriteString(STYLE_SECTION_NAME, DEFAULT_STYLE_IDENT, 'tsOffice2003Blue');
 
+    // не используется
     if FunctionFile.ValueExists(RES_SECTION_NAME, RES_IDENT) then
     begin
       ValueText := AnsiUpperCase(FunctionFile.ReadString(RES_SECTION_NAME, RES_IDENT, 'DEFAULT'));
@@ -296,56 +301,58 @@ begin
     end else
       FunctionFile.WriteString(RES_SECTION_NAME, RES_IDENT, 'DEFAULT');
 
+    //выход из системы
     if FunctionFile.ValueExists(SYS_SECTION_NAME, SYS_SHUTDOWN_ON_EXIT) then
     begin
-      ValueText := AnsiUpperCase(FunctionFile.ReadString(SYS_SECTION_NAME, SYS_SHUTDOWN_ON_EXIT, 'FALSE'));
-      cn_ShutDownOnExit := (ValueText = 'TRUE');
+      cn_ShutDownOnExit := FunctionFile.ReadBool(SYS_SECTION_NAME, SYS_SHUTDOWN_ON_EXIT, False);
     end else
-      FunctionFile.WriteString(SYS_SECTION_NAME, SYS_SHUTDOWN_ON_EXIT, 'FALSE');
+      FunctionFile.WriteBool(SYS_SECTION_NAME, SYS_SHUTDOWN_ON_EXIT, False);
+
+    if FunctionFile.ValueExists(SYS_SECTION_NAME, SYS_KEYBOARD_ENABLED) then
+    begin
+      cn_KeyBoardEnabled := FunctionFile.ReadBool(SYS_SECTION_NAME, SYS_KEYBOARD_ENABLED, True);
+    end else
+      FunctionFile.WriteBool(SYS_SECTION_NAME, SYS_KEYBOARD_ENABLED, True);
 
     if FunctionFile.ValueExists(GRID_FONT_SECTION_NAME, GRID_HEADER_FONT_SIZE) then
     begin
-      ValueText := AnsiUpperCase(FunctionFile.ReadString(GRID_FONT_SECTION_NAME, GRID_HEADER_FONT_SIZE, '10'));
       try
-        cn_TitleFontSize := StrToInt(ValueText);
+        cn_TitleFontSize := FunctionFile.ReadInteger(GRID_FONT_SECTION_NAME, GRID_HEADER_FONT_SIZE, 10);
       except
         cn_TitleFontSize := 10;
       end;
     end else
-      FunctionFile.WriteString(GRID_FONT_SECTION_NAME, GRID_HEADER_FONT_SIZE, '10');
+      FunctionFile.WriteInteger(GRID_FONT_SECTION_NAME, GRID_HEADER_FONT_SIZE, 10);
 
     if FunctionFile.ValueExists(GRID_FONT_SECTION_NAME, GRID_FONT_SIZE) then
     begin
-      ValueText := AnsiUpperCase(FunctionFile.ReadString(GRID_FONT_SECTION_NAME, GRID_FONT_SIZE, '10'));
       try
-        cn_GridFontSize := StrToInt(ValueText);
+        cn_GridFontSize := FunctionFile.ReadInteger(GRID_FONT_SECTION_NAME, GRID_FONT_SIZE, 10);
       except
         cn_GridFontSize := 10;
       end;
     end else
-      FunctionFile.WriteString(GRID_FONT_SECTION_NAME, GRID_FONT_SIZE, '10');
+      FunctionFile.WriteInteger(GRID_FONT_SECTION_NAME, GRID_FONT_SIZE, 10);
 
     if FunctionFile.ValueExists(BTN_FONT_SECTION_NAME, BTN_SMALL_FONT_SIZE) then
     begin
-      ValueText := AnsiUpperCase(FunctionFile.ReadString(BTN_FONT_SECTION_NAME, BTN_SMALL_FONT_SIZE, '8'));
       try
-        cn_ButtonSmallFontSize := StrToInt(ValueText);
+        cn_ButtonSmallFontSize := FunctionFile.ReadInteger(BTN_FONT_SECTION_NAME, BTN_SMALL_FONT_SIZE, 8);
       except
         cn_ButtonSmallFontSize := 8;
       end;
     end else
-      FunctionFile.WriteString(BTN_FONT_SECTION_NAME, BTN_SMALL_FONT_SIZE, '8');
+      FunctionFile.WriteInteger(BTN_FONT_SECTION_NAME, BTN_SMALL_FONT_SIZE, 8);
 
     if FunctionFile.ValueExists(BTN_FONT_SECTION_NAME, BTN_FONT_SIZE) then
     begin
-      ValueText := AnsiUpperCase(FunctionFile.ReadString(BTN_FONT_SECTION_NAME, BTN_FONT_SIZE, '10'));
       try
-        cn_ButtonFontSize := StrToInt(ValueText);
+        cn_ButtonFontSize := FunctionFile.ReadInteger(BTN_FONT_SECTION_NAME, BTN_FONT_SIZE, 10);
       except
         cn_ButtonFontSize := 10;
       end;
     end else
-      FunctionFile.WriteString(BTN_FONT_SECTION_NAME, BTN_FONT_SIZE, '10');
+      FunctionFile.WriteInteger(BTN_FONT_SECTION_NAME, BTN_FONT_SIZE, 10);
 
     if FunctionFile.ValueExists(LOG_SECTION_NAME, LOG_DB_PATH) then
     begin
