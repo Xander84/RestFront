@@ -65,7 +65,6 @@ object DeleteOrderLine: TDeleteOrderLine
       StatusBar.ColorTo = 16374724
       StatusBar.GradientDirection = gdVertical
       Styler = FrontData.FrontPanelStyler
-      ExplicitWidth = 469
       FullHeight = 41
       object lblQuantityLabel: TLabel
         AlignWithMargins = True
@@ -86,7 +85,7 @@ object DeleteOrderLine: TDeleteOrderLine
         ParentColor = False
         ParentFont = False
         Transparent = True
-        ExplicitTop = 10
+        ExplicitHeight = 33
       end
       object lblQuantity: TLabel
         AlignWithMargins = True
@@ -140,8 +139,6 @@ object DeleteOrderLine: TDeleteOrderLine
         TabOrder = 0
         Version = '1.6.9.0'
         OnClick = btnAddQuantityClick
-        ExplicitLeft = 250
-        ExplicitTop = 0
       end
       object btnRemoveQuantity: TAdvSmoothButton
         AlignWithMargins = True
@@ -176,7 +173,6 @@ object DeleteOrderLine: TDeleteOrderLine
         TabOrder = 1
         Version = '1.6.9.0'
         OnClick = btnRemoveQuantityClick
-        ExplicitLeft = 249
       end
       object btnShowKeyBoard: TAdvSmoothButton
         AlignWithMargins = True
@@ -211,7 +207,6 @@ object DeleteOrderLine: TDeleteOrderLine
         TabOrder = 2
         Version = '1.6.9.0'
         OnClick = btnShowKeyBoardClick
-        ExplicitLeft = 405
       end
     end
     object pnlBottom: TAdvPanel
@@ -252,7 +247,6 @@ object DeleteOrderLine: TDeleteOrderLine
       StatusBar.ColorTo = 16374724
       StatusBar.GradientDirection = gdVertical
       Styler = FrontData.FrontPanelStyler
-      ExplicitWidth = 469
       FullHeight = 48
       object btnOK: TAdvSmoothButton
         Left = 8
@@ -360,7 +354,6 @@ object DeleteOrderLine: TDeleteOrderLine
       StatusBar.ColorTo = 16374724
       StatusBar.GradientDirection = gdVertical
       Styler = FrontData.FrontPanelStyler
-      ExplicitWidth = 483
       FullHeight = 231
     end
   end
@@ -540,8 +533,6 @@ object DeleteOrderLine: TDeleteOrderLine
     Font.Height = -21
     Font.Name = 'Times New Roman'
     Font.Style = []
-    ExplicitLeft = 484
-    ExplicitWidth = 295
   end
   object alMain: TActionList
     Left = 64

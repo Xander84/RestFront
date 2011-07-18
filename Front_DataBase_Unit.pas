@@ -435,8 +435,6 @@ type
 
     //reports
     function SavePrintDate(const ID: Integer): Boolean;
-    function GetDeleteServiceCheckOptions(const DocID, MasterKey: Integer; out PrinterName: String;
-      out PrnGrid, PrinterID: Integer): Boolean;
     function GetReportList(var MemTable: TkbmMemTable): Boolean;
 
     procedure CanCloseDay;
@@ -4640,57 +4638,6 @@ begin
   except
     on E: Exception do
       Touch_MessageBox('Внимание', 'Ошибка ' + E.Message, MB_OK, mtError);
-  end;
-end;
-
-function TFrontBase.GetDeleteServiceCheckOptions(const DocID,
-  MasterKey: Integer; out PrinterName: String; out PrnGrid, PrinterID: Integer): Boolean;
-begin
-  Result := False;
-  FReadSQL.Close;
-  try
-    try
-      if not FReadSQL.Transaction.InTransaction then
-        FReadSQL.Transaction.StartTransaction;
-
-      FReadSQL.SQL.Text :=
-        'select ' +
-        '  DISTINCT setprn.id as prnid, ' +
-        '  IIF(setprn.usr$concatchecks = 0, prn.id, null) as prngrid, ' +
-        '  setprn.usr$printername,                                    ' +
-        '  o.documentkey, prn.usr$name, setprn.usr$PRINTERID          ' +
-        'from                                                         ' +
-        '  usr$mn_order o                                             ' +
-        '  join usr$mn_orderline l on o.documentkey = l.masterkey     ' +
-        '  join gd_document doc on doc.id = l.documentkey             ' +
-        '  join gd_good g on g.id = l.usr$goodkey                     ' +
-        '  join usr$mn_prngroup prn on prn.id = g.usr$prngroupkey     ' +
-        '  join usr$mn_prngroupset setprn on setprn.usr$prngroup = prn.id  ' +
-        'where                                                        ' +
-        ' o.documentkey = :masterkey                                  ' +
-        ' and l.documentkey = :docid                                  ' +
-        ' and setprn.usr$computername = :comp                         ' +
-        ' and setprn.usr$kassa = 0                                    ' +
-        'order by                                                     ' +
-        '  setprn.usr$printername,                                    ' +
-        '  prn.usr$name ';
-      FReadSQL.ParamByName('docid').AsInteger := DocID;
-      FReadSQL.ParamByName('masterkey').AsInteger := MasterKey;
-      FReadSQL.ParamByName('comp').AsString := GetLocalComputerName;
-      FReadSQL.ExecQuery;
-      if not FReadSQL.Eof then
-      begin
-        PrinterName := FReadSQL.FieldByName('usr$printername').AsString;
-        PrnGrid := FReadSQL.FieldByName('prngrid').AsInteger;
-        PrinterID := FReadSQL.FieldByName('prnid').AsInteger;
-
-        Result := True;
-      end;
-    except
-      raise;
-    end;
-  finally
-    FReadSQL.Close;
   end;
 end;
 

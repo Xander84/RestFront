@@ -74,6 +74,9 @@ var
 
 implementation
 
+uses
+  TouchMessageBoxForm_Unit;
+
 {$R *.dfm}
 
 procedure TDeleteOrderLine.FormCreate(Sender: TObject);
@@ -109,7 +112,9 @@ procedure TDeleteOrderLine.SetCanDevided(const Value: Boolean);
 begin
   FCanDevide := Value;
   if not Value then
-    TouchKeyBoard.Keys[9].Caption := '';
+    TouchKeyBoard.Keys[9].Caption := ''
+  else
+    TouchKeyBoard.Keys[9].Caption := FFormatSettings.DecimalSeparator;
 end;
 
 procedure TDeleteOrderLine.SetFrontBase(Value: TFrontBase);
@@ -134,33 +139,56 @@ var
   S: String;
   IncrementedQuantity: Currency;
 begin
-  with TouchKeyBoard.Keys.Items[Index] do
-  begin
-    if (SpecialKey = skNone) then
+  try
+    with TouchKeyBoard.Keys.Items[Index] do
     begin
-      if (Caption > '') then
+      if (SpecialKey = skNone) then
       begin
-        if lblQuantity.Caption = '0' then
-          IncrementedQuantity := StrToCurr(Caption[1])
-        else
-          IncrementedQuantity := StrToCurr(lblQuantity.Caption + Caption[1]);
+        if (Caption > '') then
+        begin
+          if (Caption[1] = '.') or (Caption[1] = ',') then
+          begin
+            lblQuantity.Caption := lblQuantity.Caption + Caption[1];
+          end
+          else
+          begin
+            if lblQuantity.Caption = '0' then
+            begin
+              IncrementedQuantity := StrToCurr(Caption[1])
+            end
+            else
+            begin
+              IncrementedQuantity := StrToCurr(lblQuantity.Caption + Caption[1]);
+            end;
 
-        if IncrementedQuantity < FQuantity then
-          lblQuantity.Caption := CurrToStr(IncrementedQuantity)
-        else
-          lblQuantity.Caption := CurrToStr(FQuantity);
-      end;
-    end else
-    begin
-      I := Length(lblQuantity.Caption);
-      if I = 1 then
-        lblQuantity.Caption := '0'
-      else if I > 1 then
+            if IncrementedQuantity < FQuantity then
+              lblQuantity.Caption := CurrToStr(IncrementedQuantity)
+            else
+              lblQuantity.Caption := CurrToStr(FQuantity);
+          end;
+        end;
+      end else
       begin
-        S := lblQuantity.Caption;
-        Delete(S, I, 1);
-        lblQuantity.Caption := S;
+        lblQuantity.Caption := '0';
+  {      I := Length(lblQuantity.Caption);
+        if I = 1 then
+          lblQuantity.Caption := '0'
+        else if I > 1 then
+        begin
+          S := lblQuantity.Caption;
+          Delete(S, I, 1);
+          lblQuantity.Caption := S;
+        end;   }
       end;
+    end;
+  except
+    on E: Exception do
+    begin
+      if E is EConvertError then
+        Touch_MessageBox('Внимание', 'Введено неверное число', MB_OK, mtWarning)
+      else
+        Touch_MessageBox('Внимание', 'Ошибка ' + E.Message, MB_OK, mtError);
+      exit;
     end;
   end;
 end;
@@ -282,7 +310,7 @@ end;
 
 procedure TDeleteOrderLine.actOKUpdate(Sender: TObject);
 begin
-  actOK.Enabled := (DeleteClauseID <> -1) and (StrToCurr(lblQuantity.Caption) <> 0);
+  actOK.Enabled := (DeleteClauseID <> -1) and (lblQuantity.Caption <> '0');
 end;
 
 procedure TDeleteOrderLine.btnCancelClick(Sender: TObject);

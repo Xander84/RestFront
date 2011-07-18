@@ -33,7 +33,7 @@ object RestMainForm: TRestMainForm
       Top = 0
       Width = 934
       Height = 721
-      ActivePage = tsPassWord
+      ActivePage = tsMain
       ActiveFont.Charset = DEFAULT_CHARSET
       ActiveFont.Color = clWindowText
       ActiveFont.Height = -11
@@ -1646,7 +1646,7 @@ object RestMainForm: TRestMainForm
             Top = 0
             Width = 609
             Height = 701
-            ActivePage = tsUserOrder
+            ActivePage = tsOrderInfo
             ActiveFont.Charset = DEFAULT_CHARSET
             ActiveFont.Color = clWindowText
             ActiveFont.Height = -11

@@ -2484,7 +2484,19 @@ begin
             FDeleteForm.ShowModal;
             if FDeleteForm.ModalResult = mrOK then
             begin
-              Amount := FDeleteForm.RemoveQuantity;
+              try
+                Amount := FDeleteForm.RemoveQuantity;
+              except
+                on E: Exception do
+                begin
+                  if E is EConvertError then
+                    Touch_MessageBox('Внимание', 'Введено неверное число', MB_OK, mtWarning)
+                  else
+                    Touch_MessageBox('Внимание', 'Ошибка ' + E.Message, MB_OK, mtError);
+                  exit;
+                end;
+              end;
+
               FFrontBase.SaveOrderLog(FFrontBase.ContactKey, FUserInfo.UserKey, FHeaderTable.FieldByName('ID').AsInteger,
                 FLineTable.FieldByName('ID').AsInteger, 3);
 
@@ -3987,9 +3999,7 @@ var
   OldDetailID, MasterKey: Integer;
   V: Array of Variant;
   I: Integer;
-  PrnGrid, DocumentKey: Integer;
-  PrinterName: String;
-  PrinterID: Integer;
+  DocumentKey: Integer;
 begin
   OldQuantity := FLineTable.FieldByName('usr$quantity').AsCurrency;
   OldDetailID := FLineTable.FieldByName('ID').AsInteger;
