@@ -416,6 +416,7 @@ var
   Table: TRestTable;
   FSQLUpdate, FSQLInsert, FSQLDelete: TIBSQL;
   FTransaction: TIBTransaction;
+  Key: Integer;
 
   procedure UpdateTable(const TableObj: TRestTable);
   begin
@@ -472,9 +473,9 @@ begin
         ' DELETE FROM usr$mn_table t WHERE t.id = :id ';
 
       // Обновление или вставка столов
-      for I := 0 to FTablesList.Count - 1 do
+      for Key in FTablesList.Keys do
       begin
-        Table := TRestTable(FTablesList.Items[I]);
+        Table := TRestTable(FTablesList.Items[Key]);
         if Table.NeedToInsert then
           InsertTable(Table)
         else
