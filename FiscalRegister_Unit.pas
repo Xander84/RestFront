@@ -25,6 +25,7 @@ type
     FFrontBase: TFrontBase;
     FInit: Boolean;
     FLastFiscalType: Integer;
+    procedure SetFrontBase(const Value: TFrontBase);
   public
     constructor Create;
     destructor Destroy; override;
@@ -40,13 +41,14 @@ type
     procedure EndDay;
     procedure EndSession;
 
+
     function PrintCheck(const Doc, DocLine, PayLine: TkbmMemTable;
       const FSums: TSaleSums): Boolean;
     function ReturnCheck(const Doc, DocLine, PayLine: TkbmMemTable;
       const FSums: TSaleSums): Boolean;
     function ReturnGoodMoney(const FSums: TSaleSums): Boolean;
 
-    property FrontBase: TFrontBase read FFrontBase write FFrontBase;
+    property FrontBase: TFrontBase read FFrontBase write SetFrontBase;
     property FiscalRegister: IBaseFiscalRegister read FFiscalRegister;
   end;
 
@@ -68,15 +70,10 @@ begin
 end;
 
 destructor TFiscalRegister.Destroy;
-var
-  Obj: TObject;
 begin
   if Assigned(FFiscalRegister) then
-  begin
-    Obj := TObject(FFiscalRegister.Self);
-    if Assigned(Obj) then
-      FreeAndNil(Obj);
-  end;
+    FreeAndNil(FFiscalRegister);
+
   inherited;
 end;
 
@@ -118,9 +115,7 @@ begin
     FLastFiscalType := FiscalType;
     if Assigned(FFiscalRegister) then
     begin
-      Obj := TObject(FFiscalRegister.Self);
-      if Assigned(Obj) then
-        FreeAndNil(Obj);
+      FreeAndNil(FFiscalRegister);
     end;
 
     case FiscalType of
@@ -252,6 +247,11 @@ begin
     Result := FFiscalRegister.ReturnGoodMoney(FSums)
   else
     Result := True;
+end;
+
+procedure TFiscalRegister.SetFrontBase(const Value: TFrontBase);
+begin
+  FFrontBase := Value;
 end;
 
 procedure TFiscalRegister.StartDay;
