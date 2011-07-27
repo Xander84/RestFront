@@ -54,6 +54,7 @@ type
 
   IBaseFiscalRegister = interface
   ['{308C2D25-B5F7-4801-B8E4-F09E92B7AFBA}']
+    procedure Free;
     // Проверка устройства
     function CheckDeviceInfo: Boolean;
     // Инициализация
@@ -99,8 +100,8 @@ type
     FFrontBase: TFrontBase;
 
     function Get_Self: Integer;
-    procedure SetFrontBase(const Value: TFrontBase);
     function GetFrontBase: TFrontBase;
+    procedure SetFrontBase(const Value: TFrontBase);
   public
     function CheckDeviceInfo: Boolean;
     function Init: Boolean;
