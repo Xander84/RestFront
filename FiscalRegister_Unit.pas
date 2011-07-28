@@ -105,8 +105,6 @@ begin
 end;
 
 procedure TFiscalRegister.InitFiscalRegister(const FiscalType: Integer);
-var
-  Obj: TObject;
 begin
   Assert(Assigned(FFrontBase), 'FrontBase not Assigned');
 
