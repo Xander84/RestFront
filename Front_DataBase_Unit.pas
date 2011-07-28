@@ -1112,22 +1112,22 @@ begin
     FCheckSQL.SQL.Text :=
       ' SELECT FIRST(1) L.DOCUMENTKEY ' +
       ' FROM USR$MN_ORDERLINE L ' +
-      ' WHERE L.USR$CAUSEDELETEKEY IS NOT NULL ' +
-      '   AND L.MASTERKEY = :ID ';
-    FCheckSQL.Params[0].AsInteger := ID;
+      ' WHERE L.MASTERKEY = :ID ';
+    FCheckSQL.ParamByName('ID').AsInteger := ID;
     FCheckSQL.ExecQuery;
 
     IsDelete := FCheckSQL.Eof;
     FCheckSQL.Close;
-    if not IsDelete then
+    if IsDelete then
+      FCheckSQL.SQL.Text := 'DELETE FROM GD_DOCUMENT DOC ' +
+        'WHERE DOC.ID = :ID '
+    else
       FCheckSQL.SQL.Text :=
         ' UPDATE USR$MN_ORDER R ' +
         ' SET R.USR$PAY = 1 ' +
-        ' WHERE R.DOCUMENTKEY = :ID '
-    else
-      FCheckSQL.SQL.Text := 'DELETE FROM GD_DOCUMENT DOC ' +
-        'WHERE DOC.ID = :ID ';
-    FCheckSQL.Params[0].AsInteger := ID;
+        ' WHERE R.DOCUMENTKEY = :ID ';
+
+    FCheckSQL.ParamByName('ID').AsInteger := ID;
     FCheckSQL.ExecQuery;
 
     FCheckSQL.Transaction.Commit;
@@ -1345,7 +1345,7 @@ begin
       ' FROM USR$MN_MENULINE M ' +
       ' JOIN GD_DOCUMENT DOC ON DOC.ID = M.DOCUMENTKEY ' +
       ' JOIN GD_GOOD G ON G.ID = M.USR$GOODKEY ' +
-      ' WHERE M.MASTERKEY = :ID ';
+      ' WHERE M.MASTERKEY = :ID ORDER BY g.NAME  ';
     FReadSQL.Params[0].AsInteger := MenuKey;
     FReadSQL.ExecQuery;
     while not FReadSQL.Eof do
@@ -2802,16 +2802,17 @@ begin
       S := ' SELECT K.USR$NAME, K.USR$PAYTYPEKEY, K.USR$NOFISCAL, K.ID FROM USR$MN_KINDTYPE K ' +
         ' LEFT JOIN USR$MN_PAYMENTRULES R ON R.USR$PAYTYPEKEY = K.USR$PAYTYPEKEY ';
       if IsPlCard = 1 then
-      begin
         FReadSQL.SQL.Text := S + ' WHERE K.USR$ISPLCARD = 1 ' +
-          ' AND (R.USR$PAYTYPEKEY IS NULL OR (BIN_AND(g_b_shl(1, R.USR$GROUPKEY - 1), :FKEY) <> 0)) ';
-        FReadSQL.Params[0].AsInteger := FUserKey;
-      end
+          ' AND (R.USR$PAYTYPEKEY IS NULL OR (BIN_AND(g_b_shl(1, R.USR$GROUPKEY - 1), :FKEY) <> 0)) '
       else
-      begin
         FReadSQL.SQL.Text := S + ' WHERE K.USR$PAYTYPEKEY = :paytype AND ((K.USR$ISPLCARD IS NULL) OR (K.USR$ISPLCARD = 0))';
-        FReadSQL.Params[0].AsInteger := PayType;
-      end;
+      FReadSQL.SQL.Text := S + ' ORDER BY K.USR$NAME ';
+
+      if IsPlCard = 1 then
+        FReadSQL.ParamByName('FKEY').AsInteger := FUserKey
+      else
+        FReadSQL.SQL.Text := S + ' WHERE K.USR$PAYTYPEKEY = :paytype AND ((K.USR$ISPLCARD IS NULL) OR (K.USR$ISPLCARD = 0))';
+
       FReadSQL.ExecQuery;
       while not FReadSQL.Eof do
       begin
@@ -4016,7 +4017,7 @@ begin
       if not FReadSQL.Transaction.InTransaction then
         FReadSQL.Transaction.StartTransaction;
 
-      FReadSQL.SQL.Text := 'SELECT ID, USR$NAME from USR$MN_DISCOUNTNAME';
+      FReadSQL.SQL.Text := 'SELECT ID, USR$NAME from USR$MN_DISCOUNTNAME ORDER BY NAME ';
       FReadSQL.ExecQuery;
       while not FReadSQL.EOF do
       begin
@@ -4129,7 +4130,7 @@ begin
         '   USR$MN_DISCOUNTCARD C ' +
         '   LEFT JOIN usr$mn_discounttype dt ON c.usr$discountnamekey = dt.USR$DISCOUNTNAMEKEY ' +
         ' WHERE C.USR$CODE IS NOT NULL ' +
-        ' ORDER BY 2 ';
+        ' ORDER BY 3 ';
       FReadSQL.ExecQuery;
       while not FReadSQL.EOF do
       begin
@@ -4377,7 +4378,7 @@ begin
     FReadSQL.Close;
     try
       FReadSQL.SQL.Text :=
-        ' SELECT id, usr$name AS name, usr$width AS width, usr$length AS height FROM usr$mn_tabletype ';
+        ' SELECT id, usr$name AS name, usr$width AS width, usr$length AS height FROM usr$mn_tabletype ORDER BY usr$name ';
       FReadSQL.ExecQuery;
       while not FReadSQL.Eof do
       begin
@@ -4595,7 +4596,7 @@ begin
       FReadSQL.Transaction.StartTransaction;
     try
       FReadSQL.SQL.Text := 'SELECT G.ID, G.NAME FROM GD_USERGROUP G ' +
-        ' WHERE G.DISABLED = 0 OR G.DISABLED IS NULL ';
+        ' WHERE G.DISABLED = 0 OR G.DISABLED IS NULL ORDER BY G.NAME ';
       FReadSQL.ExecQuery;
       while not FReadSQL.EOF do
       begin
@@ -4634,7 +4635,7 @@ begin
       FReadSQL.Transaction.StartTransaction;
     try
       FReadSQL.SQL.Text := ' SELECT con.ID, con.NAME FROM GD_CONTACT con ' +
-        ' where con.CONTACTTYPE = 4 ';
+        ' where con.CONTACTTYPE = 4 ORDER BY con.NAME ';
       FReadSQL.ExecQuery;
       while not FReadSQL.EOF do
       begin
@@ -4670,7 +4671,7 @@ begin
       if not FReadSQL.Transaction.InTransaction then
         FReadSQL.Transaction.StartTransaction;
 
-      FReadSQL.SQL.Text := 'SELECT ID, USR$NAME, USR$TYPE FROM USR$MN_REPORT';
+      FReadSQL.SQL.Text := 'SELECT ID, USR$NAME, USR$TYPE FROM USR$MN_REPORT ORDER BY USR$TYPE, USR$NAME ';
       FReadSQL.ExecQuery;
       while not FReadSQL.EOF do
       begin
