@@ -2806,12 +2806,12 @@ begin
           ' AND (R.USR$PAYTYPEKEY IS NULL OR (BIN_AND(g_b_shl(1, R.USR$GROUPKEY - 1), :FKEY) <> 0)) '
       else
         FReadSQL.SQL.Text := S + ' WHERE K.USR$PAYTYPEKEY = :paytype AND ((K.USR$ISPLCARD IS NULL) OR (K.USR$ISPLCARD = 0))';
-      FReadSQL.SQL.Text := S + ' ORDER BY K.USR$NAME ';
+      FReadSQL.SQL.Text := FReadSQL.SQL.Text + ' ORDER BY K.USR$NAME ';
 
       if IsPlCard = 1 then
         FReadSQL.ParamByName('FKEY').AsInteger := FUserKey
       else
-        FReadSQL.SQL.Text := S + ' WHERE K.USR$PAYTYPEKEY = :paytype AND ((K.USR$ISPLCARD IS NULL) OR (K.USR$ISPLCARD = 0))';
+        FReadSQL.ParamByName('paytype').AsInteger := PayType;
 
       FReadSQL.ExecQuery;
       while not FReadSQL.Eof do

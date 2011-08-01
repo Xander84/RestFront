@@ -1217,7 +1217,7 @@ begin
   FButton.Appearance.BeginUpdate;
   try
     SetButtonStyle(FButton);
-    FButton.Appearance.Font.Size := cn_ButtonFontSize;
+    FButton.Appearance.Font.Size := cn_ButtonSmallFontSize;
     FButton.Color := btnColor;
     FButton.Parent := pnlHalls;
     FButton.OnClick := HallButtonOnClick;
@@ -1230,7 +1230,7 @@ begin
     else
 {$ENDIF}
 *)
-      FButton.Width := 2 * btnNewLong;
+      FButton.Width := pnlHalls.Width - 16;
 
     FHallLastTop := FHallLastTop + btnHeight + btnFirstTop;
 
@@ -3036,6 +3036,7 @@ begin
     FViewMode := False;
 
   btnDeleteTable.Visible := (FRestFormState = rsHallEdit);
+  pnlRight.Width := FpnlRightWidth;
 
   case Value of
     rsPass:
@@ -3238,6 +3239,11 @@ begin
           tmrTables.Enabled := False;
 
           FFrontBase.GetHallsInfo(FHallsTable);
+          pnlRight.Width := 82;
+          btnScrollDown.Width := Round((pnlRight.Width - 16) / 2);
+          btnScrollUp.Left := Round((pnlRight.Width - 16) / 2) + 8;
+          btnScrollUp.Width := Round((pnlRight.Width - 16) / 2);
+
           if FHallsTable.RecordCount = 1 then
           begin
             pnlRight.Visible := False;
@@ -4527,6 +4533,7 @@ begin
     FLogManager.DoOrderLog(GetCurrentUserInfo, GetCurrentOrderInfo, ev_EnterOrder);
   end;
 end;
+
 
 procedure TRestMainForm.tmrCloseTimer(Sender: TObject);
 begin

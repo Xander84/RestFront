@@ -307,7 +307,7 @@ begin
       if Length(DocNumber) > 5 then
         Delete(DocNumber, 5, Length(DocNumber));
 
-      WaiterName := FFrontBase.GetNameWaiterOnID(Doc.FieldByName('usr$respkey').AsInteger, False, False);
+      WaiterName := FFrontBase.UserName; // FFrontBase.GetNameWaiterOnID(Doc.FieldByName('usr$respkey').AsInteger, False, False);
 
       UseReceiptRibbon := True;
       StringForPrinting := 'Открыт - ' + DateToStr(Date) + ' ' + TimeToStr(Time);
