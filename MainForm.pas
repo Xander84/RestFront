@@ -3862,15 +3862,15 @@ end;
 
 procedure TRestMainForm.RestorePanelWidth;
 begin
-{$IFNDEF DEBUG}
-  if Screen.Width > 1024 then
-  begin
+//{$IFNDEF DEBUG}
+//  if Screen.Width > 1024 then
+//  begin
     pnlRight.Width := FpnlRightWidth;
     btnScrollDown.Width := FbtnScrollDownWidth;
     btnScrollUp.Left := FbtnScrollUpLeft;
     btnScrollUp.Width := FbtnScrollUpWidth;
-  end;
-{$ENDIF}
+//  end;
+//{$ENDIF}
 end;
 
 procedure TRestMainForm.actUsersUpExecute(Sender: TObject);
