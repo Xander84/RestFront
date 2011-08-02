@@ -3398,6 +3398,7 @@ begin
           FHeaderInfoTable := TkbmMemTable.Create(nil);
         if not Assigned(FLineInfoTable) then
           FLineInfoTable := TkbmMemTable.Create(nil);
+        DBGrInfoLine.SumList.Active := False;
         // 2. проставить начальное значение кнопок выбора
         xDateBegin.Date := FFrontBase.GetLogicDate;  //GetServerDateTime;
         xDateEnd.Date := FFrontBase.GetLogicDate;  //GetServerDateTime;
@@ -3705,6 +3706,7 @@ procedure TRestMainForm.btnAllChecClick(Sender: TObject);
 begin
   FLineInfoTable.MasterSource := nil;
   TCrackDBSumListProducer(DBGrInfoLine.SumList).ResetMasterInfo;
+  DBGrInfoLine.SumList.Active := False;
   dsHeaderInfo.DataSet := nil;
   dsLineInfo.DataSet := nil;
   try
@@ -3723,6 +3725,7 @@ procedure TRestMainForm.btnWithPrecheckClick(Sender: TObject);
 begin
   FLineInfoTable.MasterSource := nil;
   TCrackDBSumListProducer(DBGrInfoLine.SumList).ResetMasterInfo;
+  DBGrInfoLine.SumList.Active := False;
   dsHeaderInfo.DataSet := nil;
   dsLineInfo.DataSet := nil;
   try
@@ -3736,6 +3739,7 @@ procedure TRestMainForm.btnWithoutPrecheckClick(Sender: TObject);
 begin
   FLineInfoTable.MasterSource := nil;
   TCrackDBSumListProducer(DBGrInfoLine.SumList).ResetMasterInfo;
+  DBGrInfoLine.SumList.Active := False;
   dsHeaderInfo.DataSet := nil;
   dsLineInfo.DataSet := nil;
   try
@@ -3763,6 +3767,7 @@ procedure TRestMainForm.btnPayedClick(Sender: TObject);
 begin
   FLineInfoTable.MasterSource := nil;
   TCrackDBSumListProducer(DBGrInfoLine.SumList).ResetMasterInfo;
+  DBGrInfoLine.SumList.Active := False;
   dsHeaderInfo.DataSet := nil;
   dsLineInfo.DataSet := nil;
   try
@@ -3776,6 +3781,7 @@ procedure TRestMainForm.btnNotPayedClick(Sender: TObject);
 begin
   FLineInfoTable.MasterSource := nil;
   TCrackDBSumListProducer(DBGrInfoLine.SumList).ResetMasterInfo;
+  DBGrInfoLine.SumList.Active := False;
   dsHeaderInfo.DataSet := nil;
   dsLineInfo.DataSet := nil;
   try
@@ -3809,6 +3815,7 @@ begin
   FLineInfoTable.MasterSource := dsHeaderInfo;
   FLineInfoTable.MasterFields := 'ID';
   FLineInfoTable.DetailFields := 'PARENT';
+  DBGrInfoLine.SumList.Active := True;
   FHeaderInfoTable.First;
   if DBGrInfoHeader.CanFocus then
     DBGrInfoHeader.SetFocus;
