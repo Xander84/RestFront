@@ -61,7 +61,6 @@ object FindGood: TFindGood
     StatusBar.ColorTo = 16374724
     StatusBar.GradientDirection = gdVertical
     Styler = FrontData.FrontPanelStyler
-    ExplicitWidth = 645
     FullHeight = 0
     object lblGoodName: TLabel
       Left = 21
@@ -756,6 +755,7 @@ object FindGood: TFindGood
       SmallFont.Name = 'Tahoma'
       SmallFont.Style = []
       Version = '1.5.0.0'
+      OnKeyClick = TouchKeyBoardKeyClick
     end
     object edGoodName: TEdit
       Left = 152

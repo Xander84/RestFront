@@ -23,6 +23,7 @@ type
     procedure FormCreate(Sender: TObject);
     procedure edGoodNameChange(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure TouchKeyBoardKeyClick(Sender: TObject; Index: Integer);
   private
     function GetGoodKey: Integer;
   public
@@ -82,6 +83,15 @@ begin
       AnsiUpperCase(MemTable.FieldByName('NAME').AsString)) <> 0)
   else
     Accept := False;
+end;
+
+procedure TFindGood.TouchKeyBoardKeyClick(Sender: TObject; Index: Integer);
+begin
+  if not edGoodName.Focused then
+  begin
+    edGoodName.SetFocus;
+    edGoodName.SelStart := Length(edGoodName.Text);
+  end;
 end;
 
 end.

@@ -3,6 +3,13 @@ program RestFront;
 {$WEAKLINKRTTI ON}
 {$RTTI EXPLICIT METHODS([]) PROPERTIES([]) FIELDS([])}
 
+{
+  “.к. приложение использует только Delphi код, то дл€
+  производительности можно отключить совместимость с
+  C++Builder строками
+  $STRINGCHECKS OFF -> Project > Options > Delphi Compiler > Compiling
+}
+
 uses
   Forms,
   AppEvnts,
