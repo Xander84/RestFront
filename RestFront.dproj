@@ -174,6 +174,9 @@
 			<DCCReference Include="rfNoCashGroupForm_Unit.pas">
 				<Form>rfNoCashGroup</Form>
 			</DCCReference>
+			<DCCReference Include="forms\rfFindGood_Unit.pas">
+				<Form>FindGood</Form>
+			</DCCReference>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>

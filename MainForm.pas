@@ -234,6 +234,8 @@ type
     btnReservationTable: TAdvSmoothToggleButton;
     btnChangeDocNumber: TAdvSmoothToggleButton;
     actChangeDocNumber: TAction;
+    btnFindGood: TAdvSmoothButton;
+    actFindGood: TAction;
 
     // Проверка введёного пароля
     procedure actPassEnterExecute(Sender: TObject);
@@ -331,6 +333,8 @@ type
     procedure actChangeDocNumberUpdate(Sender: TObject);
     procedure actKeyBoardUpdate(Sender: TObject);
     procedure FormActivate(Sender: TObject);
+    procedure actFindGoodExecute(Sender: TObject);
+    procedure actFindGoodUpdate(Sender: TObject);
   private
     // Компонент обращения к БД
     // Объявлен в базовом классе форм TBaseFrontForm
@@ -498,6 +502,7 @@ type
     procedure AddGoodButton;
     procedure RemoveGoodButton;
     procedure GoodButtonOnClick(Sender: TObject);
+    procedure AddGood(const GoodKey: Integer);
 
     procedure CreateUserList;
     procedure CreateManagerPage;
@@ -553,7 +558,7 @@ uses
   TouchMessageBoxForm_Unit, Base_FiscalRegister_unit,
   ReturneyMoneyForm_Unit, frmSwapOrder_unit, rfOrder_unit, frmReportList_unit,
   rfChooseForm_Unit, rfUtils_unit, frmEditMenu_unit, frmViewOrder_unit,
-  rfReservForm_Unit;
+  rfReservForm_Unit, rfFindGood_Unit;
 
 {$R *.dfm}
 
@@ -728,6 +733,7 @@ begin
   btnDiscount.Picture := FrontData.RestPictureContainer.FindPicture('percent');
   btnPay.Picture := FrontData.RestPictureContainer.FindPicture('money');
   btnDevide.Picture := FrontData.RestPictureContainer.FindPicture('decimal');
+  btnFindGood.Picture := FrontData.RestPictureContainer.FindPicture('application_find');
   btnOK.Picture := FrontData.RestPictureContainer.FindPicture('tick');
   btnCancel3.Picture := FrontData.RestPictureContainer.FindPicture('cross');
 
@@ -1009,6 +1015,9 @@ procedure TRestMainForm.AddPopularGoods;
 var
   FButton: TComponent;
 begin
+  if FViewMode then
+    exit;
+
   if FFrontBase.GetPopularGoodList(FGoodDataSet) then
   begin
     if (FGoodDataSet.Active) and (not FGoodDataSet.Eof) then
@@ -1097,6 +1106,158 @@ begin
       FreeAndNil(TableTypeList);
     end;
   end;
+end;
+
+procedure TRestMainForm.AddGood(const GoodKey: Integer);
+var
+  FForm: TModificationForm;
+  S, ES: String;
+  FGoodInfo: TLogGoodInfo;
+  FChooseForm: TChooseForm;
+  FNeedDelete: Boolean;
+
+const
+  cn_prnSQL = 'SELECT ID, USR$NAME FROM USR$MN_PRNGROUP';
+  cn_modSQL = ' SELECT ID, USR$NAME FROM USR$MN_MODIFY ' +
+    ' WHERE USR$ISGROUP = 1 ';
+
+begin
+  if not FHeaderTable.FieldByName('usr$timecloseorder').IsNull then
+  begin
+    Touch_MessageBox('Внимание', 'По данному заказу пречек уже был распечатан!', MB_OK, mtWarning);
+    exit;
+  end;
+  if FViewMode then
+  begin
+    Touch_MessageBox('Внимание', 'Из формы оплаты нельзя добавлять товар!', MB_OK, mtWarning);
+    exit;
+  end;
+
+  FNeedDelete := False;
+  S := '';
+  ES := '';
+  if FGoodDataSet.Locate('ID', GoodKey, []) then
+  begin
+    FLineTable.Append;
+    FLineTable.FieldByName('LINEKEY').AsInteger := FLineID;
+    FLineTable.FieldByName('STATEFIELD').AsInteger := cn_StateInsert;
+    FLineTable.FieldByName('usr$quantity').AsInteger := 1;
+    FLineTable.FieldByName('CREATIONDATE').AsDateTime := FFrontBase.GetServerDateTime;
+    FLineTable.Post;
+
+    Inc(FLineID);
+    //Issue 97
+    if (FGoodDataSet.FieldByName('PRNGROUPKEY').AsInteger = 0) and (FFrontBase.Options.NeedPrnGroup) then
+    begin
+      if Touch_MessageBox('Внимание', 'Для блюда не установлена группа сервис-печати. Установить?',
+        MB_YESNO, mtConfirmation) = IDYES then
+      begin
+        FChooseForm := TChooseForm.Create(nil);
+        try
+          FChooseForm.SQLText := cn_prnSQL;
+          FChooseForm.KeyField := 'ID';
+          FChooseForm.ListField := 'USR$NAME';
+          FChooseForm.FrontBase := FFrontBase;
+          FChooseForm.ChooseName := 'Группа сервис-печати';
+          FChooseForm.ShowModal;
+          if FChooseForm.ModalResult = mrOK then
+          begin
+            FGoodDataSet.Edit;
+            FGoodDataSet.FieldByName('PRNGROUPKEY').AsInteger := FChooseForm.ID;
+            FGoodDataSet.Post;
+            if FChooseForm.ID <> -1 then
+              FFrontBase.UpdateGoodPrnGroup(GoodKey, FChooseForm.ID);
+          end;
+        finally
+          FChooseForm.Free;
+        end;
+      end;
+    end;
+
+    if (FGoodDataSet.FieldByName('MODIFYGROUPKEY').AsInteger = 0) and (FFrontBase.Options.NeedModGroup) then
+    begin
+      if Touch_MessageBox('Внимание', 'Для блюда не установлена группа модификаторов. Установить?',
+        MB_YESNO, mtConfirmation) = IDYES then
+      begin
+        FChooseForm := TChooseForm.Create(nil);
+        try
+          FChooseForm.SQLText := cn_modSQL;
+          FChooseForm.KeyField := 'ID';
+          FChooseForm.ListField := 'USR$NAME';
+          FChooseForm.FrontBase := FFrontBase;
+          FChooseForm.ChooseName := 'Группа модификаторов';
+          FChooseForm.ShowModal;
+          if FChooseForm.ModalResult = mrOK then
+          begin
+            FGoodDataSet.Edit;
+            FGoodDataSet.FieldByName('MODIFYGROUPKEY').AsInteger := FChooseForm.ID;
+            FGoodDataSet.Post;
+            if FChooseForm.ID <> -1 then
+              FFrontBase.UpdateGoodModifyGroup(GoodKey, FChooseForm.ID);
+          end;
+        finally
+          FChooseForm.Free;
+        end;
+      end;
+    end;
+
+    // проверяем сначала на модификаторы
+    if FGoodDataSet.FieldByName('ISNEEDMODIFY').AsInteger = 1 then
+    begin
+      FForm := TModificationForm.CreateWithFrontBase(nil, FFrontBase);
+      try
+        FForm.GoodKey := GoodKey;
+        FForm.LineModifyTable := FModificationDataSet;
+        FForm.ShowModal;
+        if FForm.ModalResult = mrOK then
+        begin
+          FModificationDataSet.First;
+          while not FModificationDataSet.Eof do
+          begin
+            if S > '' then
+              S := S + ', ';
+            S := S + FModificationDataSet.FieldByName('NAME').AsString;
+            FModificationDataSet.Next;
+          end;
+          ES := FForm.ExtraModifyString;
+          if ES <> '' then
+          begin
+            if S = '' then
+              S := ES
+            else
+              S := S + ', ' + ES;
+          end;
+        end
+        else if FForm.ModalResult = mrCancel then
+          FNeedDelete := True; // Issue 128
+      finally
+        FForm.Free;
+      end;
+    end;
+    if FNeedDelete then
+      FLineTable.Delete
+    else
+    begin
+      FLineTable.Edit;
+      FLineTable.FieldByName('usr$goodkey').AsInteger := GoodKey;
+      FLineTable.FieldByName('GOODNAME').AsString := FGoodDataSet.FieldByName('NAME').AsString;
+      FLineTable.FieldByName('usr$quantity').AsInteger := 1;
+      FLineTable.FieldByName('usr$costncu').AsCurrency := FGoodDataSet.FieldByName('COST').AsCurrency;
+      FLineTable.FieldByName('MODIFYSTRING').AsString := S;
+      FLineTable.FieldByName('EXTRAMODIFY').AsString := ES;
+      FLineTable.FieldByName('USR$COMPUTERNAME').AsString := GetLocalComputerName;
+      FLineTable.FieldByName('USR$NOPRINT').AsInteger := FGoodDataSet.FieldByName('NOPRINT').AsInteger;
+      FLineTable.Post;
+
+      FGoodInfo.GoodID := GoodKey;
+      FGoodInfo.GoodName := FLineTable.FieldByName('GOODNAME').AsString;
+      FGoodInfo.Quantity := 1;
+      FGoodInfo.Sum := FGoodDataSet.FieldByName('COST').AsCurrency;
+      FLogManager.DoOrderGoodLog(GetCurrentUserInfo, GetCurrentOrderInfo, FGoodInfo, ev_AddGoodToOrder);
+      WritePos(FLineTable);
+    end;
+  end;
+  SaveAllOrder;
 end;
 
 procedure TRestMainForm.AddGoodButton;
@@ -1230,7 +1391,8 @@ begin
     else
 {$ENDIF}
 *)
-      FButton.Width := pnlHalls.Width - 16;
+    //  FButton.Width := 2 * btnNewLong;
+    FButton.Width := pnlHalls.Width - 16;
 
     FHallLastTop := FHallLastTop + btnHeight + btnFirstTop;
 
@@ -1747,157 +1909,8 @@ begin
 end;
 
 procedure TRestMainForm.GoodButtonOnClick(Sender: TObject);
-var
-  GoodKey: Integer;
-  FForm: TModificationForm;
-  S, ES: String;
-  FGoodInfo: TLogGoodInfo;
-  FChooseForm: TChooseForm;
-  FNeedDelete: Boolean;
-
-const
-  cn_prnSQL = 'SELECT ID, USR$NAME FROM USR$MN_PRNGROUP';
-  cn_modSQL = ' SELECT ID, USR$NAME FROM USR$MN_MODIFY ' +
-    ' WHERE USR$ISGROUP = 1 ';
-
 begin
-  if not FHeaderTable.FieldByName('usr$timecloseorder').IsNull then
-  begin
-    Touch_MessageBox('Внимание', 'По данному заказу пречек уже был распечатан!', MB_OK, mtWarning);
-    exit;
-  end;
-  if FViewMode then
-  begin
-    Touch_MessageBox('Внимание', 'Из формы оплаты нельзя добавлять товар!', MB_OK, mtWarning);
-    exit;
-  end;
-
-  FNeedDelete := False;
-  GoodKey := TButton(Sender).Tag;
-  S := '';
-  ES := '';
-  if FGoodDataSet.Locate('ID', GoodKey, []) then
-  begin
-    FLineTable.Append;
-    FLineTable.FieldByName('LINEKEY').AsInteger := FLineID;
-    FLineTable.FieldByName('STATEFIELD').AsInteger := cn_StateInsert;
-    FLineTable.FieldByName('usr$quantity').AsInteger := 1;
-    FLineTable.FieldByName('CREATIONDATE').AsDateTime := FFrontBase.GetServerDateTime;
-    FLineTable.Post;
-
-    Inc(FLineID);
-    //Issue 97
-    if (FGoodDataSet.FieldByName('PRNGROUPKEY').AsInteger = 0) and (FFrontBase.Options.NeedPrnGroup) then
-    begin
-      if Touch_MessageBox('Внимание', 'Для блюда не установлена группа сервис-печати. Установить?',
-        MB_YESNO, mtConfirmation) = IDYES then
-      begin
-        FChooseForm := TChooseForm.Create(nil);
-        try
-          FChooseForm.SQLText := cn_prnSQL;
-          FChooseForm.KeyField := 'ID';
-          FChooseForm.ListField := 'USR$NAME';
-          FChooseForm.FrontBase := FFrontBase;
-          FChooseForm.ChooseName := 'Группа сервис-печати';
-          FChooseForm.ShowModal;
-          if FChooseForm.ModalResult = mrOK then
-          begin
-            FGoodDataSet.Edit;
-            FGoodDataSet.FieldByName('PRNGROUPKEY').AsInteger := FChooseForm.ID;
-            FGoodDataSet.Post;
-            if FChooseForm.ID <> -1 then
-              FFrontBase.UpdateGoodPrnGroup(GoodKey, FChooseForm.ID);
-          end;
-        finally
-          FChooseForm.Free;
-        end;
-      end;
-    end;
-
-    if (FGoodDataSet.FieldByName('MODIFYGROUPKEY').AsInteger = 0) and (FFrontBase.Options.NeedModGroup) then
-    begin
-      if Touch_MessageBox('Внимание', 'Для блюда не установлена группа модификаторов. Установить?',
-        MB_YESNO, mtConfirmation) = IDYES then
-      begin
-        FChooseForm := TChooseForm.Create(nil);
-        try
-          FChooseForm.SQLText := cn_modSQL;
-          FChooseForm.KeyField := 'ID';
-          FChooseForm.ListField := 'USR$NAME';
-          FChooseForm.FrontBase := FFrontBase;
-          FChooseForm.ChooseName := 'Группа модификаторов';
-          FChooseForm.ShowModal;
-          if FChooseForm.ModalResult = mrOK then
-          begin
-            FGoodDataSet.Edit;
-            FGoodDataSet.FieldByName('MODIFYGROUPKEY').AsInteger := FChooseForm.ID;
-            FGoodDataSet.Post;
-            if FChooseForm.ID <> -1 then
-              FFrontBase.UpdateGoodModifyGroup(GoodKey, FChooseForm.ID);
-          end;
-        finally
-          FChooseForm.Free;
-        end;
-      end;
-    end;
-
-    // проверяем сначала на модификаторы
-    if FGoodDataSet.FieldByName('ISNEEDMODIFY').AsInteger = 1 then
-    begin
-      FForm := TModificationForm.CreateWithFrontBase(nil, FFrontBase);
-      try
-        FForm.GoodKey := GoodKey;
-        FForm.LineModifyTable := FModificationDataSet;
-        FForm.ShowModal;
-        if FForm.ModalResult = mrOK then
-        begin
-          FModificationDataSet.First;
-          while not FModificationDataSet.Eof do
-          begin
-            if S > '' then
-              S := S + ', ';
-            S := S + FModificationDataSet.FieldByName('NAME').AsString;
-            FModificationDataSet.Next;
-          end;
-          ES := FForm.ExtraModifyString;
-          if ES <> '' then
-          begin
-            if S = '' then
-              S := ES
-            else
-              S := S + ', ' + ES;
-          end;
-        end
-        else if FForm.ModalResult = mrCancel then
-          FNeedDelete := True; // Issue 128
-      finally
-        FForm.Free;
-      end;
-    end;
-    if FNeedDelete then
-      FLineTable.Delete
-    else
-    begin
-      FLineTable.Edit;
-      FLineTable.FieldByName('usr$goodkey').AsInteger := GoodKey;
-      FLineTable.FieldByName('GOODNAME').AsString := FGoodDataSet.FieldByName('NAME').AsString;
-      FLineTable.FieldByName('usr$quantity').AsInteger := 1;
-      FLineTable.FieldByName('usr$costncu').AsCurrency := FGoodDataSet.FieldByName('COST').AsCurrency;
-      FLineTable.FieldByName('MODIFYSTRING').AsString := S;
-      FLineTable.FieldByName('EXTRAMODIFY').AsString := ES;
-      FLineTable.FieldByName('USR$COMPUTERNAME').AsString := GetLocalComputerName;
-      FLineTable.FieldByName('USR$NOPRINT').AsInteger := FGoodDataSet.FieldByName('NOPRINT').AsInteger;
-      FLineTable.Post;
-
-      FGoodInfo.GoodID := GoodKey;
-      FGoodInfo.GoodName := FLineTable.FieldByName('GOODNAME').AsString;
-      FGoodInfo.Quantity := 1;
-      FGoodInfo.Sum := FGoodDataSet.FieldByName('COST').AsCurrency;
-      FLogManager.DoOrderGoodLog(GetCurrentUserInfo, GetCurrentOrderInfo, FGoodInfo, ev_AddGoodToOrder);
-      WritePos(FLineTable);
-    end;
-  end;
-  SaveAllOrder;
+  AddGood(TButton(Sender).Tag);
 end;
 
 procedure TRestMainForm.SaveAllOrder;
@@ -3243,7 +3256,6 @@ begin
           btnScrollDown.Width := Round((pnlRight.Width - 16) / 2);
           btnScrollUp.Left := Round((pnlRight.Width - 16) / 2) + 8;
           btnScrollUp.Width := Round((pnlRight.Width - 16) / 2);
-
           if FHallsTable.RecordCount = 1 then
           begin
             pnlRight.Visible := False;
@@ -4534,7 +4546,6 @@ begin
   end;
 end;
 
-
 procedure TRestMainForm.tmrCloseTimer(Sender: TObject);
 begin
   if not Assigned(FFrontBase) then
@@ -4735,6 +4746,41 @@ begin
         Application.Terminate;
     end;
   end;
+end;
+
+procedure TRestMainForm.actFindGoodExecute(Sender: TObject);
+var
+  FForm: TFindGood;
+begin
+  IsActionRun := True;
+  btnOK.Enabled := False;
+  btnCancel3.Enabled := False;
+  try
+    FForm := TFindGood.Create(nil);
+    try
+      FForm.FrontBase := FrontBase;
+      FForm.ShowModal;
+      if FForm.ModalResult = mrOk then
+        if FForm.GoodKey <> -1 then
+        begin
+          if not FGoodDataSet.Locate('ID', FForm.GoodKey, []) then
+            FFrontBase.GetGoodByID(FGoodDataSet, FForm.GoodKey);
+
+          AddGood(FForm.GoodKey);
+        end;
+    finally
+      FForm.Free;
+    end;
+  finally
+    IsActionRun := False;
+    btnOK.Enabled := True;
+    btnCancel3.Enabled := True;
+  end;
+end;
+
+procedure TRestMainForm.actFindGoodUpdate(Sender: TObject);
+begin
+  actFindGood.Enabled := FHeaderTable.FieldByName('usr$timecloseorder').IsNull and (not FViewMode) and (not IsActionRun)
 end;
 
 procedure TRestMainForm.actRestartRestExecute(Sender: TObject);

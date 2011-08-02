@@ -34,6 +34,18 @@ const
     '   and (doc.disabled is null or doc.disabled = 0)  ' +
     ' ORDER BY g.name ';
 
+  cst_AllGoodList =
+    ' SELECT DISTINCT G.ID, G.NAME ' +
+    ' FROM usr$mn_menu mn ' +
+    ' LEFT JOIN USR$MN_MENULINE mnl ON mnl.MASTERKEY = mn.DOCUMENTKEY ' +
+    ' JOIN gd_document doc on doc.id = mnl.documentkey ' +
+    ' LEFT JOIN GD_GOOD G ON G.ID = mnl.USR$GOODKEY ' +
+    ' WHERE (mn.usr$todate is null or mn.usr$todate >= :curdate) and (doc.documentdate <= :curdate) ' +
+    '   AND ((mn.USR$TIMEBEGIN <= current_time AND mn.USR$TIMEEND >= current_time) ' +
+    '     OR (mn.USR$TIMEBEGIN IS NULL AND mn.USR$TIMEEND IS NULL)) ' +
+    '   AND (doc.disabled is null or doc.disabled = 0) ' +
+    ' ORDER BY 2 ';
+
   cst_GroupList =
     ' SELECT DISTINCT cg.name name, cg.id id, cg.alias ' +
     '  FROM usr$mn_menuline mn  ' +
@@ -67,71 +79,71 @@ const
     ' ORDER BY mnn.usr$name ';
 
   cst_OrderHeader =
-     ' SELECT                      ' +
-     '   doc.id,                   ' +
-     '   doc.number,               ' +
-     '   doc.sumncu,               ' +
-     '   doc.usr$mn_printdate,     ' +
-     '   doc.editiondate,          ' +
-     '   doc.editorkey,            ' +
-     '   doc.creationdate,         ' +
-     '   o.usr$respkey,            ' +
-     '   o.usr$guestcount,         ' +
-     '   o.usr$timeorder,          ' +
-     '   o.usr$timecloseorder,     ' +
-     '   o.usr$logicdate,          ' +
-     '   o.usr$discountncu,        ' +
-     '   o.usr$disccardkey,        ' +
-     '   o.usr$userdisckey,        ' +
-     '   o.usr$discountkey,        ' +
-     '   o.usr$bonussum,           ' +
-     '   o.usr$pay,                ' +
-     '   o.usr$cash,               ' +
-     '   o.usr$sysnum,             ' +
-     '   o.usr$register,           ' +
-     '   o.usr$whopayoffkey,       ' +
-     '   o.usr$vip,                ' +
-     '   o.usr$tablekey,           ' +
-     '   o.usr$islocked AS islocked, ' +
-     ' ( SELECT SUM(L.USR$SUMNCUWITHDISCOUNT) FROM USR$MN_ORDERLINE L WHERE L.MASTERKEY = doc.ID AND L.USR$CAUSEDELETEKEY IS NULL) AS USR$SUMNCUWITHDISCOUNT, ' +
-     '   o.usr$computername        ' +
-     ' FROM gd_document doc        ' +
-     '   JOIN usr$mn_order o ON o.documentkey = doc.id  ' +
-     ' WHERE                                          ' +
-     '    o.documentkey = :id                            ';
+    ' SELECT                      ' +
+    '   doc.id,                   ' +
+    '   doc.number,               ' +
+    '   doc.sumncu,               ' +
+    '   doc.usr$mn_printdate,     ' +
+    '   doc.editiondate,          ' +
+    '   doc.editorkey,            ' +
+    '   doc.creationdate,         ' +
+    '   o.usr$respkey,            ' +
+    '   o.usr$guestcount,         ' +
+    '   o.usr$timeorder,          ' +
+    '   o.usr$timecloseorder,     ' +
+    '   o.usr$logicdate,          ' +
+    '   o.usr$discountncu,        ' +
+    '   o.usr$disccardkey,        ' +
+    '   o.usr$userdisckey,        ' +
+    '   o.usr$discountkey,        ' +
+    '   o.usr$bonussum,           ' +
+    '   o.usr$pay,                ' +
+    '   o.usr$cash,               ' +
+    '   o.usr$sysnum,             ' +
+    '   o.usr$register,           ' +
+    '   o.usr$whopayoffkey,       ' +
+    '   o.usr$vip,                ' +
+    '   o.usr$tablekey,           ' +
+    '   o.usr$islocked AS islocked, ' +
+    ' ( SELECT SUM(L.USR$SUMNCUWITHDISCOUNT) FROM USR$MN_ORDERLINE L WHERE L.MASTERKEY = doc.ID AND L.USR$CAUSEDELETEKEY IS NULL) AS USR$SUMNCUWITHDISCOUNT, ' +
+    '   o.usr$computername        ' +
+    ' FROM gd_document doc        ' +
+    '   JOIN usr$mn_order o ON o.documentkey = doc.id  ' +
+    ' WHERE                                          ' +
+    '    o.documentkey = :id                            ';
 
-   cst_OrderHeaderByDate =
-     ' SELECT                      ' +
-     '   doc.id,                   ' +
-     '   doc.number,               ' +
-     '   doc.sumncu,               ' +
-     '   doc.usr$mn_printdate,     ' +
-     '   doc.editiondate,          ' +
-     '   doc.editorkey,            ' +
-     '   o.usr$respkey,            ' +
-     '   o.usr$guestcount,         ' +
-     '   o.usr$timeorder,          ' +
-     '   o.usr$timecloseorder,     ' +
-     '   o.usr$logicdate,          ' +
-     '   o.usr$discountncu,        ' +
-     '   o.usr$disccardkey,        ' +
-     '   o.usr$userdisckey,        ' +
-     '   o.usr$discountkey,        ' +
-     '   o.usr$bonussum,           ' +
-     '   o.usr$pay,                ' +
-     '   o.usr$cash,               ' +
-     '   o.usr$sysnum,             ' +
-     '   o.usr$register,           ' +
-     '   o.usr$whopayoffkey,       ' +
-     '   o.usr$vip,                ' +
-     ' ( SELECT SUM(L.USR$SUMNCUWITHDISCOUNT) FROM USR$MN_ORDERLINE L WHERE L.MASTERKEY = doc.ID AND L.USR$CAUSEDELETEKEY IS NULL) AS USR$SUMNCUWITHDISCOUNT ' +
-     ' FROM gd_document doc        ' +
-     '   join usr$mn_order o on o.documentkey = doc.id  ' +
-     ' WHERE doc.documenttypekey = :doctype             ' +
-     '   AND doc.parent + 0 IS NULL       ' +
-     '   AND doc.companykey = :companykey ' +
-     '   AND o.usr$logicdate >= :DB      ' +
-     '   AND o.usr$logicdate <= :DE       ';
+  cst_OrderHeaderByDate =
+    ' SELECT                      ' +
+    '   doc.id,                   ' +
+    '   doc.number,               ' +
+    '   doc.sumncu,               ' +
+    '   doc.usr$mn_printdate,     ' +
+    '   doc.editiondate,          ' +
+    '   doc.editorkey,            ' +
+    '   o.usr$respkey,            ' +
+    '   o.usr$guestcount,         ' +
+    '   o.usr$timeorder,          ' +
+    '   o.usr$timecloseorder,     ' +
+    '   o.usr$logicdate,          ' +
+    '   o.usr$discountncu,        ' +
+    '   o.usr$disccardkey,        ' +
+    '   o.usr$userdisckey,        ' +
+    '   o.usr$discountkey,        ' +
+    '   o.usr$bonussum,           ' +
+    '   o.usr$pay,                ' +
+    '   o.usr$cash,               ' +
+    '   o.usr$sysnum,             ' +
+    '   o.usr$register,           ' +
+    '   o.usr$whopayoffkey,       ' +
+    '   o.usr$vip,                ' +
+    ' ( SELECT SUM(L.USR$SUMNCUWITHDISCOUNT) FROM USR$MN_ORDERLINE L WHERE L.MASTERKEY = doc.ID AND L.USR$CAUSEDELETEKEY IS NULL) AS USR$SUMNCUWITHDISCOUNT ' +
+    ' FROM gd_document doc        ' +
+    '   join usr$mn_order o on o.documentkey = doc.id  ' +
+    ' WHERE doc.documenttypekey = :doctype             ' +
+    '   AND doc.parent + 0 IS NULL       ' +
+    '   AND doc.companykey = :companykey ' +
+    '   AND o.usr$logicdate >= :DB      ' +
+    '   AND o.usr$logicdate <= :DE       ';
 
   cst_OrderLine =
     ' SELECT                                                    '+
@@ -348,6 +360,7 @@ type
     function GetGroupList(const MemTable: TkbmMemTable; const MenuKey: Integer): Boolean;
     function GetGoodList(const MemTable: TkbmMemTable; const MenuKey, GroupKey: Integer): Boolean;
     function GetGoodByID(const MemTable: TkbmMemTable; const GoodKey: Integer): Boolean;
+    procedure GetAllGoodList(const MemTable: TkbmMemTable);
     procedure UpdateGoodPrnGroup(const GoodKey, PrnGroupKey: Integer);
     procedure UpdateGoodModifyGroup(const GoodKey, ModifyGroupKey: Integer);
     function GetPopularGoodList(const MemTable: TkbmMemTable): Boolean;
@@ -2419,6 +2432,41 @@ begin
       AOrderList.Add(Order);
 
       FReadSQL.Next;
+    end;
+  finally
+    FReadSQL.Close;
+  end;
+end;
+
+procedure TFrontBase.GetAllGoodList(const MemTable: TkbmMemTable);
+var
+  LogicDate: TDateTime;
+begin
+  LogicDate := GetLogicDate;
+
+  FReadSQL.Close;
+  MemTable.Close;
+  MemTable.CreateTable;
+  MemTable.Open;
+  try
+    try
+      if not FReadSQL.Transaction.InTransaction then
+        FReadSQL.Transaction.StartTransaction;
+
+      FReadSQL.SQL.Text := cst_AllGoodList;
+      FReadSQL.ParamByName('curdate').AsDateTime := LogicDate;
+
+      FReadSQL.ExecQuery;
+      while not FReadSQL.EOF do
+      begin
+        MemTable.Append;
+        MemTable.FieldByName('ID').AsInteger := FReadSQL.FieldByName('ID').AsInteger;
+        MemTable.FieldByName('NAME').AsString := FReadSQL.FieldByName('NAME').AsString;
+        MemTable.Post;
+        FReadSQL.Next;
+      end;
+    except
+      raise;
     end;
   finally
     FReadSQL.Close;

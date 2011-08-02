@@ -70,9 +70,16 @@ begin
 end;
 
 destructor TFiscalRegister.Destroy;
+var
+  Obj: TObject;
 begin
   if Assigned(FFiscalRegister) then
-    FreeAndNil(FFiscalRegister);
+  begin
+    Obj := TObject(FFiscalRegister.Self);
+    if Assigned(Obj) then
+      FreeAndNil(Obj);
+    FFiscalRegister := nil;
+  end;
 
   inherited;
 end;
@@ -105,6 +112,8 @@ begin
 end;
 
 procedure TFiscalRegister.InitFiscalRegister(const FiscalType: Integer);
+var
+  Obj: TObject;
 begin
   Assert(Assigned(FFrontBase), 'FrontBase not Assigned');
 
@@ -113,7 +122,10 @@ begin
     FLastFiscalType := FiscalType;
     if Assigned(FFiscalRegister) then
     begin
-      FreeAndNil(FFiscalRegister);
+      Obj := TObject(FFiscalRegister.Self);
+  		if Assigned(Obj) then
+  		  FreeAndNil(Obj);
+      FFiscalRegister := nil;
     end;
 
     case FiscalType of

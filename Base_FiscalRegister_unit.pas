@@ -54,7 +54,6 @@ type
 
   IBaseFiscalRegister = interface
   ['{308C2D25-B5F7-4801-B8E4-F09E92B7AFBA}']
-    procedure Free;
     // Проверка устройства
     function CheckDeviceInfo: Boolean;
     // Инициализация
@@ -77,7 +76,7 @@ type
     function PrintZ1ReportWithCleaning: Boolean;
     //отчет X1 без гашения
     function PrintX1ReportWithOutCleaning: Boolean;
-    // открытие денежного ящика    
+    // открытие денежного ящика
     procedure OpenDrawer;
     // закрытие сессии (печать Z отчета)
     procedure EndSession;
