@@ -5,7 +5,8 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, ExtCtrls, AdvPanel, BaseFrontForm_Unit, FrontData_Unit,
-  AdvSmoothButton, ComCtrls, StdCtrls, Report_Unit, kbmMemTable, DB;
+  AdvSmoothButton, ComCtrls, StdCtrls, Report_Unit, kbmMemTable, DB,
+  AdvSmoothEdit, AdvSmoothEditButton, AdvSmoothDatePicker;
 
 type
   TReportForm = class(TBaseFrontForm)
@@ -16,11 +17,11 @@ type
     btnPrintBiilsCopy: TAdvSmoothButton;
     btnRealizationReport: TAdvSmoothButton;
     pnlTop: TAdvPanel;
-    xDateBegin: TDateTimePicker;
     lblDateBegin: TLabel;
     Label1: TLabel;
-    xDateEnd: TDateTimePicker;
     btnOK: TAdvSmoothButton;
+    xDateEnd: TAdvSmoothDatePicker;
+    xDateBegin: TAdvSmoothDatePicker;
     procedure FormShow(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -147,6 +148,9 @@ begin
   FLastTopButton := 2 * btnPrintIncomeReport.Top + btnPrintIncomeReport.Height;
   FLastLeftButton := btnPrintIncomeReport.Left;
   FReportButtonNumber := 1;
+
+  xDateEnd.SetComponentStyle(GetFrontStyle);
+  xDateBegin.SetComponentStyle(GetFrontStyle);
 end;
 
 procedure TReportForm.FormDestroy(Sender: TObject);
