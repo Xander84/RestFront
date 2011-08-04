@@ -234,8 +234,8 @@ type
     btnReservationTable: TAdvSmoothToggleButton;
     btnChangeDocNumber: TAdvSmoothToggleButton;
     actChangeDocNumber: TAction;
-    actFindGood: TAction;
     btnFindGood: TAdvSmoothButton;
+    actFindGood: TAction;
 
     // Проверка введёного пароля
     procedure actPassEnterExecute(Sender: TObject);
@@ -448,6 +448,8 @@ type
     FminMenuButtonCount: Integer;
 
     FReadyToShow: Boolean;
+    //ссылка на документ бронирования
+    FReservKey: Integer;
 
     procedure RestorePanelWidth;
 
@@ -558,7 +560,7 @@ uses
   TouchMessageBoxForm_Unit, Base_FiscalRegister_unit,
   ReturneyMoneyForm_Unit, frmSwapOrder_unit, rfOrder_unit, frmReportList_unit,
   rfChooseForm_Unit, rfUtils_unit, frmEditMenu_unit, frmViewOrder_unit,
-  rfReservForm_Unit, rfFindGood_Unit;
+  rfReservForm_Unit, rfFindGood_Unit, rfReservListForm_Unit;
 
 {$R *.dfm}
 
@@ -622,6 +624,7 @@ begin
   SetupGrid(DBGrMain);
   SetupGrid(DBGrInfoHeader);
   SetupGrid(DBGrInfoLine);
+  FReservKey := -1;
 {$IFDEF DEBUG}
   Height := cn_Height;
   Width := cn_Width;
@@ -701,7 +704,7 @@ begin
         Touch_MessageBox('Внимание', 'Ошибка при подключении ' + Trim(E.Message), MB_OK, mtError);
       FFrontBase.Free;
       Application.Terminate;
-      Exit;
+      exit;
     end;
   end;
 
@@ -2195,6 +2198,7 @@ begin
                   end;
                 end;
                 FLogManager.DoOrderLog(GetCurrentUserInfo, GetCurrentOrderInfo, ev_SaveOrder);
+                FReservKey := -1;
                 case FPrevFormState of
                   rsManagerPage:
                     CreateManagerPage;
@@ -2279,6 +2283,7 @@ begin
         begin
           if FPayed or (Touch_MessageBox('Внимание', 'Выйти из заказа?', MB_YESNO, mtConfirmation) = IDYES) then
           begin
+            FReservKey := -1;
             if not FHeaderTable.IsEmpty then
             begin
               if FFrontBase.UnLockUserOrder(FHeaderTable.FieldByName('ID').AsInteger) then
@@ -4370,6 +4375,8 @@ var
   Pt: TPoint;
   UserInfo: TUserInfo;
   Order: TrfOrder;
+  FReservForm: TReservForm;
+  FReservList: TReservList;
 begin
   if not FFrontBase.CheckForSession then
     exit;
@@ -4432,6 +4439,33 @@ begin
   end
   else if btnReservationTable.Down then  //бронирование стола
   begin
+    //если нет брони, то заводим
+    //иначе список с действиями
+    if CurrentRestTable.ReservList.Count = 0 then
+      begin
+      FReservForm := TReservForm.Create(nil);
+      try
+        FReservForm.FrontBase := FrontBase;
+        FReservForm.TableKey := CurrentRestTable.ID;
+        FReservForm.ShowModal;
+        if FReservForm.ModalResult = mrOk then
+          FTableManager.RefreshOrderData(CurrentRestTable);
+      finally
+        FReservForm.Free;
+      end;
+    end else
+    begin
+      FReservList := TReservList.Create(nil);
+      try
+        FReservList.FrontBase := FrontBase;
+        FReservList.TableKey := CurrentRestTable.ID;
+        FReservList.ShowModal;
+
+        FTableManager.RefreshOrderData(CurrentRestTable);
+      finally
+        FReservList.Free;
+      end;
+    end;
 
     btnReservationTable.Down := False;
   end

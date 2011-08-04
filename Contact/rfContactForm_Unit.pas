@@ -5,8 +5,9 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, BaseFrontForm_Unit, FrontData_Unit, Front_DataBase_Unit, ExtCtrls,
-  AdvPanel, DBCtrlsEh, StdCtrls, AdvGroupBox, DB, kbmMemTable, Mask, DBCtrls,
-  AdvSmoothTouchKeyBoard, AdvSmoothButton;
+  AdvPanel, StdCtrls, AdvGroupBox, DB, kbmMemTable, Mask, DBCtrls,
+  AdvSmoothTouchKeyBoard, AdvSmoothButton, ComCtrls, AdvDateTimePicker,
+  AdvDBDateTimePicker, ActnList;
 
 type
   TrfContact = class(TBaseFrontForm)
@@ -29,10 +30,8 @@ type
     avdGroupBox: TAdvGroupBox;
     Label7: TLabel;
     dbePassportNumber: TDBEdit;
-    dbePassportExpDate: TDBDateTimeEditEh;
     Label8: TLabel;
     Label9: TLabel;
-    dbePassportIssDate: TDBDateTimeEditEh;
     Label10: TLabel;
     dbePassportIssuer: TDBEdit;
     dbePassportIssCity: TDBEdit;
@@ -40,7 +39,13 @@ type
     pnlRight: TAdvPanel;
     btnOK: TAdvSmoothButton;
     btnCancel: TAdvSmoothButton;
+    dbePassportExpDate: TAdvDBDateTimePicker;
+    dbePassportIssDate: TAdvDBDateTimePicker;
+    alMain: TActionList;
+    actOK: TAction;
     procedure FormCreate(Sender: TObject);
+    procedure actOKUpdate(Sender: TObject);
+    procedure actOKExecute(Sender: TObject);
   private
     FInsertMode: Boolean;
     FUserKey: Integer;
@@ -55,6 +60,19 @@ var
 implementation
 
 {$R *.dfm}
+
+procedure TrfContact.actOKExecute(Sender: TObject);
+begin
+  if FrontBase.SaveContact(MainTable) then
+    ModalResult := mrOk;
+end;
+
+procedure TrfContact.actOKUpdate(Sender: TObject);
+begin
+  actOK.Enabled := (not MainTable.FieldByName('FIRSTNAME').IsNull) and
+    (not MainTable.FieldByName('SURNAME').IsNull) and
+    (not MainTable.FieldByName('MIDDLENAME').IsNull);
+end;
 
 procedure TrfContact.FormCreate(Sender: TObject);
 begin

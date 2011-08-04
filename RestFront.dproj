@@ -179,6 +179,9 @@
 			<DCCReference Include="forms\rfFindGood_Unit.pas">
 				<Form>FindGood</Form>
 			</DCCReference>
+			<DCCReference Include="forms\rfReservListForm_Unit.pas">
+				<Form>ReservList</Form>
+			</DCCReference>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>

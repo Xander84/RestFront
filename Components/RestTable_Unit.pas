@@ -5,7 +5,7 @@ interface
 uses
   SysUtils, Classes, Controls, Graphics, Messages,
   pngimage, Buttons, Generics.Collections, Types,
-  Windows, Menus, rfOrder_unit, jpeg;
+  Windows, Menus, rfOrder_unit, jpeg, DateUtils;
 
 type
   TRestTableCondition = (
@@ -472,7 +472,7 @@ begin
     // бронирование
     for Reservation in FReservList do
     begin
-      if Reservation.ReservDate = FDate then
+      if IsSameDay(Reservation.ReservDate, FDate) then
         FTableConditionList.Add(TRestTableCondition.rtcReservation);
     end;
   finally

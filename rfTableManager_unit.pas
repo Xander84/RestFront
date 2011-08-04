@@ -511,11 +511,11 @@ var
   var
     Order: TrfOrder;
   begin
+    // ”далим все заказы на столе
+    CurTable.ClearOrders;
     // ≈сли не было заказов на столе и нет в запросе, то не будем перерисовывать
     if (CurTable.OrderList.Count <> 0) or (not FSQL.Eof) then
     begin
-      // ”далим все заказы на столе
-      CurTable.ClearOrders;
       while not FSQL.Eof do
       begin
         // ƒобавим заказ в список заказов стола
@@ -584,12 +584,14 @@ begin
       while not FSQL.Eof do
       begin
         Reserv := ATable.AddReservation(FSQL.FieldByName('ID').AsInteger,
-          FSQL.FieldByName('USR$DOCUMENTDATE').AsString);
+          FSQL.FieldByName('USR$DOCUMENTNUMBER').AsString);
         Reserv.ReservDate := FSQL.FieldByName('USR$RESERVDATE').AsDate;
         Reserv.ReservTime := FSQL.FieldByName('USR$RESERVTIME').AsTime;
 
         FSQL.Next;
       end;
+      if ATable.ReservList.Count > 0 then
+        ATable.RefreshTableCondition(FDataBase.ContactKey);
     end
     else
     begin
@@ -621,7 +623,10 @@ begin
     for Table in FTablesList.Values do
     begin
       if Table.HallKey = HallKey then
+      begin
         Table.ClearOrders;
+        Table.Date := GetServerDateTime;
+      end;
     end;
 
     FSQL.Transaction := FDataBase.ReadTransaction;
@@ -648,8 +653,6 @@ begin
       Table := GetTable(FSQL.FieldByName('ID').AsInteger);
       if Assigned(Table) then
       begin
-        Table.Date := GetServerDateTime;
-
         // ƒобавим заказ в список заказов стола
         Order := Table.AddOrder(FSQL.FieldByName('DOCUMENTKEY').AsInteger,
           FSQL.FieldByName('NUMBER').AsString);
@@ -669,16 +672,16 @@ begin
     FSQL.Close;
 
     FSQL.SQL.Text :=
-    ' SELECT ' +
-    '   R.ID, ' +
-    '   R.USR$RESERVDATE, ' +
-    '   R.USR$RESERVTIME, ' +
-    '   R.USR$DOCUMENTNUMBER, ' +
-    '   R.USR$TABLEKEY ' +
-    ' FROM USR$MN_RESERVATION R ' +
-    ' JOIN USR$MN_TABLE T ON T.ID = R.USR$TABLEKEY ' +
-    ' WHERE T.USR$HALLKEY = :ID ' +
-    '   AND R.USR$PAYED <> 1 ';
+      ' SELECT ' +
+      '   R.ID, ' +
+      '   R.USR$RESERVDATE, ' +
+      '   R.USR$RESERVTIME, ' +
+      '   R.USR$DOCUMENTNUMBER, ' +
+      '   R.USR$TABLEKEY ' +
+      ' FROM USR$MN_RESERVATION R ' +
+      ' JOIN USR$MN_TABLE T ON T.ID = R.USR$TABLEKEY ' +
+      ' WHERE T.USR$HALLKEY = :ID ' +
+      '   AND R.USR$PAYED <> 1 ';
     FSQL.Params[0].AsInteger := HallKey;
     FSQL.ExecQuery;
     while not FSQL.Eof do
@@ -687,7 +690,7 @@ begin
       if Assigned(Table) then
       begin
         Reserv := Table.AddReservation(FSQL.FieldByName('ID').AsInteger,
-          FSQL.FieldByName('USR$DOCUMENTDATE').AsString);
+          FSQL.FieldByName('USR$DOCUMENTNUMBER').AsString);
         Reserv.ReservDate := FSQL.FieldByName('USR$RESERVDATE').AsDate;
         Reserv.ReservTime := FSQL.FieldByName('USR$RESERVTIME').AsTime;
       end;

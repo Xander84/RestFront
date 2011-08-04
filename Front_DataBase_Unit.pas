@@ -17,6 +17,7 @@ const
   //рубли по умолчанию форма оплаты
   mn_RUBpaytypeXID = 147141777;
   mn_RUBpaytypeDBID = 349813242;
+  cn_ContactFolderID = 650001;
 
 //константы с запросами
 const
@@ -395,6 +396,8 @@ type
     { Список всех пользователей фронта }
     procedure GetWaiterList(AOrderList: TList<TrfUser>);
     procedure GetAllUserList(const MemTable: TkbmMemTable);
+    procedure GetContactList(const MemTable: TkbmMemTable);
+    function SaveContact(const MemTable: TkbmMemTable): Boolean;
     { Список всех пользователей фронта у которых на данный момент есть заказы }
     procedure GetActiveWaiterList(AOrderList: TList<TrfUser>; const WithPrecheck: Boolean);
     function GetLogicDate: TDateTime;
@@ -447,7 +450,10 @@ type
     //2. Перенос блюда
     //3. Удаление блюда
     function SaveOrderLog(const WaiterKey, ManagerKey, OrderKey, OrderLineKey, Operation: Integer): Boolean;
-
+    //бронирование
+    function SaveReserv(const MemTable: TkbmMemTable): Boolean;
+    procedure DeleteReservation(const ID: Integer);
+    procedure GetReservListByTable(const TableKey: Integer; const MemTable: TkbmMemTable);
     //reports
     function SavePrintDate(const ID: Integer): Boolean;
     function GetReportList(var MemTable: TkbmMemTable): Boolean;
@@ -521,6 +527,8 @@ begin
   DS.FieldDefs.Add('creationdate', ftTimeStamp, 0);
   DS.FieldDefs.Add('USR$TABLEKEY', ftInteger, 0);
   DS.FieldDefs.Add('USR$COMPUTERNAME', ftString, 20);
+  DS.FieldDefs.Add('USR$AVANSSUM', ftFloat, 0);
+  DS.FieldDefs.Add('USR$RESERVKEY', ftInteger, 0);
   DS.CreateTable;
 end;
 
@@ -1154,6 +1162,29 @@ begin
   end;
 end;
 
+procedure TFrontBase.DeleteReservation(const ID: Integer);
+begin
+  FCheckSQL.Close;
+  try
+    if not FCheckSQL.Transaction.InTransaction then
+      FCheckSQL.Transaction.StartTransaction;
+
+    FCheckSQL.SQL.Text := ' DELETE FROM USR$MN_RESERVATION ' +
+      ' WHERE ID = :ID ';
+    FCheckSQL.ParamByName('ID').AsInteger := ID;
+    FCheckSQL.ExecQuery;
+
+    FCheckSQL.Transaction.Commit;
+    FCheckSQL.Close;
+  except
+    on E: Exception do
+    begin
+      FCheckSQL.Transaction.Rollback;
+      Touch_MessageBox('Внимание', 'Ошибка ' + E.Message, MB_OK, mtError);
+    end;
+  end;
+end;
+
 destructor TFrontBase.Destroy;
 begin
   FReadSQL.Free;
@@ -1231,6 +1262,40 @@ begin
       Result := True;
     except
       Result := False;
+      raise;
+    end;
+  finally
+    FReadSQL.Close;
+  end;
+end;
+
+procedure TFrontBase.GetContactList(const MemTable: TkbmMemTable);
+begin
+  MemTable.Close;
+  MemTable.CreateTable;
+  MemTable.Open;
+  try
+    try
+      if not FReadSQL.Transaction.InTransaction then
+        FReadSQL.Transaction.StartTransaction;
+
+      FReadSQL.SQL.Text :=
+        ' SELECT CON.ID, CON.NAME ' +
+        ' FROM GD_CONTACT CON ' +
+        ' JOIN GD_PEOPLE PL ON CON.ID = PL.CONTACTKEY ' +
+        ' WHERE CON.CONTACTTYPE = 2 ' +
+        '   AND PL.WCOMPANYKEY IS NULL ' +
+        ' ORDER BY 2 ';
+      FReadSQL.ExecQuery;
+      while not FReadSQL.EOF do
+      begin
+        MemTable.Append;
+        MemTable.FieldByName('ID').AsInteger := FReadSQL.FieldByName('ID').AsInteger;
+        MemTable.FieldByName('NAME').AsString := FReadSQL.FieldByName('NAME').AsString;
+        MemTable.Post;
+        FReadSQL.Next;
+      end;
+    except
       raise;
     end;
   finally
@@ -2853,11 +2918,12 @@ begin
       S := ' SELECT K.USR$NAME, K.USR$PAYTYPEKEY, K.USR$NOFISCAL, K.ID FROM USR$MN_KINDTYPE K ' +
         ' LEFT JOIN USR$MN_PAYMENTRULES R ON R.USR$PAYTYPEKEY = K.USR$PAYTYPEKEY ';
       if IsPlCard = 1 then
-        FReadSQL.SQL.Text := S + ' WHERE K.USR$ISPLCARD = 1 ' +
+        S := S + ' WHERE K.USR$ISPLCARD = 1 ' +
           ' AND (R.USR$PAYTYPEKEY IS NULL OR (BIN_AND(g_b_shl(1, R.USR$GROUPKEY - 1), :FKEY) <> 0)) '
       else
-        FReadSQL.SQL.Text := S + ' WHERE K.USR$PAYTYPEKEY = :paytype AND ((K.USR$ISPLCARD IS NULL) OR (K.USR$ISPLCARD = 0))';
-      FReadSQL.SQL.Text := FReadSQL.SQL.Text + ' ORDER BY K.USR$NAME ';
+        S := S + ' WHERE K.USR$PAYTYPEKEY = :paytype AND ((K.USR$ISPLCARD IS NULL) OR (K.USR$ISPLCARD = 0))';
+      S := S + ' ORDER BY K.USR$NAME ';
+      FReadSQL.SQL.Text := S;
 
       if IsPlCard = 1 then
         FReadSQL.ParamByName('FKEY').AsInteger := FUserKey
@@ -2933,20 +2999,6 @@ begin
       FReadSQL.ExecQuery;
       NoCashCount := FReadSQL.FieldByName('CREDIT_COUNT').AsInteger;
       FReadSQL.Close;
-
-{      FReadSQL.SQL.Text :=
-        'SELECT ' +
-        '  SUM(IIF(/*K.usr$paytypekey = :creditID and*/ k.usr$isplcard = 1, 1, 0)) AS CARD_COUNT, ' +
-        '  SUM(IIF(K.usr$paytypekey = :creditID and (COALESCE(usr$isplcard, 0) = 0), 1, 0)) AS CREDIT_COUNT, ' +
-        '  SUM(IIF(K.usr$paytypekey = :PCID, 1, 0)) AS PC_COUNT ' +
-        'FROM USR$MN_KINDTYPE K ';
-      FReadSQL.ParamByName('creditID').AsInteger := CreditID;
-      FReadSQL.ParamByName('PCID').AsInteger := PCID;
-      FReadSQL.ExecQuery;
-      CardCount := FReadSQL.FieldByName('CARD_COUNT').AsInteger;
-      NoCashCount := FReadSQL.FieldByName('CREDIT_COUNT').AsInteger;
-      PercCardCount := FReadSQL.FieldByName('PC_COUNT').AsInteger;
-      FReadSQL.Close;       }
     except
       raise;
     end;
@@ -3104,7 +3156,7 @@ begin
     if not FReadSQL.Transaction.InTransaction then
       FReadSQL.Transaction.StartTransaction;
 
-    FReadSQL.SQL.Text := ' SELECT ID FROM gd_ruid WHERE xid= :xid and dbid = :dbid ' ;
+    FReadSQL.SQL.Text := ' SELECT ID FROM gd_ruid WHERE xid = :xid and dbid = :dbid ' ;
     FReadSQL.ParamByName('xid').AsInteger := XID;
     FReadSQL.ParamByName('dbid').AsInteger := DBID;
     FReadSQL.ExecQuery;
@@ -3538,7 +3590,6 @@ begin
         if ModifyTable.FieldByName('CLOSETIME').AsString = '' then
         begin
           FSQL.ParamByName('linekey').AsInteger := ModifyTable.FieldByName('MASTERKEY').AsInteger;
-//          FSQL.ParamByName('closetime').AsTime := CloseTime;
           FSQL.ExecQuery;
           FSQL.Close;
         end;
@@ -3568,6 +3619,76 @@ begin
     Result := GetOrder(HeaderTable, LineTable, ModifyTable, OrderKey);
   except
     raise;
+  end;
+end;
+
+function TFrontBase.SaveContact(const MemTable: TkbmMemTable): Boolean;
+var
+  FSQL: TIBSQL;
+  Tr: TIBTransaction;
+  ContactID: Integer;
+begin
+// 1. Добавляем запись в GD_CONTACT
+// 2. Добавляем запись в GD_PEOPLE
+// 3. Создаем IB запись
+// 4. Добавляем запись в GD_USER
+// 5. Добавляем запись в GD_USERCOMPANY
+  FSQL := TIBSQL.Create(nil);
+  Tr := TIBTransaction.Create(nil);
+  try
+    try
+      Tr.DefaultDatabase := FDataBase;
+      Tr.StartTransaction;
+      FSQL.Transaction := Tr;
+
+      ContactID := GetNextID;
+      //1.
+      FSQL.SQL.Text := ' INSERT INTO GD_CONTACT (ID, PARENT, CONTACTTYPE, NAME, AFULL, ACHAG, AVIEW, ' +
+        ' ADDRESS, PHONE) ' +
+        ' VALUES (:ID, :DEP, 2, :NAME, -1, -1, -1, :ADDRESS, :PHONE) ';
+      FSQL.ParamByName('ID').AsInteger := ContactID;
+      FSQL.ParamByName('DEP').AsInteger := cn_ContactFolderID;
+      FSQL.ParamByName('NAME').AsString := MemTable.FieldByName('SURNAME').AsString + ' ' +
+        MemTable.FieldByName('FIRSTNAME').AsString + ' ' + MemTable.FieldByName('MIDDLENAME').AsString;
+      FSQL.ParamByName('ADDRESS').Value := MemTable.FieldByName('ADDRESS').Value;
+      FSQL.ParamByName('PHONE').Value := MemTable.FieldByName('PHONE').Value;
+      FSQL.ExecQuery;
+      FSQL.Close;
+
+      //2.
+      FSQL.SQL.Text :=
+        ' INSERT INTO GD_PEOPLE (CONTACTKEY, FIRSTNAME, SURNAME, MIDDLENAME, ' +
+        '   HPHONE, PASSPORTNUMBER, PASSPORTISSDATE, PASSPORTEXPDATE, ' +
+        '   PASSPORTISSCITY, PASSPORTISSUER) ' +
+        ' VALUES (:ID, :FNAME, :SNAME, :MNAME, ' +
+        '   :HPHONE, :PASSPORTNUMBER, :PASSPORTISSDATE, :PASSPORTEXPDATE, ' +
+        '   :PASSPORTISSCITY, :PASSPORTISSUER) ';
+      FSQL.ParamByName('ID').AsInteger := ContactID;
+      FSQL.ParamByName('FNAME').AsString := MemTable.FieldByName('FIRSTNAME').AsString;
+      FSQL.ParamByName('SNAME').AsString := MemTable.FieldByName('SURNAME').AsString;
+      FSQL.ParamByName('MNAME').AsString := MemTable.FieldByName('MIDDLENAME').AsString;
+      FSQL.ParamByName('HPHONE').Value := MemTable.FieldByName('HPHONE').Value;
+      FSQL.ParamByName('PASSPORTNUMBER').Value := MemTable.FieldByName('PASSPORTNUMBER').Value;
+      FSQL.ParamByName('PASSPORTISSDATE').Value := MemTable.FieldByName('PASSPORTISSDATE').Value;
+      FSQL.ParamByName('PASSPORTEXPDATE').Value := MemTable.FieldByName('PASSPORTEXPDATE').Value;
+      FSQL.ParamByName('PASSPORTISSCITY').Value := MemTable.FieldByName('PASSPORTISSCITY').Value;
+      FSQL.ParamByName('PASSPORTISSUER').Value := MemTable.FieldByName('PASSPORTISSUER').Value;
+      FSQL.ExecQuery;
+      FSQL.Close;
+
+      Tr.Commit;
+      Result := True;
+    except
+      on E: Exception do
+      begin
+        Touch_MessageBox('Внимание', 'Ошибка при создании пользователя ' + E.Message, MB_OK, mtError);
+        Result := False;
+        Tr.Rollback;
+      end;
+    end;
+  finally
+    FSQL.Free;
+    Tr.Free;
   end;
 end;
 
@@ -3973,6 +4094,51 @@ begin
   end;
 end;
 
+procedure TFrontBase.GetReservListByTable(const TableKey: Integer;
+  const MemTable: TkbmMemTable);
+begin
+  FReadSQL.Close;
+  MemTable.Close;
+  MemTable.CreateTable;
+  MemTable.Open;
+  try
+    try
+      if not FReadSQL.Transaction.InTransaction then
+        FReadSQL.Transaction.StartTransaction;
+
+      FReadSQL.SQL.Text :=
+        ' SELECT ' +
+        '   R.ID, ' +
+        '   R.USR$RESERVDATE, ' +
+        '   R.USR$RESERVTIME, ' +
+        '   R.USR$DOCUMENTNUMBER, ' +
+        '   R.USR$DOCUMENTDATE, ' +
+        '   R.USR$AVANSSUM ' +
+        ' FROM USR$MN_RESERVATION R ' +
+        ' WHERE R.USR$TABLEKEY = :ID  ' +
+        '  AND R.USR$PAYED <> 1 ';
+      FReadSQL.Params[0].AsInteger := TableKey;
+      FReadSQL.ExecQuery;
+      while not FReadSQL.EOF do
+      begin
+        MemTable.Append;
+        MemTable.FieldByName('ID').AsInteger := FReadSQL.FieldByName('ID').AsInteger;
+        MemTable.FieldByName('NAME').AsString := FReadSQL.FieldByName('USR$DOCUMENTNUMBER').AsString +
+          ' от ' + FReadSQL.FieldByName('USR$DOCUMENTDATE').AsString;
+        MemTable.FieldByName('USR$AVANSSUM').AsCurrency := FReadSQL.FieldByName('USR$AVANSSUM').AsCurrency;
+        MemTable.Post;
+
+        FReadSQL.Next;
+      end;
+    except
+      raise;
+    end;
+  finally
+    FReadSQL.Close;
+  end;
+
+end;
+
 function TFrontBase.OrderIsLocked(const ID: Integer): Boolean;
 begin
   Result := False;
@@ -4068,7 +4234,7 @@ begin
       if not FReadSQL.Transaction.InTransaction then
         FReadSQL.Transaction.StartTransaction;
 
-      FReadSQL.SQL.Text := 'SELECT ID, USR$NAME from USR$MN_DISCOUNTNAME ORDER BY NAME ';
+      FReadSQL.SQL.Text := 'SELECT ID, USR$NAME FROM USR$MN_DISCOUNTNAME ORDER BY NAME ';
       FReadSQL.ExecQuery;
       while not FReadSQL.EOF do
       begin
@@ -4559,6 +4725,7 @@ begin
       FSQL.ParamByName('id').AsInteger := ID;
       FSQL.ParamByName('data').LoadFromStream(Stream);
       FSQL.ExecQuery;
+      Result := True;
     except
       on E: Exception do
       begin
@@ -4570,7 +4737,51 @@ begin
   finally
     if FCheckTransaction.InTransaction then
       FCheckTransaction.Commit;
+    FSQL.Free;
+  end;
+end;
 
+function TFrontBase.SaveReserv(const MemTable: TkbmMemTable): Boolean;
+var
+  FSQL: TIBSQL;
+begin
+  Result := False;
+
+  FSQL := TIBSQL.Create(nil);
+  FSQL.Transaction := FCheckTransaction;
+  FSQL.SQL.Text :=
+    ' INSERT INTO USR$MN_RESERVATION(ID, USR$TABLEKEY, USR$RESERVTIME, ' +
+    '   USR$RESERVDATE, USR$DOCUMENTDATE, USR$DOCUMENTNUMBER, USR$CONTACTKEY, ' +
+    '   EDITORKEY, EDITIONDATE) ' +
+    ' VALUES (:ID, :USR$TABLEKEY, :USR$RESERVTIME, ' +
+    '   :USR$RESERVDATE, :USR$DOCUMENTDATE, :USR$DOCUMENTNUMBER, :USR$CONTACTKEY, ' +
+    '   :EDITORKEY, CURRENT_TIMESTAMP) ';
+  try
+    if not FCheckTransaction.InTransaction then
+      FCheckTransaction.StartTransaction;
+
+    try
+      FSQL.ParamByName('ID').AsInteger := MemTable.FieldByName('ID').AsInteger;
+      FSQL.ParamByName('USR$TABLEKEY').AsInteger := MemTable.FieldByName('USR$TABLEKEY').AsInteger;
+      FSQL.ParamByName('USR$RESERVTIME').Value := MemTable.FieldByName('USR$RESERVTIME').Value;
+      FSQL.ParamByName('USR$RESERVDATE').Value := MemTable.FieldByName('USR$RESERVDATE').Value;
+      FSQL.ParamByName('USR$DOCUMENTDATE').Value := MemTable.FieldByName('USR$DOCUMENTDATE').Value;
+      FSQL.ParamByName('USR$DOCUMENTNUMBER').AsString := MemTable.FieldByName('USR$DOCUMENTNUMBER').AsString;
+      FSQL.ParamByName('USR$CONTACTKEY').Value := MemTable.FieldByName('USR$CONTACTKEY').Value;
+      FSQL.ParamByName('EDITORKEY').AsInteger := FContactKey;
+      FSQL.ExecQuery;
+
+      Result := True;
+    except
+      on E: Exception do
+      begin
+        Touch_MessageBox('Внимание', 'Ошибка при сохранении шаблона ' + E.Message, MB_OK, mtError);
+        FCheckTransaction.Rollback;
+      end;
+    end;
+  finally
+    if FCheckTransaction.InTransaction then
+      FCheckTransaction.Commit;
     FSQL.Free;
   end;
 end;

@@ -59,10 +59,6 @@ object rfContact: TrfContact
     StatusBar.ColorTo = 16374724
     StatusBar.GradientDirection = gdVertical
     Styler = FrontData.FrontPanelStyler
-    ExplicitLeft = 192
-    ExplicitTop = 152
-    ExplicitWidth = 185
-    ExplicitHeight = 41
     FullHeight = 0
     object Label1: TLabel
       Left = 16
@@ -948,6 +944,12 @@ object rfContact: TrfContact
       Width = 602
       Height = 148
       Caption = #1055#1072#1089#1087#1086#1088#1090#1085#1099#1077' '#1076#1072#1085#1085#1099#1077
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'Times New Roman'
+      Font.Style = [fsBold]
+      ParentFont = False
       TabOrder = 7
       object Label7: TLabel
         Left = 9
@@ -1033,7 +1035,7 @@ object rfContact: TrfContact
         Left = 9
         Top = 45
         Width = 160
-        Height = 31
+        Height = 29
         DataField = 'PASSPORTNUMBER'
         DataSource = dsMain
         Font.Charset = DEFAULT_CHARSET
@@ -1045,47 +1047,11 @@ object rfContact: TrfContact
         ParentFont = False
         TabOrder = 0
       end
-      object dbePassportExpDate: TDBDateTimeEditEh
-        Left = 186
-        Top = 45
-        Width = 160
-        Height = 31
-        DataField = 'PASSPORTEXPDATE'
-        DataSource = dsMain
-        EditButtons = <>
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -21
-        Font.Name = 'Times New Roman'
-        Font.Style = []
-        Kind = dtkDateEh
-        ParentFont = False
-        TabOrder = 1
-        Visible = True
-      end
-      object dbePassportIssDate: TDBDateTimeEditEh
-        Left = 368
-        Top = 45
-        Width = 160
-        Height = 31
-        DataField = 'PASSPORTISSDATE'
-        DataSource = dsMain
-        EditButtons = <>
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -21
-        Font.Name = 'Times New Roman'
-        Font.Style = []
-        Kind = dtkDateEh
-        ParentFont = False
-        TabOrder = 2
-        Visible = True
-      end
       object dbePassportIssuer: TDBEdit
         Left = 9
         Top = 112
         Width = 160
-        Height = 31
+        Height = 29
         DataField = 'PASSPORTISSUER'
         DataSource = dsMain
         Font.Charset = DEFAULT_CHARSET
@@ -1095,13 +1061,13 @@ object rfContact: TrfContact
         Font.Style = []
         MaxLength = 20
         ParentFont = False
-        TabOrder = 3
+        TabOrder = 1
       end
       object dbePassportIssCity: TDBEdit
         Left = 186
         Top = 112
         Width = 160
-        Height = 31
+        Height = 29
         DataField = 'PASSPORTISSCITY'
         DataSource = dsMain
         Font.Charset = DEFAULT_CHARSET
@@ -1111,7 +1077,65 @@ object rfContact: TrfContact
         Font.Style = []
         MaxLength = 20
         ParentFont = False
+        TabOrder = 2
+      end
+      object dbePassportExpDate: TAdvDBDateTimePicker
+        Left = 186
+        Top = 45
+        Width = 160
+        Height = 31
+        Date = 40759.607291666670000000
+        Time = 40759.607291666670000000
+        DoubleBuffered = True
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -21
+        Font.Name = 'Times New Roman'
+        Font.Style = []
+        Kind = dkDate
+        ParentDoubleBuffered = False
+        ParentFont = False
+        TabOrder = 3
+        BorderStyle = bsSingle
+        Ctl3D = True
+        DateTime = 40759.607291666670000000
+        Version = '1.1.0.0'
+        LabelFont.Charset = DEFAULT_CHARSET
+        LabelFont.Color = clWindowText
+        LabelFont.Height = -11
+        LabelFont.Name = 'Tahoma'
+        LabelFont.Style = []
+        DataField = 'PASSPORTEXPDATE'
+        DataSource = dsMain
+      end
+      object dbePassportIssDate: TAdvDBDateTimePicker
+        Left = 368
+        Top = 45
+        Width = 160
+        Height = 31
+        Date = 40759.607291666670000000
+        Time = 40759.607291666670000000
+        DoubleBuffered = True
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -21
+        Font.Name = 'Times New Roman'
+        Font.Style = []
+        Kind = dkDate
+        ParentDoubleBuffered = False
+        ParentFont = False
         TabOrder = 4
+        BorderStyle = bsSingle
+        Ctl3D = True
+        DateTime = 40759.607291666670000000
+        Version = '1.1.0.0'
+        LabelFont.Charset = DEFAULT_CHARSET
+        LabelFont.Color = clWindowText
+        LabelFont.Height = -11
+        LabelFont.Name = 'Tahoma'
+        LabelFont.Style = []
+        DataField = 'PASSPORTISSDATE'
+        DataSource = dsMain
       end
     end
     object pnlRight: TAdvPanel
@@ -1158,14 +1182,13 @@ object rfContact: TrfContact
       StatusBar.ColorTo = 16374724
       StatusBar.GradientDirection = gdVertical
       Styler = FrontData.FrontPanelStyler
-      ExplicitLeft = 598
-      ExplicitHeight = 552
       FullHeight = 0
       object btnOK: TAdvSmoothButton
         Left = 5
         Top = 10
         Width = 107
         Height = 37
+        Action = actOK
         Appearance.Font.Charset = DEFAULT_CHARSET
         Appearance.Font.Color = clWindowText
         Appearance.Font.Height = -13
@@ -1247,5 +1270,14 @@ object rfContact: TrfContact
     LocaleID = 1024
     Left = 536
     Top = 160
+  end
+  object alMain: TActionList
+    Left = 464
+    Top = 112
+    object actOK: TAction
+      Caption = 'OK'
+      OnExecute = actOKExecute
+      OnUpdate = actOKUpdate
+    end
   end
 end

@@ -2,7 +2,7 @@ object ReservForm: TReservForm
   Left = 0
   Top = 0
   Caption = #1041#1088#1086#1085#1080#1088#1086#1074#1072#1085#1080#1077
-  ClientHeight = 456
+  ClientHeight = 448
   ClientWidth = 759
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -12,13 +12,15 @@ object ReservForm: TReservForm
   Font.Style = []
   OldCreateOrder = False
   Position = poMainFormCenter
+  OnCreate = FormCreate
+  OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
   object pnlMain: TAdvPanel
     Left = 0
     Top = 0
     Width = 759
-    Height = 456
+    Height = 448
     Align = alClient
     BevelOuter = bvNone
     Color = 16640730
@@ -58,10 +60,7 @@ object ReservForm: TReservForm
     StatusBar.ColorTo = 16374724
     StatusBar.GradientDirection = gdVertical
     Styler = FrontData.FrontPanelStyler
-    ExplicitLeft = 136
-    ExplicitTop = 80
-    ExplicitWidth = 185
-    ExplicitHeight = 41
+    ExplicitHeight = 456
     FullHeight = 0
     object Label1: TLabel
       Left = 16
@@ -80,6 +79,22 @@ object ReservForm: TReservForm
       Transparent = True
     end
     object Label2: TLabel
+      Left = 236
+      Top = 5
+      Width = 52
+      Height = 24
+      Caption = #1044#1072#1090#1072':'
+      Color = clNone
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -20
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentColor = False
+      ParentFont = False
+      Transparent = True
+    end
+    object Label4: TLabel
       Left = 16
       Top = 77
       Width = 189
@@ -95,11 +110,44 @@ object ReservForm: TReservForm
       ParentFont = False
       Transparent = True
     end
+    object Label3: TLabel
+      Left = 236
+      Top = 77
+      Width = 202
+      Height = 24
+      Caption = #1042#1088#1077#1084#1103' '#1073#1088#1086#1085#1080#1088#1086#1074#1072#1085#1080#1103':'
+      Color = clNone
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -20
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentColor = False
+      ParentFont = False
+      Transparent = True
+    end
+    object Label5: TLabel
+      Left = 16
+      Top = 146
+      Width = 72
+      Height = 24
+      Caption = #1050#1083#1080#1077#1085#1090':'
+      Color = clNone
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -20
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentColor = False
+      ParentFont = False
+      Transparent = True
+    end
     object btnOK: TAdvSmoothButton
       Left = 645
       Top = 10
       Width = 107
       Height = 37
+      Action = actOK
       Appearance.Font.Charset = DEFAULT_CHARSET
       Appearance.Font.Color = clWindowText
       Appearance.Font.Height = -13
@@ -121,7 +169,7 @@ object ReservForm: TReservForm
       Bevel = False
       Color = 15195349
       ParentFont = False
-      TabOrder = 0
+      TabOrder = 1
       Version = '1.6.9.0'
     end
     object btnCancel: TAdvSmoothButton
@@ -151,7 +199,7 @@ object ReservForm: TReservForm
       Caption = #1054#1090#1084#1077#1085#1072
       Color = 15195349
       ParentFont = False
-      TabOrder = 1
+      TabOrder = 2
       Version = '1.6.9.0'
       ModalResult = 2
     end
@@ -169,11 +217,11 @@ object ReservForm: TReservForm
       Font.Style = []
       MaxLength = 20
       ParentFont = False
-      TabOrder = 2
+      TabOrder = 0
     end
     object AdvTouchKeyBoard: TAdvSmoothTouchKeyBoard
       Left = 16
-      Top = 246
+      Top = 225
       Width = 602
       Height = 202
       AutoCompletion.Font.Charset = DEFAULT_CHARSET
@@ -857,21 +905,143 @@ object ReservForm: TReservForm
       Font.Name = 'Tahoma'
       Font.Style = []
     end
-    object DBEdit1: TDBEdit
+    object dbeReservDate: TAdvDBDateTimePicker
       Left = 16
       Top = 107
       Width = 160
       Height = 31
-      DataField = 'USR$DOCUMENTDATE'
-      DataSource = dsMain
+      Date = 40759.483946076390000000
+      Time = 40759.483946076390000000
+      DoubleBuffered = True
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -21
       Font.Name = 'Times New Roman'
       Font.Style = []
-      MaxLength = 20
+      Kind = dkDate
+      ParentDoubleBuffered = False
       ParentFont = False
       TabOrder = 4
+      BorderStyle = bsSingle
+      Ctl3D = True
+      DateTime = 40759.483946076390000000
+      Version = '1.1.0.0'
+      LabelFont.Charset = DEFAULT_CHARSET
+      LabelFont.Color = clWindowText
+      LabelFont.Height = -11
+      LabelFont.Name = 'Tahoma'
+      LabelFont.Style = []
+      DataField = 'USR$RESERVDATE'
+      DataSource = dsMain
+    end
+    object dbeReservTime: TAdvDBDateTimePicker
+      Left = 236
+      Top = 107
+      Width = 160
+      Height = 31
+      Date = 40759.483935185180000000
+      Time = 40759.483935185180000000
+      DoubleBuffered = True
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -21
+      Font.Name = 'Times New Roman'
+      Font.Style = []
+      Kind = dkTime
+      ParentDoubleBuffered = False
+      ParentFont = False
+      TabOrder = 5
+      BorderStyle = bsSingle
+      Ctl3D = True
+      DateTime = 40759.483935185180000000
+      Version = '1.1.0.0'
+      LabelFont.Charset = DEFAULT_CHARSET
+      LabelFont.Color = clWindowText
+      LabelFont.Height = -11
+      LabelFont.Name = 'Tahoma'
+      LabelFont.Style = []
+      DataField = 'USR$RESERVTIME'
+      DataSource = dsMain
+    end
+    object dbeDocumentDate: TAdvDBDateTimePicker
+      Left = 236
+      Top = 35
+      Width = 160
+      Height = 31
+      Date = 40759.483935185180000000
+      Time = 40759.483935185180000000
+      DoubleBuffered = True
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -21
+      Font.Name = 'Times New Roman'
+      Font.Style = []
+      Kind = dkDate
+      ParentDoubleBuffered = False
+      ParentFont = False
+      TabOrder = 6
+      BorderStyle = bsSingle
+      Ctl3D = True
+      DateTime = 40759.483935185180000000
+      Version = '1.1.0.0'
+      LabelFont.Charset = DEFAULT_CHARSET
+      LabelFont.Color = clWindowText
+      LabelFont.Height = -11
+      LabelFont.Name = 'Tahoma'
+      LabelFont.Style = []
+      DataField = 'USR$DOCUMENTDATE'
+      DataSource = dsMain
+    end
+    object DBLookupComboBox: TDBLookupComboBox
+      Left = 16
+      Top = 176
+      Width = 380
+      Height = 31
+      Color = clWhite
+      DataField = 'NAME'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -21
+      Font.Name = 'Times New Roman'
+      Font.Style = []
+      KeyField = 'ID'
+      ListField = 'NAME'
+      ListSource = dsClient
+      ParentFont = False
+      TabOrder = 7
+    end
+    object btnAddContact: TAdvSmoothButton
+      Left = 417
+      Top = 163
+      Width = 57
+      Height = 54
+      Appearance.PictureAlignment = taCenter
+      Appearance.Font.Charset = DEFAULT_CHARSET
+      Appearance.Font.Color = clWindowText
+      Appearance.Font.Height = -11
+      Appearance.Font.Name = 'Tahoma'
+      Appearance.Font.Style = [fsBold]
+      Appearance.Layout = blPictureTop
+      Status.Caption = '0'
+      Status.Appearance.Fill.Color = clRed
+      Status.Appearance.Fill.ColorMirror = clNone
+      Status.Appearance.Fill.ColorMirrorTo = clNone
+      Status.Appearance.Fill.GradientType = gtSolid
+      Status.Appearance.Fill.BorderColor = clGray
+      Status.Appearance.Fill.Rounding = 0
+      Status.Appearance.Fill.ShadowOffset = 0
+      Status.Appearance.Font.Charset = DEFAULT_CHARSET
+      Status.Appearance.Font.Color = clWhite
+      Status.Appearance.Font.Height = -11
+      Status.Appearance.Font.Name = 'Tahoma'
+      Status.Appearance.Font.Style = []
+      Bevel = False
+      Color = 15195349
+      DisabledColor = clBlack
+      ParentFont = False
+      TabOrder = 8
+      Version = '1.6.9.0'
+      OnClick = btnAddContactClick
     end
   end
   object MainTable: TkbmMemTable
@@ -891,12 +1061,46 @@ object ReservForm: TReservForm
     SortID = 0
     SubLanguageID = 1
     LocaleID = 1024
-    Left = 424
-    Top = 168
+    Left = 456
+    Top = 72
   end
   object dsMain: TDataSource
     DataSet = MainTable
-    Left = 480
-    Top = 168
+    Left = 512
+    Top = 72
+  end
+  object acMain: TActionList
+    Left = 512
+    Top = 16
+    object actOK: TAction
+      Caption = 'OK'
+      OnExecute = actOKExecute
+      OnUpdate = actOKUpdate
+    end
+  end
+  object ClientTable: TkbmMemTable
+    DesignActivation = True
+    AttachedAutoRefresh = True
+    AttachMaxCount = 1
+    FieldDefs = <>
+    IndexDefs = <>
+    SortOptions = []
+    PersistentBackup = False
+    ProgressFlags = [mtpcLoad, mtpcSave, mtpcCopy]
+    LoadedCompletely = False
+    SavedCompletely = False
+    FilterOptions = []
+    Version = '6.30'
+    LanguageID = 0
+    SortID = 0
+    SubLanguageID = 1
+    LocaleID = 1024
+    Left = 576
+    Top = 72
+  end
+  object dsClient: TDataSource
+    DataSet = ClientTable
+    Left = 456
+    Top = 16
   end
 end
