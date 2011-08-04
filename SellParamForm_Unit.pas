@@ -429,6 +429,28 @@ begin
     Touch_MessageBox('Внимание', 'При возврате сдачи не может быть!', MB_OK, mtWarning);
     exit;
   end;
+  // Cумма одного из платежей равна 0
+  dsPayLine.First;
+  while not dsPayLine.EOF do
+  begin
+    if dsPayLine.FieldByName('SUM').AsCurrency = 0 then
+    begin
+      Touch_MessageBox('Внимание', 'Неверная сумма оплаты! Сумма одного из платежей равна 0!', MB_OK, mtWarning);
+      exit;
+    end;
+    dsPayLine.Next;
+  end;
+// Сумма одного из платежей больше или равна Сумме оплаты и присутствует второй платеж
+  dsPayLine.First;
+  while not dsPayLine.EOF do
+  begin
+    if (dsPayLine.FieldByName('SUM').AsCurrency >= FSumToPay) and (dsPayLine.RecordCount > 1)  then
+    begin
+      Touch_MessageBox('Внимание', 'Неверная сумма оплаты! Сумма одного из платежей больше суммы оплаты!', MB_OK, mtWarning);
+      exit;
+    end;
+    dsPayLine.Next;
+  end;
 
   FPrinting := True;
   Ev := TouchKeyBoard.OnKeyClick;

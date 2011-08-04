@@ -84,6 +84,13 @@ end;
 
 procedure TTouchMessageBox.SetText(const Value: String);
 begin
+  if Length(Value) < 100 then
+    lblText.Font.Size := 22
+  else if Length(Value) < 200 then
+    lblText.Font.Size := 16
+  else
+    lblText.Font.Size := 8;
+
   FText := Value;
   lblText.Caption := FText;
 end;

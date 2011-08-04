@@ -234,8 +234,8 @@ type
     btnReservationTable: TAdvSmoothToggleButton;
     btnChangeDocNumber: TAdvSmoothToggleButton;
     actChangeDocNumber: TAction;
-    btnFindGood: TAdvSmoothButton;
     actFindGood: TAction;
+    btnFindGood: TAdvSmoothButton;
 
     // Проверка введёного пароля
     procedure actPassEnterExecute(Sender: TObject);
@@ -698,11 +698,13 @@ begin
       if (E is EIBClientError) and (EIBClientError(E).SQLCode = Ord(ibxeDatabaseNameMissing)) then
         Touch_MessageBox('Внимание', 'Путь к базе данных указан неверно', MB_OK, mtError)
       else
-        Touch_MessageBox('Внимание', 'Ошибка при подключении ' + E.Message, MB_OK, mtError);
+        Touch_MessageBox('Внимание', 'Ошибка при подключении ' + Trim(E.Message), MB_OK, mtError);
       FFrontBase.Free;
       Application.Terminate;
+      Exit;
     end;
   end;
+
   FFiscal := TFiscalRegister.Create;
   FFiscal.FrontBase := FFrontBase;
 
@@ -783,7 +785,8 @@ end;
 
 procedure TRestMainForm.FormDestroy(Sender: TObject);
 begin
-  FLogManager.DoSimpleEvent(ev_TerminateProgram);
+  if Assigned(FLogManager) then
+    FLogManager.DoSimpleEvent(ev_TerminateProgram);
   if Assigned(FFrontBase) then
     FFrontBase.Free;
   if Assigned(FFiscal) then
@@ -2747,42 +2750,62 @@ end;
 procedure TRestMainForm.actPreCheckExecute(Sender: TObject);
 var
   Order: TrfOrder;
+  AskSave: Boolean;
+  NoPrecheck: Boolean;
 begin
   IsActionRun := True;
   btnOK.Enabled := False;
   btnCancel3.Enabled := False;
+  NoPrecheck := False;
   try
-    if FHeaderTable.FieldByName('usr$timecloseorder').IsNull then
+    FLineTable.First;
+    AskSave := False;
+    while (not FLineTable.EOF) and (not AskSave) do
     begin
-      ClearDisplay;
-      SaveCheck;
-      if FReport.ServiceCheckOptions(FHeaderTable.FieldByName('ID').AsInteger) then
-      begin
-        FFrontBase.SavePrintDate(FHeaderTable.FieldByName('ID').AsInteger);
-        FFrontBase.CloseModifyTable(FModificationDataSet);
-      end;
+      if FLineTable.FieldByName('STATEFIELD').AsInteger <> cn_StateNothing then
+        AskSave := True;
+      FLineTable.Next;
+    end;
 
-      if FReport.PrintPreCheck(1, FHeaderTable.FieldByName('ID').AsInteger) then
+    if AskSave then
+    begin
+      if Touch_MessageBox('Внимание', 'Закрыть заказ?', MB_YESNO, mtConfirmation) = IDNO then
+        NoPrecheck := True;
+    end;
+    if not NoPrecheck then
+    begin
+      if FHeaderTable.FieldByName('usr$timecloseorder').IsNull then
       begin
-        if FHeaderTable.State = dsBrowse then
-          FHeaderTable.Edit;
-        FHeaderTable.FieldByName('usr$timecloseorder').AsDateTime := GetServerDateTime;
-        FHeaderTable.Post;
-        // Укажем в заказе стола что был распечатен пречек
-        if Assigned(FTableManager) then
-        begin
-          Order := FTableManager.GetOrder(FHeaderTable.FieldByName('usr$tablekey').AsInteger, FHeaderTable.FieldByName('ID').AsInteger);
-          if Assigned(Order) then
-            Order.TimeCloseOrder := FHeaderTable.FieldByName('usr$timecloseorder').AsDateTime;
-        end;
+        ClearDisplay;
         SaveCheck;
-        FPayed := True;
-        actCancel.Execute;
-      end;
-      FLogManager.DoOrderLog(GetCurrentUserInfo, GetCurrentOrderInfo, ev_PrintPreCheck);
-    end
-    else
-      Touch_MessageBox('Внимание', 'Пречек уже был распечатан!', MB_OK, mtWarning);
+        if FReport.ServiceCheckOptions(FHeaderTable.FieldByName('ID').AsInteger) then
+        begin
+          FFrontBase.SavePrintDate(FHeaderTable.FieldByName('ID').AsInteger);
+          FFrontBase.CloseModifyTable(FModificationDataSet);
+        end;
+
+        if FReport.PrintPreCheck(1, FHeaderTable.FieldByName('ID').AsInteger) then
+        begin
+          if FHeaderTable.State = dsBrowse then
+            FHeaderTable.Edit;
+          FHeaderTable.FieldByName('usr$timecloseorder').AsDateTime := GetServerDateTime;
+          FHeaderTable.Post;
+          // Укажем в заказе стола что был распечатен пречек
+          if Assigned(FTableManager) then
+          begin
+            Order := FTableManager.GetOrder(FHeaderTable.FieldByName('usr$tablekey').AsInteger, FHeaderTable.FieldByName('ID').AsInteger);
+            if Assigned(Order) then
+              Order.TimeCloseOrder := FHeaderTable.FieldByName('usr$timecloseorder').AsDateTime;
+          end;
+          SaveCheck;
+          FPayed := True;
+          actCancel.Execute;
+        end;
+        FLogManager.DoOrderLog(GetCurrentUserInfo, GetCurrentOrderInfo, ev_PrintPreCheck);
+      end
+      else
+        Touch_MessageBox('Внимание', 'Пречек уже был распечатан!', MB_OK, mtWarning);
+    end;
   finally
     IsActionRun := False;
     btnOK.Enabled := True;
@@ -4618,7 +4641,10 @@ begin
           S := S + ', дата печати: ' + FLineTable.FieldByName('usr$mn_printdate').AsString;
       end;
   end;
-  S := S + ' рабочий день: ' + DateToStr(FFrontBase.GetLogicDate);
+  if Assigned(FFrontBase) then
+    S := S + ' рабочий день: ' + DateToStr(FFrontBase.GetLogicDate)
+  else
+    S := 'Нет подключения к Базе Данных';
   sbMain.SimpleText := S;
   sbMain.Font.Style := [fsBold];
 end;

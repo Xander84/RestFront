@@ -68,18 +68,23 @@ object TouchMessageBox: TTouchMessageBox
       Align = alClient
       Alignment = taCenter
       AutoSize = False
-      Caption = #1055#1088#1080#1084#1077#1088' '#1076#1083#1080#1085#1085#1086#1075#1086' '#1076#1083#1080#1085#1085#1086#1075#1086' '#1090#1077#1082#1089#1090#1072' '#1082#1086#1090#1086#1088#1099#1081' '#1079#1076#1077#1089#1100' '#1085#1077' '#1087#1086#1084#1077#1089#1090#1080#1090#1089#1103' '
+      Caption = 
+        '1 2 3 4 5 1 2 3 4 5 1 2 3 4 5 1 2 3 4 5 1 2 3 4 5 1 2 3 4 5 1 2 ' +
+        '3 4 5 1 2 3 4 5 1 2 3 4 5 1 2 3 4 5 1 2 3 4 5 1 2 3 4 5 1 2 3 4 ' +
+        '5 1 2 3 4 5 1 2 3 4 5 1 2 3 4 5 1 2 3 4 5 1 2 3 4 5 1 2 3 4 5 1 ' +
+        '2 3 4 5'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clBlack
-      Font.Height = -32
+      Font.Height = -21
       Font.Name = 'Times New Roman'
       Font.Style = [fsBold]
       ParentFont = False
       Transparent = True
       Layout = tlCenter
       WordWrap = True
-      ExplicitLeft = 130
-      ExplicitTop = 3
+      ExplicitLeft = 156
+      ExplicitTop = 4
+      ExplicitHeight = 123
     end
     object pngImage: TImage
       Left = 0

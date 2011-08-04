@@ -2631,24 +2631,27 @@ var
   FSQL: TIBSQL;
 begin
   GetLogicDate := Date;
-  if not Options.UseCurrentDate then
+  if FDataBase.Connected then
   begin
-    FSQL := TIBSQL.Create(nil);
-    try
+    if not Options.UseCurrentDate then
+    begin
+      FSQL := TIBSQL.Create(nil);
       try
-        FSQL.Transaction := ReadTransaction;
-        FSQL.SQL.Text :=
-          'select max(op.usr$logicdate) as LDate ' +
-          '  from usr$mn_options op ';
-        FSQL.ExecQuery;
-        if not FSQL.EOF then
-          GetLogicDate := FSQL.FieldByName('Ldate').AsDateTime;
-        FSQL.Close;
-      except
-        raise;
+        try
+          FSQL.Transaction := ReadTransaction;
+          FSQL.SQL.Text :=
+            'select max(op.usr$logicdate) as LDate ' +
+            '  from usr$mn_options op ';
+          FSQL.ExecQuery;
+          if not FSQL.EOF then
+            GetLogicDate := FSQL.FieldByName('Ldate').AsDateTime;
+          FSQL.Close;
+        except
+          raise;
+        end;
+      finally
+        FSQL.Free;
       end;
-    finally
-      FSQL.Free;
     end;
   end;
 end;
