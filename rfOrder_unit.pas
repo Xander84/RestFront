@@ -34,6 +34,8 @@ type
     FNumber: String;
     FReservTime: TTime;
     FReservDate: TDate;
+    FOrderKey: Integer;
+    FAvansSum: Currency;
   public
     constructor Create(const AID: Integer; const ANumber: String); overload;
 
@@ -41,6 +43,8 @@ type
     property Number: String read FNumber write FNumber;
     property ReservDate: TDate read FReservDate write FReservDate;
     property ReservTime: TTime read FReservTime write FReservTime;
+    property OrderKey: Integer read FOrderKey write FOrderKey;
+    property AvansSum: Currency read FAvansSum write FAvansSum;
   end;
   
 implementation
@@ -73,6 +77,8 @@ constructor TrfReservation.Create(const AID: Integer; const ANumber: String);
 begin
   FID := AID;
   FNumber := ANumber;
+  FOrderKey := -1;
+  FAvansSum := 0;
 end;
 
 end.

@@ -575,10 +575,13 @@ begin
         '   R.ID, ' +
         '   R.USR$RESERVDATE, ' +
         '   R.USR$RESERVTIME, ' +
-        '   R.USR$DOCUMENTNUMBER ' +
+        '   R.USR$DOCUMENTNUMBER, ' +
+        '   R.USR$ORDERKEY, ' +
+        '   R.USR$AVANSSUM ' +
         ' FROM USR$MN_RESERVATION R ' +
-        ' WHERE R.USR$TABLEKEY = :ID  ' +
-        '  AND R.USR$PAYED <> 1 ';
+        ' LEFT JOIN USR$MN_ORDER O ON O.USR$RESERVKEY = R.ID ' +
+        ' WHERE R.USR$TABLEKEY = :ID ' +
+        '   AND O.USR$RESERVKEY IS NULL ';
       FSQL.ParamByName('id').AsInteger := ATable.ID;
       FSQL.ExecQuery;
       while not FSQL.Eof do
@@ -587,6 +590,8 @@ begin
           FSQL.FieldByName('USR$DOCUMENTNUMBER').AsString);
         Reserv.ReservDate := FSQL.FieldByName('USR$RESERVDATE').AsDate;
         Reserv.ReservTime := FSQL.FieldByName('USR$RESERVTIME').AsTime;
+        Reserv.OrderKey := FSQL.FieldByName('USR$ORDERKEY').AsInteger;
+        Reserv.AvansSum := FSQL.FieldByName('USR$AVANSSUM').AsCurrency;
 
         FSQL.Next;
       end;
@@ -672,16 +677,19 @@ begin
     FSQL.Close;
 
     FSQL.SQL.Text :=
-      ' SELECT ' +
+      ' SELECT  ' +
       '   R.ID, ' +
       '   R.USR$RESERVDATE, ' +
       '   R.USR$RESERVTIME, ' +
       '   R.USR$DOCUMENTNUMBER, ' +
-      '   R.USR$TABLEKEY ' +
+      '   R.USR$TABLEKEY, ' +
+      '   R.USR$ORDERKEY, ' +
+      '   R.USR$AVANSSUM ' +
       ' FROM USR$MN_RESERVATION R ' +
       ' JOIN USR$MN_TABLE T ON T.ID = R.USR$TABLEKEY ' +
+      ' LEFT JOIN USR$MN_ORDER O ON O.USR$RESERVKEY = R.ID ' +
       ' WHERE T.USR$HALLKEY = :ID ' +
-      '   AND R.USR$PAYED <> 1 ';
+      '   AND O.USR$RESERVKEY IS NULL ';
     FSQL.Params[0].AsInteger := HallKey;
     FSQL.ExecQuery;
     while not FSQL.Eof do
@@ -693,6 +701,8 @@ begin
           FSQL.FieldByName('USR$DOCUMENTNUMBER').AsString);
         Reserv.ReservDate := FSQL.FieldByName('USR$RESERVDATE').AsDate;
         Reserv.ReservTime := FSQL.FieldByName('USR$RESERVTIME').AsTime;
+        Reserv.OrderKey := FSQL.FieldByName('USR$ORDERKEY').AsInteger;
+        Reserv.AvansSum := FSQL.FieldByName('USR$AVANSSUM').AsCurrency;
       end;
       FSQL.Next;
     end;

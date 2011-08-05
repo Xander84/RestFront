@@ -6,7 +6,7 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, BaseFrontForm_Unit, FrontData_Unit, Front_DataBase_Unit, ExtCtrls,
   AdvPanel, Grids, AdvObj, BaseGrid, AdvGrid, DBAdvGrid, DB, kbmMemTable,
-  AdvSmoothButton, ActnList;
+  AdvSmoothButton, ActnList, TouchMessageBoxForm_Unit, RestTable_Unit;
 
 type
   TReservList = class(TBaseFrontForm)
@@ -18,7 +18,7 @@ type
     btnOK: TAdvSmoothButton;
     AdvSmoothButton1: TAdvSmoothButton;
     AdvSmoothButton2: TAdvSmoothButton;
-    AdvSmoothButton3: TAdvSmoothButton;
+    btnAddOrder: TAdvSmoothButton;
     AdvSmoothButton4: TAdvSmoothButton;
     AdvSmoothButton5: TAdvSmoothButton;
     actDeleteReserv: TAction;
@@ -27,10 +27,17 @@ type
     procedure FormShow(Sender: TObject);
     procedure actDeleteReservUpdate(Sender: TObject);
     procedure actDeleteReservExecute(Sender: TObject);
+    procedure btnAddOrderClick(Sender: TObject);
   private
     FTableKey: Integer;
+    FCurrentTable: TRestTable;
+    function GetOrderKey: Integer;
+    function GetReservKey: Integer;
   public
     property TableKey: Integer read FTableKey write FTableKey;
+    property ReservKey: Integer read GetReservKey;
+    property OrderKey: Integer read GetOrderKey;
+    property CurrentTable: TRestTable read FCurrentTable write FCurrentTable;
   end;
 
 var
@@ -45,15 +52,25 @@ uses
 
 procedure TReservList.actDeleteReservExecute(Sender: TObject);
 begin
-  FFrontBase.DeleteReservation(MemTable.FieldByName('ID').AsInteger);
-  FrontBase.GetReservListByTable(FTableKey, MemTable);
-  MemTable.First;
+  if Touch_MessageBox('Внимание', 'Удалить бронь?', MB_YESNO, mtConfirmation) = IDYES then
+  begin
+    FFrontBase.DeleteReservation(MemTable.FieldByName('ID').AsInteger,
+      OrderKey);
+    FrontBase.GetReservListByTable(FTableKey, MemTable);
+    MemTable.First;
+  end;
 end;
 
 procedure TReservList.actDeleteReservUpdate(Sender: TObject);
 begin
   actDeleteReserv.Enabled := (not MemTable.IsEmpty) and
     (MemTable.FieldByName('USR$AVANSSUM').AsCurrency = 0);
+end;
+
+procedure TReservList.btnAddOrderClick(Sender: TObject);
+begin
+  if Touch_MessageBox('Внимание', 'Создать предварительный заказ?', MB_YESNO, mtConfirmation) = IDYES then
+    ModalResult := mrOK;
 end;
 
 procedure TReservList.btnOKClick(Sender: TObject);
@@ -64,6 +81,7 @@ begin
   try
     FReservForm.FrontBase := FrontBase;
     FReservForm.TableKey := FTableKey;
+    FReservForm.CurrentTable := FCurrentTable;
     FReservForm.ShowModal;
     if FReservForm.ModalResult = mrOk then
     begin
@@ -84,6 +102,7 @@ begin
   MemTable.FieldDefs.Add('USR$DOCUMENTDATE', ftDate, 0);
   MemTable.FieldDefs.Add('USR$DOCUMENTNUMBER', ftString, 120);
   MemTable.FieldDefs.Add('USR$AVANSSUM', ftInteger, 0);
+  MemTable.FieldDefs.Add('USR$ORDERKEY', ftInteger, 0);
   MemTable.CreateTable;
   MemTable.Open;
 
@@ -96,6 +115,16 @@ begin
 
   FrontBase.GetReservListByTable(FTableKey, MemTable);
   MemTable.First;
+end;
+
+function TReservList.GetOrderKey: Integer;
+begin
+  Result := MemTable.FieldByName('USR$ORDERKEY').AsInteger;
+end;
+
+function TReservList.GetReservKey: Integer;
+begin
+  Result := MemTable.FieldByName('ID').AsInteger;
 end;
 
 end.

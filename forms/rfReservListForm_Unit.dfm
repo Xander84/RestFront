@@ -60,10 +60,6 @@ object ReservList: TReservList
     StatusBar.ColorTo = 16374724
     StatusBar.GradientDirection = gdVertical
     Styler = FrontData.FrontPanelStyler
-    ExplicitLeft = 56
-    ExplicitTop = 144
-    ExplicitWidth = 185
-    ExplicitHeight = 41
     FullHeight = 0
     object DBGrLeft: TDBAdvGrid
       Left = 0
@@ -339,7 +335,7 @@ object ReservList: TReservList
       Enabled = False
       Version = '1.6.9.0'
     end
-    object AdvSmoothButton3: TAdvSmoothButton
+    object btnAddOrder: TAdvSmoothButton
       Left = 327
       Top = 222
       Width = 113
@@ -367,8 +363,8 @@ object ReservList: TReservList
       Color = 15195349
       ParentFont = False
       TabOrder = 4
-      Enabled = False
       Version = '1.6.9.0'
+      OnClick = btnAddOrderClick
     end
     object AdvSmoothButton4: TAdvSmoothButton
       Left = 327

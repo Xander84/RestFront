@@ -7,7 +7,7 @@ uses
   Dialogs, BaseFrontForm_Unit, FrontData_Unit, Front_DataBase_Unit, ExtCtrls,
   AdvPanel, AdvSmoothButton, AdvSmoothTouchKeyBoard, StdCtrls, Mask, DBCtrls,
   DB, kbmMemTable, ActnList, ComCtrls, AdvDateTimePicker, AdvDBDateTimePicker,
-  rfContactForm_Unit;
+  rfContactForm_Unit, RestTable_Unit;
 
 type
   TReservForm = class(TBaseFrontForm)
@@ -40,10 +40,12 @@ type
   private
     FDocumentKey: Integer;
     FTableKey: Integer;
+    FCurrentTable: TRestTable;
     procedure SetTableKey(const Value: Integer);
   public
     property DocumentKey: Integer read FDocumentKey write FDocumentKey;
     property TableKey: Integer read FTableKey write SetTableKey;
+    property CurrentTable: TRestTable read FCurrentTable write FCurrentTable;
   end;
 
 var
@@ -51,10 +53,26 @@ var
 
 implementation
 
+uses
+  rfOrder_unit, DateUtils, TouchMessageBoxForm_Unit;
+
 {$R *.dfm}
 
 procedure TReservForm.actOKExecute(Sender: TObject);
+var
+  Reservation: TrfReservation;
 begin
+  if Assigned(FCurrentTable) then
+  begin
+    for Reservation in FCurrentTable.ReservList do
+      if (IsSameDay(Reservation.ReservDate, MainTable.FieldByName('USR$RESERVDATE').AsDateTime))
+        and (Reservation.ReservTime = MainTable.FieldByName('USR$RESERVTIME').AsDateTime) then
+      begin
+        Touch_MessageBox('Внимание', 'На данную дату и время существует бронирование!', MB_OK, mtWarning);
+        exit;
+      end;
+  end;
+
   if DBLookupComboBox.KeyValue <> Null then
   begin
     if MainTable.State = dsBrowse then

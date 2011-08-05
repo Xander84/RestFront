@@ -79,6 +79,20 @@ const
     ' and exists (select first(1) dd.id from gd_document dd where dd.parent = mn.documentkey) ' +
     ' ORDER BY mnn.usr$name ';
 
+  cst_ReservOrderHeader =
+    ' SELECT                      ' +
+    '   doc.id,                   ' +
+    '   doc.number,               ' +
+    '   doc.sumncu,               ' +
+    '   doc.usr$mn_printdate,     ' +
+    '   doc.editiondate,          ' +
+    '   doc.editorkey,            ' +
+    '   doc.creationdate          ' +
+    ' FROM gd_document doc        ' +
+    '   JOIN USR$MN_RESERVORDER o ON o.documentkey = doc.id  ' +
+    ' WHERE                       ' +
+    '    o.documentkey = :id      ';
+
   cst_OrderHeader =
     ' SELECT                      ' +
     '   doc.id,                   ' +
@@ -110,8 +124,8 @@ const
     '   o.usr$computername        ' +
     ' FROM gd_document doc        ' +
     '   JOIN usr$mn_order o ON o.documentkey = doc.id  ' +
-    ' WHERE                                          ' +
-    '    o.documentkey = :id                            ';
+    ' WHERE                       ' +
+    '    o.documentkey = :id      ';
 
   cst_OrderHeaderByDate =
     ' SELECT                      ' +
@@ -141,10 +155,10 @@ const
     ' FROM gd_document doc        ' +
     '   join usr$mn_order o on o.documentkey = doc.id  ' +
     ' WHERE doc.documenttypekey = :doctype             ' +
-    '   AND doc.parent + 0 IS NULL       ' +
+    '   AND doc.parent + 0 IS NULL ' +
     '   AND doc.companykey = :companykey ' +
-    '   AND o.usr$logicdate >= :DB      ' +
-    '   AND o.usr$logicdate <= :DE       ';
+    '   AND o.usr$logicdate >= :DB ' +
+    '   AND o.usr$logicdate <= :DE ';
 
   cst_OrderLine =
     ' SELECT                                                    '+
@@ -168,6 +182,30 @@ const
     '  g.name goodname                                          '+
     ' FROM gd_document doc                                      '+
     ' join usr$mn_orderline ol on ol.documentkey = doc.id       '+
+    ' join gd_good g on g.id = ol.usr$goodkey                   '+
+    ' WHERE ol.masterkey = :id                                  '+
+    ' ORDER BY doc.id ';
+
+  cst_ReservOrderLine =
+    ' SELECT                                                    '+
+    '  doc.id,                                                  '+
+    '  doc.editiondate,                                         '+
+    '  doc.editorkey,                                           '+
+    '  doc.number,                                              '+
+    '  doc.creationdate,                                        '+
+    '  doc.usr$mn_printdate,                                    '+
+    '  ol.usr$quantity,                                         '+
+    '  ol.usr$costncu,                                          '+
+    '  ol.usr$goodkey,                                          '+
+    '  ol.usr$sumncuwithdiscount,                               '+
+    '  ol.usr$sumncu,                                           '+
+    '  ol.usr$costncuwithdiscount,                              '+
+    '  ol.usr$sumdiscount,                                      '+
+    '  ol.usr$persdiscount,                                     '+
+    '  ol.usr$doublebonus,                                      '+
+    '  g.name goodname                                          '+
+    ' FROM gd_document doc                                      '+
+    ' join usr$mn_reservorderline ol on ol.documentkey = doc.id '+
     ' join gd_good g on g.id = ol.usr$goodkey                   '+
     ' WHERE ol.masterkey = :id                                  '+
     ' ORDER BY doc.id ';
@@ -388,6 +426,9 @@ type
     function GetOrder(const HeaderTable, LineTable, ModifyTable: TkbmMemTable; OrderKey: Integer): Boolean;
     function GetOrderInfo(const AOrderKey: Integer): TrfOrder;
     function CloseModifyTable(const ModifyTable: TkbmMemTable): Boolean;
+
+    function GetReservOrder(const HeaderTable, LineTable, ModifyTable: TkbmMemTable; OrderKey: Integer): Boolean;
+    function CreateNewReservOrder(const HeaderTable, LineTable, ModifyTable: TkbmMemTable; out OrderKey: Integer): Boolean;
     //оплачен или нет
     function OrderIsPayed(const ID: Integer): Boolean;
     function OrderIsLocked(const ID: Integer): Boolean;
@@ -452,8 +493,10 @@ type
     function SaveOrderLog(const WaiterKey, ManagerKey, OrderKey, OrderLineKey, Operation: Integer): Boolean;
     //бронирование
     function SaveReserv(const MemTable: TkbmMemTable): Boolean;
-    procedure DeleteReservation(const ID: Integer);
+    procedure DeleteReservation(const ID, OrderKey: Integer);
     procedure GetReservListByTable(const TableKey: Integer; const MemTable: TkbmMemTable);
+    procedure FillGoodsByReserv(const LineTable, GoodDataSet: TkbmMemTable;
+      const OrderKey: Integer);
     //reports
     function SavePrintDate(const ID: Integer): Boolean;
     function GetReportList(var MemTable: TkbmMemTable): Boolean;
@@ -699,7 +742,9 @@ const
     '       usr$bonussum,            ' +
     '       usr$tablekey,            ' +
     '       usr$computername,        ' +
-    '       USR$WHOPAYOFFKEY)        ' +
+    '       USR$WHOPAYOFFKEY,        ' +
+    '       USR$AVANSSUM,            ' +
+    '       USR$RESERVKEY)           ' +
     '     values (                   ' +
     '       :documentkey,            ' +
     '       :usr$respkey,            ' +
@@ -714,7 +759,9 @@ const
     '       :usr$bonussum,           ' +
     '       :usr$tablekey,           ' +
     '       :usr$computername,       ' +
-    '       :USR$WHOPAYOFFKEY)       ';
+    '       :USR$WHOPAYOFFKEY,       ' +
+    '       :USR$AVANSSUM,           ' +
+    '       :USR$RESERVKEY)          ' ;
 
   OrderLineInsert =
     '  insert into usr$mn_orderline (    ' +
@@ -937,6 +984,8 @@ begin
           else
             InsOrder.ParamByName('usr$computername').AsString := GetLocalComputerName;
           InsOrder.ParamByName('USR$WHOPAYOFFKEY').Value := HeaderTable.FieldByName('USR$WHOPAYOFFKEY').Value;
+          InsOrder.ParamByName('USR$AVANSSUM').AsCurrency := HeaderTable.FieldByName('USR$AVANSSUM').AsCurrency;
+          InsOrder.ParamByName('USR$RESERVKEY').Value := HeaderTable.FieldByName('USR$RESERVKEY').Value;
           InsOrder.ExecQuery;
         end;
       end;
@@ -1120,6 +1169,309 @@ begin
   end;
 end;
 
+function TFrontBase.CreateNewReservOrder(const HeaderTable, LineTable,
+  ModifyTable: TkbmMemTable; out OrderKey: Integer): Boolean;
+var
+  InsDoc, InsOrder, InsOrderLine: TIBSQL;
+  updOrder, updDoc, UpdOrderLine, UpdReserv: TIBSQL;
+  MasterID, LineState, LineID: Integer;
+  TypeKey: Integer;
+const
+  DocInsert =
+    ' insert into gd_document (  ' +
+    '     id,                    ' +
+    '     parent,                ' +
+    '     documenttypekey,       ' +
+    '     number,                ' +
+    '     documentdate,          ' +
+    '     afull,                 ' +
+    '     achag,                 ' +
+    '     aview,                 ' +
+    '     companykey,            ' +
+    '     creatorkey,            ' +
+    '     creationdate,          ' +
+    '     editorkey,             ' +
+    '     editiondate,           ' +
+    '     usr$mn_printdate)      ' +
+    '   values (                 ' +
+    '     :id,                   ' +
+    '     :parent,               ' +
+    '     :documenttypekey,      ' +
+    '     :number,               ' +
+    '     current_date,          ' +
+    '     -1,                    ' +
+    '     -1,                    ' +
+    '     -1,                    ' +
+    '     :companykey,           ' +
+    '     :creatorkey,           ' +
+    '     current_timestamp,     ' +
+    '     :editorkey,            ' +
+    '     current_timestamp,     ' +
+    '     :usr$mn_printdate)     ' ;
+
+  DocUpdate =
+    '  update gd_document          ' +
+    '  set editorkey = :editorkey, ' +
+    '    editiondate = current_timestamp, ' +
+    '    number = :number          ' +
+    '  where id = :id              ';
+
+  OrderInsert =
+    '   insert into USR$MN_RESERVORDER ( ' +
+    '       documentkey)             ' +
+    '     values (                   ' +
+    '       :documentkey)            ' ;
+
+  OrderLineInsert =
+    '  insert into usr$mn_reservorderline (    ' +
+    '      documentkey,                  ' +
+    '      masterkey,                    ' +
+    '      usr$quantity,                 ' +
+    '      usr$costncu,                  ' +
+    '      usr$goodkey,                  ' +
+    '      usr$sumncuwithdiscount,       ' +
+    '      usr$sumncu,                   ' +
+    '      usr$costncuwithdiscount,      ' +
+    '      usr$sumdiscount,              ' +
+    '      usr$persdiscount,             ' +
+    '      usr$logicdate,                ' +
+    '      usr$doublebonus)              ' +
+    '    values (                        ' +
+    '      :documentkey,                 ' +
+    '      :masterkey,                   ' +
+    '      :usr$quantity,                ' +
+    '      :usr$costncu,                 ' +
+    '      :usr$goodkey,                 ' +
+    '      :usr$sumncuwithdiscount,      ' +
+    '      :usr$sumncu,                  ' +
+    '      :usr$costncuwithdiscount,     ' +
+    '      :usr$sumdiscount,             ' +
+    '      :usr$persdiscount,            ' +
+    '      :usr$logicdate,               ' +
+    '      :usr$doublebonus)             ' ;
+
+  UpdateOrder =
+    '      update usr$mn_order                      ' +
+    '      set USR$ISLOCKED = 0                     ' +
+    '      where (documentkey = :documentkey)       ';
+
+  UpdateOrderLine =
+    '      update usr$mn_reservorderline                             ' +
+    '      set masterkey = :masterkey,                               ' +
+    '          usr$quantity = :usr$quantity,                         ' +
+    '          usr$costncu = :usr$costncu,                           ' +
+    '          usr$goodkey = :usr$goodkey,                           ' +
+    '          usr$sumncuwithdiscount = :usr$sumncuwithdiscount,     ' +
+    '          usr$sumncu = :usr$sumncu,                             ' +
+    '          usr$costncuwithdiscount = :usr$costncuwithdiscount,   ' +
+    '          usr$sumdiscount = :usr$sumdiscount,                   ' +
+    '          usr$persdiscount = :usr$persdiscount,                 ' +
+    '          usr$logicdate = :usr$logicdate,                       ' +
+    '          usr$doublebonus = :usr$doublebonus                    ' +
+    '      where (documentkey = :documentkey)                        ';
+
+  UpdateReserv =
+    ' UPDATE USR$MN_RESERVATION R ' +
+    ' SET R.USR$ORDERKEY = :DOC ' +
+    ' WHERE R.ID = :ID ';
+
+begin
+  Result := False;
+  //если шапка пришла без ID, значит делаем INSERT, инчае UPDATE
+  //дл€ позиций заводим поле состо€ни€
+  //0 ничего с данной позицией не делаем
+  //1 надо добавить позицию в документ
+  //2 делаем update позиций
+  TypeKey := GetIDByRUID(147747477, 1650037404);
+
+  InsDoc := TIBSQL.Create(nil);
+  InsDoc.Transaction := FCheckTransaction;
+  InsDoc.SQL.Text := DocInsert;
+
+  updDoc := TIBSQL.Create(nil);
+  updDoc.Transaction := FCheckTransaction;
+  updDoc.SQL.Text := DocUpdate;
+
+  InsOrder := TIBSQL.Create(nil);
+  InsOrder.Transaction := FCheckTransaction;
+  InsOrder.SQL.Text := OrderInsert;
+
+  InsOrderLine := TIBSQL.Create(nil);
+  InsOrderLine.Transaction := FCheckTransaction;
+  InsOrderLine.SQL.Text := OrderLineInsert;
+
+  updOrder := TIBSQL.Create(nil);
+  updOrder.Transaction := FCheckTransaction;
+  updOrder.SQL.Text := UpdateOrder;
+
+  UpdOrderLine := TIBSQL.Create(nil);
+  UpdOrderLine.Transaction := FCheckTransaction;
+  UpdOrderLine.SQL.Text := UpdateOrderLine;
+
+  UpdReserv := TIBSQL.Create(nil);
+  UpdReserv.Transaction := FCheckTransaction;
+  UpdReserv.SQL.Text := UpdateReserv;
+  try
+    try
+      if not FCheckTransaction.InTransaction then
+        FCheckTransaction.StartTransaction;
+
+      MasterID := -1;
+      HeaderTable.First;
+      if not HeaderTable.Eof then
+      begin
+        if HeaderTable.FieldByName('ID').AsInteger <> 0 then
+        begin
+          MasterID := HeaderTable.FieldByName('ID').AsInteger;
+          //обновл€ем шапку;
+          updOrder.ExecQuery;
+
+          updDoc.Close;
+          updDoc.ParamByName('ID').AsInteger := HeaderTable.FieldByName('ID').AsInteger;
+          updDoc.ParamByName('NUMBER').AsString := HeaderTable.FieldByName('NUMBER').AsString;
+          updDoc.ParamByName('editorkey').AsInteger := FContactKey;
+          updDoc.ExecQuery;
+        end else
+        begin
+          MasterID := GetNextID;
+
+          InsDoc.ParamByName('ID').AsInteger := MasterID;
+          InsDoc.ParamByName('PARENT').AsVariant := '';
+          InsDoc.ParamByName('documenttypekey').AsInteger := TypeKey;
+          InsDoc.ParamByName('NUMBER').AsString := HeaderTable.FieldByName('NUMBER').AsString;
+          InsDoc.ParamByName('companykey').AsInteger := FCompanyKey;
+          InsDoc.ParamByName('creatorkey').AsInteger := FContactKey;
+          InsDoc.ParamByName('editorkey').AsInteger := FContactKey;
+          InsDoc.ParamByName('usr$mn_printdate').Value := HeaderTable.FieldByName('usr$mn_printdate').Value;
+          InsDoc.ExecQuery;
+
+          InsOrder.ParamByName('documentkey').AsInteger := MasterID;
+          InsOrder.ExecQuery;
+
+          UpdReserv.ParamByName('ID').AsInteger := HeaderTable.FieldByName('USR$RESERVKEY').AsInteger;
+          UpdReserv.ParamByName('DOC').AsInteger := MasterID;
+          UpdReserv.ExecQuery;
+        end;
+      end;
+
+      Assert(MasterID <> -1, 'wrong master ID');
+
+      LineTable.First;
+      while not LineTable.Eof do
+      begin
+        LineState := LineTable.FieldByName('STATEFIELD').AsInteger;
+        case LineState of
+          cn_StateNothing:
+            begin
+              //ничего не делаем
+            end;
+          cn_StateInsert:
+            begin
+              //добавл€ем запись
+              InsDoc.Close;
+              InsOrderLine.Close;
+
+              if LineTable.FieldByName('ID').IsNull then
+                LineID := GetNextID
+              else
+                LineID := LineTable.FieldByName('ID').AsInteger;
+              InsDoc.ParamByName('ID').AsInteger := LineID;
+              InsDoc.ParamByName('PARENT').AsInteger := MasterID;
+              InsDoc.ParamByName('documenttypekey').AsInteger := TypeKey;
+              InsDoc.ParamByName('NUMBER').AsString := HeaderTable.FieldByName('NUMBER').AsString;
+              InsDoc.ParamByName('companykey').AsInteger := FCompanyKey;
+              InsDoc.ParamByName('creatorkey').AsInteger := FContactKey;
+              InsDoc.ParamByName('editorkey').AsInteger := FContactKey;
+              InsDoc.ParamByName('usr$mn_printdate').Value := LineTable.FieldByName('usr$mn_printdate').Value;
+              InsDoc.ExecQuery;
+
+              InsOrderLine.ParamByName('masterkey').AsInteger := MasterID;
+              InsOrderLine.ParamByName('usr$quantity').AsCurrency := LineTable.FieldByName('usr$quantity').AsCurrency;
+              InsOrderLine.ParamByName('usr$sumncu').AsCurrency := LineTable.FieldByName('usr$sumncu').AsCurrency;
+              InsOrderLine.ParamByName('usr$sumncuwithdiscount').AsCurrency := LineTable.FieldByName('usr$sumncuwithdiscount').AsCurrency;
+              InsOrderLine.ParamByName('usr$costncuwithdiscount').AsCurrency := LineTable.FieldByName('usr$costncuwithdiscount').AsCurrency;
+              InsOrderLine.ParamByName('usr$costncu').AsCurrency := LineTable.FieldByName('usr$costncu').AsCurrency;
+              InsOrderLine.ParamByName('usr$goodkey').Value := LineTable.FieldByName('usr$goodkey').Value;
+              InsOrderLine.ParamByName('usr$sumdiscount').AsCurrency := LineTable.FieldByName('usr$sumdiscount').AsCurrency;
+              InsOrderLine.ParamByName('usr$persdiscount').AsCurrency := LineTable.FieldByName('usr$persdiscount').AsCurrency;
+              InsOrderLine.ParamByName('usr$logicdate').AsDate := GetLogicDate;
+              InsOrderLine.ParamByName('usr$doublebonus').AsInteger := LineTable.FieldByName('usr$doublebonus').AsInteger;
+              InsOrderLine.ParamByName('documentkey').AsInteger := LineID;
+              InsOrderLine.ExecQuery;
+            end;
+          cn_StateUpdate:
+            begin
+              //обновл€ем запись
+              UpdOrderLine.Close;
+              UpdOrderLine.ParamByName('masterkey').AsInteger := MasterID;
+              UpdOrderLine.ParamByName('usr$quantity').AsCurrency := LineTable.FieldByName('usr$quantity').AsCurrency;
+              UpdOrderLine.ParamByName('usr$costncu').AsCurrency := LineTable.FieldByName('usr$costncu').AsCurrency;
+              UpdOrderLine.ParamByName('usr$goodkey').Value := LineTable.FieldByName('usr$goodkey').Value;
+              UpdOrderLine.ParamByName('usr$sumncuwithdiscount').AsCurrency := LineTable.FieldByName('usr$sumncuwithdiscount').AsCurrency;
+              UpdOrderLine.ParamByName('usr$sumncu').AsCurrency := LineTable.FieldByName('usr$sumncu').AsCurrency;
+              UpdOrderLine.ParamByName('usr$costncuwithdiscount').AsCurrency := LineTable.FieldByName('usr$costncuwithdiscount').AsCurrency;
+              UpdOrderLine.ParamByName('usr$sumdiscount').AsCurrency := LineTable.FieldByName('usr$sumdiscount').AsCurrency;
+              UpdOrderLine.ParamByName('usr$persdiscount').AsCurrency := LineTable.FieldByName('usr$persdiscount').AsCurrency;
+              UpdOrderLine.ParamByName('usr$logicdate').AsDate := GetLogicDate;
+              UpdOrderLine.ParamByName('usr$doublebonus').AsInteger := LineTable.FieldByName('usr$doublebonus').AsInteger;
+              UpdOrderLine.ParamByName('documentkey').AsInteger := LineTable.FieldByName('ID').AsInteger;
+              UpdOrderLine.ExecQuery;
+
+              updDoc.Close;
+              updDoc.ParamByName('ID').AsInteger := LineTable.FieldByName('ID').AsInteger;
+              updDoc.ParamByName('editorkey').AsInteger := FContactKey;
+              updDoc.ExecQuery;
+            end;
+        else
+          Assert(False, 'wrong type state field');
+        end;
+
+        LineTable.Next;
+      end;
+      Result := True;
+      OrderKey := MasterID;
+    except
+      on E: EIBInterBaseError do
+      begin
+        if (E.IBErrorCode = isc_lost_db_connection) or (E.IBErrorCode = isc_net_read_err)
+          or (E.IBErrorCode = isc_net_read_err) or (E.IBErrorCode = isc_net_write_err) then
+            DoOnDisconnect
+        else begin
+          Touch_MessageBox('¬нимание', 'ќшибка при сохранении чека ' + E.Message, MB_OK, mtError);
+          FCheckTransaction.Rollback;
+        end;
+      end;
+      on E: Exception do
+      begin
+        Touch_MessageBox('¬нимание', 'ќшибка при сохранении чека ' + E.Message, MB_OK, mtError);
+        FCheckTransaction.Rollback;
+      end;
+    end;
+  finally
+    try
+      if FCheckTransaction.InTransaction then
+        FCheckTransaction.Commit;
+    except
+      on E: EIBInterBaseError do
+      begin
+        if (E.IBErrorCode = isc_lost_db_connection) or (E.IBErrorCode = isc_net_read_err)
+          or (E.IBErrorCode = isc_net_read_err) or (E.IBErrorCode = isc_net_write_err) then
+          // ничего не делаем
+        else
+          raise;
+      end;
+    end;
+
+    InsDoc.Free;
+    updDoc.Free;
+    InsOrder.Free;
+    InsOrderLine.Free;
+    updOrder.Free;
+    UpdOrderLine.Free;
+    UpdReserv.Free;
+  end;
+end;
+
 procedure TFrontBase.DeleteOrder(const ID: Integer);
 var
   IsDelete: Boolean;
@@ -1162,7 +1514,7 @@ begin
   end;
 end;
 
-procedure TFrontBase.DeleteReservation(const ID: Integer);
+procedure TFrontBase.DeleteReservation(const ID, OrderKey: Integer);
 begin
   FCheckSQL.Close;
   try
@@ -1172,6 +1524,11 @@ begin
     FCheckSQL.SQL.Text := ' DELETE FROM USR$MN_RESERVATION ' +
       ' WHERE ID = :ID ';
     FCheckSQL.ParamByName('ID').AsInteger := ID;
+    FCheckSQL.ExecQuery;
+
+    FCheckSQL.SQL.Text := ' DELETE FROM GD_DOCUMENT ' +
+      ' WHERE ID = :ID ';
+    FCheckSQL.ParamByName('ID').AsInteger := OrderKey;
     FCheckSQL.ExecQuery;
 
     FCheckSQL.Transaction.Commit;
@@ -1235,6 +1592,57 @@ begin
     except
       raise;
     end;
+  end;
+end;
+
+procedure TFrontBase.FillGoodsByReserv(const LineTable, GoodDataSet: TkbmMemTable;
+  const OrderKey: Integer);
+var
+  FSQL: TIBSQL;
+  GoodKey: Integer;
+  FLineID: Integer;
+begin
+  FLineID := 1;
+  FSQL := TIBSQL.Create(nil);
+  try
+    FSQL.Transaction := ReadTransaction;
+    if not FSQL.Transaction.InTransaction then
+      FSQL.Transaction.StartTransaction;
+
+    FSQL.SQL.Text :=
+      ' SELECT ' +
+      '   L.DOCUMENTKEY, ' +
+      '   L.USR$GOODKEY, ' +
+      '   L.USR$QUANTITY ' +
+      ' FROM USR$MN_RESERVORDERLINE L ' +
+      ' WHERE L.MASTERKEY = :ID ' +
+      ' ORDER BY L.DOCUMENTKEY ';
+    FSQL.ParamByName('ID').AsInteger := OrderKey;
+    FSQL.ExecQuery;
+    while not FSQL.Eof do
+    begin
+      GoodKey := FSQL.FieldByName('USR$GOODKEY').AsInteger;
+      if not GoodDataSet.Locate('ID', GoodKey, []) then
+        GetGoodByID(GoodDataSet, GoodKey);
+      //если товар найден, то добавл€ем
+      if GoodDataSet.Locate('ID', GoodKey, []) then
+      begin
+        LineTable.Insert;
+        LineTable.FieldByName('LINEKEY').AsInteger := FLineID;
+        LineTable.FieldByName('STATEFIELD').AsInteger := cn_StateInsert;
+        LineTable.FieldByName('usr$goodkey').AsInteger := GoodKey;
+        LineTable.FieldByName('GOODNAME').AsString := GoodDataSet.FieldByName('NAME').AsString;
+        LineTable.FieldByName('usr$quantity').AsCurrency := FSQL.FieldByName('USR$QUANTITY').AsCurrency;
+        LineTable.FieldByName('usr$costncu').AsCurrency := GoodDataSet.FieldByName('COST').AsCurrency;
+        LineTable.FieldByName('USR$COMPUTERNAME').AsString := GetLocalComputerName;
+        LineTable.Post;
+
+        Inc(FLineID);
+      end;
+      FSQL.Next;
+    end;
+  finally
+    FSQL.Free;
   end;
 end;
 
@@ -2450,6 +2858,99 @@ begin
       FReadSQL.Next;
     end;
   finally
+    FReadSQL.Close;
+  end;
+end;
+
+function TFrontBase.GetReservOrder(const HeaderTable, LineTable,
+  ModifyTable: TkbmMemTable; OrderKey: Integer): Boolean;
+var
+  BPost, APost: TDataSetNotifyEvent;
+begin
+  HeaderTable.Close;
+  HeaderTable.CreateTable;
+  HeaderTable.Open;
+
+  LineTable.Close;
+  LineTable.CreateTable;
+  LineTable.Open;
+
+  ModifyTable.Close;
+  ModifyTable.CreateTable;
+  ModifyTable.Open;
+
+  if OrderKey  = -1 then
+  begin
+    Result := True;
+    Exit;
+  end;
+  FReadSQL.Close;
+
+  APost := HeaderTable.AfterPost;
+  HeaderTable.AfterPost := nil;
+
+  BPost := LineTable.BeforePost;
+  LineTable.BeforePost := nil;
+  try
+    try
+      if not FReadSQL.Transaction.InTransaction then
+        FReadSQL.Transaction.StartTransaction;
+
+      FReadSQL.SQL.Text := cst_ReservOrderHeader;
+      FReadSQL.ParamByName('ID').AsInteger := OrderKey;
+      FReadSQL.ExecQuery;
+      while not FReadSQL.EOF do
+      begin
+        HeaderTable.Append;
+        HeaderTable.FieldByName('id').Value := FReadSQL.FieldByName('id').Value;
+        HeaderTable.FieldByName('number').Value := FReadSQL.FieldByName('number').Value;
+        HeaderTable.FieldByName('sumncu').Value := FReadSQL.FieldByName('sumncu').Value;
+        HeaderTable.FieldByName('usr$mn_printdate').Value := FReadSQL.FieldByName('usr$mn_printdate').Value;
+        HeaderTable.FieldByName('editorkey').Value := FReadSQL.FieldByName('editorkey').Value;
+        HeaderTable.FieldByName('editiondate').Value := FReadSQL.FieldByName('editiondate').Value;
+        HeaderTable.FieldByName('creationdate').Value := FReadSQL.FieldByName('creationdate').Value;
+        HeaderTable.Post;
+        FReadSQL.Next;
+      end;
+      FReadSQL.Close;
+      FReadSQL.SQL.Text := cst_ReservOrderLine;
+      FReadSQL.ParamByName('ID').AsInteger := OrderKey;
+      FReadSQL.ExecQuery;
+      while not FReadSQL.EOF do
+      begin
+        LineTable.Append;
+        LineTable.FieldByName('id').Value := FReadSQL.FieldByName('id').Value;
+        LineTable.FieldByName('number').Value := FReadSQL.FieldByName('number').Value;
+        LineTable.FieldByName('GOODNAME').Value := FReadSQL.FieldByName('GOODNAME').Value;
+        LineTable.FieldByName('usr$mn_printdate').Value := FReadSQL.FieldByName('usr$mn_printdate').Value;
+        LineTable.FieldByName('usr$quantity').Value := FReadSQL.FieldByName('usr$quantity').Value;
+        LineTable.FieldByName('usr$costncu').Value := FReadSQL.FieldByName('usr$costncu').Value;
+        LineTable.FieldByName('usr$goodkey').Value := FReadSQL.FieldByName('usr$goodkey').Value;
+        LineTable.FieldByName('usr$sumncuwithdiscount').Value := FReadSQL.FieldByName('usr$sumncuwithdiscount').Value;
+        LineTable.FieldByName('usr$sumncu').Value := FReadSQL.FieldByName('usr$sumncu').Value;
+        LineTable.FieldByName('usr$costncuwithdiscount').Value := FReadSQL.FieldByName('usr$costncuwithdiscount').Value;
+        LineTable.FieldByName('usr$sumdiscount').Value := FReadSQL.FieldByName('usr$sumdiscount').Value;
+        LineTable.FieldByName('usr$persdiscount').Value := FReadSQL.FieldByName('usr$persdiscount').Value;
+        LineTable.FieldByName('usr$doublebonus').Value := FReadSQL.FieldByName('usr$doublebonus').Value;
+        LineTable.FieldByName('editorkey').Value := FReadSQL.FieldByName('editorkey').Value;
+        LineTable.FieldByName('editiondate').Value := FReadSQL.FieldByName('editiondate').Value;
+        LineTable.FieldByName('oldquantity').Value := FReadSQL.FieldByName('usr$quantity').Value;
+        LineTable.FieldByName('LINEKEY').AsInteger := FReadSQL.FieldByName('id').Value;
+        LineTable.FieldByName('STATEFIELD').AsInteger := 0;
+        LineTable.FieldByName('CREATIONDATE').AsDateTime := FReadSQL.FieldByName('CREATIONDATE').AsDateTime;
+        LineTable.Post;
+
+        FReadSQL.Next;
+      end;
+
+      Result := True;
+    except
+      Result := False;
+      raise;
+    end;
+  finally
+    HeaderTable.AfterPost := APost;
+    LineTable.BeforePost := BPost;
     FReadSQL.Close;
   end;
 end;
@@ -4113,10 +4614,12 @@ begin
         '   R.USR$RESERVTIME, ' +
         '   R.USR$DOCUMENTNUMBER, ' +
         '   R.USR$DOCUMENTDATE, ' +
-        '   R.USR$AVANSSUM ' +
+        '   R.USR$AVANSSUM, ' +
+        '   R.USR$ORDERKEY ' +
         ' FROM USR$MN_RESERVATION R ' +
-        ' WHERE R.USR$TABLEKEY = :ID  ' +
-        '  AND R.USR$PAYED <> 1 ';
+        ' LEFT JOIN USR$MN_ORDER O ON O.USR$RESERVKEY = R.ID ' +
+        ' WHERE R.USR$TABLEKEY = :ID ' +
+        '   AND O.USR$RESERVKEY IS NULL ';
       FReadSQL.Params[0].AsInteger := TableKey;
       FReadSQL.ExecQuery;
       while not FReadSQL.EOF do
@@ -4126,6 +4629,7 @@ begin
         MemTable.FieldByName('NAME').AsString := FReadSQL.FieldByName('USR$DOCUMENTNUMBER').AsString +
           ' от ' + FReadSQL.FieldByName('USR$DOCUMENTDATE').AsString;
         MemTable.FieldByName('USR$AVANSSUM').AsCurrency := FReadSQL.FieldByName('USR$AVANSSUM').AsCurrency;
+        MemTable.FieldByName('USR$ORDERKEY').AsInteger := FReadSQL.FieldByName('USR$ORDERKEY').AsInteger;
         MemTable.Post;
 
         FReadSQL.Next;
@@ -4136,7 +4640,6 @@ begin
   finally
     FReadSQL.Close;
   end;
-
 end;
 
 function TFrontBase.OrderIsLocked(const ID: Integer): Boolean;

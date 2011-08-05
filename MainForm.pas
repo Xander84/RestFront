@@ -14,7 +14,7 @@ uses
   FrontLog_Unit, Grids, Menus, AddUserForm_unit, AdminForm_Unit,
   Buttons, RestTable_Unit, dxfDesigner, GestureMgr, AdvObj, AdvMenus, AdvMenuStylers,
   AdvSmoothToggleButton, pngimage, Generics.Collections, rfTableManager_unit,
-  rfUser_unit, AppEvnts, jpeg, AdvOfficeStatusBar, DBSumLst;
+  rfUser_unit, AppEvnts, jpeg, AdvOfficeStatusBar, DBSumLst, DateUtils;
 
 const
   btnHeight = 65;
@@ -56,6 +56,7 @@ type
     rsPass,                    // окно с паролем
     rsOrderMenu,               // окно с заказами
     rsMenuInfo,                // редактирование заказа
+    rsReservMenuInfo,          // редактирование заказа для бронирования
     rsManagerPage,             // окно менеджера
     rsManagerChooseOrder,      // окно менеджера для разделения
     rsManagerInfo,             // выручка
@@ -448,8 +449,6 @@ type
     FminMenuButtonCount: Integer;
 
     FReadyToShow: Boolean;
-    //ссылка на документ бронирования
-    FReservKey: Integer;
 
     procedure RestorePanelWidth;
 
@@ -624,7 +623,6 @@ begin
   SetupGrid(DBGrMain);
   SetupGrid(DBGrInfoHeader);
   SetupGrid(DBGrInfoLine);
-  FReservKey := -1;
 {$IFDEF DEBUG}
   Height := cn_Height;
   Width := cn_Width;
@@ -1691,6 +1689,8 @@ var
   FGuestForm: TGuestForm;
   FOrderNumber: String;
   FGuestCount: Integer;
+  Reservation: TrfReservation;
+  UseReservation: Boolean;
 begin
   SetCloseTimerActive(False);
   try
@@ -1702,6 +1702,23 @@ begin
       begin
         Touch_MessageBox('Внимание', 'Превышено максимально возможное число открытых заказов!', MB_OK, mtWarning);
         exit;
+      end;
+    end;
+    UseReservation := False;
+    //1. Проверяем, есть ли бронь в на данном столе
+    if Table.ReservList.Count > 0 then
+    begin
+      for Reservation in Table.ReservList do
+      begin
+        if IsSameDay(Reservation.ReservDate, GetServerDateTime) then
+          if HoursBetween(Frac(GetServerDateTime), Reservation.ReservTime) <= 1 then
+            if Touch_MessageBox('Внимание', 'На ' + TimeToStr(Reservation.ReservTime) +
+              ' стол забронирован. Создать заказ на бронь?' , MB_YESNO, mtWarning) = IDYES then
+            begin
+              UseReservation := True;
+              Break;
+            end else
+              exit;
       end;
     end;
 
@@ -1741,7 +1758,15 @@ begin
         FHeaderTable.FieldByName('USR$TABLEKEY').AsInteger := Table.ID;
       FHeaderTable.FieldByName('USR$COMPUTERNAME').AsString := GetLocalComputerName;
       FHeaderTable.FieldByName('usr$respkey').AsInteger := FFrontBase.ContactKey;
+      if UseReservation then
+        FHeaderTable.FieldByName('USR$RESERVKEY').AsInteger := Reservation.ID;
       FHeaderTable.Post;
+
+      //занесём товары из предварительного заказа
+      if UseReservation and (Reservation.OrderKey > 0) then
+      begin
+        FFrontBase.FillGoodsByReserv(FLineTable, FGoodDataSet, Reservation.OrderKey);
+      end;
 
       btnPreCheck.Action := actPreCheck;
       RestFormState := rsMenuInfo;
@@ -2198,7 +2223,6 @@ begin
                   end;
                 end;
                 FLogManager.DoOrderLog(GetCurrentUserInfo, GetCurrentOrderInfo, ev_SaveOrder);
-                FReservKey := -1;
                 case FPrevFormState of
                   rsManagerPage:
                     CreateManagerPage;
@@ -2218,6 +2242,24 @@ begin
             end;
           end;
         end;
+
+      rsReservMenuInfo:
+        begin
+          if Touch_MessageBox('Внимание', 'Сохранить заказ?', MB_YESNO, mtConfirmation) = IDYES then
+          begin
+            DBGrMain.DataSource := nil;
+            FSelectedButton := nil;
+            FMenuSelectedButton := nil;
+            try
+              FFrontBase.CreateNewReservOrder(FHeaderTable, FLineTable, FModificationDataSet, OrderKey);
+              RestFormState := rsHallsPage;
+            finally
+              DBGrMain.DataSource := dsMain;
+            end;
+          end;
+
+        end;
+
     end;
   finally
     IsActionRun := False;
@@ -2283,7 +2325,6 @@ begin
         begin
           if FPayed or (Touch_MessageBox('Внимание', 'Выйти из заказа?', MB_YESNO, mtConfirmation) = IDYES) then
           begin
-            FReservKey := -1;
             if not FHeaderTable.IsEmpty then
             begin
               if FFrontBase.UnLockUserOrder(FHeaderTable.FieldByName('ID').AsInteger) then
@@ -2328,6 +2369,12 @@ begin
               end;
             end;
           end;
+        end;
+
+      rsReservMenuInfo:
+        begin
+          if Touch_MessageBox('Внимание', 'Выйти из предварительного заказа?', MB_YESNO, mtConfirmation) = IDYES then
+            RestFormState := rsHallsPage;
         end;
     end;
   finally
@@ -2432,6 +2479,16 @@ begin
         WritePos(FLineTable);
       end;
     end;
+    if (not FLineTable.IsEmpty) and (RestFormState = rsReservMenuInfo) then
+    begin
+      FLineTable.Edit;
+      FLineTable.FieldByName('USR$QUANTITY').AsCurrency := FLineTable.FieldByName('USR$QUANTITY').AsCurrency + 1;
+      if FLineTable.FieldByName('STATEFIELD').AsInteger = cn_StateNothing then
+        FLineTable.FieldByName('STATEFIELD').AsInteger := cn_StateUpdate;
+      FLineTable.Post;
+
+      exit;
+    end;
     SaveAllOrder;
   finally
     IsActionRun := False;
@@ -2535,6 +2592,24 @@ begin
         end;
       end;
     end;
+    if (not FLineTable.IsEmpty) and (RestFormState = rsReservMenuInfo) then
+    begin
+      Quantity := FLineTable.FieldByName('USR$QUANTITY').AsCurrency - 1;
+      if Quantity > 0 then
+      begin
+        FLineTable.Edit;
+        FLineTable.FieldByName('USR$QUANTITY').AsCurrency := Quantity;
+        if FLineTable.FieldByName('STATEFIELD').AsInteger = cn_StateNothing then
+          FLineTable.FieldByName('STATEFIELD').AsInteger := cn_StateUpdate;
+        FLineTable.Post;
+      end
+      else
+      begin
+        if Touch_MessageBox('Внимание', 'Удалить позицию?', MB_YESNO, mtConfirmation) = IDYES then
+          FLineTable.Delete;
+      end;
+      exit;
+    end;
     SaveAllOrder;
   finally
     IsActionRun := False;
@@ -2599,6 +2674,11 @@ begin
           end;
         end;
       end;
+    end;
+    if (not FLineTable.IsEmpty) and (RestFormState = rsReservMenuInfo) then
+    begin
+      FLineTable.Delete;
+      exit;
     end;
     SaveAllOrder;
   finally
@@ -3413,6 +3493,39 @@ begin
         lblOrderInfoUserName.Caption := FFrontBase.GetNameWaiterOnID(FHeaderTable.FieldByName('usr$respkey').AsInteger, True, False);
         if not FHeaderTable.Eof then
           lblOrderInfoTableNumber.Caption := FHeaderTable.FieldByName('number').AsString;
+
+        btnCutCheck.Visible := True;
+        btnPreCheck.Visible := True;
+        btnModification.Visible := True;
+        btnEditGuestCount.Visible := True;
+        btnDiscount.Visible := True;
+        btnPay.Visible := True;
+      end;
+
+    rsReservMenuInfo:
+      begin
+        RemoveHallButton;
+        RemoveChooseTable;
+
+        pcMenu.ActivePage := tsMenu;
+
+        pnlRight.Visible := True;
+        // Панель управления слева
+        pcExtraButton.ActivePage := tsFunctionButton;
+        pcOrder.ActivePage := tsOrderInfo;
+        pnlChoose.Visible := True;
+        FPayed := False;
+        tmrTables.Enabled := False;
+
+        CreateMenuButtonList;
+        AddPopularGoods;
+
+        btnCutCheck.Visible := False;
+        btnPreCheck.Visible := False;
+        btnModification.Visible := False;
+        btnEditGuestCount.Visible := False;
+        btnDiscount.Visible := False;
+        btnPay.Visible := False;
       end;
 
     rsManagerInfo:
@@ -3990,6 +4103,41 @@ begin
         // end;
       end;
     end;
+    if (not FLineTable.IsEmpty) and (RestFormState = rsReservMenuInfo) then
+    begin
+      GoodKey := FLineTable.FieldByName('usr$goodkey').AsInteger;
+      if FGoodDataSet.Locate('ID', GoodKey, []) then
+      begin
+        FForm := TDevideForm.Create(nil);
+        FForm.LabelCaption := 'Количество';
+        FForm.CanDevided := (FGoodDataSet.FieldByName('BEDIVIDE').AsInteger = 1);
+        try
+          FForm.ShowModal;
+          if FForm.ModalResult = mrOK then
+          begin
+            try
+              if StrToCurr(FForm.Number) > 0 then
+              begin
+                FLineTable.Edit;
+                FLineTable.FieldByName('usr$quantity').AsCurrency := StrToCurr(FForm.Number);
+                FLineTable.Post;
+              end;
+            except
+              on E: Exception do
+              begin
+                if E is EConvertError then
+                  Touch_MessageBox('Внимание', 'Введено неверное число', MB_OK, mtWarning)
+                else
+                  Touch_MessageBox('Внимание', 'Ошибка ' + E.Message, MB_OK, mtError);
+              end;
+            end;
+          end;
+        finally
+          FForm.Free;
+        end;
+      end;
+      exit;
+    end;
     SaveAllOrder;
   finally
     IsActionRun := False;
@@ -4377,6 +4525,7 @@ var
   Order: TrfOrder;
   FReservForm: TReservForm;
   FReservList: TReservList;
+  Reservation: TrfReservation;
 begin
   if not FFrontBase.CheckForSession then
     exit;
@@ -4447,6 +4596,7 @@ begin
       try
         FReservForm.FrontBase := FrontBase;
         FReservForm.TableKey := CurrentRestTable.ID;
+        FReservForm.CurrentTable := CurrentRestTable;
         FReservForm.ShowModal;
         if FReservForm.ModalResult = mrOk then
           FTableManager.RefreshOrderData(CurrentRestTable);
@@ -4459,14 +4609,38 @@ begin
       try
         FReservList.FrontBase := FrontBase;
         FReservList.TableKey := CurrentRestTable.ID;
+        FReservList.CurrentTable := CurrentRestTable;
         FReservList.ShowModal;
-
+        // предварительный заказ
+        if FReservList.ModalResult = mrOk then
+        begin
+          FFrontBase.GetReservOrder(FHeaderTable, FLineTable, FModificationDataSet, FReservList.OrderKey);
+          if not Assigned(dsMain.DataSet) then
+            dsMain.DataSet := FLineTable
+          else
+          begin
+            // для обнулений значений в гриде
+            dsMain.DataSet := nil;
+            dsMain.DataSet := FLineTable;
+          end;
+          if FReservList.OrderKey = 0 then
+          begin
+            for Reservation in CurrentRestTable.ReservList do
+              if Reservation.ID = FReservList.ReservKey then
+              begin
+                FHeaderTable.Insert;
+                FHeaderTable.FieldByName('NUMBER').AsString := Reservation.Number;
+                FHeaderTable.FieldByName('USR$RESERVKEY').AsInteger := Reservation.ID;
+                FHeaderTable.Post;
+              end;
+          end;
+          RestFormState := rsReservMenuInfo;
+        end;
         FTableManager.RefreshOrderData(CurrentRestTable);
       finally
         FReservList.Free;
       end;
     end;
-
     btnReservationTable.Down := False;
   end
   else
@@ -5061,7 +5235,8 @@ end;
 
 procedure TRestMainForm.actCutCheckUpdate(Sender: TObject);
 begin
-  actCutCheck.Enabled := FHeaderTable.FieldByName('usr$timecloseorder').IsNull and (not FViewMode) and (not IsActionRun);
+  actCutCheck.Enabled := FHeaderTable.FieldByName('usr$timecloseorder').IsNull and
+    (not FViewMode) and (not IsActionRun) and (FHeaderTable.FieldByName('USR$AVANSSUM').AsCurrency = 0);
 end;
 
 procedure TRestMainForm.actPreCheckUpdate(Sender: TObject);

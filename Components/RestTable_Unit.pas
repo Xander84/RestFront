@@ -226,8 +226,7 @@ begin
     ));
 end;
 
-function TRestTable.AddReservation(
-  const AReserv: TrfReservation): TrfReservation;
+function TRestTable.AddReservation(const AReserv: TrfReservation): TrfReservation;
 begin
   Result := AReserv;
 
@@ -235,23 +234,15 @@ begin
   FReservList.Sort(
     TComparer<TrfReservation>.Construct(
       function (const L, R: TrfReservation): Integer
-      var
-        LNumber, RNumber: Integer;
-        FPos: Integer;
+
+        function GetDateTime(const DateValue: TDate; const TimeValue: TTime): TDateTime;
+        begin
+          Result := Int(DateValue) + Frac(TimeValue);
+        end;
+
       begin
-        FPos := Pos('.', L.Number);
-        if FPos > 0 then
-          LNumber := StrToIntDef(RightStr(L.Number, Length(L.Number) - FPos), L.ID)
-        else
-          LNumber := StrToIntDef(L.Number, L.ID);
-
-        FPos := Pos('.', R.Number);
-        if FPos > 0 then
-          RNumber := StrToIntDef(RightStr(R.Number, Length(R.Number) - FPos), R.ID)
-        else
-          RNumber := StrToIntDef(R.Number, R.ID);
-
-        Result := LNumber - RNumber;
+        Result := Trunc(GetDateTime(L.ReservDate, L.ReservTime) -
+          GetDateTime(R.ReservDate, R.ReservTime));
       end
     ));
 end;
