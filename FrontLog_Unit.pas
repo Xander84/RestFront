@@ -280,6 +280,8 @@ var
   FTransaction: TIBTransaction;
   FID: Integer;
 begin
+  if not FDataBase.Connected then
+    exit;
   if not FGoodList.ContainsKey(GoodInfo.GoodID) then
   begin
     FSQL := TIBSQL.Create(nil);
@@ -461,6 +463,8 @@ var
 begin
   if not FInit then
     exit;
+  if not FDataBase.Connected then
+    exit;
 
   try
     CheckUser(UserInfo);
@@ -509,7 +513,8 @@ var
 begin
   if not FInit then
     exit;
-
+  if not FDataBase.Connected then
+    exit;
   try
     CheckUser(UserInfo);
     CheckOrder(OrderInfo);
@@ -544,7 +549,8 @@ var
 begin
   if not FInit then
     exit;
-
+  if not FDataBase.Connected then
+    exit;
   try
     FSQL := TIBSQL.Create(nil);
     FTransaction := TIBTransaction.Create(nil);
@@ -574,7 +580,8 @@ var
 begin
   if not FInit then
     exit;
-
+  if not FDataBase.Connected then
+    exit;
   try
     CheckUser(UserInfo);
 
