@@ -1759,7 +1759,10 @@ begin
       FHeaderTable.FieldByName('USR$COMPUTERNAME').AsString := GetLocalComputerName;
       FHeaderTable.FieldByName('usr$respkey').AsInteger := FFrontBase.ContactKey;
       if UseReservation then
+      begin
         FHeaderTable.FieldByName('USR$RESERVKEY').AsInteger := Reservation.ID;
+        FHeaderTable.FieldByName('USR$AVANSSUM').AsCurrency := Reservation.AvansSum;
+      end;
       FHeaderTable.Post;
 
       //занесём товары из предварительного заказа
@@ -3114,6 +3117,7 @@ begin
         FForm.Doc := FHeaderTable;
         FForm.DocLine := FLineTable;
         FForm.SumToPay := SumToPay;
+        FForm.AvansSum := FHeaderTable.FieldByName('USR$AVANSSUM').AsCurrency;
         FForm.ShowModal;
         // Сохраняем и обновляем заказ не в зависимости от нажатой кнопки диалога
         SaveCheck;
@@ -4610,6 +4614,7 @@ begin
         FReservList.FrontBase := FrontBase;
         FReservList.TableKey := CurrentRestTable.ID;
         FReservList.CurrentTable := CurrentRestTable;
+        FReservList.FiscalRegister := FFiscal;
         FReservList.ShowModal;
         // предварительный заказ
         if FReservList.ModalResult = mrOk then

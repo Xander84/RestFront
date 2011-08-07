@@ -121,7 +121,9 @@ const
     '   o.usr$tablekey,           ' +
     '   o.usr$islocked AS islocked, ' +
     ' ( SELECT SUM(L.USR$SUMNCUWITHDISCOUNT) FROM USR$MN_ORDERLINE L WHERE L.MASTERKEY = doc.ID AND L.USR$CAUSEDELETEKEY IS NULL) AS USR$SUMNCUWITHDISCOUNT, ' +
-    '   o.usr$computername        ' +
+    '   o.usr$computername,       ' +
+    '   o.usr$avanssum,           ' +
+    '   o.usr$reservkey           ' +
     ' FROM gd_document doc        ' +
     '   JOIN usr$mn_order o ON o.documentkey = doc.id  ' +
     ' WHERE                       ' +
@@ -493,6 +495,7 @@ type
     function SaveOrderLog(const WaiterKey, ManagerKey, OrderKey, OrderLineKey, Operation: Integer): Boolean;
     //бронирование
     function SaveReserv(const MemTable: TkbmMemTable): Boolean;
+    procedure SaveReservAvansSum(const ID: Integer; const FSum: Currency);
     procedure DeleteReservation(const ID, OrderKey: Integer);
     procedure GetReservListByTable(const TableKey: Integer; const MemTable: TkbmMemTable);
     procedure FillGoodsByReserv(const LineTable, GoodDataSet: TkbmMemTable;
@@ -1616,6 +1619,7 @@ begin
       '   L.USR$QUANTITY ' +
       ' FROM USR$MN_RESERVORDERLINE L ' +
       ' WHERE L.MASTERKEY = :ID ' +
+      '   AND L.USR$QUANTITY <> 0 ' +
       ' ORDER BY L.DOCUMENTKEY ';
     FSQL.ParamByName('ID').AsInteger := OrderKey;
     FSQL.ExecQuery;
@@ -2106,7 +2110,10 @@ begin
             HeaderTable.FieldByName('usr$computername').AsString := FReadSQL.FieldByName('usr$computername').AsString
           else
             HeaderTable.FieldByName('usr$computername').AsString := GetLocalComputerName;
+          HeaderTable.FieldByName('usr$reservkey').AsInteger := FReadSQL.FieldByName('usr$reservkey').AsInteger;
+          HeaderTable.FieldByName('usr$avanssum').AsCurrency := FReadSQL.FieldByName('usr$avanssum').AsCurrency;
           HeaderTable.Post;
+
           FReadSQL.Next;
         end;
         FReadSQL.Close;
@@ -4630,6 +4637,8 @@ begin
           ' от ' + FReadSQL.FieldByName('USR$DOCUMENTDATE').AsString;
         MemTable.FieldByName('USR$AVANSSUM').AsCurrency := FReadSQL.FieldByName('USR$AVANSSUM').AsCurrency;
         MemTable.FieldByName('USR$ORDERKEY').AsInteger := FReadSQL.FieldByName('USR$ORDERKEY').AsInteger;
+        MemTable.FieldByName('USR$RESPKEY').AsInteger := FContactKey;
+        MemTable.FieldByName('NUMBER').AsString := FReadSQL.FieldByName('USR$DOCUMENTNUMBER').AsString;
         MemTable.Post;
 
         FReadSQL.Next;
@@ -5278,7 +5287,40 @@ begin
     except
       on E: Exception do
       begin
-        Touch_MessageBox('Внимание', 'Ошибка при сохранении шаблона ' + E.Message, MB_OK, mtError);
+        Touch_MessageBox('Внимание', 'Ошибка при сохранении бронирования ' + E.Message, MB_OK, mtError);
+        FCheckTransaction.Rollback;
+      end;
+    end;
+  finally
+    if FCheckTransaction.InTransaction then
+      FCheckTransaction.Commit;
+    FSQL.Free;
+  end;
+end;
+
+procedure TFrontBase.SaveReservAvansSum(const ID: Integer;
+  const FSum: Currency);
+var
+  FSQL: TIBSQL;
+begin
+  FSQL := TIBSQL.Create(nil);
+  FSQL.Transaction := FCheckTransaction;
+  FSQL.SQL.Text :=
+    ' UPDATE USR$MN_RESERVATION R ' +
+    ' SET R.USR$AVANSSUM = :FSUM ' +
+    ' WHERE R.ID = :ID ';
+  try
+    if not FCheckTransaction.InTransaction then
+      FCheckTransaction.StartTransaction;
+
+    try
+      FSQL.ParamByName('ID').AsInteger := ID;
+      FSQL.ParamByName('FSUM').AsCurrency := FSUM;
+      FSQL.ExecQuery;
+    except
+      on E: Exception do
+      begin
+        Touch_MessageBox('Внимание', 'Ошибка при сохранении бронирования ' + E.Message, MB_OK, mtError);
         FCheckTransaction.Rollback;
       end;
     end;

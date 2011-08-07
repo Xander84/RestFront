@@ -98,6 +98,7 @@ type
     FNoFiscalPayment: Boolean;
     FCashNoFiscal: Integer;
     FSaleType: TSaleType;
+    FAvansSum: Currency;
 
     procedure SetSumToPay(const Value: Currency);
     procedure SetFiscalRegister(const Value: TFiscalRegister);
@@ -108,6 +109,7 @@ type
     procedure OnAfterScroll(DataSet: TDataSet);
 
     procedure PrevSettings(const PayType: Integer; NeedLocate: Boolean = True);
+    procedure SetAvansSum(const Value: Currency);
   protected
     FPrinting: Boolean;
     dsPayLine: TkbmMemTable;
@@ -118,6 +120,7 @@ type
 
     property Sums: TSaleSums read FSums;
     property SumToPay: Currency read FSumToPay write SetSumToPay;
+    property AvansSum: Currency read FAvansSum write SetAvansSum;
     property FiscalRegiter: TFiscalRegister read FFiscalRegiter write SetFiscalRegister;
     property Doc: TkbmMemTable read FDoc write SetDoc;
     property DocLine: TkbmMemTable read FDocLine write SetDocLine;
@@ -377,6 +380,14 @@ begin
   FFiscalRegiter := Value;
 end;
 
+procedure TSellParamForm.SetAvansSum(const Value: Currency);
+begin
+  FAvansSum := Value;
+
+  FSumToPay := FSumToPay - AvansSum;
+  lblToPay.Caption := Format(DBAdvGrMain.FloatFormat, [FSumToPay]);
+end;
+
 procedure TSellParamForm.SetDoc(const Value: TkbmMemTable);
 begin
   FDoc := Value;
@@ -391,6 +402,7 @@ procedure TSellParamForm.actPayExecute(Sender: TObject);
 var
   FReport: TRestReport;
   Ev: TAdvSmoothTouchKeyEvent;
+  FLineTable: TkbmMemTable;
 begin
   if (lblChange.Caption = '') or (FChange < 0) then
   begin
@@ -467,24 +479,67 @@ begin
           FFiscalRegiter.OpenDrawer;
           if FSaleType = ptSale then
           begin
-            if FFiscalRegiter.PrintCheck(Doc, DocLine, dsPayLine, FSums) then
+            if FAvansSum = 0 then
             begin
-              try
-                if FFrontBase.Options.PrintCopyCheck then
-                begin
-                  FReport := TRestReport.Create(Self);
-                  FReport.FrontBase := FFrontBase;
-                  try
-                    FReport.PrintAfterSalePreCheck(FDoc.FieldByName('ID').AsInteger, FSums);
-                  finally
-                    FReport.Free;
+              if FFiscalRegiter.PrintCheck(Doc, DocLine, dsPayLine, FSums) then
+              begin
+                try
+                  if FFrontBase.Options.PrintCopyCheck then
+                  begin
+                    FReport := TRestReport.Create(Self);
+                    FReport.FrontBase := FFrontBase;
+                    try
+                      FReport.PrintAfterSalePreCheck(FDoc.FieldByName('ID').AsInteger, FSums);
+                    finally
+                      FReport.Free;
+                    end;
                   end;
+                except
+                  on E: Exception do
+                    Touch_MessageBox('Внимание', 'Ошибка печати копии чека ' + E.Message, MB_OK, mtError);
                 end;
-              except
-                on E: Exception do
-                  Touch_MessageBox('Внимание', 'Ошибка печати копии чека ' + E.Message, MB_OK, mtError);
+                Self.ModalResult := mrOk;
               end;
-              Self.ModalResult := mrOk;
+            end else
+            begin
+              //Если был аванс, то в чеке пишем оплата по договору бронирования
+              FLineTable := TkbmMemTable.Create(nil);
+              try
+                GetLineTable(FLineTable);
+                FLineTable.Open;
+
+                FLineTable.Insert;
+                FLineTable.FieldByName('usr$quantity').AsInteger := 1;
+                FLineTable.FieldByName('usr$costncu').AsCurrency := FSumToPay;
+                FLineTable.FieldByName('usr$sumncu').AsCurrency := FSumToPay;
+                FLineTable.FieldByName('usr$sumncuwithdiscount').AsCurrency := FSumToPay;
+                FLineTable.FieldByName('usr$costncuwithdiscount').AsCurrency := FSumToPay;
+                FLineTable.FieldByName('USR$COMPUTERNAME').AsString := GetLocalComputerName;
+                FLineTable.FieldByName('GOODNAME').AsString := 'Оплата согласно договора о бронировании';
+                FLineTable.Post;
+
+                if FFiscalRegiter.PrintCheck(Doc, FLineTable, dsPayLine, FSums) then
+                begin
+                  try
+                    if FFrontBase.Options.PrintCopyCheck then
+                    begin
+                      FReport := TRestReport.Create(Self);
+                      FReport.FrontBase := FFrontBase;
+                      try
+                        FReport.PrintAfterSalePreCheck(FDoc.FieldByName('ID').AsInteger, FSums);
+                      finally
+                        FReport.Free;
+                      end;
+                    end;
+                  except
+                    on E: Exception do
+                      Touch_MessageBox('Внимание', 'Ошибка печати копии чека ' + E.Message, MB_OK, mtError);
+                  end;
+                  Self.ModalResult := mrOk;
+                end;
+              finally
+                FLineTable.Free;
+              end;
             end;
           end else
           if FSaleType = ptReturn then

@@ -3,7 +3,7 @@ object ReservList: TReservList
   Top = 0
   Caption = #1041#1088#1086#1085#1080#1088#1086#1074#1072#1085#1080#1077
   ClientHeight = 467
-  ClientWidth = 444
+  ClientWidth = 458
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -19,7 +19,7 @@ object ReservList: TReservList
   object pnlMain: TAdvPanel
     Left = 0
     Top = 0
-    Width = 444
+    Width = 458
     Height = 467
     Align = alClient
     BevelOuter = bvNone
@@ -60,6 +60,7 @@ object ReservList: TReservList
     StatusBar.ColorTo = 16374724
     StatusBar.GradientDirection = gdVertical
     Styler = FrontData.FrontPanelStyler
+    ExplicitWidth = 444
     FullHeight = 0
     object DBGrLeft: TDBAdvGrid
       Left = 0
@@ -242,10 +243,10 @@ object ReservList: TReservList
         20
         296)
     end
-    object btnOK: TAdvSmoothButton
+    object btnAddReservation: TAdvSmoothButton
       Left = 327
       Top = 10
-      Width = 112
+      Width = 127
       Height = 47
       Appearance.Font.Charset = DEFAULT_CHARSET
       Appearance.Font.Color = clWindowText
@@ -271,13 +272,14 @@ object ReservList: TReservList
       ParentFont = False
       TabOrder = 1
       Version = '1.6.9.0'
-      OnClick = btnOKClick
+      OnClick = btnAddReservationClick
     end
-    object AdvSmoothButton1: TAdvSmoothButton
+    object btnPayAvans: TAdvSmoothButton
       Left = 327
       Top = 116
-      Width = 113
+      Width = 128
       Height = 47
+      Action = actPayAvans
       Appearance.Font.Charset = DEFAULT_CHARSET
       Appearance.Font.Color = clWindowText
       Appearance.Font.Height = -13
@@ -297,18 +299,17 @@ object ReservList: TReservList
       Status.Appearance.Font.Name = 'Tahoma'
       Status.Appearance.Font.Style = []
       Bevel = False
-      Caption = #1040#1074#1072#1085#1089
       Color = 15195349
       ParentFont = False
       TabOrder = 2
-      Enabled = False
       Version = '1.6.9.0'
     end
-    object AdvSmoothButton2: TAdvSmoothButton
+    object btnReturnAvans: TAdvSmoothButton
       Left = 327
       Top = 169
-      Width = 113
+      Width = 128
       Height = 47
+      Action = actReturnAvans
       Appearance.Font.Charset = DEFAULT_CHARSET
       Appearance.Font.Color = clWindowText
       Appearance.Font.Height = -13
@@ -328,18 +329,17 @@ object ReservList: TReservList
       Status.Appearance.Font.Name = 'Tahoma'
       Status.Appearance.Font.Style = []
       Bevel = False
-      Caption = #1042#1086#1079#1074#1088#1072#1090' '#1072#1074#1072#1085#1089#1072
       Color = 15195349
       ParentFont = False
       TabOrder = 3
-      Enabled = False
       Version = '1.6.9.0'
     end
     object btnAddOrder: TAdvSmoothButton
       Left = 327
       Top = 222
-      Width = 113
+      Width = 128
       Height = 47
+      Action = actEditOrder
       Appearance.Font.Charset = DEFAULT_CHARSET
       Appearance.Font.Color = clWindowText
       Appearance.Font.Height = -13
@@ -359,17 +359,15 @@ object ReservList: TReservList
       Status.Appearance.Font.Name = 'Tahoma'
       Status.Appearance.Font.Style = []
       Bevel = False
-      Caption = #1055#1088#1077#1076#1074#1072#1088#1080#1090#1077#1083#1100#1085#1099#1081' '#1079#1072#1082#1072#1079
       Color = 15195349
       ParentFont = False
       TabOrder = 4
       Version = '1.6.9.0'
-      OnClick = btnAddOrderClick
     end
-    object AdvSmoothButton4: TAdvSmoothButton
+    object btnExit: TAdvSmoothButton
       Left = 327
       Top = 411
-      Width = 113
+      Width = 128
       Height = 47
       Appearance.Font.Charset = DEFAULT_CHARSET
       Appearance.Font.Color = clWindowText
@@ -390,17 +388,17 @@ object ReservList: TReservList
       Status.Appearance.Font.Name = 'Tahoma'
       Status.Appearance.Font.Style = []
       Bevel = False
-      Caption = #1054#1090#1084#1077#1085#1072
+      Caption = #1042#1099#1093#1086#1076
       Color = 15195349
       ParentFont = False
       TabOrder = 5
       Version = '1.6.9.0'
       ModalResult = 2
     end
-    object AdvSmoothButton5: TAdvSmoothButton
+    object btnDeleteAvans: TAdvSmoothButton
       Left = 327
       Top = 63
-      Width = 112
+      Width = 127
       Height = 47
       Action = actDeleteReserv
       Appearance.Font.Charset = DEFAULT_CHARSET
@@ -460,6 +458,21 @@ object ReservList: TReservList
       Caption = #1059#1076#1072#1083#1080#1090#1100' '#1073#1088#1086#1085#1100
       OnExecute = actDeleteReservExecute
       OnUpdate = actDeleteReservUpdate
+    end
+    object actPayAvans: TAction
+      Caption = #1040#1074#1072#1085#1089
+      OnExecute = actPayAvansExecute
+      OnUpdate = actPayAvansUpdate
+    end
+    object actReturnAvans: TAction
+      Caption = #1042#1086#1079#1074#1088#1072#1090' '#1072#1074#1072#1085#1089#1072
+      OnExecute = actReturnAvansExecute
+      OnUpdate = actReturnAvansUpdate
+    end
+    object actEditOrder: TAction
+      Caption = #1055#1088#1077#1076#1074#1072#1088#1080#1090#1077#1083#1100#1085#1099#1081' '#1079#1072#1082#1072#1079
+      OnExecute = actEditOrderExecute
+      OnUpdate = actEditOrderUpdate
     end
   end
 end
