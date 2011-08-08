@@ -136,6 +136,7 @@ var
   Str: TStream;
   BaseQueryList: TgsQueryList;
   FCompanyName: String;
+  RespName: String;
 begin
   Result := False;
   Assert(Assigned(FFrontBase), 'FrontBase not assigned');
@@ -209,6 +210,15 @@ begin
           FReport.Variables.AddVariable(cn_RestParam, 'CompanyName', '''' + FCompanyName + '''');
           FReport.Variables.AddVariable(cn_RestParam, 'RespKey', '''' + IntToStr(FrontBase.ContactKey) + '''');
           FReport.Variables.AddVariable(cn_RestParam, 'DocID', '''' + '0' + '''');
+          FReport.Variables.AddVariable(cn_RestParam, 'UserName', '''' + FrontBase.UserName + '''');
+
+          if (FFrontBase.UserKey and FFrontBase.Options.ManagerGroupMask) <> 0 then
+            RespName := 'менеджер'
+          else if (FFrontBase.UserKey and FFrontBase.Options.KassaGroupMask) <> 0 then
+            RespName := 'кассир'
+          else
+            RespName := 'официант';
+          FReport.Variables.AddVariable(cn_RestParam, 'RespName', '''' + RespName + '''');
         end;
     end;
     FReport.DesignReport;
@@ -738,6 +748,7 @@ var
   BaseQueryList: TgsQueryList;
   FPrinterInfo: TPrinterInfo;
   PrinterName, FCompanyName: String;
+  RespName: String;
 begin
   Assert(Assigned(FFrontBase), 'FrontBase not assigned');
   BaseQueryList := FrontData.BaseQueryList;
@@ -776,6 +787,15 @@ begin
       FReport.Variables.AddVariable(cn_RestParam, 'CompanyName', '''' + FCompanyName + '''');
       FReport.Variables.AddVariable(cn_RestParam, 'RespKey', '''' + IntToStr(FrontBase.ContactKey) + '''');
       FReport.Variables.AddVariable(cn_RestParam, 'DocID', '''' + IntToStr(DocID) + '''');
+      FReport.Variables.AddVariable(cn_RestParam, 'UserName', '''' + FrontBase.UserName + '''');
+
+      if (FFrontBase.UserKey and FFrontBase.Options.ManagerGroupMask) <> 0 then
+        RespName := 'менеджер'
+      else if (FFrontBase.UserKey and FFrontBase.Options.KassaGroupMask) <> 0 then
+        RespName := 'кассир'
+      else
+        RespName := 'официант';
+      FReport.Variables.AddVariable(cn_RestParam, 'RespName', '''' + RespName + '''');
 
       if FReport.PrepareReport then
       begin
@@ -798,6 +818,7 @@ var
   BaseQueryList: TgsQueryList;
   FPrinterInfo: TPrinterInfo;
   PrinterName, FCompanyName: String;
+  RespName: String;
 begin
   Assert(Assigned(FFrontBase), 'FrontBase not assigned');
   BaseQueryList := FrontData.BaseQueryList;
@@ -836,6 +857,16 @@ begin
       FReport.Variables.AddVariable(cn_RestParam, 'CompanyName', '''' + FCompanyName + '''');
       FReport.Variables.AddVariable(cn_RestParam, 'RespKey', '''' + IntToStr(FrontBase.ContactKey) + '''');
       FReport.Variables.AddVariable(cn_RestParam, 'DocID', '''' + IntToStr(DocID) + '''');
+      FReport.Variables.AddVariable(cn_RestParam, 'UserName', '''' + FrontBase.UserName + '''');
+
+      if (FFrontBase.UserKey and FFrontBase.Options.ManagerGroupMask) <> 0 then
+        RespName := 'менеджер'
+      else if (FFrontBase.UserKey and FFrontBase.Options.KassaGroupMask) <> 0 then
+        RespName := 'кассир'
+      else
+        RespName := 'официант';
+      FReport.Variables.AddVariable(cn_RestParam, 'RespName', '''' + RespName + '''');
+
       if FReport.PrepareReport then
       begin
         InitReportParams(FReport, PrinterName);
