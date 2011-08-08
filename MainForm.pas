@@ -487,6 +487,7 @@ type
     procedure SaveTablePositions;
     procedure AddChooseTables(const HallKey: Integer);
     procedure InitTableManager;
+    procedure ShowReservListForm(const CurrentRestTable: TRestTable);
     // меню
     procedure CreateMenuButtonList;
     procedure AddMenuButton;
@@ -2150,6 +2151,7 @@ end;
 procedure TRestMainForm.actOKExecute(Sender: TObject);
 var
   OrderKey: Integer;
+  Table: TRestTable;
 begin
   IsActionRun := True;
   btnOK.Enabled := False;
@@ -2261,8 +2263,16 @@ begin
             finally
               DBGrMain.DataSource := dsMain;
             end;
-          end;
 
+            if Assigned(FTableManager) then
+            begin
+              Table := FTableManager.GetTable(FHeaderTable.FieldByName('usr$tablekey').AsInteger);
+              if Assigned(Table) then
+              begin
+                ShowReservListForm(Table);
+              end;
+            end;
+          end;
         end;
 
     end;
@@ -2274,6 +2284,8 @@ begin
 end;
 
 procedure TRestMainForm.actCancelExecute(Sender: TObject);
+var
+  Table: TRestTable;
 begin
   IsActionRun := True;
   btnOK.Enabled := False;
@@ -2379,7 +2391,18 @@ begin
       rsReservMenuInfo:
         begin
           if Touch_MessageBox('Внимание', 'Выйти из предварительного заказа?', MB_YESNO, mtConfirmation) = IDYES then
+          begin
             RestFormState := rsHallsPage;
+
+            if Assigned(FTableManager) then
+            begin
+              Table := FTableManager.GetTable(FHeaderTable.FieldByName('usr$tablekey').AsInteger);
+              if Assigned(Table) then
+              begin
+                ShowReservListForm(Table);
+              end;
+            end;
+          end;
         end;
     end;
   finally
@@ -3707,6 +3730,65 @@ begin
   end;
 end;
 
+procedure TRestMainForm.ShowReservListForm(const CurrentRestTable: TRestTable);
+var
+  FReservList: TReservList;
+  Reservation: TrfReservation;
+  FGuestForm: TGuestForm;
+  FGuestCount: Integer;
+begin
+  FReservList := TReservList.Create(nil);
+  try
+    FReservList.FrontBase := FrontBase;
+    FReservList.TableKey := CurrentRestTable.ID;
+    FReservList.CurrentTable := CurrentRestTable;
+    FReservList.FiscalRegister := FFiscal;
+    FReservList.ShowModal;
+    // предварительный заказ
+    if FReservList.ModalResult = mrOk then
+    begin
+      FFrontBase.GetReservOrder(FHeaderTable, FLineTable, FModificationDataSet, FReservList.OrderKey);
+      if not Assigned(dsMain.DataSet) then
+        dsMain.DataSet := FLineTable
+      else
+      begin
+        // для обнулений значений в гриде
+        dsMain.DataSet := nil;
+        dsMain.DataSet := FLineTable;
+      end;
+      if FReservList.OrderKey = 0 then
+      begin
+        for Reservation in CurrentRestTable.ReservList do
+          if Reservation.ID = FReservList.ReservKey then
+          begin
+            FGuestForm := TGuestForm.Create(nil);
+            try
+              FGuestForm.FrontBase := FFrontBase;
+              FGuestForm.ShowModal;
+              if FGuestForm.ModalResult = mrOK then
+                FGuestCount := FGuestForm.GuestCount
+              else
+                exit;
+            finally
+              FGuestForm.Free;
+            end;
+
+            FHeaderTable.Insert;
+            FHeaderTable.FieldByName('NUMBER').AsString := Reservation.Number;
+            FHeaderTable.FieldByName('USR$RESERVKEY').AsInteger := Reservation.ID;
+            FHeaderTable.FieldByName('USR$GUESTCOUNT').AsInteger := FGuestCount;
+            FHeaderTable.FieldByName('USR$TABLEKEY').AsInteger := CurrentRestTable.ID;
+            FHeaderTable.Post;
+          end;
+      end;
+      RestFormState := rsReservMenuInfo;
+    end;
+    FTableManager.RefreshOrderData(CurrentRestTable);
+  finally
+    FReservList.Free;
+  end;
+end;
+
 procedure TRestMainForm.AddUserButton(const AUser: TrfUser);
 var
   FButton: TAdvSmoothButton;
@@ -4528,10 +4610,6 @@ var
   UserInfo: TUserInfo;
   Order: TrfOrder;
   FReservForm: TReservForm;
-  FReservList: TReservList;
-  Reservation: TrfReservation;
-  FGuestForm: TGuestForm;
-  FGuestCount: Integer;
 begin
   if not FFrontBase.CheckForSession then
     exit;
@@ -4606,61 +4684,16 @@ begin
           FReservForm.CurrentTable := CurrentRestTable;
           FReservForm.ShowModal;
           if FReservForm.ModalResult = mrOk then
+          begin
             FTableManager.RefreshOrderData(CurrentRestTable);
+            ShowReservListForm(CurrentRestTable);
+          end;
         finally
           FReservForm.Free;
         end;
       end else
       begin
-        FReservList := TReservList.Create(nil);
-        try
-          FReservList.FrontBase := FrontBase;
-          FReservList.TableKey := CurrentRestTable.ID;
-          FReservList.CurrentTable := CurrentRestTable;
-          FReservList.FiscalRegister := FFiscal;
-          FReservList.ShowModal;
-          // предварительный заказ
-          if FReservList.ModalResult = mrOk then
-          begin
-            FFrontBase.GetReservOrder(FHeaderTable, FLineTable, FModificationDataSet, FReservList.OrderKey);
-            if not Assigned(dsMain.DataSet) then
-              dsMain.DataSet := FLineTable
-            else
-            begin
-              // для обнулений значений в гриде
-              dsMain.DataSet := nil;
-              dsMain.DataSet := FLineTable;
-            end;
-            if FReservList.OrderKey = 0 then
-            begin
-              for Reservation in CurrentRestTable.ReservList do
-                if Reservation.ID = FReservList.ReservKey then
-                begin
-                  FGuestForm := TGuestForm.Create(nil);
-                  try
-                    FGuestForm.FrontBase := FFrontBase;
-                    FGuestForm.ShowModal;
-                    if FGuestForm.ModalResult = mrOK then
-                      FGuestCount := FGuestForm.GuestCount
-                    else
-                      exit;
-                  finally
-                    FGuestForm.Free;
-                  end;
-
-                  FHeaderTable.Insert;
-                  FHeaderTable.FieldByName('NUMBER').AsString := Reservation.Number;
-                  FHeaderTable.FieldByName('USR$RESERVKEY').AsInteger := Reservation.ID;
-                  FHeaderTable.FieldByName('USR$GUESTCOUNT').AsInteger := FGuestCount;
-                  FHeaderTable.Post;
-                end;
-            end;
-            RestFormState := rsReservMenuInfo;
-          end;
-          FTableManager.RefreshOrderData(CurrentRestTable);
-        finally
-          FReservList.Free;
-        end;
+        ShowReservListForm(CurrentRestTable);
       end;
       btnReservationTable.Down := False;
     end

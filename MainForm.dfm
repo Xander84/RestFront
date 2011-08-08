@@ -3246,9 +3246,6 @@ object RestMainForm: TRestMainForm
           ImageIndex = 1
           TabColor = clBtnFace
           TabColorTo = clNone
-          ExplicitTop = 0
-          ExplicitWidth = 0
-          ExplicitHeight = 0
           object btnAddQuantity: TAdvSmoothButton
             AlignWithMargins = True
             Left = 3

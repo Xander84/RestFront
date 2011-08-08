@@ -88,9 +88,11 @@ const
     '   doc.editiondate,          ' +
     '   doc.editorkey,            ' +
     '   doc.creationdate,         ' +
-    '   o.usr$guestcount          ' +
+    '   o.usr$guestcount,         ' +
+    '   r.USR$TABLEKEY            ' +
     ' FROM gd_document doc        ' +
     '   JOIN USR$MN_RESERVORDER o ON o.documentkey = doc.id  ' +
+    '   LEFT JOIN USR$MN_RESERVATION R ON R.USR$ORDERKEY = O.DOCUMENTKEY ' +
     ' WHERE                       ' +
     '    o.documentkey = :id      ';
 
@@ -2923,6 +2925,7 @@ begin
         HeaderTable.FieldByName('editiondate').Value := FReadSQL.FieldByName('editiondate').Value;
         HeaderTable.FieldByName('creationdate').Value := FReadSQL.FieldByName('creationdate').Value;
         HeaderTable.FieldByName('USR$GUESTCOUNT').AsInteger := FReadSQL.FieldByName('USR$GUESTCOUNT').AsInteger;
+        HeaderTable.FieldByName('USR$TABLEKEY').AsInteger := FReadSQL.FieldByName('USR$TABLEKEY').AsInteger;
         HeaderTable.Post;
         FReadSQL.Next;
       end;
