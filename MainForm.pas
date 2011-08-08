@@ -3110,7 +3110,7 @@ begin
         exit;
 
       FForm := TSellParamForm.CreateWithFrontBase(nil, FFrontBase);
-      SetCloseTimerActive(false);
+      SetCloseTimerActive(False);
       try
         FForm.SaleType := ptSale;
         FForm.FiscalRegiter := FFiscal;
@@ -4548,111 +4548,115 @@ begin
   end;
 
   // Сбросим таймер выхода из окна зала
-  SetCloseTimerActive(not FFrontBase.Options.NoPassword);
-  // Если активен режим разблокировки стола
-  if btnUnblockTable.Down then
-  begin
-    // Запросим ввод пароля пользователем
-    UserInfo := FFrontBase.CheckUserPasswordWithForm;
-    if UserInfo.CheckedUserPassword then
+  SetCloseTimerActive(False);
+  try
+    // Если активен режим разблокировки стола
+    if btnUnblockTable.Down then
     begin
-      if (UserInfo.UserInGroup and FFrontBase.Options.ManagerGroupMask) <> 0 then
+      // Запросим ввод пароля пользователем
+      UserInfo := FFrontBase.CheckUserPasswordWithForm;
+      if UserInfo.CheckedUserPassword then
       begin
-        // Разблокируем все заказы в столе
-        for Order in CurrentRestTable.OrderList do
-          FFrontBase.UnLockUserOrder(Order.ID);
-        Touch_MessageBox('Разблокировка стола', Format('Стол %s разблокирован.', [CurrentRestTable.Number]), MB_OK, mtInformation);
+        if (UserInfo.UserInGroup and FFrontBase.Options.ManagerGroupMask) <> 0 then
+        begin
+          // Разблокируем все заказы в столе
+          for Order in CurrentRestTable.OrderList do
+            FFrontBase.UnLockUserOrder(Order.ID);
+          Touch_MessageBox('Разблокировка стола', Format('Стол %s разблокирован.', [CurrentRestTable.Number]), MB_OK, mtInformation);
+        end
+        else
+          // Сообщим о недостатке прав пользователя
+          Touch_MessageBox('Внимание', cn_dontManagerPermission, MB_OK, mtWarning);
+      end;
+      btnUnblockTable.Down := False;
+    end
+    else if btnSwapTable.Down then    // Если активен режим смены стола
+    begin
+      // Если первый стол выделен
+      if Assigned(FSwapTableFrom) and (FSwapTableFrom <> CurrentRestTable) then
+      begin
+        CurrentRestTable.Checked := True;
+        // Вызовем операцию замены столов
+        SwapTable(FSwapTableFrom, CurrentRestTable);
+        // Очистим ссылки на заменяемые столы
+        FSwapTableFrom.Checked := False;
+        CurrentRestTable.Checked := False;
+        FSwapTableFrom := nil;
+        btnSwapTable.Down := False;
       end
       else
-        // Сообщим о недостатке прав пользователя
-        Touch_MessageBox('Внимание', cn_dontManagerPermission, MB_OK, mtWarning);
-    end;
-    btnUnblockTable.Down := False;
-  end
-  else if btnSwapTable.Down then    // Если активен режим смены стола
-  begin
-    // Если первый стол выделен
-    if Assigned(FSwapTableFrom) and (FSwapTableFrom <> CurrentRestTable) then
+      begin
+        // Выделим первый стол
+        FSwapTableFrom := CurrentRestTable;
+        FSwapTableFrom.Checked := True;
+      end;
+    end
+    else if btnReservationTable.Down then  //бронирование стола
     begin
-      CurrentRestTable.Checked := True;
-      // Вызовем операцию замены столов
-      SwapTable(FSwapTableFrom, CurrentRestTable);
-      // Очистим ссылки на заменяемые столы
-      FSwapTableFrom.Checked := False;
-      CurrentRestTable.Checked := False;
-      FSwapTableFrom := nil;
-      btnSwapTable.Down := False;
+      //если нет брони, то заводим
+      //иначе список с действиями
+      if CurrentRestTable.ReservList.Count = 0 then
+        begin
+        FReservForm := TReservForm.Create(nil);
+        try
+          FReservForm.FrontBase := FrontBase;
+          FReservForm.TableKey := CurrentRestTable.ID;
+          FReservForm.CurrentTable := CurrentRestTable;
+          FReservForm.ShowModal;
+          if FReservForm.ModalResult = mrOk then
+            FTableManager.RefreshOrderData(CurrentRestTable);
+        finally
+          FReservForm.Free;
+        end;
+      end else
+      begin
+        FReservList := TReservList.Create(nil);
+        try
+          FReservList.FrontBase := FrontBase;
+          FReservList.TableKey := CurrentRestTable.ID;
+          FReservList.CurrentTable := CurrentRestTable;
+          FReservList.FiscalRegister := FFiscal;
+          FReservList.ShowModal;
+          // предварительный заказ
+          if FReservList.ModalResult = mrOk then
+          begin
+            FFrontBase.GetReservOrder(FHeaderTable, FLineTable, FModificationDataSet, FReservList.OrderKey);
+            if not Assigned(dsMain.DataSet) then
+              dsMain.DataSet := FLineTable
+            else
+            begin
+              // для обнулений значений в гриде
+              dsMain.DataSet := nil;
+              dsMain.DataSet := FLineTable;
+            end;
+            if FReservList.OrderKey = 0 then
+            begin
+              for Reservation in CurrentRestTable.ReservList do
+                if Reservation.ID = FReservList.ReservKey then
+                begin
+                  FHeaderTable.Insert;
+                  FHeaderTable.FieldByName('NUMBER').AsString := Reservation.Number;
+                  FHeaderTable.FieldByName('USR$RESERVKEY').AsInteger := Reservation.ID;
+                  FHeaderTable.Post;
+                end;
+            end;
+            RestFormState := rsReservMenuInfo;
+          end;
+          FTableManager.RefreshOrderData(CurrentRestTable);
+        finally
+          FReservList.Free;
+        end;
+      end;
+      btnReservationTable.Down := False;
     end
     else
     begin
-      // Выделим первый стол
-      FSwapTableFrom := CurrentRestTable;
-      FSwapTableFrom.Checked := True;
+      Pt := CurrentRestTable.ClientToScreen(Point(0, 0));
+      CurrentRestTable.PopupMenu.PopupComponent := CurrentRestTable;
+      CurrentRestTable.PopupMenu.Popup(Pt.X + 64, Pt.Y + 32);
     end;
-  end
-  else if btnReservationTable.Down then  //бронирование стола
-  begin
-    //если нет брони, то заводим
-    //иначе список с действиями
-    if CurrentRestTable.ReservList.Count = 0 then
-      begin
-      FReservForm := TReservForm.Create(nil);
-      try
-        FReservForm.FrontBase := FrontBase;
-        FReservForm.TableKey := CurrentRestTable.ID;
-        FReservForm.CurrentTable := CurrentRestTable;
-        FReservForm.ShowModal;
-        if FReservForm.ModalResult = mrOk then
-          FTableManager.RefreshOrderData(CurrentRestTable);
-      finally
-        FReservForm.Free;
-      end;
-    end else
-    begin
-      FReservList := TReservList.Create(nil);
-      try
-        FReservList.FrontBase := FrontBase;
-        FReservList.TableKey := CurrentRestTable.ID;
-        FReservList.CurrentTable := CurrentRestTable;
-        FReservList.FiscalRegister := FFiscal;
-        FReservList.ShowModal;
-        // предварительный заказ
-        if FReservList.ModalResult = mrOk then
-        begin
-          FFrontBase.GetReservOrder(FHeaderTable, FLineTable, FModificationDataSet, FReservList.OrderKey);
-          if not Assigned(dsMain.DataSet) then
-            dsMain.DataSet := FLineTable
-          else
-          begin
-            // для обнулений значений в гриде
-            dsMain.DataSet := nil;
-            dsMain.DataSet := FLineTable;
-          end;
-          if FReservList.OrderKey = 0 then
-          begin
-            for Reservation in CurrentRestTable.ReservList do
-              if Reservation.ID = FReservList.ReservKey then
-              begin
-                FHeaderTable.Insert;
-                FHeaderTable.FieldByName('NUMBER').AsString := Reservation.Number;
-                FHeaderTable.FieldByName('USR$RESERVKEY').AsInteger := Reservation.ID;
-                FHeaderTable.Post;
-              end;
-          end;
-          RestFormState := rsReservMenuInfo;
-        end;
-        FTableManager.RefreshOrderData(CurrentRestTable);
-      finally
-        FReservList.Free;
-      end;
-    end;
-    btnReservationTable.Down := False;
-  end
-  else
-  begin
-    Pt := CurrentRestTable.ClientToScreen(Point(0, 0));
-    CurrentRestTable.PopupMenu.PopupComponent := CurrentRestTable;
-    CurrentRestTable.PopupMenu.Popup(Pt.X + 64, Pt.Y + 32);
+  finally
+    SetCloseTimerActive(not FFrontBase.Options.NoPassword);
   end;
 end;
 
