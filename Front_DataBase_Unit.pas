@@ -2922,7 +2922,7 @@ begin
         HeaderTable.FieldByName('editorkey').Value := FReadSQL.FieldByName('editorkey').Value;
         HeaderTable.FieldByName('editiondate').Value := FReadSQL.FieldByName('editiondate').Value;
         HeaderTable.FieldByName('creationdate').Value := FReadSQL.FieldByName('creationdate').Value;
-        HeaderTable.FieldByName('USR$GUESTCOUN').AsInteger := FReadSQL.FieldByName('USR$GUESTCOUNT').AsInteger;
+        HeaderTable.FieldByName('USR$GUESTCOUNT').AsInteger := FReadSQL.FieldByName('USR$GUESTCOUNT').AsInteger;
         HeaderTable.Post;
         FReadSQL.Next;
       end;

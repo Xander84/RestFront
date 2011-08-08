@@ -5127,9 +5127,12 @@ procedure TRestMainForm.OnBeforePostLine(DataSet: TDataSet);
 begin
   // 1. Проверяем на скидку
   // if FHeaderTable.FieldByName('USR$DISCOUNTKEY').AsInteger > 0 then
-  DataSet.FieldByName('USR$PERSDISCOUNT').AsCurrency := FFrontBase.GetDiscount(FHeaderTable.FieldByName('USR$DISCOUNTKEY').AsInteger,
-    DataSet.FieldByName('usr$goodkey').AsInteger, FHeaderTable.FieldByName('usr$logicdate').AsDateTime,
-    DataSet.FieldByName('usr$persdiscount').AsCurrency, DataSet.FieldByName('creationdate').AsDateTime);
+  if RestFormState = rsReservMenuInfo then
+    DataSet.FieldByName('USR$PERSDISCOUNT').AsCurrency := 0
+  else
+    DataSet.FieldByName('USR$PERSDISCOUNT').AsCurrency := FFrontBase.GetDiscount(FHeaderTable.FieldByName('USR$DISCOUNTKEY').AsInteger,
+      DataSet.FieldByName('usr$goodkey').AsInteger, FHeaderTable.FieldByName('usr$logicdate').AsDateTime,
+      DataSet.FieldByName('usr$persdiscount').AsCurrency, DataSet.FieldByName('creationdate').AsDateTime);
   // else
   // DataSet.FieldByName('USR$PERSDISCOUNT').AsCurrency := 0;
 

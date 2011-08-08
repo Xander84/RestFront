@@ -44,42 +44,48 @@ type
     constructor Create(AOwner: TComponent);
     destructor Destroy; override;
 
-    function PrintPreCheck(const ReportType, DocID: Integer): Boolean; //DONE
+    function PrintPreCheck(const ReportType, DocID: Integer): Boolean;
     procedure PrintAfterSalePreCheck(const DocID: Integer; const FSums: TSaleSums);
     function PrintServiceCheck(const ReportType, PrnGrID, DocID: Integer; const PrinterName: String;
-      PrinterID: Integer): Boolean;  //DONE
+      PrinterID: Integer): Boolean;
     function PrintDeleteServiceCheck(const ReportType, PrnGrID, DocumentKey, MasterKey: Integer;
-      const PrinterName: String; PrinterID: Integer): Boolean;  //DONE
-    procedure PrintIncomeReport(const DateBegin, DateEnd: TDate);  //DONE
-    procedure PrintCheckRegisterEmpl(const DateBegin, DateEnd: TDate; EmplKey, RespKey: Integer); //DONE
-    procedure PrintCopyChecks(const DateBegin, DateEnd: TDate);    // DONE
-    procedure PrintRealization(const DateBegin, DateEnd: TDate);   // DONE
+      const PrinterName: String; PrinterID: Integer): Boolean;
+    procedure PrintIncomeReport(const DateBegin, DateEnd: TDate);
+    procedure PrintCheckRegisterEmpl(const DateBegin, DateEnd: TDate; EmplKey, RespKey: Integer);
+    procedure PrintCopyChecks(const DateBegin, DateEnd: TDate);
+    procedure PrintRealization(const DateBegin, DateEnd: TDate);
     function EditTemplate(const ID, TemplateType: Integer): Boolean;
     function ServiceCheckOptions(const OrderKey: Integer): Boolean;
     function DeleteServiceCheckOptions(const DocID, MasterKey,
       DocumentKey: Integer): Boolean;
     procedure PrintCustomReport(const DateBegin, DateEnd: TDate; const TemplateID: Integer);
+    procedure PrintReservationOrder(const DocID: Integer);
+    procedure PrintReservationTable(const DocID: Integer);
 
     property FrontBase: TFrontBase read FFrontBase write FFrontBase;
   end;
 
 const
   cn_RestParam = 'RestParam';
-  rp_ServiceCheck      = 1;   //DONE
-  rp_DelServiceCheck   = 2;   //DONE
-  rp_PreCheck          = 3;   //DONE
+  rp_ServiceCheck      = 1;
+  rp_DelServiceCheck   = 2;
+  rp_PreCheck          = 3;
   //копия чека
   rp_AfterSalePreCheck = 4;
   //отчет по выручке
-  rp_IncomeReport      = 5;   //DONE
+  rp_IncomeReport      = 5;
   //реестр счетов
-  rp_CheckRegisterEmpl = 6;   //DONE
+  rp_CheckRegisterEmpl = 6;
   //копии счетов за период
-  rp_CopyCheck         = 7;   //DONE
+  rp_CopyCheck         = 7;
   //акт реализации
-  rp_Realization       = 8;   //DONE
+  rp_Realization       = 8;
   //пользовательский отчет
   rp_CustomReport      = 9;
+  //предварительный заказ
+  rp_ReservationOrder  = 10;
+  //бронирование столика
+  rp_ReservationTable  = 11;
 
 
 implementation
@@ -193,6 +199,15 @@ begin
         end;
       rp_AfterSalePreCheck:
         begin
+          FReport.Variables.AddVariable(cn_RestParam, 'DocID', '''' + '0' + '''');
+        end;
+      rp_ReservationOrder, rp_ReservationTable:
+        begin
+          FCompanyName := FFrontBase.Options.CheckLine1 +
+            ' ' + FFrontBase.Options.CheckLine2 + ' ' +
+            FFrontBase.Options.CheckLine3 + ' ' + FFrontBase.Options.CheckLine4;
+          FReport.Variables.AddVariable(cn_RestParam, 'CompanyName', '''' + FCompanyName + '''');
+          FReport.Variables.AddVariable(cn_RestParam, 'RespKey', '''' + IntToStr(FrontBase.ContactKey) + '''');
           FReport.Variables.AddVariable(cn_RestParam, 'DocID', '''' + '0' + '''');
         end;
     end;
@@ -713,6 +728,125 @@ begin
   finally
     FReport.Free;
     BaseQueryList.Report := nil;
+  end;
+end;
+
+procedure TRestReport.PrintReservationOrder(const DocID: Integer);
+var
+  FReport: Tgs_fr4SingleReport;
+  Str: TStream;
+  BaseQueryList: TgsQueryList;
+  FPrinterInfo: TPrinterInfo;
+  PrinterName, FCompanyName: String;
+begin
+  Assert(Assigned(FFrontBase), 'FrontBase not assigned');
+  BaseQueryList := FrontData.BaseQueryList;
+  BaseQueryList.Clear;
+
+  FPrinterInfo := FFrontBase.GetPrinterInfo;
+  PrinterName := FPrinterInfo.PrinterName;
+
+  FReport := Tgs_fr4SingleReport.Create(nil);
+  BaseQueryList.Report := FReport;
+  try
+    Str := TMemoryStream.Create;
+    try
+      GetTemplateStreamByPrnIDAndType(rp_ReservationOrder, FPrinterInfo.PrinterID, Str);
+      if Str.Size > 0 then
+      begin
+        Str.Position := 0;
+        FReport.LoadFromStream(Str);
+      end else
+      begin
+        GetTemplateStreamByRuid(147747703, 1650037404, Str);
+        if Str.Size > 0 then
+        begin
+          Str.Position := 0;
+          FReport.LoadFromStream(Str);
+        end;
+      end;
+
+      FReport.DataSets.Clear;
+      FCompanyName := FFrontBase.Options.CheckLine1 +
+        ' ' + FFrontBase.Options.CheckLine2 + ' ' +
+        FFrontBase.Options.CheckLine3 + ' ' + FFrontBase.Options.CheckLine4;
+
+      FReport.Variables.Clear;
+      FReport.Variables[' ' + cn_RestParam] := Null;
+      FReport.Variables.AddVariable(cn_RestParam, 'CompanyName', '''' + FCompanyName + '''');
+      FReport.Variables.AddVariable(cn_RestParam, 'RespKey', '''' + IntToStr(FrontBase.ContactKey) + '''');
+      FReport.Variables.AddVariable(cn_RestParam, 'DocID', '''' + IntToStr(DocID) + '''');
+
+      if FReport.PrepareReport then
+      begin
+        InitReportParams(FReport, PrinterName);
+        FReport.ShowPreparedReport;
+      end;
+    finally
+      Str.Free;
+    end;
+  finally
+    BaseQueryList.Report := nil;
+    FReport.Free;
+  end;
+end;
+
+procedure TRestReport.PrintReservationTable(const DocID: Integer);
+var
+  FReport: Tgs_fr4SingleReport;
+  Str: TStream;
+  BaseQueryList: TgsQueryList;
+  FPrinterInfo: TPrinterInfo;
+  PrinterName, FCompanyName: String;
+begin
+  Assert(Assigned(FFrontBase), 'FrontBase not assigned');
+  BaseQueryList := FrontData.BaseQueryList;
+  BaseQueryList.Clear;
+
+  FPrinterInfo := FFrontBase.GetPrinterInfo;
+  PrinterName := FPrinterInfo.PrinterName;
+
+  FReport := Tgs_fr4SingleReport.Create(nil);
+  BaseQueryList.Report := FReport;
+  try
+    Str := TMemoryStream.Create;
+    try
+      GetTemplateStreamByPrnIDAndType(rp_ReservationTable, FPrinterInfo.PrinterID, Str);
+      if Str.Size > 0 then
+      begin
+        Str.Position := 0;
+        FReport.LoadFromStream(Str);
+      end else
+      begin
+        GetTemplateStreamByRuid(147747705, 1650037404, Str);
+        if Str.Size > 0 then
+        begin
+          Str.Position := 0;
+          FReport.LoadFromStream(Str);
+        end;
+      end;
+
+      FReport.DataSets.Clear;
+      FCompanyName := FFrontBase.Options.CheckLine1 +
+        ' ' + FFrontBase.Options.CheckLine2 + ' ' +
+        FFrontBase.Options.CheckLine3 + ' ' + FFrontBase.Options.CheckLine4;
+
+      FReport.Variables.Clear;
+      FReport.Variables[' ' + cn_RestParam] := Null;
+      FReport.Variables.AddVariable(cn_RestParam, 'CompanyName', '''' + FCompanyName + '''');
+      FReport.Variables.AddVariable(cn_RestParam, 'RespKey', '''' + IntToStr(FrontBase.ContactKey) + '''');
+      FReport.Variables.AddVariable(cn_RestParam, 'DocID', '''' + IntToStr(DocID) + '''');
+      if FReport.PrepareReport then
+      begin
+        InitReportParams(FReport, PrinterName);
+        FReport.ShowPreparedReport;
+      end;
+    finally
+      Str.Free;
+    end;
+  finally
+    BaseQueryList.Report := nil;
+    FReport.Free;
   end;
 end;
 

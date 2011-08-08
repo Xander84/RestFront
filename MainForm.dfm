@@ -1147,9 +1147,6 @@ object RestMainForm: TRestMainForm
         ImageIndex = 1
         TabColor = clBtnFace
         TabColorTo = clNone
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 0
         object pnlRight: TAdvPanel
           Left = 609
           Top = 0
@@ -3071,7 +3068,7 @@ object RestMainForm: TRestMainForm
         Top = 1
         Width = 80
         Height = 719
-        ActivePage = tsEmpty
+        ActivePage = tsFunctionButton
         ActiveFont.Charset = DEFAULT_CHARSET
         ActiveFont.Color = clWindowText
         ActiveFont.Height = -11

@@ -7,7 +7,7 @@ uses
   Dialogs, BaseFrontForm_Unit, FrontData_Unit, Front_DataBase_Unit, ExtCtrls,
   AdvPanel, Grids, AdvObj, BaseGrid, AdvGrid, DBAdvGrid, DB, kbmMemTable,
   AdvSmoothButton, ActnList, TouchMessageBoxForm_Unit, RestTable_Unit,
-  FiscalRegister_Unit, Base_FiscalRegister_unit;
+  FiscalRegister_Unit, Base_FiscalRegister_unit, Report_Unit;
 
 type
   TReservList = class(TBaseFrontForm)
@@ -26,6 +26,10 @@ type
     actPayAvans: TAction;
     actReturnAvans: TAction;
     actEditOrder: TAction;
+    btnPrintReservationOrder: TAdvSmoothButton;
+    btnPrintReservationTable: TAdvSmoothButton;
+    actPrintReservationOrder: TAction;
+    actPrintReservationTable: TAction;
     procedure FormCreate(Sender: TObject);
     procedure btnAddReservationClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -37,7 +41,13 @@ type
     procedure actPayAvansExecute(Sender: TObject);
     procedure actReturnAvansExecute(Sender: TObject);
     procedure actReturnAvansUpdate(Sender: TObject);
+    procedure actPrintReservationOrderExecute(Sender: TObject);
+    procedure actPrintReservationOrderUpdate(Sender: TObject);
+    procedure actPrintReservationTableUpdate(Sender: TObject);
+    procedure actPrintReservationTableExecute(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
   private
+    FReport: TRestReport;
     FPrinting: Boolean;
     FTableKey: Integer;
     FCurrentTable: TRestTable;
@@ -230,6 +240,37 @@ begin
     (MemTable.FieldByName('USR$AVANSSUM').AsCurrency = 0) and (not FPrinting);
 end;
 
+procedure TReservList.actPrintReservationOrderExecute(Sender: TObject);
+begin
+  FPrinting := True;
+  try
+    FReport.PrintReservationOrder(MemTable.FieldByName('ID').AsInteger);
+  finally
+    FPrinting := False;
+  end;
+end;
+
+procedure TReservList.actPrintReservationOrderUpdate(Sender: TObject);
+begin
+  actPrintReservationOrder.Enabled := (not MemTable.IsEmpty) and
+    (MemTable.FieldByName('USR$ORDERKEY').AsInteger <> 0) and (not FPrinting); ;
+end;
+
+procedure TReservList.actPrintReservationTableExecute(Sender: TObject);
+begin
+  FPrinting := True;
+  try
+    FReport.PrintReservationTable(MemTable.FieldByName('ID').AsInteger);
+  finally
+    FPrinting := False;
+  end;
+end;
+
+procedure TReservList.actPrintReservationTableUpdate(Sender: TObject);
+begin
+  actPrintReservationTable.Enabled := actPrintReservationOrder.Enabled;
+end;
+
 procedure TReservList.actReturnAvansExecute(Sender: TObject);
 var
   dsPayLine: TkbmMemTable;
@@ -389,6 +430,11 @@ begin
   SetupAdvGrid(DBGrLeft);
 end;
 
+procedure TReservList.FormDestroy(Sender: TObject);
+begin
+  FReport.Free;
+end;
+
 procedure TReservList.FormShow(Sender: TObject);
 begin
   Assert(Assigned(FrontBase), 'FrontBase not assigned');
@@ -396,6 +442,9 @@ begin
   FrontBase.GetReservListByTable(FTableKey, MemTable);
   FRubPayTypeKey := FrontBase.GetIDByRUID(mn_RUBpaytypeXID, mn_RUBpaytypeDBID);
   MemTable.First;
+
+  FReport := TRestReport.Create(nil);
+  FReport.FrontBase := FrontBase;
 end;
 
 function TReservList.GetOrderKey: Integer;
