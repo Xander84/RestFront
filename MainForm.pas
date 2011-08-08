@@ -4667,6 +4667,10 @@ begin
   // Обновим информацию по текущему столу
   FTableManager.RefreshOrderData(Table);
 
+  //вдруг сработает (или повиснет) 'левое' выпадающее меню
+  if not Assigned(Table) then
+    exit;
+
   if Table.Tag = 0 then
   begin
     Table.Tag := 1;
