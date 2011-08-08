@@ -1735,6 +1735,8 @@ begin
       FGuestForm := TGuestForm.Create(nil);
       try
         FGuestForm.FrontBase := FFrontBase;
+        if UseReservation and Assigned(Reservation) then
+          FGuestForm.GuestCount := Reservation.GuestCount;
         FGuestForm.ShowModal;
         if FGuestForm.ModalResult = mrOK then
           FGuestCount := FGuestForm.GuestCount
@@ -3501,7 +3503,6 @@ begin
         btnCutCheck.Visible := True;
         btnPreCheck.Visible := True;
         btnModification.Visible := True;
-        btnEditGuestCount.Visible := True;
         btnDiscount.Visible := True;
         btnPay.Visible := True;
       end;
@@ -3527,7 +3528,6 @@ begin
         btnCutCheck.Visible := False;
         btnPreCheck.Visible := False;
         btnModification.Visible := False;
-        btnEditGuestCount.Visible := False;
         btnDiscount.Visible := False;
         btnPay.Visible := False;
       end;
@@ -4530,6 +4530,8 @@ var
   FReservForm: TReservForm;
   FReservList: TReservList;
   Reservation: TrfReservation;
+  FGuestForm: TGuestForm;
+  FGuestCount: Integer;
 begin
   if not FFrontBase.CheckForSession then
     exit;
@@ -4634,9 +4636,22 @@ begin
               for Reservation in CurrentRestTable.ReservList do
                 if Reservation.ID = FReservList.ReservKey then
                 begin
+                  FGuestForm := TGuestForm.Create(nil);
+                  try
+                    FGuestForm.FrontBase := FFrontBase;
+                    FGuestForm.ShowModal;
+                    if FGuestForm.ModalResult = mrOK then
+                      FGuestCount := FGuestForm.GuestCount
+                    else
+                      exit;
+                  finally
+                    FGuestForm.Free;
+                  end;
+
                   FHeaderTable.Insert;
                   FHeaderTable.FieldByName('NUMBER').AsString := Reservation.Number;
                   FHeaderTable.FieldByName('USR$RESERVKEY').AsInteger := Reservation.ID;
+                  FHeaderTable.FieldByName('USR$GUESTCOUNT').AsInteger := FGuestCount;
                   FHeaderTable.Post;
                 end;
             end;

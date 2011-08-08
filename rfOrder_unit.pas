@@ -36,6 +36,7 @@ type
     FReservDate: TDate;
     FOrderKey: Integer;
     FAvansSum: Currency;
+    FGuestCount: Integer;
   public
     constructor Create(const AID: Integer; const ANumber: String); overload;
 
@@ -45,6 +46,7 @@ type
     property ReservTime: TTime read FReservTime write FReservTime;
     property OrderKey: Integer read FOrderKey write FOrderKey;
     property AvansSum: Currency read FAvansSum write FAvansSum;
+    property GuestCount: Integer read FGuestCount write FGuestCount;
   end;
   
 implementation
@@ -79,6 +81,7 @@ begin
   FNumber := ANumber;
   FOrderKey := -1;
   FAvansSum := 0;
+  FGuestCount := 1;
 end;
 
 end.

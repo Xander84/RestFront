@@ -87,7 +87,8 @@ const
     '   doc.usr$mn_printdate,     ' +
     '   doc.editiondate,          ' +
     '   doc.editorkey,            ' +
-    '   doc.creationdate          ' +
+    '   doc.creationdate,         ' +
+    '   o.usr$guestcount          ' +
     ' FROM gd_document doc        ' +
     '   JOIN USR$MN_RESERVORDER o ON o.documentkey = doc.id  ' +
     ' WHERE                       ' +
@@ -1221,9 +1222,11 @@ const
 
   OrderInsert =
     '   insert into USR$MN_RESERVORDER ( ' +
-    '       documentkey)             ' +
+    '       documentkey,             ' +
+    '       usr$guestcount)          ' +
     '     values (                   ' +
-    '       :documentkey)            ' ;
+    '       :documentkey,            ' +
+    '       :usr$guestcount)         ' ;
 
   OrderLineInsert =
     '  insert into usr$mn_reservorderline (    ' +
@@ -1255,7 +1258,8 @@ const
 
   UpdateOrder =
     '      update usr$mn_order                      ' +
-    '      set USR$ISLOCKED = 0                     ' +
+    '      set USR$ISLOCKED = 0,                    ' +
+    '          USR$GUESTCOUNT = :USR$GUESTCOUNT     ' +
     '      where (documentkey = :documentkey)       ';
 
   UpdateOrderLine =
@@ -1327,6 +1331,7 @@ begin
         begin
           MasterID := HeaderTable.FieldByName('ID').AsInteger;
           //обновляем шапку;
+          updOrder.ParamByName('USR$GUESTCOUNT').AsInteger := HeaderTable.FieldByName('USR$GUESTCOUNT').AsInteger;
           updOrder.ExecQuery;
 
           updDoc.Close;
@@ -1349,6 +1354,7 @@ begin
           InsDoc.ExecQuery;
 
           InsOrder.ParamByName('documentkey').AsInteger := MasterID;
+          InsOrder.ParamByName('USR$GUESTCOUNT').AsInteger := HeaderTable.FieldByName('USR$GUESTCOUNT').AsInteger;
           InsOrder.ExecQuery;
 
           UpdReserv.ParamByName('ID').AsInteger := HeaderTable.FieldByName('USR$RESERVKEY').AsInteger;
@@ -2916,6 +2922,7 @@ begin
         HeaderTable.FieldByName('editorkey').Value := FReadSQL.FieldByName('editorkey').Value;
         HeaderTable.FieldByName('editiondate').Value := FReadSQL.FieldByName('editiondate').Value;
         HeaderTable.FieldByName('creationdate').Value := FReadSQL.FieldByName('creationdate').Value;
+        HeaderTable.FieldByName('USR$GUESTCOUN').AsInteger := FReadSQL.FieldByName('USR$GUESTCOUNT').AsInteger;
         HeaderTable.Post;
         FReadSQL.Next;
       end;

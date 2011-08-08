@@ -577,9 +577,11 @@ begin
         '   R.USR$RESERVTIME, ' +
         '   R.USR$DOCUMENTNUMBER, ' +
         '   R.USR$ORDERKEY, ' +
-        '   R.USR$AVANSSUM ' +
+        '   R.USR$AVANSSUM, ' +
+        '   RO.USR$GUESTCOUNT ' +
         ' FROM USR$MN_RESERVATION R ' +
         ' LEFT JOIN USR$MN_ORDER O ON O.USR$RESERVKEY = R.ID ' +
+        ' LEFT JOIN USR$MN_RESERVORDER RO ON R.USR$ORDERKEY = RO.DOCUMENTKEY ' +
         ' WHERE R.USR$TABLEKEY = :ID ' +
         '   AND O.USR$RESERVKEY IS NULL ';
       FSQL.ParamByName('id').AsInteger := ATable.ID;
@@ -592,6 +594,7 @@ begin
         Reserv.ReservTime := FSQL.FieldByName('USR$RESERVTIME').AsTime;
         Reserv.OrderKey := FSQL.FieldByName('USR$ORDERKEY').AsInteger;
         Reserv.AvansSum := FSQL.FieldByName('USR$AVANSSUM').AsCurrency;
+        Reserv.GuestCount := FSQL.FieldByName('USR$GUESTCOUNT').AsInteger;
 
         FSQL.Next;
       end;
@@ -684,10 +687,12 @@ begin
       '   R.USR$DOCUMENTNUMBER, ' +
       '   R.USR$TABLEKEY, ' +
       '   R.USR$ORDERKEY, ' +
-      '   R.USR$AVANSSUM ' +
+      '   R.USR$AVANSSUM, ' +
+      '   RO.USR$GUESTCOUNT ' +
       ' FROM USR$MN_RESERVATION R ' +
       ' JOIN USR$MN_TABLE T ON T.ID = R.USR$TABLEKEY ' +
       ' LEFT JOIN USR$MN_ORDER O ON O.USR$RESERVKEY = R.ID ' +
+      ' LEFT JOIN USR$MN_RESERVORDER RO ON R.USR$ORDERKEY = RO.DOCUMENTKEY ' +
       ' WHERE T.USR$HALLKEY = :ID ' +
       '   AND O.USR$RESERVKEY IS NULL ';
     FSQL.Params[0].AsInteger := HallKey;
@@ -703,6 +708,7 @@ begin
         Reserv.ReservTime := FSQL.FieldByName('USR$RESERVTIME').AsTime;
         Reserv.OrderKey := FSQL.FieldByName('USR$ORDERKEY').AsInteger;
         Reserv.AvansSum := FSQL.FieldByName('USR$AVANSSUM').AsCurrency;
+        Reserv.GuestCount := FSQL.FieldByName('USR$GUESTCOUNT').AsInteger;
       end;
       FSQL.Next;
     end;
