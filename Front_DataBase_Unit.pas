@@ -490,7 +490,7 @@ type
       Sum: Currency; Revert: Boolean = False): Boolean;
 
     function SaveRegisters(const Summ1, Summ2, Summ3, Summ4, SummReturn1, SummReturn2,
-      SummReturn3, SummReturn4, PayInSumm, PayOutSumm: Currency): Boolean;
+      SummReturn3, SummReturn4, PayInSumm, PayOutSumm: Currency; const RNM: String): Boolean;
 
     //1. Отмена пречека
     //2. Перенос блюда
@@ -5186,7 +5186,7 @@ end;
 
 function TFrontBase.SaveRegisters(const Summ1, Summ2, Summ3, Summ4, SummReturn1,
   SummReturn2, SummReturn3, SummReturn4, PayInSumm,
-  PayOutSumm: Currency): Boolean;
+  PayOutSumm: Currency; const RNM: String): Boolean;
 var
   FSQL: TIBSQL;
 begin
@@ -5197,9 +5197,10 @@ begin
   FSQL.SQL.Text :=
     ' INSERT INTO USR$MN_REGISTERINFO(USR$DATE, USR$SUMM1, USR$SUMM2, USR$SUMM3, USR$SUMM4, ' +
     '   USR$SUMMRETURN1, USR$SUMMRETURN2, USR$SUMMRETURN3, USR$SUMMRETURN4, ' +
-    '   USR$PAYINSUMM, USR$PAYOUTSUMM) ' +
+    '   USR$PAYINSUMM, USR$PAYOUTSUMM, USR$CASHNUMBER, USR$COMPUTERNAME, USR$RNM) ' +
     ' VALUES (CURRENT_DATE, :SUMM1, :SUMM2, :SUMM3, :SUMM4, :SUMMRETURN1, :SUMMRETURN2, ' +
-    '   :SUMMRETURN3, :SUMMRETURN4, :PAYINSUMM, :PAYOUTSUMM) ';
+    '   :SUMMRETURN3, :SUMMRETURN4, :PAYINSUMM, :PAYOUTSUMM, :USR$CASHNUMBER, ' +
+    '   :USR$COMPUTERNAME, :USR$RNM) ';
   try
     if not FCheckTransaction.InTransaction then
       FCheckTransaction.StartTransaction;
@@ -5214,6 +5215,9 @@ begin
       FSQL.ParamByName('SUMMRETURN4').AsCurrency := SummReturn4;
       FSQL.ParamByName('PAYINSUMM').AsCurrency := PayInSumm;
       FSQL.ParamByName('PAYOUTSUMM').AsCurrency := PayOutSumm;
+      FSQL.ParamByName('USR$CASHNUMBER').AsInteger := CashNumber;
+      FSQL.FieldByName('USR$COMPUTERNAME').AsString := GetLocalComputerName;
+      FSQL.FieldByName('USR$RNM').AsString := RNM;
       FSQL.ExecQuery;
       Result := True;
     except

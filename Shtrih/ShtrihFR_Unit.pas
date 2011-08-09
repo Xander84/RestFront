@@ -210,6 +210,12 @@ begin
   Result.SummReturn4 := GetResister(207);
   Result.PayInSumm := GetResister(242);
   Result.PayOutSumm := GetResister(243);
+
+  GetLongSerialNumberAndLongRNM;
+  if ResultCode = 0 then
+    Result.RNM := RNM
+  else
+    Result.RNM := '';
 end;
 
 function TShtrihFR.Init: Boolean;
@@ -447,6 +453,18 @@ begin
   Result := False;
   if FDriverInit then
   begin
+    GetShortECRStatus;
+    if ECRAdvancedMode = 3 then
+    begin
+      ContinuePrint;
+      Sleep(250);
+      if ResultCode <> 0 then
+      begin
+        CancelCheck;
+        ErrMessage(ResultCode);
+      end;
+    end;
+
     if (ResultCode <> 0) or (ECRMode = 8) then
     begin
       ErrMessage(ResultCode);
@@ -465,6 +483,18 @@ begin
   Result := False;
   if FDriverInit then
   begin
+    GetShortECRStatus;
+    if ECRAdvancedMode = 3 then
+    begin
+      ContinuePrint;
+      Sleep(250);
+      if ResultCode <> 0 then
+      begin
+        CancelCheck;
+        ErrMessage(ResultCode);
+      end;
+    end;
+
     if (ResultCode <> 0) or (ECRMode = 8) then
     begin
       ErrMessage(ResultCode);

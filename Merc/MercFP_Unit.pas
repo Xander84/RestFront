@@ -1010,6 +1010,7 @@ begin
   Result.SummReturn4 := 0;
   Result.PayInSumm := GetRegister(9);
   Result.PayOutSumm := GetRegister(10);
+  Result.RNM := QueryRegNumber;
 end;
 
 function TMercuryRegister.Cut(const LineCount: Integer): Boolean;

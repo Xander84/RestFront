@@ -50,6 +50,8 @@ type
     PayInSumm: Currency;
     //сумма выплат
     PayOutSumm: Currency;
+    //регистрационный номер устройства
+    RNM: String;
   end;
 
   IBaseFiscalRegister = interface
@@ -170,7 +172,7 @@ begin
   with RegStruct do
   begin
     FrontBase.SaveRegisters(Summ1, Summ2, Summ3, Summ4, SummReturn1, SummReturn2,
-      SummReturn3, SummReturn4, PayInSumm, PayOutSumm);
+      SummReturn3, SummReturn4, PayInSumm, PayOutSumm, RNM);
   end;
 end;
 

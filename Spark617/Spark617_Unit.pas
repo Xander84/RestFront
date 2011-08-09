@@ -981,6 +981,7 @@ begin
   Result.SummReturn4 := 0;
   Result.PayInSumm := GetRegister(320);
   Result.PayOutSumm := GetRegister(322);
+  Result.RNM := GetTextDeviceInfo(22);
 end;
 
 function TSpark617Register.Get_Self: Integer;
