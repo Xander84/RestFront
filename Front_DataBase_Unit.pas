@@ -4756,7 +4756,7 @@ begin
       if not FReadSQL.Transaction.InTransaction then
         FReadSQL.Transaction.StartTransaction;
 
-      FReadSQL.SQL.Text := 'SELECT ID, USR$NAME FROM USR$MN_DISCOUNTNAME ORDER BY NAME ';
+      FReadSQL.SQL.Text := 'SELECT ID, USR$NAME FROM USR$MN_DISCOUNTNAME ORDER BY usr$NAME ';
       FReadSQL.ExecQuery;
       while not FReadSQL.EOF do
       begin
