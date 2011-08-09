@@ -59,8 +59,7 @@ type
     function DeleteServiceCheckOptions(const DocID, MasterKey,
       DocumentKey: Integer): Boolean;
     procedure PrintCustomReport(const DateBegin, DateEnd: TDate; const TemplateID: Integer);
-    procedure PrintReservationOrder(const DocID: Integer);
-    procedure PrintReservationTable(const DocID: Integer);
+    procedure PrintReservationOrder(const DocID, ReservType: Integer);
 
     property FrontBase: TFrontBase read FFrontBase write FFrontBase;
   end;
@@ -741,7 +740,7 @@ begin
   end;
 end;
 
-procedure TRestReport.PrintReservationOrder(const DocID: Integer);
+procedure TRestReport.PrintReservationOrder(const DocID, ReservType: Integer);
 var
   FReport: Tgs_fr4SingleReport;
   Str: TStream;
@@ -769,77 +768,10 @@ begin
         FReport.LoadFromStream(Str);
       end else
       begin
-        GetTemplateStreamByRuid(147747703, 1650037404, Str);
-        if Str.Size > 0 then
-        begin
-          Str.Position := 0;
-          FReport.LoadFromStream(Str);
-        end;
-      end;
-
-      FReport.DataSets.Clear;
-      FCompanyName := FFrontBase.Options.CheckLine1 +
-        ' ' + FFrontBase.Options.CheckLine2 + ' ' +
-        FFrontBase.Options.CheckLine3 + ' ' + FFrontBase.Options.CheckLine4;
-
-      FReport.Variables.Clear;
-      FReport.Variables[' ' + cn_RestParam] := Null;
-      FReport.Variables.AddVariable(cn_RestParam, 'CompanyName', '''' + FCompanyName + '''');
-      FReport.Variables.AddVariable(cn_RestParam, 'RespKey', '''' + IntToStr(FrontBase.ContactKey) + '''');
-      FReport.Variables.AddVariable(cn_RestParam, 'DocID', '''' + IntToStr(DocID) + '''');
-      FReport.Variables.AddVariable(cn_RestParam, 'UserName', '''' + FrontBase.UserName + '''');
-
-      if (FFrontBase.UserKey and FFrontBase.Options.ManagerGroupMask) <> 0 then
-        RespName := 'менеджер'
-      else if (FFrontBase.UserKey and FFrontBase.Options.KassaGroupMask) <> 0 then
-        RespName := 'кассир'
-      else
-        RespName := 'официант';
-      FReport.Variables.AddVariable(cn_RestParam, 'RespName', '''' + RespName + '''');
-
-      if FReport.PrepareReport then
-      begin
-        InitReportParams(FReport, PrinterName);
-        FReport.ShowPreparedReport;
-      end;
-    finally
-      Str.Free;
-    end;
-  finally
-    BaseQueryList.Report := nil;
-    FReport.Free;
-  end;
-end;
-
-procedure TRestReport.PrintReservationTable(const DocID: Integer);
-var
-  FReport: Tgs_fr4SingleReport;
-  Str: TStream;
-  BaseQueryList: TgsQueryList;
-  FPrinterInfo: TPrinterInfo;
-  PrinterName, FCompanyName: String;
-  RespName: String;
-begin
-  Assert(Assigned(FFrontBase), 'FrontBase not assigned');
-  BaseQueryList := FrontData.BaseQueryList;
-  BaseQueryList.Clear;
-
-  FPrinterInfo := FFrontBase.GetPrinterInfo;
-  PrinterName := FPrinterInfo.PrinterName;
-
-  FReport := Tgs_fr4SingleReport.Create(nil);
-  BaseQueryList.Report := FReport;
-  try
-    Str := TMemoryStream.Create;
-    try
-      GetTemplateStreamByPrnIDAndType(rp_ReservationTable, FPrinterInfo.PrinterID, Str);
-      if Str.Size > 0 then
-      begin
-        Str.Position := 0;
-        FReport.LoadFromStream(Str);
-      end else
-      begin
-        GetTemplateStreamByRuid(147747705, 1650037404, Str);
+        if ReservType = rp_ReservationOrder then
+          GetTemplateStreamByRuid(147747703, 1650037404, Str)
+        else
+          GetTemplateStreamByRuid(147747705, 1650037404, Str);
         if Str.Size > 0 then
         begin
           Str.Position := 0;

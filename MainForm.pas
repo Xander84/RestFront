@@ -449,6 +449,7 @@ type
     FminMenuButtonCount: Integer;
 
     FReadyToShow: Boolean;
+    FClearDiscount: Boolean;
 
     procedure RestorePanelWidth;
 
@@ -783,6 +784,7 @@ begin
   FFormEvent := TApplicationEvents.Create(Self);
   FFormEvent.OnMessage := AppMessage;
   FReadyToShow := False;
+  FClearDiscount := False;
 end;
 
 procedure TRestMainForm.FormDestroy(Sender: TObject);
@@ -2871,6 +2873,10 @@ begin
   btnCancel3.Enabled := False;
   NoPrecheck := False;
   try
+    if FHeaderTable.State = dsBrowse then
+      FHeaderTable.Edit;
+    FHeaderTable.Post;
+
     FLineTable.First;
     AskSave := False;
     while (not FLineTable.EOF) and (not AskSave) do
@@ -3081,13 +3087,18 @@ begin
           end
           else
           begin
-            if FHeaderTable.State = dsBrowse then
-              FHeaderTable.Edit;
+            FClearDiscount := True;
+            try
+              if FHeaderTable.State = dsBrowse then
+                FHeaderTable.Edit;
 
-            FHeaderTable.FieldByName('USR$DISCCARDKEY').Clear;
-            FHeaderTable.FieldByName('USR$DISCOUNTKEY').Clear;
-            FHeaderTable.FieldByName('USR$USERDISCKEY').Clear;
-            FHeaderTable.Post;
+              FHeaderTable.FieldByName('USR$DISCCARDKEY').Clear;
+              FHeaderTable.FieldByName('USR$DISCOUNTKEY').Clear;
+              FHeaderTable.FieldByName('USR$USERDISCKEY').Clear;
+              FHeaderTable.Post;
+            finally
+              FClearDiscount := False;
+            end;
           end;
       finally
         FChooseDiscountForm.Free;
@@ -3109,6 +3120,10 @@ begin
   btnOK.Enabled := False;
   btnCancel3.Enabled := False;
   try
+    if FHeaderTable.State = dsBrowse then
+      FHeaderTable.Edit;
+    FHeaderTable.Post;
+
     if FFrontBase.CashCode <> -1 then
     begin
       SaveCheck;
@@ -5197,15 +5212,19 @@ begin
   if DataSet.FieldByName('USR$BONUSSUM').AsCurrency > 0 then
     FFrontBase.CalcBonusSum(DataSet, FLineTable, Bonus, PercDisc);
 
-  FLineTable.First;
-  while not FLineTable.Eof do
+  if (DataSet.FieldByName('USR$DISCOUNTKEY').AsInteger > 0) or
+    (DataSet.FieldByName('USR$BONUSSUM').AsCurrency > 0) or FClearDiscount then
   begin
-    FLineTable.Edit;
-    if Bonus then
-      FLineTable.FieldByName('USR$PERSDISCOUNT').AsCurrency := PercDisc;
-    FLineTable.Post;
+    FLineTable.First;
+    while not FLineTable.Eof do
+    begin
+      FLineTable.Edit;
+      if Bonus then
+        FLineTable.FieldByName('USR$PERSDISCOUNT').AsCurrency := PercDisc;
+      FLineTable.Post;
 
-    FLineTable.Next;
+      FLineTable.Next;
+    end;
   end;
 end;
 

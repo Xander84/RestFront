@@ -21,7 +21,7 @@ const
 
 type
   // тип оплаты: продажа или возврат
-  TSaleType = (ptSale, ptReturn);
+  TSaleType = (ptSale, ptReturn, ptAvans, ptReturnAvans);
 
   TSellParamForm = class(TBaseFrontForm)
     pnlMain: TAdvPanel;
@@ -125,6 +125,8 @@ type
     property Doc: TkbmMemTable read FDoc write SetDoc;
     property DocLine: TkbmMemTable read FDocLine write SetDocLine;
     property SaleType: TSaleType read FSaleType write FSaleType;
+    property PayLine: TkbmMemTable read dsPayLine;
+    property NoFiscalPayment: Boolean read FNoFiscalPayment;
   end;
 
 var
@@ -358,12 +360,15 @@ begin
     end;
 
     DBAdvGrMain.CalcFooter(2);
-    if (FSumToPay - FPaySum) < 0 then
-      lblChange.Caption := Format(DBAdvGrMain.FloatFormat, [(FPaySum - FSumToPay)])
-    else
-      lblChange.Caption := '0';
+    if FSaleType <> ptAvans then
+    begin
+      if (FSumToPay - FPaySum) < 0 then
+        lblChange.Caption := Format(DBAdvGrMain.FloatFormat, [(FPaySum - FSumToPay)])
+      else
+        lblChange.Caption := '0';
 
-    FChange := FPaySum - FSumToPay;
+      FChange := FPaySum - FSumToPay;
+    end;
   finally
     FInInsert := False;
   end;
@@ -404,7 +409,7 @@ var
   Ev: TAdvSmoothTouchKeyEvent;
   FLineTable: TkbmMemTable;
 begin
-  if (lblChange.Caption = '') or (FChange < 0) then
+  if ((lblChange.Caption = '') or (FChange < 0)) and (FSaleType <> ptAvans) then
   begin
     Touch_MessageBox('Внимание', 'Сумма оплаты меньше суммы чека!', MB_OK, mtWarning);
     exit;
@@ -420,7 +425,8 @@ begin
     exit;
   end;
   CalcSums;
-  if ((FSums.FCardSum + FSums.FCreditSum) > FSumToPay) or (FSums.FPersonalCardSum > FSumToPay) then
+  if (((FSums.FCardSum + FSums.FCreditSum) > FSumToPay) or (FSums.FPersonalCardSum > FSumToPay))
+    and (FSaleType <> ptAvans) then
   begin
     Touch_MessageBox('Внимание', 'Сумма оплаты по безналичному расчету превышает сумму чека!', MB_OK, mtWarning);
     exit;
@@ -436,7 +442,7 @@ begin
     exit;
   end;
   FSums.FChangeSum := FChange;
-  if (FSaleType = ptReturn) and (FChange <> 0)  then
+  if ((FSaleType = ptReturn) or (FSaleType = ptReturnAvans)) and (FChange <> 0)  then
   begin
     Touch_MessageBox('Внимание', 'При возврате сдачи не может быть!', MB_OK, mtWarning);
     exit;
@@ -452,7 +458,7 @@ begin
       exit;
     end;
     // Сумма одного из платежей больше или равна Сумме оплаты и присутствует второй платеж
-    if (dsPayLine.FieldByName('SUM').AsCurrency >= FSumToPay) and (dsPayLine.RecordCount > 1)  then
+    if (dsPayLine.FieldByName('SUM').AsCurrency >= FSumToPay) and (dsPayLine.RecordCount > 1) and (FSaleType <> ptAvans) then
     begin
       Touch_MessageBox('Внимание', 'Неверная сумма оплаты! Сумма одного из платежей больше суммы оплаты!', MB_OK, mtWarning);
       exit;
@@ -472,6 +478,11 @@ begin
       begin
         FInBrowse := True;
         try
+          if (FSaleType = ptAvans) or (FSaleType = ptReturnAvans) then
+          begin
+            Self.ModalResult := mrOk;
+            exit;
+          end;
           if FNoFiscalPayment then
             FFiscalRegiter.InitFiscalRegister(Reg_Test)
           else
