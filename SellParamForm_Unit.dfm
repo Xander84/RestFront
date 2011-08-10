@@ -4,8 +4,8 @@ object SellParamForm: TSellParamForm
   BorderIcons = []
   BorderStyle = bsSingle
   Caption = #1055#1072#1088#1072#1084#1077#1090#1088#1099' '#1087#1088#1086#1076#1072#1078#1080
-  ClientHeight = 434
-  ClientWidth = 797
+  ClientHeight = 463
+  ClientWidth = 815
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -22,8 +22,8 @@ object SellParamForm: TSellParamForm
   object pnlMain: TAdvPanel
     Left = 0
     Top = 0
-    Width = 797
-    Height = 434
+    Width = 815
+    Height = 463
     Align = alClient
     BevelOuter = bvNone
     Color = 16640730
@@ -57,9 +57,10 @@ object SellParamForm: TSellParamForm
     StatusBar.ColorTo = 16374724
     StatusBar.GradientDirection = gdVertical
     Styler = FrontData.FrontPanelStyler
+    ExplicitWidth = 797
     FullHeight = 0
     object lblToPay: TLabel
-      Left = 627
+      Left = 648
       Top = 11
       Width = 152
       Height = 33
@@ -76,7 +77,7 @@ object SellParamForm: TSellParamForm
       Transparent = True
     end
     object lblChange: TLabel
-      Left = 627
+      Left = 648
       Top = 317
       Width = 152
       Height = 33
@@ -93,7 +94,7 @@ object SellParamForm: TSellParamForm
       Transparent = True
     end
     object Label1: TLabel
-      Left = 519
+      Left = 540
       Top = 11
       Width = 105
       Height = 29
@@ -109,7 +110,7 @@ object SellParamForm: TSellParamForm
       Transparent = True
     end
     object Label2: TLabel
-      Left = 552
+      Left = 573
       Top = 317
       Width = 71
       Height = 29
@@ -124,9 +125,75 @@ object SellParamForm: TSellParamForm
       ParentFont = False
       Transparent = True
     end
+    object lblAllSumCaption: TLabel
+      Left = 16
+      Top = 11
+      Width = 153
+      Height = 29
+      Caption = #1086#1073#1097#1072#1103' '#1089#1091#1084#1084#1072':'
+      Color = clWindow
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -24
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentColor = False
+      ParentFont = False
+      Transparent = True
+    end
+    object lblAllSum: TLabel
+      Left = 175
+      Top = 11
+      Width = 122
+      Height = 33
+      Alignment = taRightJustify
+      AutoSize = False
+      Color = clWindow
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -24
+      Font.Name = 'Tahoma'
+      Font.Style = [fsBold]
+      ParentColor = False
+      ParentFont = False
+      Transparent = True
+    end
+    object lblAvansCaption: TLabel
+      Left = 312
+      Top = 11
+      Width = 72
+      Height = 29
+      Caption = #1072#1074#1072#1085#1089':'
+      Color = clWindow
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -24
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentColor = False
+      ParentFont = False
+      Transparent = True
+    end
+    object lblAvansSum: TLabel
+      Left = 390
+      Top = 11
+      Width = 123
+      Height = 33
+      Alignment = taRightJustify
+      AutoSize = False
+      Color = clWindow
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -24
+      Font.Name = 'Tahoma'
+      Font.Style = [fsBold]
+      ParentColor = False
+      ParentFont = False
+      Transparent = True
+    end
     object edMain: TEdit
-      Left = 336
-      Top = 363
+      Left = 347
+      Top = 372
       Width = 121
       Height = 21
       TabOrder = 0
@@ -136,7 +203,7 @@ object SellParamForm: TSellParamForm
     end
     object TouchKeyBoard: TAdvSmoothTouchKeyBoard
       Left = 16
-      Top = 17
+      Top = 46
       Width = 268
       Height = 329
       AutoCompletion.Font.Charset = DEFAULT_CHARSET
@@ -314,7 +381,7 @@ object SellParamForm: TSellParamForm
     end
     object btnPay: TAdvSmoothButton
       Left = 16
-      Top = 363
+      Top = 392
       Width = 268
       Height = 57
       Action = actPay
@@ -346,8 +413,8 @@ object SellParamForm: TSellParamForm
       Version = '1.6.9.0'
     end
     object btnCancel: TAdvSmoothButton
-      Left = 511
-      Top = 363
+      Left = 532
+      Top = 392
       Width = 268
       Height = 57
       Action = actCancel
@@ -379,8 +446,8 @@ object SellParamForm: TSellParamForm
       Version = '1.6.9.0'
     end
     object btnCashPay: TAdvSmoothToggleButton
-      Left = 301
-      Top = 20
+      Left = 312
+      Top = 49
       Width = 174
       Height = 59
       Color = 15195349
@@ -416,8 +483,8 @@ object SellParamForm: TSellParamForm
       TabOrder = 4
     end
     object btnCreditlPay: TAdvSmoothToggleButton
-      Left = 301
-      Top = 150
+      Left = 312
+      Top = 179
       Width = 174
       Height = 59
       Color = 15195349
@@ -453,8 +520,8 @@ object SellParamForm: TSellParamForm
       TabOrder = 5
     end
     object btnCardPay: TAdvSmoothToggleButton
-      Left = 301
-      Top = 85
+      Left = 312
+      Top = 114
       Width = 174
       Height = 59
       Color = 15195349
@@ -490,8 +557,8 @@ object SellParamForm: TSellParamForm
       TabOrder = 6
     end
     object btnDelPay: TAdvSmoothButton
-      Left = 301
-      Top = 280
+      Left = 312
+      Top = 309
       Width = 174
       Height = 57
       Action = actDeletePay
@@ -523,7 +590,7 @@ object SellParamForm: TSellParamForm
       Version = '1.6.9.0'
     end
     object DBAdvGrMain: TDBAdvGrid
-      Left = 491
+      Left = 512
       Top = 52
       Width = 289
       Height = 257
@@ -731,8 +798,8 @@ object SellParamForm: TSellParamForm
         131)
     end
     object btnPersonalCard: TAdvSmoothToggleButton
-      Left = 301
-      Top = 215
+      Left = 312
+      Top = 244
       Width = 174
       Height = 59
       Color = 15195349
@@ -769,12 +836,12 @@ object SellParamForm: TSellParamForm
     end
   end
   object dsMain: TDataSource
-    Left = 312
-    Top = 8
+    Left = 368
+    Top = 408
   end
   object acListMain: TActionList
-    Left = 360
-    Top = 8
+    Left = 432
+    Top = 400
     object actPay: TAction
       Caption = #1054#1087#1083#1072#1090#1080#1090#1100
       OnExecute = actPayExecute

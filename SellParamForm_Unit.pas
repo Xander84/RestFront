@@ -48,6 +48,10 @@ type
     actPersonalCard: TAction;
     actCardPay: TAction;
     actCreditPay: TAction;
+    lblAllSumCaption: TLabel;
+    lblAllSum: TLabel;
+    lblAvansCaption: TLabel;
+    lblAvansSum: TLabel;
     procedure edMainKeyPress(Sender: TObject; var Key: Char);
     procedure edMainChange(Sender: TObject);
     procedure actPayExecute(Sender: TObject);
@@ -73,6 +77,8 @@ type
     FFrontBase: TFrontBase;
     // сумма к оплате
     FSumToPay: Currency;
+    //общая сумма (вместе с авансом)
+    FAllSum: Currency;
     // сумма по всем видам оплат
     FPaySum: Currency;
     // сдача
@@ -110,6 +116,7 @@ type
 
     procedure PrevSettings(const PayType: Integer; NeedLocate: Boolean = True);
     procedure SetAvansSum(const Value: Currency);
+    procedure SetSaleType(const Value: TSaleType);
   protected
     FPrinting: Boolean;
     dsPayLine: TkbmMemTable;
@@ -124,7 +131,7 @@ type
     property FiscalRegiter: TFiscalRegister read FFiscalRegiter write SetFiscalRegister;
     property Doc: TkbmMemTable read FDoc write SetDoc;
     property DocLine: TkbmMemTable read FDocLine write SetDocLine;
-    property SaleType: TSaleType read FSaleType write FSaleType;
+    property SaleType: TSaleType read FSaleType write SetSaleType;
     property PayLine: TkbmMemTable read dsPayLine;
     property NoFiscalPayment: Boolean read FNoFiscalPayment;
   end;
@@ -215,6 +222,7 @@ begin
   FPaySum := 0;
   FSumToPay := 0;
   FChange := 0;
+  FAllSum := 0;
   FInDeleteOrUpdate := False;
   FInInsert := False;
   FInBrowse := False;
@@ -374,10 +382,30 @@ begin
   end;
 end;
 
+procedure TSellParamForm.SetSaleType(const Value: TSaleType);
+begin
+  FSaleType := Value;
+  if FSaleType = ptSale then
+  begin
+    lblAllSum.Visible := True;
+    lblAvansSum.Visible := True;
+    lblAllSumCaption.Visible := True;
+    lblAvansCaption.Visible := True;
+  end else
+  begin
+    lblAllSum.Visible := False;
+    lblAvansSum.Visible := False;
+    lblAllSumCaption.Visible := False;
+    lblAvansCaption.Visible := False;
+  end;
+end;
+
 procedure TSellParamForm.SetSumToPay(const Value: Currency);
 begin
+  FAllSum := Value;
   FSumToPay := Value;
   lblToPay.Caption := Format(DBAdvGrMain.FloatFormat, [Value]);
+  lblAllSum.Caption := Format(DBAdvGrMain.FloatFormat, [FSumToPay]);
 end;
 
 procedure TSellParamForm.SetFiscalRegister(const Value: TFiscalRegister);
@@ -391,6 +419,7 @@ begin
 
   FSumToPay := FSumToPay - AvansSum;
   lblToPay.Caption := Format(DBAdvGrMain.FloatFormat, [FSumToPay]);
+  lblAvansSum.Caption := Format(DBAdvGrMain.FloatFormat, [FAvansSum]);
 end;
 
 procedure TSellParamForm.SetDoc(const Value: TkbmMemTable);
