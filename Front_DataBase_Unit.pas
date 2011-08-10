@@ -443,7 +443,7 @@ type
     procedure GetWaiterList(AOrderList: TList<TrfUser>);
     procedure GetAllUserList(const MemTable: TkbmMemTable);
     procedure GetContactList(const MemTable: TkbmMemTable);
-    function SaveContact(const MemTable: TkbmMemTable): Boolean;
+    function SaveContact(const MemTable: TkbmMemTable; var ContactID: Integer): Boolean;
     { Список всех пользователей фронта у которых на данный момент есть заказы }
     procedure GetActiveWaiterList(AOrderList: TList<TrfUser>; const WithPrecheck: Boolean);
     function GetLogicDate: TDateTime;
@@ -4140,11 +4140,11 @@ begin
   end;
 end;
 
-function TFrontBase.SaveContact(const MemTable: TkbmMemTable): Boolean;
+function TFrontBase.SaveContact(const MemTable: TkbmMemTable; var ContactID: Integer): Boolean;
 var
   FSQL: TIBSQL;
   Tr: TIBTransaction;
-  ContactID: Integer;
+//  ContactID: Integer;
 begin
 // 1. Добавляем запись в GD_CONTACT
 // 2. Добавляем запись в GD_PEOPLE

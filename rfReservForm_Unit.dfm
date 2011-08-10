@@ -60,7 +60,6 @@ object ReservForm: TReservForm
     StatusBar.ColorTo = 16374724
     StatusBar.GradientDirection = gdVertical
     Styler = FrontData.FrontPanelStyler
-    ExplicitHeight = 456
     FullHeight = 0
     object Label1: TLabel
       Left = 16
@@ -910,8 +909,8 @@ object ReservForm: TReservForm
       Top = 107
       Width = 160
       Height = 31
-      Date = 40759.483946076390000000
-      Time = 40759.483946076390000000
+      Date = 40759.483935185180000000
+      Time = 40759.483935185180000000
       DoubleBuffered = True
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
@@ -924,7 +923,7 @@ object ReservForm: TReservForm
       TabOrder = 4
       BorderStyle = bsSingle
       Ctl3D = True
-      DateTime = 40759.483946076390000000
+      DateTime = 40759.483935185180000000
       Version = '1.1.0.0'
       LabelFont.Charset = DEFAULT_CHARSET
       LabelFont.Color = clWindowText
@@ -941,6 +940,7 @@ object ReservForm: TReservForm
       Height = 31
       Date = 40759.483935185180000000
       Time = 40759.483935185180000000
+      ShowCheckbox = True
       DoubleBuffered = True
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText

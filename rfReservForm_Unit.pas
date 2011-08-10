@@ -98,7 +98,10 @@ begin
     FForm.FrontBase := FrontBase;
     FForm.ShowModal;
     if FForm.ModalResult = mrOk then
+    begin
       FrontBase.GetContactList(ClientTable);
+      DBLookupComboBox.KeyValue := FForm.UserKey;
+    end;
   finally
     FForm.Free;
   end;

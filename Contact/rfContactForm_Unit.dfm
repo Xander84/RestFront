@@ -968,7 +968,7 @@ object rfContact: TrfContact
         Transparent = True
       end
       object Label8: TLabel
-        Left = 186
+        Left = 368
         Top = 15
         Width = 140
         Height = 24
@@ -984,7 +984,7 @@ object rfContact: TrfContact
         Transparent = True
       end
       object Label9: TLabel
-        Left = 368
+        Left = 186
         Top = 15
         Width = 126
         Height = 24
@@ -1080,7 +1080,7 @@ object rfContact: TrfContact
         TabOrder = 2
       end
       object dbePassportExpDate: TAdvDBDateTimePicker
-        Left = 186
+        Left = 368
         Top = 45
         Width = 160
         Height = 31
@@ -1109,7 +1109,7 @@ object rfContact: TrfContact
         DataSource = dsMain
       end
       object dbePassportIssDate: TAdvDBDateTimePicker
-        Left = 368
+        Left = 186
         Top = 45
         Width = 160
         Height = 31

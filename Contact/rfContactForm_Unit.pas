@@ -63,7 +63,7 @@ implementation
 
 procedure TrfContact.actOKExecute(Sender: TObject);
 begin
-  if FrontBase.SaveContact(MainTable) then
+  if FrontBase.SaveContact(MainTable, FUserKey) then
     ModalResult := mrOk;
 end;
 
@@ -93,6 +93,11 @@ begin
   MainTable.FieldDefs.Add('PASSPORTISSUER', ftString, 40);
   MainTable.CreateTable;
   MainTable.Open;
+
+  MainTable.Edit;
+  MainTable.FieldByName('PASSPORTISSDATE').AsDateTime := EncodeDate(2000, 1, 1);
+  MainTable.FieldByName('PASSPORTEXPDATE').AsDateTime := EncodeDate(2000, 1, 1);
+  MainTable.Post;
 end;
 
 end.
