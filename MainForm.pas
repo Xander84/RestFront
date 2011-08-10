@@ -3563,6 +3563,10 @@ begin
         CreateMenuButtonList;
         AddPopularGoods;
 
+        // Информация о заказе
+        lblOrderInfoUserName.Caption := FFrontBase.GetNameWaiterOnID(FFrontBase.ContactKey, True, False);
+        lblOrderInfoTableNumber.Caption := 'Бронирование';
+
         btnCutCheck.Visible := False;
         btnPreCheck.Visible := False;
         btnModification.Visible := False;

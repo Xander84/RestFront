@@ -801,7 +801,7 @@ begin
 
       if FReport.PrepareReport then
       begin
-        InitReportParams(FReport, PrinterName);
+      //  InitReportParams(FReport, PrinterName);
         FReport.ShowPreparedReport;
       end;
     finally
