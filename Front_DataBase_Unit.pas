@@ -360,6 +360,8 @@ type
 
     FQueryList: TgsQueryList;
 
+    FComputerName: String;
+
     CacheList: TDictionary<String, Integer>;
 
     function GetDisplay: TDisplay;
@@ -372,6 +374,7 @@ type
     function GetReadTransaction: TIBTransaction;
 
     function EnsureDBConnection: Boolean;
+    function GetComputerName: String;
   public
     constructor Create;
     destructor Destroy; override;
@@ -536,6 +539,7 @@ type
     property CompanyName: String read FCompanyName;
     property ReadTransaction: TIBTransaction read GetReadTransaction;
     property DoFiscalLog: Boolean read FFiscalLog;
+    property ComputerName: String read GetComputerName;
   end;
 
   procedure GetHeaderTable(var DS: TkbmMemTable);
@@ -628,6 +632,8 @@ end;
 constructor TFrontBase.Create;
 begin
   inherited;
+
+  FComputerName := '';
 
   FReadTransaction := TIBTransaction.Create(nil);
   FReadTransaction.Params.Add('read_committed');
@@ -948,7 +954,7 @@ begin
           updOrder.ParamByName('usr$timecloseorder').Value := HeaderTable.FieldByName('usr$timecloseorder').Value;
           updOrder.ParamByName('documentkey').AsInteger := HeaderTable.FieldByName('ID').AsInteger;
           updOrder.ParamByName('usr$pay').AsInteger := HeaderTable.FieldByName('usr$pay').AsInteger;
-          updOrder.ParamByName('usr$computername').AsString := GetLocalComputerName;
+          updOrder.ParamByName('usr$computername').AsString := ComputerName;
           updOrder.ParamByName('usr$tablekey').AsInteger := HeaderTable.FieldByName('usr$tablekey').AsInteger;
           updOrder.ParamByName('usr$sysnum').AsInteger := HeaderTable.FieldByName('usr$sysnum').AsInteger;
           updOrder.ParamByName('usr$register').AsString := HeaderTable.FieldByName('usr$register').AsString;
@@ -988,7 +994,7 @@ begin
           if HeaderTable.FieldByName('USR$COMPUTERNAME').AsString <> '' then
             InsOrder.ParamByName('usr$computername').AsString := HeaderTable.FieldByName('USR$COMPUTERNAME').AsString
           else
-            InsOrder.ParamByName('usr$computername').AsString := GetLocalComputerName;
+            InsOrder.ParamByName('usr$computername').AsString := ComputerName;
           InsOrder.ParamByName('USR$WHOPAYOFFKEY').Value := HeaderTable.FieldByName('USR$WHOPAYOFFKEY').Value;
           InsOrder.ParamByName('USR$AVANSSUM').AsCurrency := HeaderTable.FieldByName('USR$AVANSSUM').AsCurrency;
           InsOrder.ParamByName('USR$RESERVKEY').Value := HeaderTable.FieldByName('USR$RESERVKEY').Value;
@@ -1058,7 +1064,7 @@ begin
               if LineTable.FieldByName('USR$COMPUTERNAME').AsString <> '' then
                 InsOrderLine.ParamByName('usr$computername').AsString := LineTable.FieldByName('USR$COMPUTERNAME').AsString
               else
-                InsOrderLine.FieldByName('USR$COMPUTERNAME').AsString := GetLocalComputerName;
+                InsOrderLine.FieldByName('USR$COMPUTERNAME').AsString := ComputerName;
               InsOrderLine.ExecQuery;
 
               ModifyTable.First;
@@ -1646,7 +1652,7 @@ begin
         LineTable.FieldByName('GOODNAME').AsString := GoodDataSet.FieldByName('NAME').AsString;
         LineTable.FieldByName('usr$quantity').AsCurrency := FSQL.FieldByName('USR$QUANTITY').AsCurrency;
         LineTable.FieldByName('usr$costncu').AsCurrency := GoodDataSet.FieldByName('COST').AsCurrency;
-        LineTable.FieldByName('USR$COMPUTERNAME').AsString := GetLocalComputerName;
+        LineTable.FieldByName('USR$COMPUTERNAME').AsString := ComputerName;
         LineTable.Post;
 
         Inc(FLineID);
@@ -1687,6 +1693,14 @@ begin
   finally
     FReadSQL.Close;
   end;
+end;
+
+function TFrontBase.GetComputerName: String;
+begin
+  if FComputerName = '' then
+    FComputerName := GetLocalComputerName;
+
+  Result := FComputerName;
 end;
 
 procedure TFrontBase.GetContactList(const MemTable: TkbmMemTable);
@@ -2117,7 +2131,7 @@ begin
           if FReadSQL.FieldByName('usr$computername').AsString <> '' then
             HeaderTable.FieldByName('usr$computername').AsString := FReadSQL.FieldByName('usr$computername').AsString
           else
-            HeaderTable.FieldByName('usr$computername').AsString := GetLocalComputerName;
+            HeaderTable.FieldByName('usr$computername').AsString := ComputerName;
           HeaderTable.FieldByName('usr$reservkey').AsInteger := FReadSQL.FieldByName('usr$reservkey').AsInteger;
           HeaderTable.FieldByName('usr$avanssum').AsCurrency := FReadSQL.FieldByName('usr$avanssum').AsCurrency;
           HeaderTable.Post;
@@ -2239,7 +2253,7 @@ begin
         if FReadSQL.FieldByName('usr$computername').AsString <> '' then
           Result.ComputerName := FReadSQL.FieldByName('usr$computername').AsString
         else
-          Result.ComputerName := GetLocalComputerName;
+          Result.ComputerName := ComputerName;
         Result.IsLocked := (FReadSQL.FieldByName('islocked').AsInteger = 1);
       end;
     finally
@@ -3315,7 +3329,7 @@ begin
       FReadSQL.SQL.Text :=
         ' SELECT * FROM USR$MN_SALEDEVICE sd ' +
         ' WHERE sd.USR$COMPUTERNAME = :ComputerName and sd.usr$active = 1 ';
-      FReadSQL.Params[0].AsString := GetLocalComputerName;
+      FReadSQL.ParamByName('ComputerName').AsString := ComputerName;
       FReadSQL.ExecQuery;
       if not FReadSQL.Eof then
       begin
@@ -3538,9 +3552,9 @@ begin
         FReadSQL.Transaction.StartTransaction;
 
       FReadSQL.SQL.Text :=
-        'SELECT C.*, T.USR$NOFISCAL FROM USR$MN_PERSONALCARD C ' +
+        'SELECT C.*, T.USR$NOFISCAL, t.id kindtypekey FROM USR$MN_PERSONALCARD C ' +
         'JOIN USR$MN_KINDTYPE T ON 1 = 1 ' +
-        'WHERE T.ID = :ID AND C.USR$CODE = :pass ';
+        'WHERE T.usr$paytypekey = :ID AND C.USR$CODE = :pass ';
       FReadSQL.ParamByName('pass').AsString := Pass;
       FReadSQL.ParamByName('ID').AsInteger := PersonalCardID;
       FReadSQL.ExecQuery;
@@ -3556,6 +3570,7 @@ begin
         MemTable.FieldByName('USR$NAME').AsString := FReadSQL.FieldByName('USR$NAME').AsString;
         MemTable.FieldByName('USR$CODE').AsString := FReadSQL.FieldByName('USR$CODE').AsString;
         MemTable.FieldByName('ID').AsInteger := FReadSQL.FieldByName('ID').AsInteger;
+        MemTable.FieldByName('kindtypekey').AsInteger := FReadSQL.FieldByName('kindtypekey').AsInteger;
         MemTable.FieldByName('USR$NOFISCAL').AsInteger := FReadSQL.FieldByName('USR$NOFISCAL').AsInteger;
         MemTable.Post;
 
@@ -3710,7 +3725,7 @@ begin
         '   and s.usr$kassa > '''' ' +
         ' order by  ' +
         '   s.id desc ';
-      FReadSQL.Params[0].AsString := GetLocalComputerName;
+      FReadSQL.ParamByName('comp').AsString := ComputerName;
       FReadSQL.ExecQuery;
       if not FReadSQL.Eof then
       begin
@@ -4510,7 +4525,7 @@ begin
         'where ' +
         '  prnset.usr$kassa = 1 ' +
         '  and prnset.usr$computername = :comp ';
-      FReadSQL.Params[0].AsString := GetLocalComputerName;
+      FReadSQL.ParamByName('comp').AsString := ComputerName;
       FReadSQL.ExecQuery;
       if not FReadSQL.Eof then
       begin
@@ -4541,7 +4556,7 @@ begin
         'where ' +
         '  prnset.usr$kassa = 1 ' +
         '  and prnset.usr$computername = :comp ';
-      FReadSQL.Params[0].AsString := GetLocalComputerName;
+      FReadSQL.ParamByName('comp').AsString := ComputerName;
       FReadSQL.ExecQuery;
       if not FReadSQL.Eof then
         Result := FReadSQL.FieldByName('usr$printername').AsString
@@ -5216,7 +5231,7 @@ begin
       FSQL.ParamByName('PAYINSUMM').AsCurrency := PayInSumm;
       FSQL.ParamByName('PAYOUTSUMM').AsCurrency := PayOutSumm;
       FSQL.ParamByName('USR$CASHNUMBER').AsInteger := CashNumber;
-      FSQL.ParamByName('USR$COMPUTERNAME').AsString := GetLocalComputerName;
+      FSQL.ParamByName('USR$COMPUTERNAME').AsString := ComputerName;
       FSQL.ParamByName('USR$RNM').AsString := RNM;
       FSQL.ExecQuery;
       Result := True;
