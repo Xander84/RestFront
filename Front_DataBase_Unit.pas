@@ -5216,8 +5216,8 @@ begin
       FSQL.ParamByName('PAYINSUMM').AsCurrency := PayInSumm;
       FSQL.ParamByName('PAYOUTSUMM').AsCurrency := PayOutSumm;
       FSQL.ParamByName('USR$CASHNUMBER').AsInteger := CashNumber;
-      FSQL.FieldByName('USR$COMPUTERNAME').AsString := GetLocalComputerName;
-      FSQL.FieldByName('USR$RNM').AsString := RNM;
+      FSQL.ParamByName('USR$COMPUTERNAME').AsString := GetLocalComputerName;
+      FSQL.ParamByName('USR$RNM').AsString := RNM;
       FSQL.ExecQuery;
       Result := True;
     except
