@@ -177,14 +177,14 @@ begin
           FReport.Variables.AddVariable(cn_RestParam, 'DocID', '''' + '0' + '''');
           FReport.Variables.AddVariable(cn_RestParam, 'LineID', '''' + '0' + '''');
           FReport.Variables.AddVariable(cn_RestParam, 'PrinterName', '''' + '' + '''');
-          FReport.Variables.AddVariable(cn_RestParam, 'ComputerName', '''' + GetLocalComputerName + '''');
+          FReport.Variables.AddVariable(cn_RestParam, 'ComputerName', '''' + FrontBase.ComputerName + '''');
         end;
       rp_ServiceCheck:
         begin
           FReport.Variables.AddVariable(cn_RestParam, 'PrnGrID', '''' + '0' + '''');
           FReport.Variables.AddVariable(cn_RestParam, 'DocID', '''' + '0' + '''');
           FReport.Variables.AddVariable(cn_RestParam, 'PrinterName', '''' + '' + '''');
-          FReport.Variables.AddVariable(cn_RestParam, 'ComputerName', '''' + GetLocalComputerName + '''');
+          FReport.Variables.AddVariable(cn_RestParam, 'ComputerName', '''' + FrontBase.ComputerName + '''');
         end;
       rp_CheckRegisterEmpl:
         begin
@@ -536,7 +536,7 @@ begin
         FReport.Variables.AddVariable(cn_RestParam, 'DocID', '''' + VarToStr(DocumentKey) + '''');
         FReport.Variables.AddVariable(cn_RestParam, 'LineID', '''' + VarToStr(MasterKey) + '''');
         FReport.Variables.AddVariable(cn_RestParam, 'PrinterName', '''' + VarToStr(PrinterName) + '''');
-        FReport.Variables.AddVariable(cn_RestParam, 'ComputerName', '''' + GetLocalComputerName + '''');
+        FReport.Variables.AddVariable(cn_RestParam, 'ComputerName', '''' + FrontBase.ComputerName + '''');
         if FReport.PrepareReport then
         begin
           InitReportParams(FReport, PrinterName);
@@ -857,7 +857,7 @@ begin
       FReport.Variables.AddVariable(cn_RestParam, 'PrnGrID', '''' + VarToStr(PrnGrID) + '''');
       FReport.Variables.AddVariable(cn_RestParam, 'DocID', '''' + VarToStr(DocID) + '''');
       FReport.Variables.AddVariable(cn_RestParam, 'PrinterName', '''' + VarToStr(PrinterName) + '''');
-      FReport.Variables.AddVariable(cn_RestParam, 'ComputerName', '''' + GetLocalComputerName + '''');
+      FReport.Variables.AddVariable(cn_RestParam, 'ComputerName', '''' + FrontBase.ComputerName + '''');
       if FReport.PrepareReport then
       begin
         InitReportParams(FReport, PrinterName);
@@ -911,7 +911,7 @@ begin
       'order by  ' +
       '  setprn.usr$printername, prn.id  ';
     FSQL.ParamByName('docid').AsInteger := OrderKey;
-    FSQL.ParamByName('comp').AsString := GetLocalComputerName;
+    FSQL.ParamByName('comp').AsString := FrontBase.ComputerName;
     FSQL.ExecQuery;
     while not FSQL.Eof do
     begin
@@ -959,7 +959,7 @@ begin
       '  prn.usr$name ';
     FSQL.ParamByName('docid').AsInteger := DocID;
     FSQL.ParamByName('masterkey').AsInteger := MasterKey;
-    FSQL.ParamByName('comp').AsString := GetLocalComputerName;
+    FSQL.ParamByName('comp').AsString := FrontBase.ComputerName;
     FSQL.ExecQuery;
     while not FSQL.Eof do
     begin
