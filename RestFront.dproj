@@ -45,6 +45,7 @@
 			<DCC_DcuOutput>D:\Front\DCU</DCC_DcuOutput>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_1)'!=''">
+			<DCC_Optimize>true</DCC_Optimize>
 			<DCC_StringChecks>off</DCC_StringChecks>
 			<DCC_LocalDebugSymbols>false</DCC_LocalDebugSymbols>
 			<DCC_Define>RELEASE;$(DCC_Define)</DCC_Define>
@@ -182,6 +183,7 @@
 			<DCCReference Include="forms\rfReservListForm_Unit.pas">
 				<Form>ReservList</Form>
 			</DCCReference>
+			<DCCReference Include="Metadata\rfMetadata_unit.pas"/>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>

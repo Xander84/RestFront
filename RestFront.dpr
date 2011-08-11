@@ -66,7 +66,8 @@ uses
   rfDiscountListForm_Unit in 'forms\rfDiscountListForm_Unit.pas' {DiscountList},
   rfNoCashGroupForm_Unit in 'rfNoCashGroupForm_Unit.pas' {rfNoCashGroup},
   rfFindGood_Unit in 'forms\rfFindGood_Unit.pas' {FindGood},
-  rfReservListForm_Unit in 'forms\rfReservListForm_Unit.pas' {ReservList};
+  rfReservListForm_Unit in 'forms\rfReservListForm_Unit.pas' {ReservList},
+  rfMetadata_unit in 'Metadata\rfMetadata_unit.pas';
 
 {$R *.res}
 

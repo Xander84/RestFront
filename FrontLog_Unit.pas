@@ -4,7 +4,7 @@ interface
 
 uses
   Front_DataBase_Unit, Classes, SysUtils, Forms, Generics.Collections, IBSQL,
-  IBDatabase, IB, IBScript;
+  IBDatabase, IB, IBScript, rfMetadata_unit;
 
 const
   // simple event's UserKey, DateTime, Event
@@ -239,7 +239,6 @@ type
     FDataBase: TIBDataBase;
     FReadTransaction: TIBTransaction;
     FFrontBase: TFrontBase;
-    FIDSQL: TIBSQL;
 
     FDataBaseName: String;
     FInit: Boolean;
@@ -247,8 +246,6 @@ type
     procedure CheckUser(const UserInfo: TLogUserInfo);
     procedure CheckGood(const GoodInfo: TLogGoodInfo);
     procedure CheckOrder(const OrderInfo: TLogOrderInfo);
-
-    function GetNextID: Integer;
 
     procedure SetDatabaseName(const Value: String);
     procedure SetFrontBase(const Value: TFrontBase);
@@ -291,7 +288,7 @@ begin
       FTransaction.StartTransaction;
       FSQL.Transaction := FTransaction;
       try
-        // проверяем, если данный пользователь в базе лога
+        // проверяем, если данный товар в базе лога
         FSQL.SQL.Text := ' SELECT ID FROM GD_GOOD WHERE GOODKEY = :ID ';
         FSQL.Params[0].AsInteger := GoodInfo.GoodID;
         FSQL.ExecQuery;
@@ -300,13 +297,13 @@ begin
         else
         begin
           FSQL.Close;
-          FID := GetNextID;
           FSQL.SQL.Text := 'INSERT INTO GD_GOOD(ID, GOODKEY, GOODNAME) ' +
-            ' VALUES(:ID, :GOODKEY, :GOODNAME) ';
-          FSQL.ParamByName('ID').AsInteger := FID;
+            ' VALUES(GEN_ID(GD_G_UNIQUE, 1), :GOODKEY, :GOODNAME) ' +
+            ' RETURNING ID ';
           FSQL.ParamByName('GOODKEY').AsInteger := GoodInfo.GoodID;
           FSQL.ParamByName('GOODNAME').AsString := GoodInfo.GoodName;
           FSQL.ExecQuery;
+          FID := FSQL.FieldByName('ID').AsInteger;
           FTransaction.Commit;
           FGoodList.Add(GoodInfo.GoodID, FID);
         end;
@@ -340,7 +337,7 @@ begin
       FTransaction.StartTransaction;
       FSQL.Transaction := FTransaction;
       try
-        // проверяем, если данный пользователь в базе лога
+        // проверяем, если данный заказ в базе лога
         FSQL.SQL.Text := ' SELECT ID FROM GD_ORDER WHERE ORDERKEY = :ID ';
         FSQL.Params[0].AsInteger := OrderInfo.OrderID;
         FSQL.ExecQuery;
@@ -349,13 +346,13 @@ begin
         else
         begin
           FSQL.Close;
-          FID := GetNextID;
           FSQL.SQL.Text := 'INSERT INTO GD_ORDER(ID, ORDERKEY, NUMBER) ' +
-            ' VALUES(:ID, :ORDERKEY, :NUMBER) ';
-          FSQL.ParamByName('ID').AsInteger := FID;
+            ' VALUES(GEN_ID(GD_G_UNIQUE, 1), :ORDERKEY, :NUMBER) ' +
+            ' RETURNING ID ';
           FSQL.ParamByName('ORDERKEY').AsInteger := OrderInfo.OrderID;
           FSQL.ParamByName('NUMBER').AsString := OrderInfo.OrderNumber;
           FSQL.ExecQuery;
+          FID := FSQL.FieldByName('ID').AsInteger;
           FTransaction.Commit;
           FOrderList.Add(OrderInfo.OrderID, FID);
         end;
@@ -394,13 +391,13 @@ begin
         else
         begin
           FSQL.Close;
-          FID := GetNextID;
           FSQL.SQL.Text := 'INSERT INTO GD_USER(ID, USERKEY, USERNAME) ' +
-            ' VALUES(:ID, :USERKEY, :USERNAME) ';
-          FSQL.ParamByName('ID').AsInteger := FID;
+            ' VALUES(GEN_ID(GD_G_UNIQUE, 1), :USERKEY, :USERNAME) ' +
+            ' RETURNING ID ';
           FSQL.ParamByName('USERKEY').AsInteger := UserInfo.UserID;
           FSQL.ParamByName('USERNAME').AsString := UserInfo.UserName;
           FSQL.ExecQuery;
+          FID := FSQL.FieldByName('ID').AsInteger;
           FTransaction.Commit;
           FUserList.Add(UserInfo.UserID, FID);
         end;
@@ -433,10 +430,6 @@ begin
   FDataBase.DefaultTransaction := FReadTransaction;
   FReadTransaction.DefaultDatabase := FDataBase;
 
-  FIDSQL := TIBSQL.Create(nil);
-  FIDSQL.Transaction := FReadTransaction;
-  FIDSQL.SQL.Text := 'SELECT gen_id(gd_g_unique, 1) as id FROM rdb$database';
-
   FInit := False;
 end;
 
@@ -449,7 +442,6 @@ begin
     FreeAndNil(FDataBase);
   if Assigned(FReadTransaction) then
     FreeAndNil(FReadTransaction);
-  FIDSQL.Free;
 
   inherited;
 end;
@@ -478,13 +470,13 @@ begin
       FTransaction.StartTransaction;
       FSQL.Transaction := FTransaction;
       FSQL.SQL.Text := ' INSERT INTO GD_GOODLOG(ID, GOODKEY, SUMM, QUANTITY) ' +
-        ' VALUES(:ID, :GOODKEY, :SUMM, :QUANTITY) ';
-      FID := GetNextID;
-      FSQL.ParamByName('ID').AsInteger := FID;
+        ' VALUES(GEN_ID(GD_G_UNIQUE, 1), :GOODKEY, :SUMM, :QUANTITY) ' +
+        ' RETURNING ID ';
       FSQL.ParamByName('GOODKEY').AsInteger := FGoodList.Items[GoodInfo.GoodID];
       FSQL.ParamByName('SUMM').AsCurrency := GoodInfo.Sum;
       FSQL.ParamByName('QUANTITY').AsCurrency := GoodInfo.Quantity;
       FSQL.ExecQuery;
+      FID := FSQL.FieldByName('ID').AsInteger;
 
       FSQL.Close;
       FSQL.SQL.Text := ' INSERT INTO GD_EVENTLOG(USERKEY, EVENTKEY, ORDERKEY, GOODLOGKEY, EDITIONDATE) ' +
@@ -607,21 +599,9 @@ begin
   end;
 end;
 
-function TLogManager.GetNextID: Integer;
-begin
-  if not FIDSQL.Transaction.InTransaction then
-    FIDSQL.Transaction.StartTransaction;
-
-  FIDSQL.Close;
-  FIDSQL.ExecQuery;
-  Result := FIDSQL.FieldByName('ID').AsInteger;
-end;
-
 procedure TLogManager.SetDatabaseName(const Value: String);
 var
-  FScript: TIBScript;
-  FSQL: TIBSQL;
-  FTransaction: TIBTransaction;
+  FDBCreator: TDataBaseCreator;
 begin
   FDataBaseName := Value;
   if FDataBaseName <> '' then
@@ -642,55 +622,25 @@ begin
         if (E is EIBInterBaseError) and ((EIBInterBaseError(E).SQLCode = - 902) and (EIBInterBaseError(E).IBErrorCode = 335544344)) then
         begin
           FDataBase.ForceClose;
+
+          FDBCreator := TDataBaseCreator.Create;
           try
-            //Create DB
-            FDataBase.Params.Clear;
-            FDataBase.DatabaseName := FDataBaseName;
-            FDataBase.Params.Add('user ''SYSDBA'' password ''masterkey'' ');
-            FDataBase.Params.Add('page_size 8192');
-            FDataBase.Params.Add('default character set win1251');
-            FDatabase.SQLDialect := 3;
-            FDataBase.CreateDatabase;
-            FDataBase.Connected := False;
-            //Connect to DB
-            FDataBase.DatabaseName := FDataBaseName;
-            FDatabase.Params.Add('user_name=SYSDBA');
-            FDatabase.Params.Add('password=masterkey');
-            FDatabase.Params.Add('lc_ctype=WIN1251');
-            FDatabase.SQLDialect := 3;
-            FDataBase.Open;
-            //Create structure
-            FScript := TIBScript.Create(nil);
-            FTransaction := TIBTransaction.Create(nil);
-            FSQL := TIBSQL.Create(nil);
-            try
-              FSQL.Transaction := FTransaction;
-              FScript.Database := FDataBase;
-              FScript.Transaction := FTransaction;
-              FTransaction.DefaultDatabase := FDataBase;
-              FTransaction.StartTransaction;
-
-              FScript.Script.Text := DataBaseSQL;
-              FScript.ExecuteScript;
-              if FTransaction.InTransaction then
-                FTransaction.Commit;
-
-              FTransaction.StartTransaction;
-              FSQL.ParamCheck := False;
-              FSQL.SQL.Text := DataSQL;
-              FSQL.ExecQuery;
-              FSQL.Close;
-
-              if FTransaction.InTransaction then
-                FTransaction.Commit;
-              FInit := True;
-            finally
-              FSQL.Free;
-              FScript.Free;
-              FTransaction.Free;
-            end;
-          except
-            FInit := False;
+            FDBCreator.DataBaseName := FDataBaseName;
+            FDBCreator.MetaDataSQL := DataBaseSQL;
+            FDBCreator.DataSQL := DataSQL;
+            FDBCreator.ShowMessages := False;
+            if FDBCreator.CreateDataBase then
+            begin
+              try
+                FDataBase.Open;
+                FInit := True;
+              except
+                FInit := False;
+              end;
+            end else
+              FInit := False;
+          finally
+            FDBCreator.Free;
           end;
         end else
           FInit := False;

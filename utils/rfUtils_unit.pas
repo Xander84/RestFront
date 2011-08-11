@@ -11,11 +11,38 @@ function WinExec32(Cmd: string; const CmdShow: Integer): Boolean;
 function GetLocalComputerName: String;
 function IPAddrToName(IPAddr : AnsiString): AnsiString;
 function EqualPoints(const a, b: TPoint): Boolean;
+// code from http://stackoverflow.com/questions/397934/writing-to-the-event-log-in-delphi
+procedure WriteToEventLog(const Msg: string);
 
 implementation
 
 uses
   SysUtils, WinSock;
+
+procedure WriteToEventLog(const Msg: string);
+var
+  h: THandle;
+  ss: array [0..0] of PChar;
+begin
+  ss[0] := PChar(Msg);
+  // uses local computer
+  // source name
+  h := RegisterEventSource(nil, 'RestFront');
+  try
+    if h <> 0 then
+      ReportEvent(h,              // event log handle
+            EVENTLOG_ERROR_TYPE,  // event type
+            0,                    // category zero
+            0,                    // event identifier
+            nil,                  // no user security identifier
+            1,                    // one substitution string
+            0,                    // no data
+            @ss,                  // pointer to string array
+            nil);                 // pointer to data
+  finally
+    DeregisterEventSource(h);
+  end;
+end;
 
 procedure RemoveWrongPassChar(var Key: Char);
 begin
@@ -95,7 +122,7 @@ begin
   end;
 end;
 
-function EqualPoints(const a, b: TPoint): Boolean;
+function EqualPoints(const a, b: TPoint): Boolean; inline;
 begin
   Result := (a.x = b.x) and (a.y = b.y);
 end;
