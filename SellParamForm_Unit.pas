@@ -554,7 +554,7 @@ begin
                 FLineTable.FieldByName('usr$sumncu').AsCurrency := FSumToPay;
                 FLineTable.FieldByName('usr$sumncuwithdiscount').AsCurrency := FSumToPay;
                 FLineTable.FieldByName('usr$costncuwithdiscount').AsCurrency := FSumToPay;
-                FLineTable.FieldByName('USR$COMPUTERNAME').AsString := GetLocalComputerName;
+                FLineTable.FieldByName('USR$COMPUTERNAME').AsString := FFrontBase.ComputerName;
                 FLineTable.FieldByName('GOODNAME').AsString := 'Оплата согласно договора о бронировании';
                 FLineTable.Post;
 
@@ -622,7 +622,7 @@ begin
     FForm.ShowModal;
     if FForm.ModalResult = mrOK then
     begin
-      FCurrentPayType := FPersonalCardID;
+      FCurrentPayType := FForm.HeaderTable.FieldByName('kindtypekey').AsInteger;
       FCurrentPayName := 'Персональная карта';
       FPayType := cn_paytype_personalcard;
       FPersonalCardKey := FForm.HeaderTable.FieldByName('ID').AsInteger;
