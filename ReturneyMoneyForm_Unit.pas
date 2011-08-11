@@ -51,7 +51,7 @@ var
   FSum: Currency;
 begin
   CalcSums;
-  FSum := (Sums.FCardSum + Sums.FCreditSum + Sums.FCashSum);
+  FSum := (Sums.FCardSum + Sums.FCreditSum + Sums.FCashSum + Sums.FPersonalCardSum);
   if (FSum <= 0) then
   begin
     Touch_MessageBox('Внимание', 'Сумма возврата должна быть положительной!', MB_OK, mtWarning);
@@ -69,7 +69,7 @@ begin
   FHeaderTable.FieldByName('NUMBER').AsString := '0';
   FHeaderTable.FieldByName('USR$GUESTCOUNT').AsInteger := 1;
   FHeaderTable.FieldByName('USR$TIMEORDER').Value := FFrontBase.GetServerDateTime;
-  FHeaderTable.FieldByName('USR$COMPUTERNAME').AsString := GetLocalComputerName;
+  FHeaderTable.FieldByName('USR$COMPUTERNAME').AsString := FFrontBase.ComputerName;
   FHeaderTable.FieldByName('usr$respkey').AsInteger := FFrontBase.ContactKey;
   FHeaderTable.Post;
 
@@ -83,7 +83,7 @@ begin
   FLineTable.FieldByName('usr$sumncu').AsCurrency := FSum;
   FLineTable.FieldByName('usr$sumncuwithdiscount').AsCurrency := FSum;
   FLineTable.FieldByName('usr$costncuwithdiscount').AsCurrency := FSum;
-  FLineTable.FieldByName('USR$COMPUTERNAME').AsString := GetLocalComputerName;
+  FLineTable.FieldByName('USR$COMPUTERNAME').AsString := FFrontBase.ComputerName;
   FLineTable.Post;
   //3. Сохраняем документ возврата
   FFrontBase.CreateNewOrder(FHeaderTable, FLineTable, FModificationDataSet,

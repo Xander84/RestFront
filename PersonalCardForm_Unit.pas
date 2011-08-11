@@ -61,6 +61,7 @@ procedure TPersonalCardForm.FormCreate(Sender: TObject);
 begin
   FHeaderTable := TkbmMemTable.Create(nil);
   FHeaderTable.FieldDefs.Add('ID', ftInteger, 0);
+  FHeaderTable.FieldDefs.Add('kindtypekey', ftInteger, 0);
   FHeaderTable.FieldDefs.Add('USR$CODE', ftString, 80);
   FHeaderTable.FieldDefs.Add('USR$NAME', ftString, 80);
   FHeaderTable.FieldDefs.Add('USR$DISABLED', ftInteger, 0);

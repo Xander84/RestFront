@@ -148,6 +148,7 @@ object PersonalCardForm: TPersonalCardForm
       Bevel = False
       Caption = #1054#1090#1084#1077#1085#1072
       Color = 15195349
+      DisabledColor = clBlack
       ParentFont = False
       TabOrder = 1
       Version = '1.6.9.0'
@@ -179,8 +180,11 @@ object PersonalCardForm: TPersonalCardForm
       Bevel = False
       Caption = #1054#1050
       Color = 15195349
+      DisabledColor = clBlack
       ParentFont = False
       TabOrder = 2
+      TabStop = False
+      ShowFocus = False
       Version = '1.6.9.0'
       OnClick = btnOKClick
     end
@@ -210,8 +214,11 @@ object PersonalCardForm: TPersonalCardForm
       Bevel = False
       Caption = #1059#1076#1072#1083#1080#1090#1100
       Color = 15195349
+      DisabledColor = clBlack
       ParentFont = False
       TabOrder = 3
+      TabStop = False
+      ShowFocus = False
       Version = '1.6.9.0'
       OnClick = btnDeleteClick
     end
