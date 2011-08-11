@@ -291,7 +291,7 @@ begin
         FHeaderTable.FieldByName('USR$RESPKEY').AsInteger := MemTable.FieldByName('USR$RESPKEY').AsInteger;
         FHeaderTable.FieldByName('USR$GUESTCOUNT').AsInteger := 1;
         FHeaderTable.FieldByName('USR$TIMEORDER').Value := FFrontBase.GetServerDateTime;
-        FHeaderTable.FieldByName('USR$COMPUTERNAME').AsString := GetLocalComputerName;
+        FHeaderTable.FieldByName('USR$COMPUTERNAME').AsString := FFrontBase.ComputerName;
         FHeaderTable.Post;
 
         GetLineTable(FLineTable);
@@ -313,7 +313,7 @@ begin
           FLineTable.FieldByName('usr$goodkey').AsInteger := FFrontBase.GetIDByRUID(147747671, 1650037404)
         else
           FLineTable.FieldByName('usr$goodkey').AsInteger := FFrontBase.GetIDByRUID(147747670, 1650037404);
-        FLineTable.FieldByName('USR$COMPUTERNAME').AsString := GetLocalComputerName;
+        FLineTable.FieldByName('USR$COMPUTERNAME').AsString := FFrontBase.ComputerName;
         FLineTable.Post;
 
         FFrontBase.CreateNewOrder(FHeaderTable, FLineTable, FModificationDataSet,

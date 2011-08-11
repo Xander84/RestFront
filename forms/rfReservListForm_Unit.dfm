@@ -269,6 +269,7 @@ object ReservList: TReservList
       Bevel = False
       Caption = #1044#1086#1073#1072#1074#1080#1090#1100' '#1073#1088#1086#1085#1100
       Color = 15195349
+      DisabledColor = clBlack
       ParentFont = False
       TabOrder = 1
       Version = '1.6.9.0'
@@ -300,6 +301,7 @@ object ReservList: TReservList
       Status.Appearance.Font.Style = []
       Bevel = False
       Color = 15195349
+      DisabledColor = clBlack
       ParentFont = False
       TabOrder = 2
       Version = '1.6.9.0'
@@ -330,6 +332,7 @@ object ReservList: TReservList
       Status.Appearance.Font.Style = []
       Bevel = False
       Color = 15195349
+      DisabledColor = clBlack
       ParentFont = False
       TabOrder = 3
       Version = '1.6.9.0'
@@ -360,6 +363,7 @@ object ReservList: TReservList
       Status.Appearance.Font.Style = []
       Bevel = False
       Color = 15195349
+      DisabledColor = clBlack
       ParentFont = False
       TabOrder = 4
       Version = '1.6.9.0'
@@ -390,6 +394,7 @@ object ReservList: TReservList
       Bevel = False
       Caption = #1042#1099#1093#1086#1076
       Color = 15195349
+      DisabledColor = clBlack
       ParentFont = False
       TabOrder = 5
       Version = '1.6.9.0'
@@ -421,6 +426,7 @@ object ReservList: TReservList
       Status.Appearance.Font.Style = []
       Bevel = False
       Color = 15195349
+      DisabledColor = clBlack
       ParentFont = False
       TabOrder = 6
       Version = '1.6.9.0'
@@ -451,6 +457,7 @@ object ReservList: TReservList
       Status.Appearance.Font.Style = []
       Bevel = False
       Color = 15195349
+      DisabledColor = clBlack
       ParentFont = False
       TabOrder = 7
       Version = '1.6.9.0'
@@ -481,6 +488,7 @@ object ReservList: TReservList
       Status.Appearance.Font.Style = []
       Bevel = False
       Color = 15195349
+      DisabledColor = clBlack
       ParentFont = False
       TabOrder = 8
       Version = '1.6.9.0'
