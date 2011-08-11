@@ -1252,7 +1252,7 @@ begin
       FLineTable.FieldByName('usr$costncu').AsCurrency := FGoodDataSet.FieldByName('COST').AsCurrency;
       FLineTable.FieldByName('MODIFYSTRING').AsString := S;
       FLineTable.FieldByName('EXTRAMODIFY').AsString := ES;
-      FLineTable.FieldByName('USR$COMPUTERNAME').AsString := GetLocalComputerName;
+      FLineTable.FieldByName('USR$COMPUTERNAME').AsString := FFrontBase.ComputerName;
       FLineTable.FieldByName('USR$NOPRINT').AsInteger := FGoodDataSet.FieldByName('NOPRINT').AsInteger;
       FLineTable.Post;
 
@@ -1676,7 +1676,7 @@ begin
     FHeaderTable.FieldByName('USR$TIMEORDER').Value := GetServerDateTime;
     if TableKey > 0 then
       FHeaderTable.FieldByName('USR$TABLEKEY').AsInteger := TableKey;
-    FHeaderTable.FieldByName('USR$COMPUTERNAME').AsString := GetLocalComputerName;
+    FHeaderTable.FieldByName('USR$COMPUTERNAME').AsString := FFrontBase.ComputerName;
     FHeaderTable.Post;
 
     btnPreCheck.Action := actPreCheck;
@@ -1761,7 +1761,7 @@ begin
       FHeaderTable.FieldByName('USR$TIMEORDER').Value := GetServerDateTime;
       if Table.ID > 0 then
         FHeaderTable.FieldByName('USR$TABLEKEY').AsInteger := Table.ID;
-      FHeaderTable.FieldByName('USR$COMPUTERNAME').AsString := GetLocalComputerName;
+      FHeaderTable.FieldByName('USR$COMPUTERNAME').AsString := FFrontBase.ComputerName;
       FHeaderTable.FieldByName('usr$respkey').AsInteger := FFrontBase.ContactKey;
       if UseReservation then
       begin
@@ -2482,7 +2482,7 @@ begin
           FLineTable.FieldByName('usr$costncu').AsCurrency := FGoodDataSet.FieldByName('COST').AsCurrency;
           FLineTable.FieldByName('MODIFYSTRING').AsString := S;
           FLineTable.FieldByName('EXTRAMODIFY').AsString := ES;
-          FLineTable.FieldByName('USR$COMPUTERNAME').AsString := GetLocalComputerName;
+          FLineTable.FieldByName('USR$COMPUTERNAME').AsString := FFrontBase.ComputerName;
           FLineTable.Post;
 
           FGoodInfo.GoodID := GoodKey;
@@ -4839,7 +4839,7 @@ begin
   else
   begin
     // Если заказ заблокирован, то позволяем зайти в него только с того же компьютера
-    if FFrontBase.OrderIsLocked(MenuOrderButton.Tag) {and (Order.ComputerName <> FFrontBase.GetLocalComputerName)} then
+    if FFrontBase.OrderIsLocked(MenuOrderButton.Tag) {and (Order.ComputerName <> FFrontBase.ComputerName)} then
     begin
       Touch_MessageBox('Внимание', 'Заказ редактируется на другом рабочем месте!', MB_OK, mtWarning);
       Exit;
