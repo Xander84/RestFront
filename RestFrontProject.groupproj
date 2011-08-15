@@ -3,9 +3,6 @@
 			<ProjectGuid>{385EB4DC-9FB6-4AF2-AE97-302402C24A18}</ProjectGuid>
 		</PropertyGroup>
 		<ItemGroup>
-			<Projects Include="RestFront.dproj">
-				<Dependencies/>
-			</Projects>
 			<Projects Include="TMS\tmsd2010.dproj">
 				<Dependencies/>
 			</Projects>
@@ -27,13 +24,16 @@
 			<Projects Include="Components\EhLib\RADStudio2009\DclEhLib120.dproj">
 				<Dependencies/>
 			</Projects>
-			<Projects Include="Components\Designer\Designer.dproj">
-				<Dependencies/>
-			</Projects>
 			<Projects Include="Components\PNGcomp_D2009_D2010\Packages\D2010\PngComponents.dproj">
 				<Dependencies/>
 			</Projects>
 			<Projects Include="Components\PNGcomp_D2009_D2010\Packages\D2010\PngComponentsDesign.dproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="Components\Designer\Designer.dproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="RestFront.dproj">
 				<Dependencies/>
 			</Projects>
 		</ItemGroup>
@@ -44,15 +44,6 @@
 				<Default.Personality/>
 			</BorlandProject>
 		</ProjectExtensions>
-		<Target Name="RestFront">
-			<MSBuild Projects="RestFront.dproj"/>
-		</Target>
-		<Target Name="RestFront:Clean">
-			<MSBuild Targets="Clean" Projects="RestFront.dproj"/>
-		</Target>
-		<Target Name="RestFront:Make">
-			<MSBuild Targets="Make" Projects="RestFront.dproj"/>
-		</Target>
 		<Target Name="tmsd2010">
 			<MSBuild Projects="TMS\tmsd2010.dproj"/>
 		</Target>
@@ -116,15 +107,6 @@
 		<Target Name="DclEhLib120:Make">
 			<MSBuild Targets="Make" Projects="Components\EhLib\RADStudio2009\DclEhLib120.dproj"/>
 		</Target>
-		<Target Name="Designer">
-			<MSBuild Projects="Components\Designer\Designer.dproj"/>
-		</Target>
-		<Target Name="Designer:Clean">
-			<MSBuild Targets="Clean" Projects="Components\Designer\Designer.dproj"/>
-		</Target>
-		<Target Name="Designer:Make">
-			<MSBuild Targets="Make" Projects="Components\Designer\Designer.dproj"/>
-		</Target>
 		<Target Name="PngComponents">
 			<MSBuild Projects="Components\PNGcomp_D2009_D2010\Packages\D2010\PngComponents.dproj"/>
 		</Target>
@@ -143,14 +125,32 @@
 		<Target Name="PngComponentsDesign:Make">
 			<MSBuild Targets="Make" Projects="Components\PNGcomp_D2009_D2010\Packages\D2010\PngComponentsDesign.dproj"/>
 		</Target>
+		<Target Name="Designer">
+			<MSBuild Projects="Components\Designer\Designer.dproj"/>
+		</Target>
+		<Target Name="Designer:Clean">
+			<MSBuild Targets="Clean" Projects="Components\Designer\Designer.dproj"/>
+		</Target>
+		<Target Name="Designer:Make">
+			<MSBuild Targets="Make" Projects="Components\Designer\Designer.dproj"/>
+		</Target>
+		<Target Name="RestFront">
+			<MSBuild Projects="RestFront.dproj"/>
+		</Target>
+		<Target Name="RestFront:Clean">
+			<MSBuild Targets="Clean" Projects="RestFront.dproj"/>
+		</Target>
+		<Target Name="RestFront:Make">
+			<MSBuild Targets="Make" Projects="RestFront.dproj"/>
+		</Target>
 		<Target Name="Build">
-			<CallTarget Targets="RestFront;tmsd2010;tmsded2010;tmsexd2010;kbmMemRunD2010Std;kbmMemDesD2010Std;EhLib120;DclEhLib120;Designer;PngComponents;PngComponentsDesign"/>
+			<CallTarget Targets="tmsd2010;tmsded2010;tmsexd2010;kbmMemRunD2010Std;kbmMemDesD2010Std;EhLib120;DclEhLib120;PngComponents;PngComponentsDesign;Designer;RestFront"/>
 		</Target>
 		<Target Name="Clean">
-			<CallTarget Targets="RestFront:Clean;tmsd2010:Clean;tmsded2010:Clean;tmsexd2010:Clean;kbmMemRunD2010Std:Clean;kbmMemDesD2010Std:Clean;EhLib120:Clean;DclEhLib120:Clean;Designer:Clean;PngComponents:Clean;PngComponentsDesign:Clean"/>
+			<CallTarget Targets="tmsd2010:Clean;tmsded2010:Clean;tmsexd2010:Clean;kbmMemRunD2010Std:Clean;kbmMemDesD2010Std:Clean;EhLib120:Clean;DclEhLib120:Clean;PngComponents:Clean;PngComponentsDesign:Clean;Designer:Clean;RestFront:Clean"/>
 		</Target>
 		<Target Name="Make">
-			<CallTarget Targets="RestFront:Make;tmsd2010:Make;tmsded2010:Make;tmsexd2010:Make;kbmMemRunD2010Std:Make;kbmMemDesD2010Std:Make;EhLib120:Make;DclEhLib120:Make;Designer:Make;PngComponents:Make;PngComponentsDesign:Make"/>
+			<CallTarget Targets="tmsd2010:Make;tmsded2010:Make;tmsexd2010:Make;kbmMemRunD2010Std:Make;kbmMemDesD2010Std:Make;EhLib120:Make;DclEhLib120:Make;PngComponents:Make;PngComponentsDesign:Make;Designer:Make;RestFront:Make"/>
 		</Target>
 		<Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 	</Project>

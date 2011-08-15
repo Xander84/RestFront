@@ -105,7 +105,7 @@ type
     FCashNoFiscal: Integer;
     FSaleType: TSaleType;
     FAvansSum: Currency;
-
+    FExternalPay: Boolean;
     procedure SetSumToPay(const Value: Currency);
     procedure SetFiscalRegister(const Value: TFiscalRegister);
     procedure SetDoc(const Value: TkbmMemTable);
@@ -775,6 +775,7 @@ begin
       FCurrentPayName := FForm.CurrentPayName;
       FNoFiscal := FForm.NoFiscal;
       FPayType := cn_paytype_noncash;
+      FExternalPay := FForm.ExternalPay;
       edMain.Text := '';
       if dsPayLine.IsEmpty then
       begin

@@ -61,7 +61,6 @@ object rfNoCashGroup: TrfNoCashGroup
     StatusBar.ColorTo = 16374724
     StatusBar.GradientDirection = gdVertical
     Styler = FrontData.FrontPanelStyler
-    ExplicitWidth = 397
     FullHeight = 0
     object btnExit: TAdvSmoothButton
       Left = 54
@@ -90,6 +89,7 @@ object rfNoCashGroup: TrfNoCashGroup
       Bevel = False
       Caption = #1042#1099#1093#1086#1076
       Color = 15195349
+      DisabledColor = clBlack
       ParentFont = False
       TabOrder = 0
       Version = '1.6.9.0'
@@ -250,10 +250,6 @@ object rfNoCashGroup: TrfNoCashGroup
     StatusBar.ColorTo = 16374724
     StatusBar.GradientDirection = gdVertical
     Styler = FrontData.FrontPanelStyler
-    ExplicitLeft = 72
-    ExplicitTop = 184
-    ExplicitWidth = 185
-    ExplicitHeight = 41
     FullHeight = 0
   end
   object aclPayGroup: TActionList

@@ -39,6 +39,7 @@ type
     FNoFiscal: Integer;
     FPayTypeKey: Integer;
     FCurrentPayName: String;
+    FExternalPay: Boolean;
 
     procedure AddButton;
     procedure ScrollControl(const FControl: TWinControl; const Down: Boolean;
@@ -48,6 +49,7 @@ type
     property PayTypeKey: Integer read FPayTypeKey write FPayTypeKey;
     property CurrentPayName: String read FCurrentPayName write FCurrentPayName;
     property NoFiscal: Integer read FNoFiscal write FNoFiscal;
+    property ExternalPay: Boolean read FExternalPay write FExternalPay;
   end;
 
 const
@@ -163,6 +165,7 @@ procedure TrfNoCashGroup.FormShow(Sender: TObject);
 begin
   // должны отобразить виды безнальной оплаты
   // исходя из групп
+  FExternalPay := False;
   FFrontBase.GetNoCashGroupList(FMemTable);
   FMemTable.First;
   while not FMemTable.Eof do
@@ -180,13 +183,14 @@ begin
   FForm := TPayForm.CreateWithFrontBase(nil, FFrontBase);
   FForm.PayType := TAdvSmoothToggleButton(Sender).Tag;
   FForm.IsPlCard := 0;
+  ExternalPay := FFrontBase.CheckExternalPay(TAdvSmoothToggleButton(Sender).Tag);
   try
     if FFrontBase.GetPayKindType(FForm.PayFormDataSet,
-      FForm.PayType, FForm.IsPlCard) then
+      FForm.PayType, FForm.IsPlCard, ExternalPay) then
     begin
       if FForm.PayFormDataSet.RecordCount > 0 then
       begin
-        if FForm.PayFormDataSet.RecordCount = 1 then
+        if (FForm.PayFormDataSet.RecordCount = 1) and (not ExternalPay) then
         begin
           FPayTypeKey := FForm.PayFormDataSet.FieldByName('USR$PAYTYPEKEY').AsInteger;
           FCurrentPayName := FForm.PayFormDataSet.FieldByName('USR$NAME').AsString;

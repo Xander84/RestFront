@@ -421,7 +421,7 @@ type
     function LockUserOrder(const OrderKey: Integer): Boolean;
     function UnLockUserOrder(const OrderKey: Integer): Boolean;
 
-    function GetPayKindType(const MemTable: TkbmMemTable; const PayType: Integer; IsPlCard: Integer = 0): Boolean;
+    function GetPayKindType(const MemTable: TkbmMemTable; const PayType: Integer; IsPlCard: Integer = 0; IsExternal:Boolean = False): Boolean;
     procedure GetPaymentsCount(var CardCount, NoCashCount, PercCardCount: Integer;
       const CashID, PCID: Integer);
     function GetCashFiscalType: Integer;
@@ -509,7 +509,7 @@ type
     //reports
     function SavePrintDate(const ID: Integer): Boolean;
     function GetReportList(var MemTable: TkbmMemTable): Boolean;
-
+    function CheckExternalPay(ID: Integer): Boolean;
     procedure CanCloseDay;
     procedure CanOpenDay;
 
@@ -550,7 +550,7 @@ implementation
 
 uses
   Windows, Sysutils, CardCodeForm_Unit, TouchMessageBoxForm_Unit, Dialogs, FrontData_Unit, rfUtils_unit,
-  rfWaitWindow_unit;
+  rfWaitWindow_unit, rfCheckDatabase;
 
 procedure GetHeaderTable(var DS: TkbmMemTable);
 begin
@@ -672,6 +672,7 @@ begin
 
   try
     InitDB;
+    CheckVersion(FDataBase);
     InitStorage;
   except
     raise;
@@ -3433,10 +3434,11 @@ begin
   end;
 end;
 
-function TFrontBase.GetPayKindType(const MemTable: TkbmMemTable;
-  const PayType: Integer; IsPlCard: Integer): Boolean;
+function TFrontBase.GetPayKindType(const MemTable: TkbmMemTable; const PayType: Integer; IsPlCard: Integer = 0; IsExternal:Boolean = False): Boolean;
 var
   S: String;
+  FSQL: TIBSQL;
+  tr: TIBTransaction;
 begin
   FReadSQL.Close;
   MemTable.Close;
@@ -3444,23 +3446,39 @@ begin
   MemTable.Open;
   try
     try
-      if not FReadSQL.Transaction.InTransaction then
-        FReadSQL.Transaction.StartTransaction;
-
-      S := ' SELECT K.USR$NAME, K.USR$PAYTYPEKEY, K.USR$NOFISCAL, K.ID FROM USR$MN_KINDTYPE K ' +
-        ' LEFT JOIN USR$MN_PAYMENTRULES R ON R.USR$PAYTYPEKEY = K.USR$PAYTYPEKEY ';
-      if IsPlCard = 1 then
-        S := S + ' WHERE K.USR$ISPLCARD = 1 ' +
-          ' AND (R.USR$PAYTYPEKEY IS NULL OR (BIN_AND(g_b_shl(1, R.USR$GROUPKEY - 1), :FKEY) <> 0)) '
+      if IsExternal then
+      begin
+     {   FSQL := TIBSQL.Create(nil);
+        tr := TIBTransaction.Create(nil);
+        tr.DefaultDatabase :=
+        S := ' SELECT p.ID, cast(:USR$PAYTYPEKEY as Integer) USR$PAYTYPEKEY, p.USR$NOFISCAL, p.USR$NAME ' +
+             ' FROM RF$EXT_GETPAYTYPELIST (:LOGICDATE, :CURRENTDATETIME, :USR$PAYTYPEKEY) p ORDER BY p.USR$NAME ';
+        FReadSQL.SQL.Text := S;
+        FReadSQL.ParamByName('LogicDate').AsDateTime := GetLogicDate;
+        FReadSQL.ParamByName('CURRENTDATETIME').AsDateTime := GetLogicDate;
+        FReadSQL.ParamByName('USR$PAYTYPEKEY').ASInteger := PayType;}
+      end
       else
-        S := S + ' WHERE K.USR$PAYTYPEKEY = :paytype AND ((K.USR$ISPLCARD IS NULL) OR (K.USR$ISPLCARD = 0))';
-      S := S + ' ORDER BY K.USR$NAME ';
-      FReadSQL.SQL.Text := S;
+      begin
+        {FSQL := FReadSQL;}
+        if not FReadSQL.Transaction.InTransaction then
+          FReadSQL.Transaction.StartTransaction;
 
-      if IsPlCard = 1 then
-        FReadSQL.ParamByName('FKEY').AsInteger := FUserKey
-      else
-        FReadSQL.ParamByName('paytype').AsInteger := PayType;
+        S := ' SELECT K.USR$NAME, K.USR$PAYTYPEKEY, K.USR$NOFISCAL, K.ID FROM USR$MN_KINDTYPE K ' +
+          ' LEFT JOIN USR$MN_PAYMENTRULES R ON R.USR$PAYTYPEKEY = K.USR$PAYTYPEKEY ';
+        if IsPlCard = 1 then
+          S := S + ' WHERE K.USR$ISPLCARD = 1 ' +
+            ' AND (R.USR$PAYTYPEKEY IS NULL OR (BIN_AND(g_b_shl(1, R.USR$GROUPKEY - 1), :FKEY) <> 0)) '
+        else
+          S := S + ' WHERE K.USR$PAYTYPEKEY = :paytype AND ((K.USR$ISPLCARD IS NULL) OR (K.USR$ISPLCARD = 0))';
+        S := S + ' ORDER BY K.USR$NAME ';
+        FReadSQL.SQL.Text := S;
+
+        if IsPlCard = 1 then
+          FReadSQL.ParamByName('FKEY').AsInteger := FUserKey
+        else
+          FReadSQL.ParamByName('paytype').AsInteger := PayType;
+      end;
 
       FReadSQL.ExecQuery;
       while not FReadSQL.Eof do
@@ -6132,6 +6150,25 @@ begin
   except
     on E: Exception do
       Touch_MessageBox('Внимание', 'Ошибка ' + E.Message, MB_OK, mtError);
+  end;
+end;
+
+function TFrontBase.CheckExternalPay(ID: Integer): Boolean;
+var
+  FSQL: TIBSQL;
+begin
+  FSQL := TIBSQL.Create(nil);
+  FSQL.Transaction := ReadTransaction;
+  try
+      Result := False;
+      FSQL.Close;
+      FSQL.SQL.Text :=
+        '  SELECT i.USR$EXTERNALPROCESS FROM USR$INV_PAYTYPE i WHERE i.id = :id ';
+      FSQL.ParamByName('ID').AsInteger := ID;
+      FSQL.ExecQuery;
+      Result := FSQL.FieldBYName('USR$EXTERNALPROCESS').AsInteger = 1
+  finally
+    FSQL.Free;
   end;
 end;
 
