@@ -3448,21 +3448,22 @@ begin
     try
       if IsExternal then
       begin
-     {   FSQL := TIBSQL.Create(nil);
+        FSQL := TIBSQL.Create(nil);
         tr := TIBTransaction.Create(nil);
-        tr.DefaultDatabase :=
+        tr.DefaultDatabase := Self.FDataBase;
+        tr.StartTransaction;
+        FSQL.Transaction := tr;
         S := ' SELECT p.ID, cast(:USR$PAYTYPEKEY as Integer) USR$PAYTYPEKEY, p.USR$NOFISCAL, p.USR$NAME ' +
-             ' FROM RF$EXT_GETPAYTYPELIST (:LOGICDATE, :CURRENTDATETIME, :USR$PAYTYPEKEY) p ORDER BY p.USR$NAME ';
-        FReadSQL.SQL.Text := S;
-        FReadSQL.ParamByName('LogicDate').AsDateTime := GetLogicDate;
-        FReadSQL.ParamByName('CURRENTDATETIME').AsDateTime := GetLogicDate;
-        FReadSQL.ParamByName('USR$PAYTYPEKEY').ASInteger := PayType;}
+             ' FROM RF$EXT_GETPAYTYPELIST (:LOGICDATE, :current_timestamp, :USR$PAYTYPEKEY) p ORDER BY p.USR$NAME ';
+        FSQL.SQL.Text := S;
+        FSQL.ParamByName('LogicDate').AsDateTime := GetLogicDate;
+        FSQL.ParamByName('USR$PAYTYPEKEY').ASInteger := PayType;
       end
       else
       begin
-        {FSQL := FReadSQL;}
-        if not FReadSQL.Transaction.InTransaction then
-          FReadSQL.Transaction.StartTransaction;
+        FSQL := FReadSQL;
+        if not FSQL.Transaction.InTransaction then
+          FSQL.Transaction.StartTransaction;
 
         S := ' SELECT K.USR$NAME, K.USR$PAYTYPEKEY, K.USR$NOFISCAL, K.ID FROM USR$MN_KINDTYPE K ' +
           ' LEFT JOIN USR$MN_PAYMENTRULES R ON R.USR$PAYTYPEKEY = K.USR$PAYTYPEKEY ';
@@ -3472,24 +3473,24 @@ begin
         else
           S := S + ' WHERE K.USR$PAYTYPEKEY = :paytype AND ((K.USR$ISPLCARD IS NULL) OR (K.USR$ISPLCARD = 0))';
         S := S + ' ORDER BY K.USR$NAME ';
-        FReadSQL.SQL.Text := S;
+        FSQL.SQL.Text := S;
 
         if IsPlCard = 1 then
-          FReadSQL.ParamByName('FKEY').AsInteger := FUserKey
+          FSQL.ParamByName('FKEY').AsInteger := FUserKey
         else
-          FReadSQL.ParamByName('paytype').AsInteger := PayType;
+          FSQL.ParamByName('paytype').AsInteger := PayType;
       end;
 
-      FReadSQL.ExecQuery;
-      while not FReadSQL.Eof do
+      FSQL.ExecQuery;
+      while not FSQL.Eof do
       begin
         MemTable.Append;
-        MemTable.FieldByName('USR$NAME').AsString := FReadSQL.FieldByName('USR$NAME').AsString;
-        MemTable.FieldByName('USR$PAYTYPEKEY').AsInteger := FReadSQL.FieldByName('ID').AsInteger;
-        MemTable.FieldByName('USR$NOFISCAL').AsInteger := FReadSQL.FieldByName('USR$NOFISCAL').AsInteger;
+        MemTable.FieldByName('USR$NAME').AsString := FSQL.FieldByName('USR$NAME').AsString;
+        MemTable.FieldByName('USR$PAYTYPEKEY').AsInteger := FSQL.FieldByName('ID').AsInteger;
+        MemTable.FieldByName('USR$NOFISCAL').AsInteger := FSQL.FieldByName('USR$NOFISCAL').AsInteger;
         MemTable.Post;
 
-        FReadSQL.Next;
+        FSQL.Next;
       end;
       Result := True;
     except
@@ -3497,7 +3498,13 @@ begin
       raise;
     end;
   finally
-    FReadSQL.Close;
+    FSQL.Close;
+    if FSQL <> FReadSQL then
+    begin
+      tr.Commit;
+      FSQL.Free;
+      tr.Free;
+    end;
   end;
 end;
 
@@ -3874,6 +3881,7 @@ function TFrontBase.SavePayment(const ContactKey, OrderKey,
   PayKindKey, PersonalCardKey: Integer; Sum: Currency; Revert: Boolean): Boolean;
 var
   FSQL: TIBSQL;
+  ExtKey: Integer;
 begin
   Result := False;
 
@@ -3913,6 +3921,7 @@ begin
         FSQL.ParamByName('usr$perscardkey').Clear;
 
       FSQL.ExecQuery;
+      Result := True;
     except
       FCheckTransaction.Rollback;
       raise;
@@ -3920,8 +3929,45 @@ begin
   finally
     if FCheckTransaction.InTransaction then
       FCheckTransaction.Commit;
+
+      if Result then
+      begin
+        FCheckTransaction.StartTransaction;
+        try
+          FSQL.Close;
+          FSQL.SQL.Text := ' SELECT k.usr$externalkey, p.usr$externalprocess ' +
+                           ' FROM                                                              ' +
+                           ' USR$MN_KINDTYPE k                                                 ' +
+                           '   LEFT JOIN usr$inv_paytype p on p.id = k.usr$paytypekey          ' +
+                           ' WHERE k.ID = :ID                                                  ';
+          FSQL.ParamByName('ID').AsInteger := PayKindKey;
+          FSQL.ExecQuery;
+
+          if FSQL.FieldByName('usr$externalprocess').AsInteger = 1 then
+          begin
+            try
+              ExtKey := FSQL.FieldByName('usr$externalkey').AsInteger;
+              FSQL.Close;
+              FSQL.SQL.Text := ' EXECUTE PROCEDURE rf$ext_saveorder(:EXTKEY, :LOGICDATE, current_timestamp, :PAYSUM) ';
+              FSQL.ParamByName('EXTKEY').AsInteger := ExtKey;
+              FSQL.ParamByName('LOGICDATE').AsDateTime := GetLogicDate;
+              FSQL.ParamByName('PAYSUM').ASCurrency := Sum;
+              FSQL.ExecQuery;
+            except
+              on E: Exception do
+                Touch_MessageBox('Внимание', 'Ошибка при сохранении Оплаты во внешнюю БД ' + E.Message, MB_OK, mtError);
+            end;
+          end;
+        finally
+          FCheckTransaction.Commit;
+        end;
+      end;
+
     FSQL.Free;
   end;
+
+//  EXECUTE PROCEDURE rf$ext_saveorder(:EXTKEY, :LOGICDATE, current_timestamp, :PAYSUM numeric(15,4))
+
 end;
 
 function TFrontBase.SaveOrderLog(const WaiterKey, ManagerKey, OrderKey,
