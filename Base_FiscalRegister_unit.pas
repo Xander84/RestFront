@@ -142,11 +142,22 @@ type
   procedure SaveRegisters(const RegStruct: TRegisterStucture; const FrontBase: TFrontBase);
 
   procedure WriteLogToFile(const Str, UserName: String);
+  function GetCurrentUserInfo(const FFrontBase: TFrontBase): TLogUserInfo;
 
 implementation
 
 uses
   SysUtils, Forms, TouchMessageBoxForm_Unit, Dialogs;
+
+function GetCurrentUserInfo(const FFrontBase: TFrontBase): TLogUserInfo;
+begin
+  if Assigned(FFrontBase) then
+  begin
+    Result.UserID := FFrontBase.ContactKey;
+    Result.UserName := FFrontBase.UserName;
+  end;
+end;
+
 
 procedure WriteLogToFile(const Str, UserName: String);
 const
@@ -281,8 +292,38 @@ end;
 
 function TAbstractFiscalRegister.PrintCheck(const Doc, DocLine,
   PayLine: TkbmMemTable; const FSums: TSaleSums): Boolean;
+var
+  FUserInfo: TLogUserInfo;
+  FCheckInfo: TLogCheckInfo;
 begin
   try
+    if Assigned(FLogManager) then
+    begin
+      FUserInfo := GetCurrentUserInfo(FFrontBase);
+      with FCheckInfo do
+      begin
+        FCheckInfo.OrderID := Doc.FieldByName('ID').AsInteger;
+        FCheckInfo.OrderNumber := Doc.FieldByName('NUMBER').AsString;
+      end;
+
+      DocLine.First;
+      while not DocLine.Eof do
+      begin
+        with FCheckInfo do
+        begin
+          GoodID := DocLine.FieldByName('usr$goodkey').AsInteger;
+          GoodName := DocLine.FieldByName('GOODNAME').AsString;
+          Quantity := DocLine.FieldByName('usr$quantity').AsCurrency;
+          CostNCU := DocLine.FieldByName('usr$costncu').AsCurrency;
+          SumNCU := DocLine.FieldByName('usr$sumncu').AsCurrency;
+          SumDiscount := DocLine.FieldByName('usr$sumncu').AsCurrency -
+            DocLine.FieldByName('usr$sumncuwithdiscount').AsCurrency;
+        end;
+        FLogManager.DoCheckLog(FUserInfo,  FCheckInfo, ev_PrintCheck);
+        DocLine.Next;
+      end;
+    end;
+
     if Doc.State <> dsEdit then
       Doc.Edit;
     Doc.FieldByName('USR$WHOPAYOFFKEY').AsInteger := FFrontBase.ContactKey;
@@ -301,6 +342,8 @@ begin
   except
     on E: Exception do
     begin
+      if Assigned(FLogManager) then
+        FLogManager.DoCancelCheckLog(FUserInfo, FCheckInfo, E.Message);
       Touch_MessageBox('Внимание', 'Ошибка при сохранении чека ' + E.Message, MB_OK, mtError);
       Result := False;
     end;
@@ -328,8 +371,38 @@ end;
 
 function TAbstractFiscalRegister.ReturnCheck(const Doc, DocLine,
   PayLine: TkbmMemTable; const FSums: TSaleSums): Boolean;
+var
+  FUserInfo: TLogUserInfo;
+  FCheckInfo: TLogCheckInfo;
 begin
   try
+    if Assigned(FLogManager) then
+    begin
+      FUserInfo := GetCurrentUserInfo(FFrontBase);
+      with FCheckInfo do
+      begin
+        FCheckInfo.OrderID := Doc.FieldByName('ID').AsInteger;
+        FCheckInfo.OrderNumber := Doc.FieldByName('NUMBER').AsString;
+      end;
+
+      DocLine.First;
+      while not DocLine.Eof do
+      begin
+        with FCheckInfo do
+        begin
+          GoodID := DocLine.FieldByName('usr$goodkey').AsInteger;
+          GoodName := DocLine.FieldByName('GOODNAME').AsString;
+          Quantity := DocLine.FieldByName('usr$quantity').AsCurrency;
+          CostNCU := DocLine.FieldByName('usr$costncu').AsCurrency;
+          SumNCU := DocLine.FieldByName('usr$sumncu').AsCurrency;
+          SumDiscount := DocLine.FieldByName('usr$sumncu').AsCurrency -
+            DocLine.FieldByName('usr$sumncuwithdiscount').AsCurrency;
+        end;
+        FLogManager.DoCheckLog(FUserInfo,  FCheckInfo, ev_ReturnCheck);
+        DocLine.Next;
+      end;
+    end;
+
     if Doc.State <> dsEdit then
       Doc.Edit;
     Doc.FieldByName('USR$WHOPAYOFFKEY').AsInteger := FFrontBase.ContactKey;
@@ -347,6 +420,8 @@ begin
   except
     on E: Exception do
     begin
+      if Assigned(FLogManager) then
+        FLogManager.DoCancelCheckLog(FUserInfo, FCheckInfo, E.Message);
       Touch_MessageBox('Внимание', 'Ошибка при сохранении чека ' + E.Message, MB_OK, mtError);
       Result := False;
     end;

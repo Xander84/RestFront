@@ -713,6 +713,7 @@ begin
 
   FLogManager := TLogManager.Create;
   FLogManager.FrontBase := FFrontBase;
+  FLogManager.ShowMsg := cn_LogShowMsg;
   FLogManager.EventDatabaseName := cn_LogDataBasePath;
   FLogManager.FiscalDataBaseName := cn_LogFiscalBasePath;
   FLogManager.ActionDataBaseName := cn_LogActionBasePath;

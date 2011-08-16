@@ -4,7 +4,8 @@ interface
 
 uses
   Front_DataBase_Unit, Classes, SysUtils, Forms, Generics.Collections, IBSQL,
-  IBDatabase, IB, IBScript, rfMetadata_unit;
+  IBDatabase, IB, IBScript, rfMetadata_unit, TouchMessageBoxForm_Unit, Dialogs,
+  Windows;
 
 const
   // simple event's UserKey, DateTime, Event
@@ -324,6 +325,7 @@ type
     FFrontBase: TFrontBase;
 
     FInit: Boolean;
+    FShowMsg: Boolean;
     procedure SetFrontBase(const Value: TFrontBase);
   protected
     procedure CheckUser(const UserInfo: TLogUserInfo);
@@ -341,6 +343,7 @@ type
     property DataBase: TIBDataBase read FDataBase write FDataBase;
     property FrontBase: TFrontBase read FFrontBase write SetFrontBase;
     property Init: Boolean read FInit write FInit;
+    property ShowMsg: Boolean read FShowMsg write FShowMsg;
   end;
 
   TEventLog = class(TFrontLog)
@@ -382,6 +385,7 @@ type
     FActionDataBaseName: String;
     FActionDataBase: TIBDatabase;
     FActionLog: TActionLog;
+    FShowMsg: Boolean;
 
     procedure SetFrontBase(const Value: TFrontBase);
     procedure SetEventDatabaseName(const Value: String);
@@ -412,6 +416,7 @@ type
     property FiscalDataBaseName: String read FFiscalDataBaseName write SetFiscalDataBaseName;
     property ActionDataBaseName: String read FActionDataBaseName write SetActionDataBaseName;
     property FrontBase: TFrontBase read FFrontBase write SetFrontBase;
+    property ShowMsg: Boolean read FShowMsg write FShowMsg;
   end;
 
 implementation
@@ -421,7 +426,7 @@ implementation
 constructor TLogManager.Create;
 begin
   inherited;
-  //
+  FShowMsg := True;
 end;
 
 destructor TLogManager.Destroy;
@@ -545,6 +550,7 @@ begin
       FActionLog := TActionLog.Create;
       FActionLog.FrontBase := FFrontBase;
       FActionLog.DataBase := FEventDataBase;
+      FActionLog.ShowMsg := FShowMsg;
       exit;
     end
     else if (Value = FFiscalDataBaseName) and Assigned(FFiscalDataBase) then
@@ -552,6 +558,7 @@ begin
       FActionLog := TActionLog.Create;
       FActionLog.FrontBase := FFrontBase;
       FActionLog.DataBase := FFiscalDataBase;
+      FActionLog.ShowMsg := FShowMsg;
       exit;
     end;
 
@@ -607,6 +614,7 @@ begin
     FActionLog := TActionLog.Create;
     FActionLog.FrontBase := FFrontBase;
     FActionLog.DataBase := FActionDataBase;
+    FActionLog.ShowMsg := FShowMsg;
   end;
 end;
 
@@ -670,6 +678,7 @@ begin
     FEventLog := TEventLog.Create;
     FEventLog.FrontBase := FFrontBase;
     FEventLog.DataBase := FEventDataBase;
+    FEventLog.ShowMsg := FShowMsg;
   end;
 end;
 
@@ -686,6 +695,7 @@ begin
       FFiscalLog := TCheckLog.Create;
       FFiscalLog.FrontBase := FrontBase;
       FFiscalLog.DataBase := FEventDataBase;
+      FFiscalLog.ShowMsg := FShowMsg;
       exit;
     end;
 
@@ -741,6 +751,7 @@ begin
     FFiscalLog := TCheckLog.Create;
     FFiscalLog.FrontBase := FrontBase;
     FFiscalLog.DataBase := FFiscalDataBase;
+    FFiscalLog.ShowMsg := FShowMsg;
   end;
 end;
 
@@ -1036,7 +1047,8 @@ begin
     end;
   except
     on E: Exception do
-      raise Exception.Create('Ошибка логирования ' + E.Message);
+      if FShowMsg then
+        Touch_MessageBox('Внимание', 'Ошибка логирования ' + E.Message, MB_OK, mtError);
   end;
 end;
 
@@ -1072,7 +1084,8 @@ begin
     end;
   except
     on E: Exception do
-      raise Exception.Create('Ошибка логирования ' + E.Message);
+      if FShowMsg then
+        Touch_MessageBox('Внимание', 'Ошибка логирования ' + E.Message, MB_OK, mtError);
   end;
 end;
 
@@ -1133,7 +1146,8 @@ begin
     end;
   except
     on E: Exception do
-      raise Exception.Create('Ошибка логирования ' + E.Message);
+      if FShowMsg then
+        Touch_MessageBox('Внимание', 'Ошибка логирования ' + E.Message, MB_OK, mtError);
   end;
 end;
 
@@ -1172,7 +1186,8 @@ begin
     end;
   except
     on E: Exception do
-      raise Exception.Create('Ошибка логирования ' + E.Message);
+      if FShowMsg then
+        Touch_MessageBox('Внимание', 'Ошибка логирования ' + E.Message, MB_OK, mtError);
   end;
 end;
 
@@ -1226,7 +1241,8 @@ begin
     end;
   except
     on E: Exception do
-      raise Exception.Create('Ошибка логирования ' + E.Message);
+      if FShowMsg then
+        Touch_MessageBox('Внимание', 'Ошибка логирования ' + E.Message, MB_OK, mtError);
   end;
 end;
 
@@ -1287,7 +1303,8 @@ begin
     end;
   except
     on E: Exception do
-      raise Exception.Create('Ошибка логирования ' + E.Message);
+      if FShowMsg then
+        Touch_MessageBox('Внимание', 'Ошибка логирования ' + E.Message, MB_OK, mtError);
   end;
 end;
 
@@ -1330,7 +1347,8 @@ begin
     end;
   except
     on E: Exception do
-      raise Exception.Create('Ошибка логирования ' + E.Message);
+      if FShowMsg then
+        Touch_MessageBox('Внимание', 'Ошибка логирования ' + E.Message, MB_OK, mtError);
   end;
 end;
 
@@ -1368,7 +1386,8 @@ begin
     end;
   except
     on E: Exception do
-      raise Exception.Create('Ошибка логирования ' + E.Message);
+      if FShowMsg then
+        Touch_MessageBox('Внимание', 'Ошибка логирования ' + E.Message, MB_OK, mtError);
   end;
 end;
 

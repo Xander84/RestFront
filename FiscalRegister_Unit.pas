@@ -184,7 +184,13 @@ begin
       Form.LabelCaption := 'Сумма';
       Form.ShowModal;
       if Form.ModalResult = mrOK then
+      begin
+        if Assigned(FFiscalRegister.LogManager) then
+          FFiscalRegister.LogManager.DoMoneyLog(GetCurrentUserInfo(FFrontBase),
+            StrToCurr(Form.Number), ev_MoneyIn);
+
         FFiscalRegister.MoneyIn(StrToCurr(Form.Number));
+      end;
     finally
       Form.Free;
     end;
@@ -202,7 +208,13 @@ begin
       Form.LabelCaption := 'Сумма';
       Form.ShowModal;
       if Form.ModalResult = mrOK then
+      begin
+        if Assigned(FFiscalRegister.LogManager) then
+          FFiscalRegister.LogManager.DoMoneyLog(GetCurrentUserInfo(FFrontBase),
+            StrToCurr(Form.Number), ev_MoneyOut);
+
         FFiscalRegister.MoneyOut(StrToCurr(Form.Number));
+      end;
     finally
       Form.Free;
     end;
@@ -232,6 +244,10 @@ begin
     if Touch_MessageBox('Внимание',
       'Вы действительно хотите снять отчет с гашением Z1?', MB_YESNO, mtConfirmation) = IDYES then
     begin
+      if Assigned(FFiscalRegister.LogManager) then
+        FFiscalRegister.LogManager.DoFiscalReportLog(GetCurrentUserInfo(FFrontBase),
+          ev_PrintZReport);
+
       FFiscalRegister.PrintZ1ReportWithCleaning;
     end;
   end;
@@ -243,6 +259,10 @@ begin
   begin
     if Touch_MessageBox('Внимание', 'Вы действительно хотите снять отчет X1?', MB_YESNO) = IDYES then
     begin
+      if Assigned(FFiscalRegister.LogManager) then
+        FFiscalRegister.LogManager.DoFiscalReportLog(GetCurrentUserInfo(FFrontBase),
+          ev_PrintXReport);
+
       FFiscalRegister.PrintX1ReportWithOutCleaning;
     end;
   end;
