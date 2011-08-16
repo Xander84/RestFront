@@ -716,7 +716,7 @@ begin
 
   FLogManager := TLogManager.Create;
   FLogManager.FrontBase := FFrontBase;
-  FLogManager.DatabaseName := cn_LodDataBasePath;
+  FLogManager.EventDatabaseName := cn_LodDataBasePath;
   FLogManager.DoSimpleEvent(ev_StartProgram);
 
   btnGoodUp.Picture := FrontData.RestPictureContainer.FindPicture('Up');

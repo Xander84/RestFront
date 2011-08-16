@@ -421,7 +421,8 @@ type
     function LockUserOrder(const OrderKey: Integer): Boolean;
     function UnLockUserOrder(const OrderKey: Integer): Boolean;
 
-    function GetPayKindType(const MemTable: TkbmMemTable; const PayType: Integer; IsPlCard: Integer = 0; IsExternal:Boolean = False): Boolean;
+    function GetPayKindType(const MemTable: TkbmMemTable; const PayType: Integer;
+      IsPlCard: Integer = 0; const IsExternal: Boolean = False): Boolean;
     procedure GetPaymentsCount(var CardCount, NoCashCount, PercCardCount: Integer;
       const CashID, PCID: Integer);
     function GetCashFiscalType: Integer;
@@ -509,7 +510,7 @@ type
     //reports
     function SavePrintDate(const ID: Integer): Boolean;
     function GetReportList(var MemTable: TkbmMemTable): Boolean;
-    function CheckExternalPay(ID: Integer): Boolean;
+    function CheckExternalPay(const ID: Integer): Boolean;
     procedure CanCloseDay;
     procedure CanOpenDay;
 
@@ -3434,36 +3435,58 @@ begin
   end;
 end;
 
-function TFrontBase.GetPayKindType(const MemTable: TkbmMemTable; const PayType: Integer; IsPlCard: Integer = 0; IsExternal:Boolean = False): Boolean;
+function TFrontBase.GetPayKindType(const MemTable: TkbmMemTable; const PayType: Integer;
+  IsPlCard: Integer = 0; const IsExternal: Boolean = False): Boolean;
 var
   S: String;
   FSQL: TIBSQL;
-  tr: TIBTransaction;
+  FTransaction: TIBTransaction;
 begin
   FReadSQL.Close;
+
   MemTable.Close;
   MemTable.CreateTable;
   MemTable.Open;
   try
-    try
-      if IsExternal then
-      begin
-        FSQL := TIBSQL.Create(nil);
-        tr := TIBTransaction.Create(nil);
-        tr.DefaultDatabase := Self.FDataBase;
-        tr.StartTransaction;
-        FSQL.Transaction := tr;
-        S := ' SELECT p.ID, cast(:USR$PAYTYPEKEY as Integer) USR$PAYTYPEKEY, p.USR$NOFISCAL, p.USR$NAME ' +
-             ' FROM RF$EXT_GETPAYTYPELIST (:LOGICDATE, :current_timestamp, :USR$PAYTYPEKEY) p ORDER BY p.USR$NAME ';
-        FSQL.SQL.Text := S;
+    if IsExternal then
+    begin
+      FSQL := TIBSQL.Create(nil);
+      FTransaction := TIBTransaction.Create(nil);
+      try
+        FTransaction.DefaultDatabase := FDataBase;
+        FTransaction.StartTransaction;
+        FSQL.Transaction := FTransaction;
+        FSQL.SQL.Text :=
+          '  SELECT P.ID, CAST(:USR$PAYTYPEKEY AS INTEGER) AS USR$PAYTYPEKEY, P.USR$NOFISCAL, P.USR$NAME ' +
+          '  FROM RF$EXT_GETPAYTYPELIST (:LOGICDATE, CURRENT_TIMESTAMP, :USR$PAYTYPEKEY) P ORDER BY P.USR$NAME ';
         FSQL.ParamByName('LogicDate').AsDateTime := GetLogicDate;
         FSQL.ParamByName('USR$PAYTYPEKEY').ASInteger := PayType;
-      end
-      else
-      begin
-        FSQL := FReadSQL;
-        if not FSQL.Transaction.InTransaction then
-          FSQL.Transaction.StartTransaction;
+        FSQL.ExecQuery;
+        while not FSQL.Eof do
+        begin
+          MemTable.Append;
+          MemTable.FieldByName('USR$NAME').AsString := FSQL.FieldByName('USR$NAME').AsString;
+          MemTable.FieldByName('USR$PAYTYPEKEY').AsInteger := FSQL.FieldByName('ID').AsInteger;
+          MemTable.FieldByName('USR$NOFISCAL').AsInteger := FSQL.FieldByName('USR$NOFISCAL').AsInteger;
+          MemTable.Post;
+
+          FSQL.Next;
+        end;
+        FSQL.Close;
+        Result := True;
+      finally
+        if FTransaction.InTransaction then
+          FTransaction.Commit;
+
+        FSQL.Free;
+        FTransaction.Free;
+      end;
+    end
+    else
+    begin
+      try
+        if not FReadSQL.Transaction.InTransaction then
+          FReadSQL.Transaction.StartTransaction;
 
         S := ' SELECT K.USR$NAME, K.USR$PAYTYPEKEY, K.USR$NOFISCAL, K.ID FROM USR$MN_KINDTYPE K ' +
           ' LEFT JOIN USR$MN_PAYMENTRULES R ON R.USR$PAYTYPEKEY = K.USR$PAYTYPEKEY ';
@@ -3473,38 +3496,31 @@ begin
         else
           S := S + ' WHERE K.USR$PAYTYPEKEY = :paytype AND ((K.USR$ISPLCARD IS NULL) OR (K.USR$ISPLCARD = 0))';
         S := S + ' ORDER BY K.USR$NAME ';
-        FSQL.SQL.Text := S;
+        FReadSQL.SQL.Text := S;
 
         if IsPlCard = 1 then
-          FSQL.ParamByName('FKEY').AsInteger := FUserKey
+          FReadSQL.ParamByName('FKEY').AsInteger := FUserKey
         else
-          FSQL.ParamByName('paytype').AsInteger := PayType;
-      end;
+          FReadSQL.ParamByName('paytype').AsInteger := PayType;
 
-      FSQL.ExecQuery;
-      while not FSQL.Eof do
-      begin
-        MemTable.Append;
-        MemTable.FieldByName('USR$NAME').AsString := FSQL.FieldByName('USR$NAME').AsString;
-        MemTable.FieldByName('USR$PAYTYPEKEY').AsInteger := FSQL.FieldByName('ID').AsInteger;
-        MemTable.FieldByName('USR$NOFISCAL').AsInteger := FSQL.FieldByName('USR$NOFISCAL').AsInteger;
-        MemTable.Post;
+        FReadSQL.ExecQuery;
+        while not FReadSQL.Eof do
+        begin
+          MemTable.Append;
+          MemTable.FieldByName('USR$NAME').AsString := FReadSQL.FieldByName('USR$NAME').AsString;
+          MemTable.FieldByName('USR$PAYTYPEKEY').AsInteger := FReadSQL.FieldByName('ID').AsInteger;
+          MemTable.FieldByName('USR$NOFISCAL').AsInteger := FReadSQL.FieldByName('USR$NOFISCAL').AsInteger;
+          MemTable.Post;
 
-        FSQL.Next;
+          FReadSQL.Next;
+        end;
+        Result := True;
+      finally
+        FReadSQL.Close;
       end;
-      Result := True;
-    except
-      Result := False;
-      raise;
     end;
-  finally
-    FSQL.Close;
-    if FSQL <> FReadSQL then
-    begin
-      tr.Commit;
-      FSQL.Free;
-      tr.Free;
-    end;
+  except
+    raise;
   end;
 end;
 
@@ -6199,20 +6215,23 @@ begin
   end;
 end;
 
-function TFrontBase.CheckExternalPay(ID: Integer): Boolean;
+function TFrontBase.CheckExternalPay(const ID: Integer): Boolean;
 var
   FSQL: TIBSQL;
 begin
   FSQL := TIBSQL.Create(nil);
   FSQL.Transaction := ReadTransaction;
   try
-      Result := False;
-      FSQL.Close;
-      FSQL.SQL.Text :=
-        '  SELECT i.USR$EXTERNALPROCESS FROM USR$INV_PAYTYPE i WHERE i.id = :id ';
-      FSQL.ParamByName('ID').AsInteger := ID;
-      FSQL.ExecQuery;
-      Result := FSQL.FieldBYName('USR$EXTERNALPROCESS').AsInteger = 1
+    Result := False;
+    if not ReadTransaction.InTransaction then
+      ReadTransaction.StartTransaction;
+
+    FSQL.SQL.Text :=
+      ' SELECT I.USR$EXTERNALPROCESS FROM USR$INV_PAYTYPE I WHERE I.ID = :ID ';
+    FSQL.ParamByName('ID').AsInteger := ID;
+    FSQL.ExecQuery;
+    Result := (FSQL.FieldBYName('USR$EXTERNALPROCESS').AsInteger = 1);
+    FSQL.Close;
   finally
     FSQL.Free;
   end;
