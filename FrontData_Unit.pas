@@ -69,6 +69,8 @@ const
   cn_defaultWidth = 1024;
   LOG_SECTION_NAME = 'LOG';
   LOG_DB_PATH = 'LOG_DB_PATH';
+  LOG_FISCAL_DB_PATH = 'LOG_FISCAL_DB_PATH';
+  LOG_ACTION_DB_PATH = 'LOG_ACTION_DB_PATH';
 
 var
   FrontData: TFrontData;
@@ -82,7 +84,9 @@ var
   cn_GridFontSize: Integer;
   cn_ButtonFontSize: Integer;
   cn_ButtonSmallFontSize: Integer;
-  cn_LodDataBasePath: String;
+  cn_LogDataBasePath: String;
+  cn_LogFiscalBasePath: String;
+  cn_LogActionBasePath: String;
   cn_KeyBoardEnabled: Boolean;
   AppHandle: THandle;
   cn_EvenRowColor: Integer;
@@ -181,7 +185,9 @@ begin
   cn_MainPercent := 100;
   cn_ShutDownOnExit := False;
   cn_KeyBoardEnabled := True;
-  cn_LodDataBasePath := '';
+  cn_LogDataBasePath := '';
+  cn_LogFiscalBasePath := '';
+  cn_LogActionBasePath := '';
 
   ApStyler.Style := GetDefaultTheme;
   FrontPanelStyler.SetComponentStyle(GetDefaultTheme);
@@ -405,9 +411,21 @@ begin
 
     if FunctionFile.ValueExists(LOG_SECTION_NAME, LOG_DB_PATH) then
     begin
-      cn_LodDataBasePath := FunctionFile.ReadString(LOG_SECTION_NAME, LOG_DB_PATH, '')
+      cn_LogDataBasePath := FunctionFile.ReadString(LOG_SECTION_NAME, LOG_DB_PATH, '')
     end else
       FunctionFile.WriteString(LOG_SECTION_NAME, LOG_DB_PATH, '');
+
+    if FunctionFile.ValueExists(LOG_SECTION_NAME, LOG_FISCAL_DB_PATH) then
+    begin
+      cn_LogFiscalBasePath := FunctionFile.ReadString(LOG_SECTION_NAME, LOG_FISCAL_DB_PATH, '')
+    end else
+      FunctionFile.WriteString(LOG_SECTION_NAME, LOG_FISCAL_DB_PATH, '');
+
+    if FunctionFile.ValueExists(LOG_SECTION_NAME, LOG_ACTION_DB_PATH) then
+    begin
+      cn_LogActionBasePath := FunctionFile.ReadString(LOG_SECTION_NAME, LOG_ACTION_DB_PATH, '')
+    end else
+      FunctionFile.WriteString(LOG_SECTION_NAME, LOG_ACTION_DB_PATH, '');
 
   finally
     FreeAndNil(FunctionFile);
