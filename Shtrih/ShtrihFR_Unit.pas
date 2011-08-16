@@ -154,12 +154,19 @@ end;
 procedure TShtrihFR.ErrMessage(Err: Integer);
 var
   ErrStr: String;
+  FCheckInfo: TLogCheckInfo;
 begin
   if Err <> 0 then
   begin
     ErrStr := ResultCodeDescription;
     Touch_MessageBox('Внимание', ErrStr, MB_OK, mtWarning);
     WriteLogToFile(ErrStr, FFrontBase.UserName);
+    if Assigned(FLogManager) then
+    begin
+      FCheckInfo.OrderID := -1;
+      FLogManager.DoCancelCheckLog(GetCurrentUserInfo(FFrontBase),
+        FCheckInfo, ErrStr);
+    end;
   end;
 end;
 
@@ -286,6 +293,8 @@ var
   GoodName, DiscName: String;
   Quantity, Price, SumDiscount: Currency;
   QuantityStr, PriceStr: String;
+  FUserInfo: TLogUserInfo;
+  FCheckInfo: TLogCheckInfo;
 begin
   Result := False;
   Assert(Assigned(FFrontBase), 'FrontBase not Assigned');
@@ -345,6 +354,16 @@ begin
       TotalDiscount := 0;
       WasDiscount := False;
 
+      if Assigned(FLogManager) then
+      begin
+        FUserInfo := GetCurrentUserInfo(FFrontBase);
+        with FCheckInfo do
+        begin
+          FCheckInfo.OrderID := Doc.FieldByName('ID').AsInteger;
+          FCheckInfo.OrderNumber := Doc.FieldByName('NUMBER').AsString;
+        end;
+      end;
+
       DocLine.First;
       while not DocLine.Eof do
       begin
@@ -382,6 +401,21 @@ begin
             if DocLine.FieldByName('usr$persdiscount').AsCurrency <> 0 then
               WasDiscount := True;
           end;
+        end;
+
+        if Assigned(FLogManager) then
+        begin
+          with FCheckInfo do
+          begin
+            GoodID := DocLine.FieldByName('usr$goodkey').AsInteger;
+            GoodName := DocLine.FieldByName('GOODNAME').AsString;
+            Quantity := DocLine.FieldByName('usr$quantity').AsCurrency;
+            CostNCU := DocLine.FieldByName('usr$costncu').AsCurrency;
+            SumNCU := DocLine.FieldByName('usr$sumncu').AsCurrency;
+            SumDiscount := DocLine.FieldByName('usr$sumncu').AsCurrency -
+              DocLine.FieldByName('usr$sumncuwithdiscount').AsCurrency;
+          end;
+          FLogManager.DoCheckLog(FUserInfo,  FCheckInfo, ev_PrintCheck);
         end;
         DocLine.Next;
       end;
@@ -450,6 +484,11 @@ begin
             PayLine, FFrontBase, FSums);
         except
           {TODO: Issue 50}
+          on E: Exception do
+          begin
+            if Assigned(FLogManager) then
+              FLogManager.DoCancelCheckLog(FUserInfo, FCheckInfo, E.Message);
+          end;
         end;
         Doc.Post;
       end;
@@ -530,6 +569,8 @@ var
   GoodName, DiscName: String;
   Quantity, Price, SumDiscount: Currency;
   QuantityStr, PriceStr: String;
+  FUserInfo: TLogUserInfo;
+  FCheckInfo: TLogCheckInfo;
 begin
   Result := False;
   Assert(Assigned(FFrontBase), 'FrontBase not Assigned');
@@ -570,6 +611,16 @@ begin
       TotalDiscount := 0;
       WasDiscount := False;
 
+      if Assigned(FLogManager) then
+      begin
+        FUserInfo := GetCurrentUserInfo(FFrontBase);
+        with FCheckInfo do
+        begin
+          FCheckInfo.OrderID := Doc.FieldByName('ID').AsInteger;
+          FCheckInfo.OrderNumber := Doc.FieldByName('NUMBER').AsString;
+        end;
+      end;
+
       DocLine.First;
       while not DocLine.Eof do
       begin
@@ -605,6 +656,21 @@ begin
           end;
           if DocLine.FieldByName('usr$persdiscount').AsCurrency <> 0 then
             WasDiscount := True;
+        end;
+
+        if Assigned(FLogManager) then
+        begin
+          with FCheckInfo do
+          begin
+            GoodID := DocLine.FieldByName('usr$goodkey').AsInteger;
+            GoodName := DocLine.FieldByName('GOODNAME').AsString;
+            Quantity := DocLine.FieldByName('usr$quantity').AsCurrency;
+            CostNCU := DocLine.FieldByName('usr$costncu').AsCurrency;
+            SumNCU := DocLine.FieldByName('usr$sumncu').AsCurrency;
+            SumDiscount := DocLine.FieldByName('usr$sumncu').AsCurrency -
+              DocLine.FieldByName('usr$sumncuwithdiscount').AsCurrency;
+          end;
+          FLogManager.DoCheckLog(FUserInfo,  FCheckInfo, ev_ReturnCheck);
         end;
         DocLine.Next;
       end;
@@ -675,6 +741,11 @@ begin
             PayLine, FFrontBase, FSums);
         except
           {TODO: Issue 50}
+          on E: Exception do
+          begin
+            if Assigned(FLogManager) then
+              FLogManager.DoCancelCheckLog(FUserInfo, FCheckInfo, E.Message);
+          end;
         end;
         Doc.Post;
       end;

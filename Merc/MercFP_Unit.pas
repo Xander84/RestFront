@@ -290,6 +290,8 @@ var
   Quantity, Price, SumDiscount, Summ: Currency;
   QuantityStr: String;
   PriceStr: String;
+  FUserInfo: TLogUserInfo;
+  FCheckInfo: TLogCheckInfo;
 begin
   FIV := 0;
   Result := False;
@@ -301,6 +303,16 @@ begin
       OpenCheck(motSale);
     except
       SetLastError;
+    end;
+
+    if Assigned(FLogManager) then
+    begin
+      FUserInfo := GetCurrentUserInfo(FFrontBase);
+      with FCheckInfo do
+      begin
+        FCheckInfo.OrderID := Doc.FieldByName('ID').AsInteger;
+        FCheckInfo.OrderNumber := Doc.FieldByName('NUMBER').AsString;
+      end;
     end;
 
     DocLine.First;
@@ -332,6 +344,21 @@ begin
 
         Sale(Quantity, Price, GoodName, Summ, 1, 0, '', SumDiscount);
       end;
+
+      if Assigned(FLogManager) then
+      begin
+        with FCheckInfo do
+        begin
+          GoodID := DocLine.FieldByName('usr$goodkey').AsInteger;
+          GoodName := DocLine.FieldByName('GOODNAME').AsString;
+          Quantity := DocLine.FieldByName('usr$quantity').AsCurrency;
+          CostNCU := DocLine.FieldByName('usr$costncu').AsCurrency;
+          SumNCU := DocLine.FieldByName('usr$sumncu').AsCurrency;
+          SumDiscount := DocLine.FieldByName('usr$sumncu').AsCurrency -
+            DocLine.FieldByName('usr$sumncuwithdiscount').AsCurrency;
+        end;
+        FLogManager.DoCheckLog(FUserInfo,  FCheckInfo, ev_PrintCheck);
+      end;
       DocLine.Next;
     end;
 
@@ -359,10 +386,14 @@ begin
           PayLine, FFrontBase, FSums);
       except
         { TODO: Issue 50 }
+        on E: Exception do
+        begin
+          if Assigned(FLogManager) then
+            FLogManager.DoCancelCheckLog(FUserInfo, FCheckInfo, E.Message);
+        end;
       end;
       Doc.Post;
     end;
-
   end
   else
     Touch_MessageBox('Внимание', 'Не установлен драйвер для ФР!', MB_OK, mtError);
@@ -411,6 +442,8 @@ var
   Quantity, Price, SumDiscount, Summ: Currency;
   QuantityStr: String;
   PriceStr: String;
+  FUserInfo: TLogUserInfo;
+  FCheckInfo: TLogCheckInfo;
 begin
   FIV := 0;
   Result := False;
@@ -427,8 +460,19 @@ begin
       SetLastError;
     end;
 
-    DocLine.First;
     TotalDiscount := 0;
+
+    if Assigned(FLogManager) then
+    begin
+      FUserInfo := GetCurrentUserInfo(FFrontBase);
+      with FCheckInfo do
+      begin
+        FCheckInfo.OrderID := Doc.FieldByName('ID').AsInteger;
+        FCheckInfo.OrderNumber := Doc.FieldByName('NUMBER').AsString;
+      end;
+    end;
+
+    DocLine.First;
     while not DocLine.Eof do
     begin
       GoodName := DocLine.FieldByName('GOODNAME').AsString;
@@ -454,6 +498,20 @@ begin
 
       Sale(Quantity, Price, GoodName, Summ, 1, 0, '', SumDiscount);
 
+      if Assigned(FLogManager) then
+      begin
+        with FCheckInfo do
+        begin
+          GoodID := DocLine.FieldByName('usr$goodkey').AsInteger;
+          GoodName := DocLine.FieldByName('GOODNAME').AsString;
+          Quantity := DocLine.FieldByName('usr$quantity').AsCurrency;
+          CostNCU := DocLine.FieldByName('usr$costncu').AsCurrency;
+          SumNCU := DocLine.FieldByName('usr$sumncu').AsCurrency;
+          SumDiscount := DocLine.FieldByName('usr$sumncu').AsCurrency -
+            DocLine.FieldByName('usr$sumncuwithdiscount').AsCurrency;
+        end;
+        FLogManager.DoCheckLog(FUserInfo,  FCheckInfo, ev_ReturnCheck);
+      end;
       DocLine.Next;
     end;
 
@@ -481,6 +539,11 @@ begin
           PayLine, FFrontBase, FSums);
       except
         { TODO: Issue 50 }
+        on E: Exception do
+        begin
+          if Assigned(FLogManager) then
+            FLogManager.DoCancelCheckLog(FUserInfo, FCheckInfo, E.Message);
+        end;
       end;
       Doc.Post;
     end;
@@ -595,11 +658,19 @@ begin
 end;
 
 procedure TMercuryRegister.ShowLastError;
+var
+  FCheckInfo: TLogCheckInfo;
 begin
   if FLastErrorNumber <> 0 then
   begin
     Touch_MessageBox('Внимание', FLastErrorDescription, MB_OK, mtWarning);
     WriteLogToFile(FLastErrorDescription, FFrontBase.UserName);
+    if Assigned(FLogManager) then
+    begin
+      FCheckInfo.OrderID := -1;
+      FLogManager.DoCancelCheckLog(GetCurrentUserInfo(FFrontBase),
+        FCheckInfo, FLastErrorDescription);
+    end;
   end;
 end;
 

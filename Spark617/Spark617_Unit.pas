@@ -272,12 +272,19 @@ end;
 procedure TSpark617Register.ErrMessage(Err: Integer);
 var
   ErrStr: String;
+  FCheckInfo: TLogCheckInfo;
 begin
   if Err <> 0 then
   begin
     ErrStr := GetErrorComment(Err);
     Touch_MessageBox('Внимание', ErrStr, MB_OK or MB_ICONEXCLAMATION);
     WriteLogToFile(ErrStr, FFrontBase.UserName);
+    if Assigned(FLogManager) then
+    begin
+      FCheckInfo.OrderID := -1;
+      FLogManager.DoCancelCheckLog(GetCurrentUserInfo(FFrontBase),
+        FCheckInfo, ErrStr);
+    end;
   end;
 end;
 
@@ -337,13 +344,14 @@ var
   Res: Integer;
   DocNumber, WaiterName: String;
   DocStr: Integer;
-//  WasDiscount: Boolean;
   TotalDiscount: Currency;
-  GoodName{, DiscName}: String;
+  GoodName: String;
   Quantity, Price, SumDiscount: Currency;
   QuantityStr: String;
   PriceStr: String;
   DoLog: Boolean;
+  FUserInfo: TLogUserInfo;
+  FCheckInfo: TLogCheckInfo;
 begin
   Result := False;
   Assert(Assigned(FFrontBase), 'FrontBase not Assigned');
@@ -386,6 +394,16 @@ begin
       end;
 
       TotalDiscount := 0;
+
+      if Assigned(FLogManager) then
+      begin
+        FUserInfo := GetCurrentUserInfo(FFrontBase);
+        with FCheckInfo do
+        begin
+          FCheckInfo.OrderID := Doc.FieldByName('ID').AsInteger;
+          FCheckInfo.OrderNumber := Doc.FieldByName('NUMBER').AsString;
+        end;
+      end;
 
       DocLine.First;
       while not DocLine.Eof do
@@ -439,6 +457,21 @@ begin
               exit;
             end;
           end;
+        end;
+
+        if Assigned(FLogManager) then
+        begin
+          with FCheckInfo do
+          begin
+            GoodID := DocLine.FieldByName('usr$goodkey').AsInteger;
+            GoodName := DocLine.FieldByName('GOODNAME').AsString;
+            Quantity := DocLine.FieldByName('usr$quantity').AsCurrency;
+            CostNCU := DocLine.FieldByName('usr$costncu').AsCurrency;
+            SumNCU := DocLine.FieldByName('usr$sumncu').AsCurrency;
+            SumDiscount := DocLine.FieldByName('usr$sumncu').AsCurrency -
+              DocLine.FieldByName('usr$sumncuwithdiscount').AsCurrency;
+          end;
+          FLogManager.DoCheckLog(FUserInfo,  FCheckInfo, ev_PrintCheck);
         end;
         DocLine.Next;
       end;
@@ -501,17 +534,6 @@ begin
         Res := EndDocument;
         if DoLog then
           WriteLogToFile('Закрытие фискального документа', FFrontBase.UserName);
-//        if Res = 0 then
-//        begin
-//          Res := GetDeviceInfo(102);
-//          if Res <> 0 then
-//          begin
-//            WriteLogToFile('Документ остался открытым! Строка 472, код ' + IntToStr(Res), FFrontBase.UserName);
-//            StartDocument(1, 1, StrToInt(DocNumber), FFrontBase.UserName);
-//            Res := CancelDocument;
-//            WriteLogToFile('Создание чека отмены ', FFrontBase.UserName);
-//          end
-//        end;
       end;
       if Res = 0 then
         Result := True
@@ -576,6 +598,11 @@ begin
             PayLine, FFrontBase, FSums);
         except
           {TODO: Issue 50}
+          on E: Exception do
+          begin
+            if Assigned(FLogManager) then
+              FLogManager.DoCancelCheckLog(FUserInfo, FCheckInfo, E.Message);
+          end;
         end;
         Doc.Post;
       end;
@@ -612,12 +639,13 @@ var
   Res: Integer;
   DocNumber, WaiterName: String;
   DocStr: Integer;
-//  WasDiscount: Boolean;
   TotalDiscount: Currency;
-  GoodName{, DiscName}: String;
+  GoodName: String;
   Quantity, Price, SumDiscount: Currency;
   QuantityStr: String;
   PriceStr: String;
+  FUserInfo: TLogUserInfo;
+  FCheckInfo: TLogCheckInfo;
 begin
   Result := False;
   Assert(Assigned(FFrontBase), 'FrontBase not Assigned');
@@ -651,6 +679,16 @@ begin
       end;
 
       TotalDiscount := 0;
+
+      if Assigned(FLogManager) then
+      begin
+        FUserInfo := GetCurrentUserInfo(FFrontBase);
+        with FCheckInfo do
+        begin
+          FCheckInfo.OrderID := Doc.FieldByName('ID').AsInteger;
+          FCheckInfo.OrderNumber := Doc.FieldByName('NUMBER').AsString;
+        end;
+      end;
 
       DocLine.First;
       while not DocLine.Eof do
@@ -695,6 +733,21 @@ begin
             exit;
           end;
         end;
+
+        if Assigned(FLogManager) then
+        begin
+          with FCheckInfo do
+          begin
+            GoodID := DocLine.FieldByName('usr$goodkey').AsInteger;
+            GoodName := DocLine.FieldByName('GOODNAME').AsString;
+            Quantity := DocLine.FieldByName('usr$quantity').AsCurrency;
+            CostNCU := DocLine.FieldByName('usr$costncu').AsCurrency;
+            SumNCU := DocLine.FieldByName('usr$sumncu').AsCurrency;
+            SumDiscount := DocLine.FieldByName('usr$sumncu').AsCurrency -
+              DocLine.FieldByName('usr$sumncuwithdiscount').AsCurrency;
+          end;
+          FLogManager.DoCheckLog(FUserInfo,  FCheckInfo, ev_ReturnCheck);
+        end;
         DocLine.Next;
       end;
 
@@ -737,19 +790,7 @@ begin
               exit;
           end;
         end;
-
         Res := EndDocument;
-//        if Res = 0 then
-//        begin
-//          Res := GetDeviceInfo(102);
-//          if Res <> 0 then
-//          begin
-//            WriteLogToFile('Документ остался открытым! Строка 472, код ' + IntToStr(Res), FFrontBase.UserName);
-//            StartDocument(1, 1, StrToInt(DocNumber), FFrontBase.UserName);
-//            Res := CancelDocument;
-//            WriteLogToFile('Создание чека отмены ', FFrontBase.UserName);
-//          end
-//        end;
       end;
       if Res = 0 then
         Result := True
@@ -802,6 +843,11 @@ begin
             PayLine, FFrontBase, FSums);
         except
           {TODO: Issue 50}
+          on E: Exception do
+          begin
+            if Assigned(FLogManager) then
+              FLogManager.DoCancelCheckLog(FUserInfo, FCheckInfo, E.Message);
+          end;
         end;
         Doc.Post;
       end;
