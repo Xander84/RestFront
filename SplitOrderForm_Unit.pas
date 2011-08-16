@@ -26,6 +26,7 @@ type
     btnOK: TAdvSmoothButton;
     DBGrLeft: TDBAdvGrid;
     DBGrRight: TDBAdvGrid;
+    btnCancel: TAdvSmoothButton;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -36,6 +37,7 @@ type
     procedure btnLeftClick(Sender: TObject);
     procedure btnAllRightClick(Sender: TObject);
     procedure btnAllLeftClick(Sender: TObject);
+    procedure btnCancelClick(Sender: TObject);
   private
     FFrontBase: TFrontBase;
     FLeftDoc: TkbmMemTable;
@@ -286,11 +288,11 @@ begin
 end;
 
 procedure TSplitOrder.btnOKClick(Sender: TObject);
-{var
-  OrderKey: Integer;  }
+var
+  OrderKey: Integer;
 begin
-//  FFrontBase.CreateNewOrder(FLeftDoc, FLeftDocLine, FLeftModificationDataSet, OrderKey);
-//  FFrontBase.CreateNewOrder(FRightDoc, FRightDocLine, FRightModificationDataSet, OrderKey);
+  FFrontBase.CreateNewOrder(FLeftDoc, FLeftDocLine, FLeftModificationDataSet, OrderKey);
+  FFrontBase.CreateNewOrder(FRightDoc, FRightDocLine, FRightModificationDataSet, OrderKey);
   ModalResult := mrOK;
 end;
 
@@ -315,6 +317,12 @@ begin
 //    FLeftDocLine.Next;
   end;
   RefreshDataSets;
+end;
+
+procedure TSplitOrder.btnCancelClick(Sender: TObject);
+begin
+  inherited;
+  ModalResult := mrCancel;
 end;
 
 procedure TSplitOrder.btnAllLeftClick(Sender: TObject);
@@ -410,10 +418,10 @@ var
   FOrderKey: Integer;
   FMainOrderKey: Integer;
 begin
-  FFrontBase.CreateNewOrder(FLeftDoc, FLeftDocLine, FLeftModificationDataSet, FMainOrderKey);
-  FFrontBase.CreateNewOrder(FRightDoc, FRightDocLine, FRightModificationDataSet, FOrderKey);
-  FFrontBase.GetOrder(FLeftDoc, FLeftDocLine, FLeftModificationDataSet, FMainOrderKey);
-  FFrontBase.GetOrder(FRightDoc, FRightDocLine, FRightModificationDataSet, FOrderKey);
+//  FFrontBase.CreateNewOrder(FLeftDoc, FLeftDocLine, FLeftModificationDataSet, FMainOrderKey);
+//  FFrontBase.CreateNewOrder(FRightDoc, FRightDocLine, FRightModificationDataSet, FOrderKey);
+//  FFrontBase.GetOrder(FLeftDoc, FLeftDocLine, FLeftModificationDataSet, FMainOrderKey);
+//  FFrontBase.GetOrder(FRightDoc, FRightDocLine, FRightModificationDataSet, FOrderKey);
 end;
 
 end.

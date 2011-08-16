@@ -596,8 +596,8 @@ object SplitOrder: TSplitOrder
     Styler = FrontData.FrontPanelStyler
     FullHeight = 61
     object btnOK: TAdvSmoothButton
-      Left = 737
-      Top = 10
+      Left = 613
+      Top = 6
       Width = 116
       Height = 42
       Appearance.Font.Charset = DEFAULT_CHARSET
@@ -621,10 +621,43 @@ object SplitOrder: TSplitOrder
       Bevel = False
       Caption = #1054#1050
       Color = 15195349
+      DisabledColor = clBlack
       ParentFont = False
       TabOrder = 0
       Version = '1.6.9.0'
       OnClick = btnOKClick
+    end
+    object btnCancel: TAdvSmoothButton
+      Left = 735
+      Top = 6
+      Width = 116
+      Height = 42
+      Appearance.Font.Charset = DEFAULT_CHARSET
+      Appearance.Font.Color = clWindowText
+      Appearance.Font.Height = -13
+      Appearance.Font.Name = 'Times New Roman'
+      Appearance.Font.Style = [fsBold]
+      Status.Caption = '0'
+      Status.Appearance.Fill.Color = clRed
+      Status.Appearance.Fill.ColorMirror = clNone
+      Status.Appearance.Fill.ColorMirrorTo = clNone
+      Status.Appearance.Fill.GradientType = gtSolid
+      Status.Appearance.Fill.BorderColor = clGray
+      Status.Appearance.Fill.Rounding = 0
+      Status.Appearance.Fill.ShadowOffset = 0
+      Status.Appearance.Font.Charset = DEFAULT_CHARSET
+      Status.Appearance.Font.Color = clWhite
+      Status.Appearance.Font.Height = -11
+      Status.Appearance.Font.Name = 'Tahoma'
+      Status.Appearance.Font.Style = []
+      Bevel = False
+      Caption = #1054#1090#1084#1077#1085#1072
+      Color = 15195349
+      DisabledColor = clBlack
+      ParentFont = False
+      TabOrder = 1
+      Version = '1.6.9.0'
+      OnClick = btnCancelClick
     end
   end
   object pnlCenter: TAdvPanel
@@ -692,6 +725,7 @@ object SplitOrder: TSplitOrder
       Status.Appearance.Font.Style = []
       Bevel = False
       Color = 15195349
+      DisabledColor = clBlack
       ParentFont = False
       TabOrder = 0
       Version = '1.6.9.0'
@@ -723,6 +757,7 @@ object SplitOrder: TSplitOrder
       Status.Appearance.Font.Style = []
       Bevel = False
       Color = 15195349
+      DisabledColor = clBlack
       ParentFont = False
       TabOrder = 1
       Version = '1.6.9.0'
@@ -754,6 +789,7 @@ object SplitOrder: TSplitOrder
       Status.Appearance.Font.Style = []
       Bevel = False
       Color = 15195349
+      DisabledColor = clBlack
       ParentFont = False
       TabOrder = 2
       Version = '1.6.9.0'
@@ -785,6 +821,7 @@ object SplitOrder: TSplitOrder
       Status.Appearance.Font.Style = []
       Bevel = False
       Color = 15195349
+      DisabledColor = clBlack
       ParentFont = False
       TabOrder = 3
       Version = '1.6.9.0'
