@@ -4,7 +4,7 @@ interface
 
 uses
   Classes, Windows, Base_FiscalRegister_unit, Front_DataBase_Unit, SysUtils,
-  kbmMemTable, Controls;
+  kbmMemTable, Controls, FrontLog_Unit;
 
 {
   Класс работы с фискальником.
@@ -23,9 +23,11 @@ type
   private
     FFiscalRegister: IBaseFiscalRegister;
     FFrontBase: TFrontBase;
+    FLogManager: TLogManager;
     FInit: Boolean;
     FLastFiscalType: Integer;
     procedure SetFrontBase(const Value: TFrontBase);
+    procedure SetLogManager(const Value: TLogManager);
   public
     constructor Create;
     destructor Destroy; override;
@@ -50,6 +52,7 @@ type
 
     property FrontBase: TFrontBase read FFrontBase write SetFrontBase;
     property FiscalRegister: IBaseFiscalRegister read FFiscalRegister;
+    property LogManager: TLogManager read FLogManager write SetLogManager;
   end;
 
 implementation
@@ -133,6 +136,7 @@ begin
         begin
           FFiscalRegister := TShtrihFR.Create(nil);
           FFiscalRegister.FrontBase := FFrontBase;
+          FFiscalRegister.LogManager := FLogManager;
           FFiscalRegister.Init;
         end;
 
@@ -140,6 +144,7 @@ begin
         begin
           FFiscalRegister := TMercuryRegister.Create(nil);
           FFiscalRegister.FrontBase := FFrontBase;
+          FFiscalRegister.LogManager := FLogManager;
           FFiscalRegister.Init;
         end;
 
@@ -147,6 +152,7 @@ begin
         begin
           FFiscalRegister := TSpark617Register.Create(nil);
           FFiscalRegister.FrontBase := FFrontBase;
+          FFiscalRegister.LogManager := FLogManager;
           FFiscalRegister.Init;
         end;
 
@@ -154,6 +160,7 @@ begin
         begin
           FFiscalRegister := TAbstractFiscalRegister.Create;
           FFiscalRegister.FrontBase := FFrontBase;
+          FFiscalRegister.LogManager := FLogManager;
         end;
 
     else
@@ -262,6 +269,11 @@ end;
 procedure TFiscalRegister.SetFrontBase(const Value: TFrontBase);
 begin
   FFrontBase := Value;
+end;
+
+procedure TFiscalRegister.SetLogManager(const Value: TLogManager);
+begin
+  FLogManager := Value;
 end;
 
 procedure TFiscalRegister.StartDay;

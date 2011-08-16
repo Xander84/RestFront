@@ -4,12 +4,13 @@ interface
 
 uses
   Classes, Windows, Forms, SPARKAX3Lib_TLB, Front_DataBase_Unit, kbmMemTable, DB,
-  Base_FiscalRegister_unit;
+  Base_FiscalRegister_unit, FrontLog_Unit;
 
 type
   TSpark617Register = class(TSpark617TF, IBaseFiscalRegister)
   private
     FFrontBase: TFrontBase;
+    FLogManager: TLogManager;
     FDriverInit: Boolean;
     IsInit: Boolean;
     FLastErr: Integer;
@@ -27,6 +28,8 @@ type
     procedure MoneyOperation(const Param: Integer; Sum: Currency);
     function GetFrontBase: TFrontBase;
     function Get_Self: Integer;
+    function GetLogManager: TLogManager;
+    procedure SetLogManager(const Value: TLogManager);
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -47,8 +50,9 @@ type
     function GetDocumentNumber: Integer;
     function GetRegisterInfo: TRegisterStucture;
 
-    property FrontBase: TFrontBase read GetFrontBase write SetFrontBase;
     property Self: Integer read Get_Self;
+    property FrontBase: TFrontBase read GetFrontBase write SetFrontBase;
+    property LogManager: TLogManager read GetLogManager write SetLogManager;
   end;
 
 
@@ -954,9 +958,19 @@ begin
   end;
 end;
 
+procedure TSpark617Register.SetLogManager(const Value: TLogManager);
+begin
+  FLogManager := Value;
+end;
+
 function TSpark617Register.GetFrontBase: TFrontBase;
 begin
   Result := FFrontBase;
+end;
+
+function TSpark617Register.GetLogManager: TLogManager;
+begin
+  Result := FLogManager;
 end;
 
 function TSpark617Register.GetRegisterInfo: TRegisterStucture;

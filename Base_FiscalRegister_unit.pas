@@ -8,7 +8,7 @@
 interface
 
 uses
-  Classes, Windows, kbmMemTable, DB, Front_DataBase_Unit;
+  Classes, Windows, kbmMemTable, DB, Front_DataBase_Unit, FrontLog_Unit;
 
 const
   // тип оплаты
@@ -74,6 +74,11 @@ type
     function GetFrontBase: TFrontBase;
     property FrontBase: TFrontBase read GetFrontBase write SetFrontBase;
 
+    //логирование фискальных операций
+    procedure SetLogManager(const Value: TLogManager);
+    function GetLogManager: TLogManager;
+    property LogManager: TLogManager read GetLogManager write SetLogManager;
+
     //отчет Z1 с гашением
     function PrintZ1ReportWithCleaning: Boolean;
     //отчет X1 без гашения
@@ -99,10 +104,13 @@ type
   TAbstractFiscalRegister = class(TObject, IBaseFiscalRegister)
   private
     FFrontBase: TFrontBase;
+    FLogManager: TLogManager;
 
     function Get_Self: Integer;
     function GetFrontBase: TFrontBase;
     procedure SetFrontBase(const Value: TFrontBase);
+    function GetLogManager: TLogManager;
+    procedure SetLogManager(const Value: TLogManager);
   public
     function CheckDeviceInfo: Boolean;
     function Init: Boolean;
@@ -126,6 +134,7 @@ type
 
     property Self: Integer read Get_Self;
     property FrontBase: TFrontBase read GetFrontBase write SetFrontBase;
+    property LogManager: TLogManager read GetLogManager write SetLogManager;
   end;
 
   procedure SavePayment(const ContactKey, DocID: Integer; const PayLine: TkbmMemTable;
@@ -228,6 +237,11 @@ end;
 function TAbstractFiscalRegister.GetFrontBase: TFrontBase;
 begin
   Result := FFrontBase;
+end;
+
+function TAbstractFiscalRegister.GetLogManager: TLogManager;
+begin
+  Result := FLogManager;
 end;
 
 function TAbstractFiscalRegister.GetRegisterInfo: TRegisterStucture;
@@ -347,6 +361,11 @@ end;
 procedure TAbstractFiscalRegister.SetFrontBase(const Value: TFrontBase);
 begin
   FFrontBase := Value;
+end;
+
+procedure TAbstractFiscalRegister.SetLogManager(const Value: TLogManager);
+begin
+  FLogManager := Value;
 end;
 
 function TAbstractFiscalRegister._AddRef: Integer;

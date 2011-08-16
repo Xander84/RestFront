@@ -4,7 +4,7 @@ interface
 
 uses
   Classes, Windows, Forms, Front_DataBase_Unit, kbmMemTable, DB, MercFPrtX_TLB,
-  Base_FiscalRegister_unit;
+  Base_FiscalRegister_unit, FrontLog_Unit;
 
 const
   cn_FontFlagHeaderLine1 = 3; // 1-я строка заголовка
@@ -32,6 +32,7 @@ type
   TMercuryRegister = class(TMercuryFPrtX, IBaseFiscalRegister)
   private
     FFrontBase: TFrontBase;
+    FLogManager: TLogManager;
     FDriverInit: Boolean;
     IsInit: Boolean;
 
@@ -83,6 +84,8 @@ type
       const ValueName: String; const SumDiscount: Currency): Boolean;
     procedure SetFRRoundOption(const Value: Integer);
     function GetFRRoundOption: Integer;
+    function GetLogManager: TLogManager;
+    procedure SetLogManager(const Value: TLogManager);
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -106,11 +109,11 @@ type
     function GetDocumentNumber: Integer;
     function GetRegisterInfo: TRegisterStucture;
 
-    property FrontBase: TFrontBase read GetFrontBase write SetFrontBase;
     property Self: Integer read Get_Self;
+    property FrontBase: TFrontBase read GetFrontBase write SetFrontBase;
+    property LogManager: TLogManager read GetLogManager write SetLogManager;
 
-    property FRRoundOption
-      : Integer read GetFRRoundOption write SetFRRoundOption;
+    property FRRoundOption: Integer read GetFRRoundOption write SetFRRoundOption;
   end;
 
 implementation
@@ -586,6 +589,11 @@ begin
   Result := (ErrCode <> 0);
 end;
 
+procedure TMercuryRegister.SetLogManager(const Value: TLogManager);
+begin
+  FLogManager := Value;
+end;
+
 procedure TMercuryRegister.ShowLastError;
 begin
   if FLastErrorNumber <> 0 then
@@ -986,6 +994,11 @@ begin
   end
   else
     Result := 0;
+end;
+
+function TMercuryRegister.GetLogManager: TLogManager;
+begin
+  Result := FLogManager;
 end;
 
 function TMercuryRegister.GetRegisterInfo: TRegisterStucture;

@@ -708,9 +708,6 @@ begin
     end;
   end;
 
-  FFiscal := TFiscalRegister.Create;
-  FFiscal.FrontBase := FFrontBase;
-
   FReport := TRestReport.Create(Self);
   FReport.FrontBase := FFrontBase;
 
@@ -720,6 +717,10 @@ begin
   FLogManager.FiscalDataBaseName := cn_LogFiscalBasePath;
   FLogManager.ActionDataBaseName := cn_LogActionBasePath;
   FLogManager.DoSimpleEvent(ev_StartProgram);
+
+  FFiscal := TFiscalRegister.Create;
+  FFiscal.FrontBase := FFrontBase;
+  FFiscal.LogManager := FLogManager;
 
   btnGoodUp.Picture := FrontData.RestPictureContainer.FindPicture('Up');
   btnScrollUp.Picture := FrontData.RestPictureContainer.FindPicture('Up');

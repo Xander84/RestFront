@@ -4,12 +4,13 @@ interface
 
 uses
   Classes, Windows, Forms, DrvFRLib_TLB, Front_DataBase_Unit, kbmMemTable, DB,
-  Base_FiscalRegister_unit, TouchMessageBoxForm_Unit;
+  Base_FiscalRegister_unit, TouchMessageBoxForm_Unit, FrontLog_Unit;
 
 type
   TShtrihFR = class(TDrvFR, IBaseFiscalRegister)
   private
     FFrontBase: TFrontBase;
+    FLogManager: TLogManager;
     FDriverInit: Boolean;
     IsInit: Boolean;
 
@@ -19,6 +20,8 @@ type
     function GetFrontBase: TFrontBase;
     function Get_Self: Integer;
     function CheckFiscalState: Boolean;
+    function GetLogManager: TLogManager;
+    procedure SetLogManager(const Value: TLogManager);
 
   public
     constructor Create(AOwner: TComponent); override;
@@ -40,8 +43,9 @@ type
     function GetDocumentNumber: Integer;
     function GetRegisterInfo: TRegisterStucture;
 
-    property FrontBase: TFrontBase read GetFrontBase write SetFrontBase;
     property Self: Integer read Get_Self;
+    property FrontBase: TFrontBase read GetFrontBase write SetFrontBase;
+    property LogManager: TLogManager read GetLogManager write SetLogManager;
   end;
 
 implementation
@@ -181,6 +185,11 @@ end;
 function TShtrihFR.GetFrontBase: TFrontBase;
 begin
   Result := FFrontBase;
+end;
+
+function TShtrihFR.GetLogManager: TLogManager;
+begin
+  Result := FLogManager;
 end;
 
 function TShtrihFR.GetRegisterInfo: TRegisterStucture;
@@ -682,6 +691,11 @@ end;
 procedure TShtrihFR.SetFrontBase(const Value: TFrontBase);
 begin
   FFrontBase := Value;
+end;
+
+procedure TShtrihFR.SetLogManager(const Value: TLogManager);
+begin
+  FLogManager := Value;
 end;
 
 function TShtrihFR.SetParams: Boolean;
