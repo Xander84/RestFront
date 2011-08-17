@@ -90,10 +90,22 @@ begin
         begin
           ContinuePrint;
           Sleep(2000);
-          if ResultCode <> 0 then
+          if (ResultCode <> 0) or (EcrMode = 8) then
           begin
-            ErrMessage(ResultCode);
+            if ResultCode <> 0 then
+              ErrMessage(ResultCode);
             CancelCheck;
+            if ResultCode <> 0 then
+              ErrMessage(ResultCode);
+            if ResultCode = 88 then
+            begin
+              ContinuePrint;
+              Sleep(2000);
+              CancelCheck;
+              if ResultCode <> 0 then
+                ErrMessage(ResultCode);
+            end;
+
             Result := False;
           end else
             Result := True;

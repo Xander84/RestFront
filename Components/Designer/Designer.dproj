@@ -20,9 +20,14 @@
 			<Base>true</Base>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Base)'!=''">
+			<DCC_UnitSearchPath>d:\Front\Source\Components\;d:\Front\Source\Components\kbmMemTable\Source\;d:\Front\Source\Display\;d:\Front\Source\Components\PNGcomp_D2009_D2010\Source\;d:\Front\Source\Components\FastReport 4\Source\;D:\Front\Source\Components\FastReport 4\FastScript;d:\Front\Source\;d:\Front\Source\UTILS\;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+			<DCC_DcuOutput>d:\Front\DCU\</DCC_DcuOutput>
+			<DesignOnlyPackage>false</DesignOnlyPackage>
+			<DCC_BplOutput>d:\Front\DCU\</DCC_BplOutput>
+			<DCC_DcpOutput>d:\Front\DCU\</DCC_DcpOutput>
 			<DCC_ImageBase>00400000</DCC_ImageBase>
 			<GenPackage>true</GenPackage>
-			<DCC_DependencyCheckOutputName>C:\Users\Public\Documents\RAD Studio\7.0\Bpl\Designer.bpl</DCC_DependencyCheckOutputName>
+			<DCC_DependencyCheckOutputName>..\..\..\DCU\Designer.bpl</DCC_DependencyCheckOutputName>
 			<DCC_UnitAlias>WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;$(DCC_UnitAlias)</DCC_UnitAlias>
 			<DCC_Platform>x86</DCC_Platform>
 			<DCC_E>false</DCC_E>
@@ -45,8 +50,19 @@
 			<DelphiCompile Include="Designer.dpk">
 				<MainSource>MainSource</MainSource>
 			</DelphiCompile>
-			<DCCReference Include="rtl.dcp"/>
 			<DCCReference Include="vcl.dcp"/>
+			<DCCReference Include="rtl.dcp"/>
+			<DCCReference Include="vclimg.dcp"/>
+			<DCCReference Include="dbrtl.dcp"/>
+			<DCCReference Include="dsnap.dcp"/>
+			<DCCReference Include="vcldb.dcp"/>
+			<DCCReference Include="tmsd2010.dcp"/>
+			<DCCReference Include="bdertl.dcp"/>
+			<DCCReference Include="tmsexd2010.dcp"/>
+			<DCCReference Include="kbmMemDesD2010Std.dcp"/>
+			<DCCReference Include="DclEhLib120.dcp"/>
+			<DCCReference Include="PngComponents.dcp"/>
+			<DCCReference Include="ibxpress.dcp"/>
 			<DCCReference Include="dxfDesigner.pas"/>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>

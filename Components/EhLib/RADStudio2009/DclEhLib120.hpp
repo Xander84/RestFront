@@ -113,6 +113,17 @@
 #include <Drpctrls.hpp>	// Pascal unit
 #include <Dsdefine.hpp>	// Pascal unit
 #include <Dsdesign.hpp>	// Pascal unit
+#include <Gridseh.hpp>	// Pascal unit
+#include <Ehlibvcl.hpp>	// Pascal unit
+#include <Dblookupeh.hpp>	// Pascal unit
+#include <Dblookupgridseh.hpp>	// Pascal unit
+#include <Calculatoreh.hpp>	// Pascal unit
+#include <Dbsumlst.hpp>	// Pascal unit
+#include <Memtableeh.hpp>	// Pascal unit
+#include <Memtreeeh.hpp>	// Pascal unit
+#include <Prndgdlg.hpp>	// Pascal unit
+#include <Prvfrmeh.hpp>	// Pascal unit
+#include <Ehlibconsts.hpp>	// Pascal unit
 
 //-- user supplied -----------------------------------------------------------
 
