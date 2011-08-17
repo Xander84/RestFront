@@ -14,7 +14,7 @@ uses
   FrontLog_Unit, Grids, Menus, AddUserForm_unit, AdminForm_Unit,
   Buttons, RestTable_Unit, dxfDesigner, GestureMgr, AdvObj, AdvMenus, AdvMenuStylers,
   AdvSmoothToggleButton, pngimage, Generics.Collections, rfTableManager_unit,
-  rfUser_unit, AppEvnts, jpeg, AdvOfficeStatusBar, DBSumLst, DateUtils;
+  rfUser_unit, AppEvnts, jpeg, AdvOfficeStatusBar, DBSumLst, DateUtils, ShellAPI;
 
 const
   btnHeight = 65;
@@ -2811,7 +2811,6 @@ end;
 procedure TRestMainForm.actKeyBoardExecute(Sender: TObject);
 var
   S: String;
-  A: PAnsiChar;
 begin
   if (FileExists(GetEnvironmentVariable('windir') + '\Sysnative\osk.exe')) then
     S := GetEnvironmentVariable('windir') + '\Sysnative\osk.exe'
@@ -2819,13 +2818,8 @@ begin
     S := GetEnvironmentVariable('windir') + '\system32\osk.exe'
   else
     S := 'osk.exe';
-  try
-    A := AllocMem(Length(S) + 1);
-    StrPCopy(A, S);
-    WinExec(A, SW_SHOWNORMAL);
-  finally
-    FreeMem(A)
-  end;
+
+  ShellExecute(Self.Handle, nil, PChar(S), nil, nil, SW_SHOWNORMAL);
 end;
 
 procedure TRestMainForm.actKeyBoardUpdate(Sender: TObject);

@@ -37,20 +37,19 @@ uses
 
 procedure TDevideForm.edtNumberKeyPress(Sender: TObject; var Key: Char);
 var
-  d: Double;
+  D: Double;
 begin
   if (Key = '.') or (Key = ',') then
     Key := SysUtils.DecimalSeparator;
   if Key <> #8 then
   begin
-    if not TryStrToFloat(edtNumber.Text+Key, D) then
+    if not TryStrToFloat(edtNumber.Text + Key, D) then
     begin
       Key := #0;
       Beep;
     end;
   end;
   inherited;
-
 end;
 
 procedure TDevideForm.FormCreate(Sender: TObject);
