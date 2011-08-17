@@ -2,7 +2,7 @@ inherited DevideForm: TDevideForm
   Caption = 'DevideForm'
   OldCreateOrder = True
   ExplicitWidth = 456
-  ExplicitHeight = 534
+  ExplicitHeight = 531
   PixelsPerInch = 96
   TextHeight = 13
   inherited pnlMain: TAdvPanel
@@ -174,18 +174,14 @@ inherited DevideForm: TDevideForm
     end
     inherited btnOK: TAdvSmoothButton
       Height = 54
-      Appearance.PictureAlignment = taCenter
       Appearance.Font.Height = -11
       Appearance.Font.Name = 'Tahoma'
-      Appearance.Layout = blPictureTop
       ExplicitHeight = 54
     end
     inherited btnCancel: TAdvSmoothButton
       Height = 54
-      Appearance.PictureAlignment = taCenter
       Appearance.Font.Height = -11
       Appearance.Font.Name = 'Tahoma'
-      Appearance.Layout = blPictureTop
       ExplicitHeight = 54
     end
   end

@@ -10,6 +10,7 @@ uses
 type
   TDevideForm = class(TOrderNumber)
     procedure FormCreate(Sender: TObject);
+    procedure edtNumberKeyPress(Sender: TObject; var Key: Char);
   private
     FCanDevided: Boolean;
     function GetLabelCaption: String;
@@ -33,6 +34,24 @@ uses
   FrontData_Unit;
 
 { TDevideForm }
+
+procedure TDevideForm.edtNumberKeyPress(Sender: TObject; var Key: Char);
+var
+  d: Double;
+begin
+  if (Key = '.') or (Key = ',') then
+    Key := SysUtils.DecimalSeparator;
+  if Key <> #8 then
+  begin
+    if not TryStrToFloat(edtNumber.Text+Key, D) then
+    begin
+      Key := #0;
+      Beep;
+    end;
+  end;
+  inherited;
+
+end;
 
 procedure TDevideForm.FormCreate(Sender: TObject);
 begin
