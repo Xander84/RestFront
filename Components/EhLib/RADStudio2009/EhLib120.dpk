@@ -34,7 +34,7 @@ requires
 
 contains
   DBSumLst in '..\Common\DBSumLst.pas',
-  PrnDbgEh in '..\Common\PrnDbgEh.pas',
+  PrnDbgeh in '..\Common\PrnDbgEh.pas',
   PrnDGDlg in '..\Common\PrnDGDlg.pas' {fPrnDBGridEHSetupDialog},
   PrntsEh in '..\Common\PrntsEh.pas',
   PrvFrmEh in '..\Common\PrvFrmEh.pas' {PreviewFormEh},

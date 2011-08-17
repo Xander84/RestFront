@@ -23,13 +23,10 @@
 			<Base>true</Base>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Base)'!=''">
-			<DCC_DcuOutput>d:\Front\DCU\</DCC_DcuOutput>
-			<DCC_DcpOutput>d:\Front\DCU\</DCC_DcpOutput>
-			<DCC_BplOutput>d:\Front\DCU\</DCC_BplOutput>
 			<DCC_UnitSearchPath>D:\Front\Source\Components\EhLib\Common;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
 			<DCC_CBuilderOutput>All</DCC_CBuilderOutput>
 			<DCC_ImageBase>00400000</DCC_ImageBase>
-			<DCC_DependencyCheckOutputName>..\..\..\..\DCU\DclEhLib120.bpl</DCC_DependencyCheckOutputName>
+			<DCC_DependencyCheckOutputName>C:\Users\Public\Documents\RAD Studio\7.0\Bpl\DclEhLib120.bpl</DCC_DependencyCheckOutputName>
 			<DCC_Description>EhLib 4.5 Components</DCC_Description>
 			<DesignOnlyPackage>true</DesignOnlyPackage>
 			<GenDll>true</GenDll>
@@ -52,6 +49,7 @@
 				<MainSource>MainSource</MainSource>
 			</DelphiCompile>
 			<DCCReference Include="EhLibReg.dcr"/>
+			<DCCReference Include="EhLib120.dcp"/>
 			<DCCReference Include="rtl.dcp"/>
 			<DCCReference Include="designide.dcp"/>
 			<DCCReference Include="dcldb.dcp"/>

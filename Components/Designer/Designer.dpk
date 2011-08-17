@@ -25,19 +25,8 @@ package Designer;
 {$IMPLICITBUILD ON}
 
 requires
-  vcl,
   rtl,
-  vclimg,
-  dbrtl,
-  dsnap,
-  vcldb,
-  tmsd2010,
-  bdertl,
-  tmsexd2010,
-  kbmMemDesD2010Std,
-  DclEhLib120,
-  PngComponents,
-  ibxpress;
+  vcl;
 
 contains
   dxfDesigner in 'dxfDesigner.pas';

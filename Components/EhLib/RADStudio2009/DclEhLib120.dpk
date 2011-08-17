@@ -28,6 +28,7 @@ package DclEhLib120;
 {$IMPLICITBUILD ON}
 
 requires
+  EhLib120,
   rtl,
   designide,
   dcldb;

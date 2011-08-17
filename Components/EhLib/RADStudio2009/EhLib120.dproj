@@ -23,12 +23,9 @@
 			<Base>true</Base>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Base)'!=''">
-			<DCC_BplOutput>d:\Front\DCU\</DCC_BplOutput>
-			<DCC_DcuOutput>d:\Front\DCU\</DCC_DcuOutput>
-			<DCC_DcpOutput>d:\Front\DCU\</DCC_DcpOutput>
 			<DCC_DebugInformation>false</DCC_DebugInformation>
 			<DCC_CBuilderOutput>All</DCC_CBuilderOutput>
-			<DCC_DependencyCheckOutputName>..\..\..\..\DCU\EhLib120.bpl</DCC_DependencyCheckOutputName>
+			<DCC_DependencyCheckOutputName>C:\Users\Public\Documents\RAD Studio\7.0\Bpl\EhLib120.bpl</DCC_DependencyCheckOutputName>
 			<DCC_ImageBase>00400000</DCC_ImageBase>
 			<DesignOnlyPackage>false</DesignOnlyPackage>
 			<DCC_LocalDebugSymbols>false</DCC_LocalDebugSymbols>
@@ -152,6 +149,9 @@
 					<Source>
 						<Source Name="MainSource">EhLib120.dpk</Source>
 					</Source>
+					<Language>
+						<Language Name="RootDir">D:\Front\Source\Components\EhLib\RADStudio2009\</Language>
+					</Language>
 				</Delphi.Personality>
 			</BorlandProject>
 			<ProjectFileVersion>12</ProjectFileVersion>
