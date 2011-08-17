@@ -57,9 +57,9 @@ object EditReport: TEditReport
     StatusBar.GradientDirection = gdVertical
     Styler = FrontData.FrontPanelStyler
     FullHeight = 0
-    object btnOK: TAdvSmoothButton
-      Left = 328
-      Top = 10
+    object btnExit: TAdvSmoothButton
+      Left = 327
+      Top = 444
       Width = 107
       Height = 37
       Appearance.Font.Charset = DEFAULT_CHARSET
@@ -81,16 +81,16 @@ object EditReport: TEditReport
       Status.Appearance.Font.Name = 'Tahoma'
       Status.Appearance.Font.Style = []
       Bevel = False
-      Caption = #1054#1050
+      Caption = #1042#1099#1093#1086#1076
       Color = 15195349
       ParentFont = False
       TabOrder = 0
       Version = '1.6.9.0'
-      OnClick = btnOKClick
+      OnClick = btnExitClick
     end
     object btnEdit: TAdvSmoothButton
-      Left = 328
-      Top = 59
+      Left = 327
+      Top = 8
       Width = 107
       Height = 37
       Appearance.Font.Charset = DEFAULT_CHARSET

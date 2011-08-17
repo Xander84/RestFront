@@ -4,13 +4,9 @@ inherited EditUsers: TEditUsers
   TextHeight = 13
   inherited pnlMain: TAdvPanel
     FullHeight = 0
-    inherited btnEdit: TAdvSmoothButton
-      Top = 102
-      ExplicitTop = 102
-    end
     object btnAddUser: TAdvSmoothButton
       Left = 327
-      Top = 59
+      Top = 51
       Width = 107
       Height = 37
       Appearance.Font.Charset = DEFAULT_CHARSET

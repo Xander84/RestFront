@@ -4,16 +4,9 @@ inherited DiscountList: TDiscountList
   TextHeight = 13
   inherited pnlMain: TAdvPanel
     FullHeight = 0
-    inherited btnOK: TAdvSmoothButton
-      Caption = #1042#1099#1073#1088#1072#1090#1100
-    end
     inherited btnEdit: TAdvSmoothButton
-      Left = 327
-      Top = 53
       Appearance.Font.Height = -13
-      Caption = #1054#1090#1084#1077#1085#1072
-      ExplicitLeft = 327
-      ExplicitTop = 53
+      Caption = #1042#1099#1073#1088#1072#1090#1100
     end
     inherited DBGrLeft: TDBAdvGrid
       ColCount = 3

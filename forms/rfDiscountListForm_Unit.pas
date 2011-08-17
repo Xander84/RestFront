@@ -11,9 +11,9 @@ type
   TDiscountList = class(TEditReport)
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
-    procedure btnOKClick(Sender: TObject);
     procedure btnEditClick(Sender: TObject);
     procedure DBGrLeftDblClick(Sender: TObject);
+    procedure btnExitClick(Sender: TObject);
   private
     FCardCode: String;
   public
@@ -29,14 +29,14 @@ implementation
 
 procedure TDiscountList.btnEditClick(Sender: TObject);
 begin
-  ModalResult := mrCancel;
-end;
-
-procedure TDiscountList.btnOKClick(Sender: TObject);
-begin
   if not MemTable.IsEmpty then
     FCardCode := MemTable.FieldByName('USR$CODE').AsString;
   ModalResult := mrOk;
+end;
+
+procedure TDiscountList.btnExitClick(Sender: TObject);
+begin
+  ModalResult := mrCancel;
 end;
 
 procedure TDiscountList.DBGrLeftDblClick(Sender: TObject);

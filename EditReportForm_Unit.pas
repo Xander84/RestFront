@@ -13,14 +13,14 @@ type
     pnlMain: TAdvPanel;
     MemTable: TkbmMemTable;
     dsMain: TDataSource;
-    btnOK: TAdvSmoothButton;
+    btnExit: TAdvSmoothButton;
     btnEdit: TAdvSmoothButton;
     DBGrLeft: TDBAdvGrid;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure btnEditClick(Sender: TObject);
-    procedure btnOKClick(Sender: TObject);
+    procedure btnExitClick(Sender: TObject);
     procedure DBGrLeftDblClick(Sender: TObject);
   private
     FReport: TRestReport;
@@ -68,7 +68,7 @@ begin
     MemTable.FieldByName('USR$TYPE').AsInteger);
 end;
 
-procedure TEditReport.btnOKClick(Sender: TObject);
+procedure TEditReport.btnExitClick(Sender: TObject);
 begin
   ModalResult := mrOK;
 end;
