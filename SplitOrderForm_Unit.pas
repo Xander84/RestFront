@@ -168,6 +168,9 @@ begin
                 FRightModificationDataSet.Next;
               end;
             end;
+
+            if SourceDS.FieldByName('usr$quantity').AsCurrency = 0 then
+              SourceDS.Delete;
           end;
         end;
       finally
