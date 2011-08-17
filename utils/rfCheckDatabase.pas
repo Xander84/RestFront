@@ -10,6 +10,8 @@ function AddVersionInfo(FSQL: TIBSQL; ID: Integer; ReleaseDate: TDate;
 function Check1(FSQL: TIBSQL): Integer;
 function Check2(FSQL: TIBSQL): Boolean;
 
+  function Check2(ibsql: TIBSQL): Boolean;
+  function Check3(ibsql: TIBSQL): Boolean;
 implementation
 
 uses SysUtils;
@@ -32,14 +34,21 @@ begin
   FTransaction.Params.Add('nowait');
   FTransaction.Params.Add('write');
 
-  FSQL := TIBSQL.Create(nil);
-  FSQL.Transaction := FTransaction;
-  try
-    DBVersion := Check1(FSQL);
-    if DBVersion >= 0 then
-    begin
-      if DBVersion < 2 then
-        Result := Check2(FSQL);
+    ibsql := TIBSQL.Create(nil);
+    ibsql.Transaction := tr;
+    try
+      DBVersion := Check1(ibsql);
+      if DBVersion >= 0 then
+      begin
+        if DBVersion < 2 then
+          Result := Check2(ibsql);
+        if DBVersion < 3 then
+          Result := Check3(ibsql);
+      end;
+    finally
+      ibsql.Close;
+      ibsql.Free;
+      tr.Free
     end;
   finally
     FSQL.Close;
@@ -67,6 +76,34 @@ begin
   end;
 end;
 
+  function Check1(ibsql: TIbSQL): Integer;
+  begin
+    Result := -1;
+    ibsql.Transaction.StartTransaction;
+    try
+      ibsql.SQL.Text :=
+        'SELECT r.rdb$relation_name FROM rdb$relations r ' +
+        ' WHERE ' +
+        ' r.rdb$relation_name = ''RF$VERSIONINFO''' ;
+      ibsql.ExecQuery;
+      if not ibsql.EOF then
+      begin
+        IBSQL.Close;
+        IBSQL.SQL.Text :=
+          ' SELECT max(id) ID FROM RF$VERSIONINFO ';
+        IBSQL.ExecQuery;
+        Result := ibsql.FieldByName('ID').AsInteger;
+      end
+      else
+      begin
+        try
+          IBSQL.Close;
+          IBSQL.SQL.Text :=
+            ' CREATE TABLE RF$VERSIONINFO(    ' +
+            '  ID             DINTKEY,        ' +
+            '  RELEASEDATE    DDATE NOT NULL, ' +
+            '  COMMENT        DTEXT254)       ';
+          IBSQL.ExecQuery;
 function Check1(FSQL: TIBSQL): Integer;
 begin
   Result := -1;
@@ -93,6 +130,7 @@ begin
           '  COMMENT        DTEXT254)       ';
         FSQL.ExecQuery;
 
+          IBSQL.Close;
         FSQL.Close;
         FSQL.SQL.Text :=
           ' ALTER TABLE RF$VERSIONINFO ADD CONSTRAINT RF_PK_VERSIONINFO_ID PRIMARY KEY (ID) ';
@@ -154,6 +192,29 @@ begin
   finally
     FSQL.Transaction.Commit;
   end;
-end;
+<<<<<<< .mine  function Check3(ibsql: TIbSQL): Boolean;
+  begin
+    Result := False;
+    ibsql.Transaction.StartTransaction;
+    try
+      try
+        ibsql.SQL.Text :=
+          ' update RDB$RELATION_FIELDS set RDB$FIELD_SOURCE = ''DTEXT20''' +
+          ' where (RDB$FIELD_NAME = ''USR$ALIAS'') and ' +
+          '   (RDB$RELATION_NAME = ''USR$MN_KINDTYPE'')';
+        ibsql.ExecQuery;
+=======end;
+>>>>>>> .theirs
+        Result := AddVersionInfo(ibsql, 3, EncodeDate(2011, 08, 16), 'Удлинили поле Alias в типах оплаты ')
+
+      except
+        raise;
+      end;
+
+    finally
+      ibsql.Transaction.Commit;
+    end;
+
+  end;
 
 end.
