@@ -18,6 +18,7 @@ object RestMainForm: TRestMainForm
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnKeyDown = FormKeyDown
+  OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
   object pnlMain: TPanel
@@ -1961,7 +1962,6 @@ object RestMainForm: TRestMainForm
                       Version = '1.6.9.0'
                     end
                     object btnFindGood: TAdvSmoothButton
-                      AlignWithMargins = True
                       Left = 0
                       Top = 126
                       Width = 44
@@ -2043,6 +2043,8 @@ object RestMainForm: TRestMainForm
                     StatusBar.GradientDirection = gdVertical
                     Styler = FrontData.FrontPanelStyler
                     Touch.GestureManager = gmFront
+                    ExplicitLeft = -6
+                    ExplicitTop = -6
                     FullHeight = 0
                   end
                 end

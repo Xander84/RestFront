@@ -336,6 +336,7 @@ type
     procedure FormActivate(Sender: TObject);
     procedure actFindGoodExecute(Sender: TObject);
     procedure actFindGoodUpdate(Sender: TObject);
+    procedure FormShow(Sender: TObject);
   private
     // Компонент обращения к БД
     // Объявлен в базовом классе форм TBaseFrontForm
@@ -856,6 +857,21 @@ begin
     edPassword.SetFocus;
     PostMessage(edPassword.Handle, WM_KEYUP, Key, 0);
   end;
+end;
+
+procedure TRestMainForm.FormShow(Sender: TObject);
+var
+  HfPnl: Integer;
+  HfBtn: Integer;
+begin
+  inherited;
+  HfPnl := Panel6.Height div 2;
+  HfBtn := btnFindGood.Height div 2;
+
+  btnFindGood.Top := HfPnl - HfBtn;
+  btnGoodUp.Height := HfPnl - 12 - HfBtn;
+  btnGoodDown.Top := HfPnl + HfBtn + 4;
+  btnGoodDown.Height := btnGoodUp.Height;
 end;
 
 procedure TRestMainForm.edPasswordKeyPress(Sender: TObject; var Key: Char);
