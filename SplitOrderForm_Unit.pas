@@ -49,6 +49,8 @@ type
     FLeftMasterDataSource: TDataSource;
     FRightMasterDataSource: TDataSource;
 
+    FGoodDataSet: TkbmMemTable;
+
     FOrderKey: Integer;
     FMainOrderKey: Integer;
     FManagerKey: Integer;
@@ -78,24 +80,47 @@ procedure TSplitOrder.CopyDS(const SourceDS, DestDS: TkbmMemTable;
   Parent: Integer; All: Boolean);
 var
   I: Integer;
-  Form: TDevideForm;
+  FForm: TDevideForm;
   Quantity: Currency;
+  GoodKey: Integer;
+  FCanDevide: Boolean;
 begin
   if not SourceDS.IsEmpty then
   begin
     FFrontBase.SaveOrderLog(FFrontBase.ContactKey, ManagerKey,
       Parent, SourceDS.FieldByName('ID').AsInteger, 2);
 
-    if (SourceDS.FieldByName('usr$quantity').AsCurrency > 1) and (not All) then
+    GoodKey := SourceDS.FieldByName('usr$goodkey').AsInteger;
+    if not FGoodDataSet.Locate('ID', GoodKey, []) then
     begin
-      Form := TDevideForm.Create(nil);
+      FFrontBase.GetGoodByID(FGoodDataSet, GoodKey);
+      if FGoodDataSet.Locate('ID', GoodKey, []) then
+        FCanDevide := (FGoodDataSet.FieldByName('BEDIVIDE').AsInteger = 1)
+      else
+        FCanDevide := False;
+    end else
+    begin
+      FCanDevide := (FGoodDataSet.FieldByName('BEDIVIDE').AsInteger = 1);
+    end;
+
+    {
+      ѕравила переноса
+      1.≈сли товар не может быть дробным и кол-во больше 1 => то форма ввода кол-ва,
+        иначе переносим полностью
+      2.≈сли товар может быть дробным и кол-во больше либо равно 1 => то форма ввода кол-ва
+      3.≈сли товар может быть дробным и кол-во меньше => переносим полностью
+    }
+    if ((SourceDS.FieldByName('usr$quantity').AsCurrency > 1) or (FCanDevide and
+      (SourceDS.FieldByName('usr$quantity').AsCurrency >= 1))) and (not All) then
+    begin
+      FForm := TDevideForm.Create(nil);
       try
-        Form.LabelCaption := ' оличество';
-        Form.ShowModal;
-        if Form.ModalResult = mrOK then
+        FForm.LabelCaption := ' оличество';
+        FForm.CanDevided := FCanDevide;
+        FForm.ShowModal;
+        if FForm.ModalResult = mrOK then
         begin
-{ TODO : провер€ть на дробность товара }
-          Quantity := StrToCurr(Form.Number);
+          Quantity := StrToCurr(FForm.Number);
           if (Quantity > 0) and (SourceDS.FieldByName('usr$quantity').AsCurrency >= Quantity) then
           begin
             SourceDS.Edit;
@@ -146,7 +171,7 @@ begin
           end;
         end;
       finally
-        Form.Free;
+        FForm.Free;
       end;
     end else
     begin
@@ -187,7 +212,6 @@ begin
           FRightModificationDataSet.Next;
         end;
       end;
-
       SourceDS.Delete;
     end;  
   end;
@@ -231,6 +255,19 @@ begin
   dsLeft.DataSet := FLeftDocLine;
   dsRight.DataSet := FRightDocLine;
 
+  FGoodDataSet := TkbmMemTable.Create(nil);
+  FGoodDataSet.FieldDefs.Add('ID', ftInteger, 0);
+  FGoodDataSet.FieldDefs.Add('NAME', ftString, 60);
+  FGoodDataSet.FieldDefs.Add('ALIAS', ftString, 16);
+  FGoodDataSet.FieldDefs.Add('COST', ftCurrency, 0);
+  FGoodDataSet.FieldDefs.Add('MODIFYGROUPKEY', ftInteger, 0);
+  FGoodDataSet.FieldDefs.Add('ISNEEDMODIFY', ftInteger, 0);
+  FGoodDataSet.FieldDefs.Add('BEDIVIDE', ftInteger, 0);
+  FGoodDataSet.FieldDefs.Add('PRNGROUPKEY', ftInteger, 0);
+  FGoodDataSet.FieldDefs.Add('NOPRINT', ftInteger, 0);
+  FGoodDataSet.CreateTable;
+  FGoodDataSet.Open;
+
   pnlLeft.Width := (Width div 2) - 50;
   pnlRight.Width := (Width div 2) - 50;
 
@@ -253,6 +290,7 @@ begin
   FLeftMasterDataSource.Free;
   FRightModificationDataSet.Free;
   FRightMasterDataSource.Free;
+  FGoodDataSet.Free;
 end;
 
 procedure TSplitOrder.FormShow(Sender: TObject);
@@ -414,9 +452,9 @@ begin
 end;
 
 procedure TSplitOrder.RefreshDataSets;
-var
+{var
   FOrderKey: Integer;
-  FMainOrderKey: Integer;
+  FMainOrderKey: Integer; }
 begin
 //  FFrontBase.CreateNewOrder(FLeftDoc, FLeftDocLine, FLeftModificationDataSet, FMainOrderKey);
 //  FFrontBase.CreateNewOrder(FRightDoc, FRightDocLine, FRightModificationDataSet, FOrderKey);

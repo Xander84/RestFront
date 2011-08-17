@@ -71,7 +71,9 @@ procedure TDevideForm.SetCanDevided(const Value: Boolean);
 begin
   FCanDevided := Value;
   if not Value then
-    TouchKeyBoard.Keys[9].Caption := '';
+    TouchKeyBoard.Keys[9].Caption := ''
+  else
+    TouchKeyBoard.Keys[9].Caption := FFormatSettings.DecimalSeparator;
 end;
 
 procedure TDevideForm.SetLabelCaption(const Value: String);

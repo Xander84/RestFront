@@ -4057,7 +4057,7 @@ object RestMainForm: TRestMainForm
             Status.Appearance.Font.Name = 'Tahoma'
             Status.Appearance.Font.Style = []
             ParentFont = False
-            Action = actRervTable
+            Action = actReservTable
             Align = alTop
             TabOrder = 9
           end
@@ -4895,11 +4895,11 @@ object RestMainForm: TRestMainForm
       OnExecute = actReturnCheckExecute
       OnUpdate = actReturnCheckUpdate
     end
-    object actRervTable: TAction
+    object actReservTable: TAction
       Category = 'Hall'
       Caption = #1041#1088#1086#1085#1080#1088#1086#1074#1072#1085#1080#1077' '#1089#1090#1086#1083#1072
-      OnExecute = actRervTableExecute
-      OnUpdate = actRervTableUpdate
+      OnExecute = actReservTableExecute
+      OnUpdate = actReservTableUpdate
     end
     object actChangeDocNumber: TAction
       Category = 'menu'

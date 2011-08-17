@@ -231,7 +231,7 @@ type
     actEditGuestCount: TAction;
     btnReturnCheck: TAdvSmoothButton;
     actReturnCheck: TAction;
-    actRervTable: TAction;
+    actReservTable: TAction;
     btnReservationTable: TAdvSmoothToggleButton;
     btnChangeDocNumber: TAdvSmoothToggleButton;
     actChangeDocNumber: TAction;
@@ -329,8 +329,8 @@ type
     procedure actEditGuestCountUpdate(Sender: TObject);
     procedure actReturnCheckExecute(Sender: TObject);
     procedure actReturnCheckUpdate(Sender: TObject);
-    procedure actRervTableExecute(Sender: TObject);
-    procedure actRervTableUpdate(Sender: TObject);
+    procedure actReservTableExecute(Sender: TObject);
+    procedure actReservTableUpdate(Sender: TObject);
     procedure actChangeDocNumberUpdate(Sender: TObject);
     procedure actKeyBoardUpdate(Sender: TObject);
     procedure FormActivate(Sender: TObject);
@@ -968,7 +968,6 @@ begin
   FModificationDataSet.MasterFields := 'LINEKEY';
   FModificationDataSet.DetailFields := 'MASTERKEY';
   FModificationDataSet.AfterPost := OnAfterPost;
-  /// !!!!
   FModificationDataSet.Open;
 end;
 
@@ -1712,6 +1711,7 @@ begin
       end;
     end;
     UseReservation := False;
+    Reservation := nil;
     //1. ѕровер€ем, есть ли бронь в на данном столе
     if Table.ReservList.Count > 0 then
     begin
@@ -1767,7 +1767,7 @@ begin
         FHeaderTable.FieldByName('USR$TABLEKEY').AsInteger := Table.ID;
       FHeaderTable.FieldByName('USR$COMPUTERNAME').AsString := FFrontBase.ComputerName;
       FHeaderTable.FieldByName('usr$respkey').AsInteger := FFrontBase.ContactKey;
-      if UseReservation then
+      if UseReservation and Assigned(Reservation) then
       begin
         FHeaderTable.FieldByName('USR$RESERVKEY').AsInteger := Reservation.ID;
         FHeaderTable.FieldByName('USR$AVANSSUM').AsCurrency := Reservation.AvansSum;
@@ -1775,7 +1775,7 @@ begin
       FHeaderTable.Post;
 
       //занесЄм товары из предварительного заказа
-      if UseReservation and (Reservation.OrderKey > 0) then
+      if UseReservation and Assigned(Reservation) and (Reservation.OrderKey > 0) then
       begin
         FFrontBase.FillGoodsByReserv(FLineTable, FGoodDataSet, Reservation.OrderKey);
       end;
@@ -3798,6 +3798,7 @@ begin
           begin
             FGuestForm := TGuestForm.Create(nil);
             try
+              FGuestCount := 1;
               FGuestForm.FrontBase := FFrontBase;
               FGuestForm.ShowModal;
               if FGuestForm.ModalResult = mrOK then
@@ -5318,17 +5319,17 @@ begin
   actRemoveQuantity.Enabled := FHeaderTable.FieldByName('usr$timecloseorder').IsNull and (not FViewMode) and (not IsActionRun);
 end;
 
-procedure TRestMainForm.actRervTableExecute(Sender: TObject);
+procedure TRestMainForm.actReservTableExecute(Sender: TObject);
 begin
   inherited;
   //
 end;
 
-procedure TRestMainForm.actRervTableUpdate(Sender: TObject);
+procedure TRestMainForm.actReservTableUpdate(Sender: TObject);
 begin
-  actRervTable.Enabled := ((FFrontBase.UserKey and FFrontBase.Options.ManagerGroupMask) <> 0)
+  actReservTable.Enabled := ((FFrontBase.UserKey and FFrontBase.Options.ManagerGroupMask) <> 0)
     and (not btnSwapTable.Down);
-  btnReservationTable.Enabled := actRervTable.Enabled;
+  btnReservationTable.Enabled := actReservTable.Enabled;
 end;
 
 procedure TRestMainForm.actDeletePositionUpdate(Sender: TObject);
