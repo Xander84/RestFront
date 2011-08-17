@@ -2809,11 +2809,23 @@ begin
 end;
 
 procedure TRestMainForm.actKeyBoardExecute(Sender: TObject);
+var
+  S: String;
+  A: PAnsiChar;
 begin
-  // TouchKeyBoard.Show;
-  // TouchKeyBoard.Keyboard.SetComponentStyle(GetFrontStyle);
-
-  WinExec('osk.exe', 1);
+  if (FileExists(GetEnvironmentVariable('windir') + '\Sysnative\osk.exe')) then
+    S := GetEnvironmentVariable('windir') + '\Sysnative\osk.exe'
+  else if (FileExists(GetEnvironmentVariable('windir') + '\system32\osk.exe')) then
+    S := GetEnvironmentVariable('windir') + '\system32\osk.exe'
+  else
+    S := 'osk.exe';
+  try
+    A := AllocMem(Length(S) + 1);
+    StrPCopy(A, S);
+    WinExec(A, SW_SHOWNORMAL);
+  finally
+    FreeMem(A)
+  end;
 end;
 
 procedure TRestMainForm.actKeyBoardUpdate(Sender: TObject);
