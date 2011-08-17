@@ -9,7 +9,7 @@ function AddVersionInfo(FSQL: TIBSQL; ID: Integer; ReleaseDate: TDate;
   Comment: String): Boolean;
 function Check1(FSQL: TIBSQL): Integer;
 function Check2(FSQL: TIBSQL): Boolean;
-function Check3(ibsql: TIBSQL): Boolean;
+function Check3(FSQL: TIBSQL): Boolean;
 
 implementation
 
@@ -47,14 +47,14 @@ begin
   finally
     FSQL.Close;
     FSQL.Free;
-    FTransaction.Free;
+    FTransaction.Free
   end;
 end;
 
 function AddVersionInfo(FSQL: TIBSQL; ID: Integer; ReleaseDate: TDate;
   Comment: String): Boolean;
 begin
-  Result := True;
+  Result := False;
   try
     FSQL.Close;
     FSQL.SQL.Text :=
@@ -64,8 +64,8 @@ begin
     Delete(Comment, 40, Length(Comment) - 40);
     FSQL.ParamByName('COMMENT').AsString := Comment;
     FSQL.ExecQuery;
+    Result := True;
   except
-    Result := False;
     raise ;
   end;
 end;
@@ -95,7 +95,6 @@ begin
           '  RELEASEDATE    DDATE NOT NULL, ' +
           '  COMMENT        DTEXT254)       ';
         FSQL.ExecQuery;
-
         FSQL.Close;
         FSQL.SQL.Text :=
           ' ALTER TABLE RF$VERSIONINFO ADD CONSTRAINT RF_PK_VERSIONINFO_ID PRIMARY KEY (ID) ';
@@ -133,49 +132,49 @@ begin
       FSQL.ExecQuery;
 
       FSQL.SQL.Text :=
-        ' create procedure RF$EXT_GETPAYTYPELIST(LogicDate DATE, CurrentDateTime TIMESTAMP, PayTypeKey INTEGER) '#10#13 +
-        ' returns (id INTEGER, USR$NAME dtext60, USR$NOFISCAL DBOOLEAN ) '#10#13 +
-        ' as '#10#13 +
-        ' begin '#10#13 +
-        '   /* Procedure Text */ '#10#13 +
-        '   suspend; '#10#13 +
+        ' create procedure RF$EXT_GETPAYTYPELIST(LogicDate DATE, CurrentDateTime TIMESTAMP, PayTypeKey INTEGER) '#10#13
+        +
+        ' returns (id INTEGER, USR$NAME dtext60, USR$NOFISCAL DBOOLEAN ) ' + #10#13 +
+        ' as ' + #10#13 +
+        ' begin ' + #10#13 +
+        '   /* Procedure Text */ ' + #10#13 +
+        '   suspend; ' + #10#13 +
         ' end ';
       FSQL.ExecQuery;
 
       FSQL.SQL.Text :=
-        ' create procedure RF$EXT_SAVEORDER(EXTKEY INTEGER, LogicDate DATE, CurrentDateTime TIMESTAMP, PAYSUM NUMERIC(15,4)) '#10#13 +
-        ' as '#10#13 +
-        ' begin '#10#13 +
+        ' create procedure RF$EXT_SAVEORDER(EXTKEY INTEGER, LogicDate DATE, CurrentDateTime TIMESTAMP, PAYSUM NUMERIC(15,4)) ' + #10#13 +
+        ' as '+ #10#13 +
+        ' begin ' + #10#13 +
         ' end  ';
       FSQL.ExecQuery;
 
       Result := AddVersionInfo(FSQL, 2, EncodeDate(2011, 08, 11),
-        'Создали структуру для связи с внешней БД ')
-    except
-      raise;
+        'Создали структуру для связи с внешней БД ') except raise ;
     end;
   finally
     FSQL.Transaction.Commit;
   end;
 end;
 
-function Check3(ibsql: TIbSQL): Boolean;
-  begin
-    Result := False;
-    ibsql.Transaction.StartTransaction;
+function Check3(FSQL: TIBSQL): Boolean;
+begin
+  Result := False;
+  FSQL.Transaction.StartTransaction;
+  try
     try
-      try
-        ibsql.SQL.Text :=
-          ' ALTER TABLE USR$MN_KINDTYPE ' +
-          ' ALTER COLUMN USR$ALIAS TYPE DTEXT20 ';
-        ibsql.ExecQuery;
-
-        Result := AddVersionInfo(ibsql, 3, EncodeDate(2011, 08, 16), 'Удлинили поле Alias в типах оплаты ')
-      except
-        raise;
-      end;
-    finally
-      ibsql.Transaction.Commit;
+      FSQL.SQL.Text :=
+        ' update RDB$RELATION_FIELDS set RDB$FIELD_SOURCE = ''DTEXT20''' +
+        ' where (RDB$FIELD_NAME = ''USR$ALIAS'') and ' +
+        '   (RDB$RELATION_NAME = ''USR$MN_KINDTYPE'')';
+      FSQL.ExecQuery;
+      Result := AddVersionInfo(FSQL, 3, EncodeDate(2011, 08, 16),
+        'Удлинили поле Alias в типах оплаты ') except raise ;
     end;
+  finally
+    FSQL.Transaction.Commit;
   end;
+
+end;
+
 end.
