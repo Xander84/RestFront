@@ -40,7 +40,7 @@ var
   D: Double;
 begin
   if (Key = '.') or (Key = ',') then
-    Key := SysUtils.DecimalSeparator;
+    Key := DecimalSeparator;
   if Key <> #8 then
   begin
     if not TryStrToFloat(edtNumber.Text + Key, D) then
@@ -72,7 +72,7 @@ begin
   if not Value then
     TouchKeyBoard.Keys[9].Caption := ''
   else
-    TouchKeyBoard.Keys[9].Caption := FFormatSettings.DecimalSeparator;
+    TouchKeyBoard.Keys[9].Caption := DecimalSeparator;
 end;
 
 procedure TDevideForm.SetLabelCaption(const Value: String);

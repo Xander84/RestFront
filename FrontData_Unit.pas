@@ -75,7 +75,6 @@ const
 
 var
   FrontData: TFrontData;
-  FFormatSettings: TFormatSettings;
   FFrontStyle: TTMSStyle;
   cn_Height: Integer;
   cn_Width: Integer;
@@ -472,7 +471,6 @@ end;
 
 initialization
   FFrontStyle := tsOffice2003Blue;
-  GetLocaleFormatSettings(LOCALE_SYSTEM_DEFAULT, FFormatSettings);
   InitThemeLibrary;
 
 finalization

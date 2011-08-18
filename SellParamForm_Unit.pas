@@ -287,7 +287,7 @@ end;
 procedure TSellParamForm.edMainKeyPress(Sender: TObject; var Key: Char);
 begin
   if (Key = 'þ') or (Key = 'Þ') or (Key = 'á') or (Key = 'Á') or (Key = ',') or (Key = '<') then
-    Key := FFormatSettings.DecimalSeparator;
+    Key := DecimalSeparator;
 end;
 
 procedure TSellParamForm.FormCreate(Sender: TObject);

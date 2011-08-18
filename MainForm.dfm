@@ -52,6 +52,9 @@ object RestMainForm: TRestMainForm
         ColorTo = 14986888
         TabColor = clBtnFace
         TabColorTo = clNone
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object mainTouchKeyBoard: TAdvSmoothTouchKeyBoard
           Left = 0
           Top = 472
@@ -1145,6 +1148,9 @@ object RestMainForm: TRestMainForm
         ImageIndex = 1
         TabColor = clBtnFace
         TabColorTo = clNone
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object pnlRight: TAdvPanel
           Left = 609
           Top = 0
@@ -1667,6 +1673,9 @@ object RestMainForm: TRestMainForm
               ColorTo = 14986888
               TabColor = clBtnFace
               TabColorTo = clNone
+              ExplicitTop = 0
+              ExplicitWidth = 0
+              ExplicitHeight = 0
               object btnNewOrder: TAdvSmoothButton
                 Left = 16
                 Top = 1
@@ -2043,8 +2052,6 @@ object RestMainForm: TRestMainForm
                     StatusBar.GradientDirection = gdVertical
                     Styler = FrontData.FrontPanelStyler
                     Touch.GestureManager = gmFront
-                    ExplicitLeft = -6
-                    ExplicitTop = -6
                     FullHeight = 0
                   end
                 end
@@ -2615,6 +2622,9 @@ object RestMainForm: TRestMainForm
               ColorTo = clNone
               TabColor = clBtnFace
               TabColorTo = clNone
+              ExplicitTop = 0
+              ExplicitWidth = 0
+              ExplicitHeight = 0
               object sbTable: TScrollBox
                 Left = 0
                 Top = 0
@@ -2649,6 +2659,9 @@ object RestMainForm: TRestMainForm
         ColorTo = clNone
         TabColor = clBtnFace
         TabColorTo = clNone
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object pnlManagerInfo: TPanel
           Left = 0
           Top = 0
@@ -3076,6 +3089,9 @@ object RestMainForm: TRestMainForm
           ColorTo = clNone
           TabColor = clBtnFace
           TabColorTo = clNone
+          ExplicitTop = 0
+          ExplicitWidth = 0
+          ExplicitHeight = 0
           object btnExitWindows: TAdvSmoothButton
             AlignWithMargins = True
             Left = 3
@@ -3233,6 +3249,9 @@ object RestMainForm: TRestMainForm
           ImageIndex = 1
           TabColor = clBtnFace
           TabColorTo = clNone
+          ExplicitTop = 0
+          ExplicitWidth = 0
+          ExplicitHeight = 0
           object btnAddQuantity: TAdvSmoothButton
             AlignWithMargins = True
             Left = 3
@@ -3689,6 +3708,9 @@ object RestMainForm: TRestMainForm
           ImageIndex = 2
           TabColor = clBtnFace
           TabColorTo = clNone
+          ExplicitTop = 0
+          ExplicitWidth = 0
+          ExplicitHeight = 0
           object btnCashForm: TAdvSmoothButton
             AlignWithMargins = True
             Left = 3
@@ -4114,6 +4136,9 @@ object RestMainForm: TRestMainForm
           ParentFont = False
           TabColor = clBtnFace
           TabColorTo = clNone
+          ExplicitTop = 0
+          ExplicitWidth = 0
+          ExplicitHeight = 0
           object xDateBegin: TDateTimePicker
             AlignWithMargins = True
             Left = 3
@@ -4496,6 +4521,9 @@ object RestMainForm: TRestMainForm
           ColorTo = clNone
           TabColor = clBtnFace
           TabColorTo = clNone
+          ExplicitTop = 0
+          ExplicitWidth = 0
+          ExplicitHeight = 0
           object btnShowKeyboard2: TAdvSmoothButton
             AlignWithMargins = True
             Left = 3

@@ -1,8 +1,6 @@
 inherited DevideForm: TDevideForm
   Caption = 'DevideForm'
   OldCreateOrder = True
-  ExplicitWidth = 456
-  ExplicitHeight = 531
   PixelsPerInch = 96
   TextHeight = 13
   inherited pnlMain: TAdvPanel

@@ -218,7 +218,7 @@ object OrderNumber: TOrderNumber
           SubKeys = <>
         end
         item
-          Caption = ','
+          Caption = '.'
           KeyValue = -1
           ShiftKeyValue = -1
           AltGrKeyValue = -1
@@ -295,6 +295,7 @@ object OrderNumber: TOrderNumber
       Bevel = False
       Caption = #1054#1050
       Color = 15195349
+      DisabledColor = clBlack
       ParentFont = False
       TabOrder = 2
       Version = '1.6.9.0'
@@ -328,6 +329,7 @@ object OrderNumber: TOrderNumber
       Bevel = False
       Caption = #1054#1090#1084#1077#1085#1072
       Color = 15195349
+      DisabledColor = clBlack
       ParentFont = False
       TabOrder = 3
       Version = '1.6.9.0'

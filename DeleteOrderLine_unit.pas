@@ -39,11 +39,11 @@ type
     FQuantity: Currency;
     FDeleteClauseID: Integer;
     //
-    FLastLeftButton          : Integer;
-    FLastTopButton           : Integer;
+    FLastLeftButton: Integer;
+    FLastTopButton: Integer;
     FDeleteClauseButtonNumber: Integer;
     //
-    FButtonList : TObjectList;
+    FButtonList: TObjectList;
     FCanDevide: Boolean;
     FShowKeyBoard: Boolean;
     FKeyBoardWidth: Integer;
@@ -76,7 +76,6 @@ implementation
 
 uses
   TouchMessageBoxForm_Unit;
-
 {$R *.dfm}
 
 procedure TDeleteOrderLine.FormCreate(Sender: TObject);
@@ -92,10 +91,12 @@ begin
       CreateDeleteClauseButtonList;
 
   btnAddQuantity.Picture := FrontData.RestPictureContainer.FindPicture('add');
-  btnRemoveQuantity.Picture := FrontData.RestPictureContainer.FindPicture('delete');
+  btnRemoveQuantity.Picture := FrontData.RestPictureContainer.FindPicture
+    ('delete');
   btnOK.Picture := FrontData.RestPictureContainer.FindPicture('tick');
   btnCancel.Picture := FrontData.RestPictureContainer.FindPicture('cross');
-  btnShowKeyBoard.Picture := FrontData.RestPictureContainer.FindPicture('keyboard');
+  btnShowKeyBoard.Picture := FrontData.RestPictureContainer.FindPicture
+    ('keyboard');
 
   FKeyBoardWidth := TouchKeyBoard.Width;
   ShowKeyBoard := False;
@@ -114,7 +115,7 @@ begin
   if not Value then
     TouchKeyBoard.Keys[9].Caption := ''
   else
-    TouchKeyBoard.Keys[9].Caption := FFormatSettings.DecimalSeparator;
+    TouchKeyBoard.Keys[9].Caption := DecimalSeparator;
 end;
 
 procedure TDeleteOrderLine.SetFrontBase(Value: TFrontBase);
@@ -135,61 +136,34 @@ end;
 procedure TDeleteOrderLine.TouchKeyBoardKeyClick(Sender: TObject;
   Index: Integer);
 var
-{  I: Integer;
-  S: String;  }
-  IncrementedQuantity: Currency;
+  S: String;
+  D: Double;
 begin
-  try
-    with TouchKeyBoard.Keys.Items[Index] do
-    begin
-      if (SpecialKey = skNone) then
-      begin
-        if (Caption > '') then
-        begin
-          if (Caption[1] = '.') or (Caption[1] = ',') then
-          begin
-            lblQuantity.Caption := lblQuantity.Caption + Caption[1];
-          end
-          else
-          begin
-            if lblQuantity.Caption = '0' then
-            begin
-              IncrementedQuantity := StrToCurr(Caption[1])
-            end
-            else
-            begin
-              IncrementedQuantity := StrToCurr(lblQuantity.Caption + Caption[1]);
-            end;
+  S := lblQuantity.Caption;
 
-            if IncrementedQuantity < FQuantity then
-              lblQuantity.Caption := CurrToStr(IncrementedQuantity)
-            else
-              lblQuantity.Caption := CurrToStr(FQuantity);
-          end;
-        end;
-      end else
-      begin
-        lblQuantity.Caption := '0';
-  {      I := Length(lblQuantity.Caption);
-        if I = 1 then
-          lblQuantity.Caption := '0'
-        else if I > 1 then
-        begin
-          S := lblQuantity.Caption;
-          Delete(S, I, 1);
-          lblQuantity.Caption := S;
-        end;   }
-      end;
-    end;
-  except
-    on E: Exception do
-    begin
-      if E is EConvertError then
-        Touch_MessageBox('Внимание', 'Введено неверное число', MB_OK, mtWarning)
-      else
-        Touch_MessageBox('Внимание', 'Ошибка ' + E.Message, MB_OK, mtError);
-      exit;
-    end;
+  if (TouchKeyBoard.Keys.Items[Index].Caption[1] = '.') or
+    (TouchKeyBoard.Keys.Items[Index].Caption[1] = ',') then
+    S := S + DecimalSeparator
+  else if TouchKeyBoard.Keys.Items[Index].SpecialKey = skBackSpace then
+    Delete(S, Length(S), 1)
+  else
+  begin
+    if S = '0' then
+      S := '';
+    S := S + TouchKeyBoard.Keys.Items[Index].Caption[1];
+  end;
+
+  if S = '' then
+    S := '0';
+
+  if not TryStrToFloat(S, D) then
+    Beep
+  else
+  begin
+    if D < FQuantity then
+      lblQuantity.Caption := S
+    else
+      lblQuantity.Caption := CurrToStr(FQuantity);
   end;
 end;
 
@@ -202,7 +176,7 @@ begin
   FCanDevide := False;
 
   FLastLeftButton := 8;
-  FLastTopButton  := 8;
+  FLastTopButton := 8;
   FDeleteClauseButtonNumber := 1;
   FDeleteClauseID := -1;
 
@@ -215,38 +189,38 @@ procedure TDeleteOrderLine.AddDeleteClauseButton;
 var
   FButton: TAdvSmoothToggleButton;
 begin
-  //Создание кнопки
+  // Создание кнопки
   FButton := TAdvSmoothToggleButton.Create(nil);
-//  FButton.AllowAllUp := True;
+  // FButton.AllowAllUp := True;
   FButton.Parent := pnlMain;
   FButton.OnClick := DeleteButtonOnClick;
   FButton.Name := Format('btnDelete%d', [FDeleteClauseButtonNumber]);
   FButton.GroupIndex := 1;
   FButton.Height := 51;
-  FButton.Width  := 145;
+  FButton.Width := 145;
   FButton.Appearance.Font.Name := cn_FontType;
   FButton.Appearance.Font.Size := cn_ButtonFontSize;
   FButton.SetComponentStyle(tsOffice2007Silver);
 
-  //проверяем, есть ли ещё место в ряду
+  // проверяем, есть ли ещё место в ряду
   if (FLastLeftButton + 145) > pnlMain.Width then
   begin
     FLastTopButton := FLastTopButton + 51 + 8;
     FLastLeftButton := 8;
 
     FButton.Left := FLastLeftButton;
-    FButton.Top  := FLastTopButton;
-  end else
+    FButton.Top := FLastTopButton;
+  end
+  else
   begin
     FButton.Left := FLastLeftButton;
-    FButton.Top  := FLastTopButton;
+    FButton.Top := FLastTopButton;
   end;
 
   FButton.Tag := DeleteCauseList.FieldByName('ID').AsInteger;
   FButton.Caption := DeleteCauseList.FieldByName('NAME').AsString;
 
   FLastLeftButton := FLastLeftButton + 145 + 10;
-
 
   FButtonList.Add(FButton);
   Inc(FDeleteClauseButtonNumber);

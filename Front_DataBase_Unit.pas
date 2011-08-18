@@ -8,8 +8,7 @@ uses
   rfOrder_unit, RestTable_Unit;
 
 const
-  MN_OrderXID = 147014509;
-  MN_OrderDBID = 9263644;
+
   cn_StateNothing = 0;
   cn_StateInsert = 1;
   cn_StateUpdate = 2;
@@ -323,6 +322,11 @@ type
     PrinterID: Integer;
   end;
 
+  TFrontConst = record
+    DocumentTypeKey_ZakazRezerv: Integer;
+    DocumentTypeKey_Zakaz: Integer;
+  end;
+
   TFrontBase = class
   private
     FDataBase: TIBDataBase;
@@ -350,7 +354,6 @@ type
     FFiscalLog: Boolean;
     FBaudRate: Integer;
 
-    FOrderTypeKey: Integer;
     FCompanyKey: Integer;
     FCompanyName: String;
     FOptions: TFrontOptions;
@@ -363,6 +366,7 @@ type
     FComputerName: String;
 
     CacheList: TDictionary<String, Integer>;
+    FFrontConst: TFrontConst;
 
     function GetDisplay: TDisplay;
     function GetCashCode: Integer;
@@ -375,6 +379,7 @@ type
 
     function EnsureDBConnection: Boolean;
     function GetComputerName: String;
+    procedure InitFrontConst;
   public
     constructor Create;
     destructor Destroy; override;
@@ -541,6 +546,7 @@ type
     property ReadTransaction: TIBTransaction read GetReadTransaction;
     property DoFiscalLog: Boolean read FFiscalLog;
     property ComputerName: String read GetComputerName;
+    property FrontConst: TFrontConst read FFrontConst;
   end;
 
   procedure GetHeaderTable(var DS: TkbmMemTable);
@@ -675,6 +681,7 @@ begin
     InitDB;
     CheckVersion(FDataBase);
     InitStorage;
+    InitFrontConst;
   except
     raise;
   end;
@@ -974,7 +981,7 @@ begin
 
           InsDoc.ParamByName('ID').AsInteger := MasterID;
           InsDoc.ParamByName('PARENT').AsVariant := '';
-          InsDoc.ParamByName('documenttypekey').AsInteger := FOrderTypeKey;
+          InsDoc.ParamByName('documenttypekey').AsInteger := FrontConst.DocumentTypeKey_Zakaz;
           InsDoc.ParamByName('NUMBER').AsString := HeaderTable.FieldByName('NUMBER').AsString;
           InsDoc.ParamByName('companykey').AsInteger := FCompanyKey;
           InsDoc.ParamByName('creatorkey').AsInteger := FContactKey;
@@ -1027,7 +1034,7 @@ begin
                 LineID := LineTable.FieldByName('ID').AsInteger;
               InsDoc.ParamByName('ID').AsInteger := LineID;
               InsDoc.ParamByName('PARENT').AsInteger := MasterID;
-              InsDoc.ParamByName('documenttypekey').AsInteger := FOrderTypeKey;
+              InsDoc.ParamByName('documenttypekey').AsInteger := FrontConst.DocumentTypeKey_Zakaz;
               InsDoc.ParamByName('NUMBER').AsString := HeaderTable.FieldByName('NUMBER').AsString;
               InsDoc.ParamByName('companykey').AsInteger := FCompanyKey;
               InsDoc.ParamByName('creatorkey').AsInteger := FContactKey;
@@ -1189,7 +1196,6 @@ var
   InsDoc, InsOrder, InsOrderLine: TIBSQL;
   updOrder, updDoc, UpdOrderLine, UpdReserv: TIBSQL;
   MasterID, LineState, LineID: Integer;
-  TypeKey: Integer;
 const
   DocInsert =
     ' insert into gd_document (  ' +
@@ -1299,7 +1305,6 @@ begin
   //0 ничего с данной позицией не делаем
   //1 надо добавить позицию в документ
   //2 делаем update позиций
-  TypeKey := GetIDByRUID(147747477, 1650037404);
 
   InsDoc := TIBSQL.Create(nil);
   InsDoc.Transaction := FCheckTransaction;
@@ -1355,7 +1360,7 @@ begin
 
           InsDoc.ParamByName('ID').AsInteger := MasterID;
           InsDoc.ParamByName('PARENT').AsVariant := '';
-          InsDoc.ParamByName('documenttypekey').AsInteger := TypeKey;
+          InsDoc.ParamByName('documenttypekey').AsInteger := FrontConst.DocumentTypeKey_ZakazRezerv;
           InsDoc.ParamByName('NUMBER').AsString := HeaderTable.FieldByName('NUMBER').AsString;
           InsDoc.ParamByName('companykey').AsInteger := FCompanyKey;
           InsDoc.ParamByName('creatorkey').AsInteger := FContactKey;
@@ -1396,7 +1401,7 @@ begin
                 LineID := LineTable.FieldByName('ID').AsInteger;
               InsDoc.ParamByName('ID').AsInteger := LineID;
               InsDoc.ParamByName('PARENT').AsInteger := MasterID;
-              InsDoc.ParamByName('documenttypekey').AsInteger := TypeKey;
+              InsDoc.ParamByName('documenttypekey').AsInteger := FrontConst.DocumentTypeKey_ZakazRezerv;
               InsDoc.ParamByName('NUMBER').AsString := HeaderTable.FieldByName('NUMBER').AsString;
               InsDoc.ParamByName('companykey').AsInteger := FCompanyKey;
               InsDoc.ParamByName('creatorkey').AsInteger := FContactKey;
@@ -2527,7 +2532,7 @@ begin
       FHeaderQuery.ParamByName('DB').AsDateTime := DateBegin;
       FHeaderQuery.ParamByName('DE').AsDateTime := DateEnd;
       FHeaderQuery.ParamByName('COMPANYKEY').AsInteger := FCompanyKey;
-      FHeaderQuery.ParamByName('doctype').AsInteger := FOrderTypeKey;
+      FHeaderQuery.ParamByName('doctype').AsInteger := FrontConst.DocumentTypeKey_Zakaz;
       FHeaderQuery.Open;
 
       FLineQuery.SQL.Text := LineSQLText;
@@ -2550,7 +2555,7 @@ begin
         HeaderTable.Post;
 
         FLineQuery.ParamByName('PARENT').AsInteger := HeaderTable.FieldByName('ID').AsInteger;
-        FLineQuery.ParamByName('DOCTYPE').AsInteger := FOrderTypeKey;
+        FLineQuery.ParamByName('DOCTYPE').AsInteger := FrontConst.DocumentTypeKey_Zakaz;
         FLineQuery.Open;
         if FFirst then
         begin
@@ -2635,7 +2640,7 @@ begin
       else
         FReadSQL.ParamByName('RespKey').AsInteger := FContactKey;
 
-      FReadSQL.ParamByName('OrderTypeKey').AsInteger := FOrderTypeKey;
+      FReadSQL.ParamByName('OrderTypeKey').AsInteger := FrontConst.DocumentTypeKey_Zakaz;
 
       FReadSQL.ExecQuery;
       while not FReadSQL.EOF do
@@ -2714,7 +2719,7 @@ begin
       else
         FReadSQL.ParamByName('RespKey').AsInteger := FContactKey;
       // Тип заказа
-      FReadSQL.ParamByName('OrderTypeKey').AsInteger := FOrderTypeKey;
+      FReadSQL.ParamByName('OrderTypeKey').AsInteger := FrontConst.DocumentTypeKey_Zakaz;
       FReadSQL.ExecQuery;
       while not FReadSQL.EOF do
       begin
@@ -2794,7 +2799,7 @@ begin
       else
         FReadSQL.ParamByName('RespKey').AsInteger := FContactKey;
 
-      FReadSQL.ParamByName('OrderTypeKey').AsInteger := FOrderTypeKey;
+      FReadSQL.ParamByName('OrderTypeKey').AsInteger := FrontConst.DocumentTypeKey_Zakaz;
 
       FReadSQL.ExecQuery;
       while not FReadSQL.EOF do
@@ -3151,16 +3156,6 @@ begin
       FReadSQL.Transaction.StartTransaction;
     FReadSQL.Close;
 
-    FReadSQL.SQL.Text := ' SELECT ID FROM gd_ruid WHERE xid= :xid and dbid = :dbid ' ;
-    FReadSQL.ParamByName('xid').AsInteger := MN_OrderXID;
-    FReadSQL.ParamByName('DBid').AsInteger := MN_OrderDBID;
-    FReadSQL.ExecQuery;
-    if not FReadSQL.Eof then
-      FOrderTypeKey := FReadSQL.FieldByname('ID').AsInteger
-    else
-      FOrderTypeKey := -1;
-    FReadSQL.Close;
-
     FReadSQL.SQL.Text :=
       ' SELECT FIRST(1) ' +
       '   oc.companykey, c.name AS companyname ' +
@@ -3359,6 +3354,62 @@ begin
     end;
   finally
     FReadSQL.Close;
+  end;
+end;
+
+procedure TFrontBase.InitFrontConst;
+var
+  FSQL, FSQLInsRUID, FSQLDelRUID: TIBSQL;
+  FTransaction: TIBTransaction;
+begin
+  if Assigned(FDataBase) and FDataBase.Connected then
+  begin
+    FSQL := TIBSQL.Create(nil);
+    FSQLInsRUID := TIBSQL.Create(nil);
+    FSQLDelRUID := TIBSQL.Create(nil);
+    FTransaction := TIBTransaction.Create(nil);
+    try
+
+      FTransaction.DefaultDatabase := FDataBase;
+      FSQL.Transaction := FTransaction;
+      FSQLInsRUID.Transaction := FTransaction;
+      FSQLDelRUID.Transaction := FTransaction;
+      FSQLDelRUID.SQL.Text := ' DELETE FROM gd_ruid r WHERE r.xid = :xid and r.dbid = :dbid ';
+      FSQLInsRUID.SQL.Text := ' insert into gd_ruid (id, xid, dbid, modified) values (:id, :xid, :dbid, current_timestamp) ';
+      FTransaction.StartTransaction;
+
+      //DocumentTypeKey
+      // DocumentTypeKey_ZakazRezerv  147747477, 1650037404
+      FSQL.SQL.Text := ' SELECT dt.id from gd_ruid r JOIN gd_documenttype dt ON dt.id = r.id ' +
+                       ' WHERE r.xid = :XID and r.dbid = :DBID ';
+      FSQL.ParamByName('xid').AsInteger := 147747477;
+      FSQL.ParamByName('dbid').AsInteger := 1650037404;
+      FSQL.ExecQuery;
+      if not FSQL.EOF then
+        FFrontConst.DocumentTypeKey_ZakazRezerv := FSQL.FieldByName('ID').AsInteger
+      else
+        raise Exception.Create('Неверная структура БД. Отсутствует типовой документ Бронирование');
+      FSQL.Close;
+
+      // DocumentTypeKey_Zakaz 147014509, 9263644
+      FSQL.ParamByName('xid').AsInteger := 147014509;
+      FSQL.ParamByName('dbid').AsInteger := 9263644;
+      FSQL.ExecQuery;
+      if not FSQL.EOF then
+        FFrontConst.DocumentTypeKey_Zakaz := FSQL.FieldByName('ID').AsInteger
+      else
+        raise Exception.Create('Неверная структура БД. Отсутствует типовой документ Заказ');
+      FSQL.Close;
+
+
+
+      FTransaction.Commit;
+    finally
+      FSQL.Free;
+      FSQLInsRUID.Free;
+      FSQLDelRUID.Free;
+      FTransaction.Free;
+    end;
   end;
 end;
 

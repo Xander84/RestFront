@@ -36,14 +36,16 @@ var
   OrderNumber: TOrderNumber;
 
 implementation
-
+uses Character;
 {$R *.dfm}
 
 procedure TOrderNumber.edtNumberKeyPress(Sender: TObject;
   var Key: Char);
 begin
-  if (Key = 'þ') or (Key = 'Þ') or (Key = 'á') or (Key = 'Á') or (Key = ',') or (Key = '<') then
-    Key := FFormatSettings.DecimalSeparator;
+  if (Key = 'þ') or (Key = 'Þ') or (Key = 'á') or (Key = 'Á') or (Key = ',') or (Key = '<') or (Key = '.') then
+    Key := '.'
+  else if not IsDigit(Key) then
+    key := #0;
 end;
 
 function TOrderNumber.GetNumber: String;
