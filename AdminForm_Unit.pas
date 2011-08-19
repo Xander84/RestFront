@@ -9,6 +9,8 @@ uses
   frmEditUsers_unit;
 
 type
+  TCrackControl = class(TControl);
+
   TAdminForm = class(TBaseFrontForm)
     pnlMain: TAdvPanel;
     alMain: TActionList;
@@ -19,9 +21,12 @@ type
     btnHallsEdit: TAdvSmoothButton;
     btnEditUser: TAdvSmoothButton;
     actEditUser: TAction;
+    actExit: TAction;
     procedure actAddUserExecute(Sender: TObject);
     procedure actEditReportExecute(Sender: TObject);
     procedure actEditUserExecute(Sender: TObject);
+    procedure actExitExecute(Sender: TObject);
+    procedure alMainExecute(Action: TBasicAction; var Handled: Boolean);
   private
     FFrontBase: TFrontBase;
   public
@@ -74,6 +79,28 @@ begin
     Form.ShowModal;
   finally
     Form.Free;
+  end;
+end;
+
+procedure TAdminForm.actExitExecute(Sender: TObject);
+begin
+  ModalResult := mrCancel;
+end;
+
+procedure TAdminForm.alMainExecute(Action: TBasicAction; var Handled: Boolean);
+var
+  FComponent: TControl;
+begin
+  inherited;
+  if Action.ActionComponent is TControl then
+  begin
+    FComponent := TControl(Action.ActionComponent);
+    if Assigned(FLogManager) then
+    begin
+      FLogManager.DoActionLog(FLogManager.GetCurrentUserInfo,
+        Format('Форма %s (%s), событие %s (%s)', [Self.Caption,
+        Self.Name, TCrackControl(FComponent).Caption, FComponent.Name]));
+    end;
   end;
 end;
 

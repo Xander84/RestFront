@@ -59,7 +59,6 @@ object AdminForm: TAdminForm
     StatusBar.ColorTo = 16374724
     StatusBar.GradientDirection = gdVertical
     Styler = FrontData.FrontPanelStyler
-    ExplicitHeight = 241
     FullHeight = 0
     object btnEditReport: TAdvSmoothButton
       Left = 14
@@ -159,7 +158,7 @@ object AdminForm: TAdminForm
     Top = 168
     Width = 296
     Height = 40
-    Hint = #1042#1099#1093#1086#1076
+    Action = actExit
     Appearance.Font.Charset = DEFAULT_CHARSET
     Appearance.Font.Color = clWindowText
     Appearance.Font.Height = -19
@@ -179,7 +178,6 @@ object AdminForm: TAdminForm
     Status.Appearance.Font.Name = 'Tahoma'
     Status.Appearance.Font.Style = []
     Bevel = False
-    Caption = #1042#1099#1093#1086#1076
     Color = 15195349
     ParentFont = False
     TabOrder = 1
@@ -187,6 +185,7 @@ object AdminForm: TAdminForm
     ModalResult = 2
   end
   object alMain: TActionList
+    OnExecute = alMainExecute
     Left = 96
     Top = 80
     object actAddUser: TAction
@@ -203,6 +202,10 @@ object AdminForm: TAdminForm
       Caption = #1056#1077#1076#1072#1082#1090#1080#1088#1086#1074#1072#1085#1080#1077' '#1087#1086#1083#1100#1079#1086#1074#1072#1090#1077#1083#1077#1081
       Hint = #1056#1077#1076#1072#1082#1090#1080#1088#1086#1074#1072#1090#1100' '#1087#1086#1083#1100#1079#1086#1074#1072#1090#1077#1083#1103
       OnExecute = actEditUserExecute
+    end
+    object actExit: TAction
+      Caption = #1042#1099#1093#1086#1076
+      OnExecute = actExitExecute
     end
   end
 end

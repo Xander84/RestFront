@@ -1148,9 +1148,6 @@ object RestMainForm: TRestMainForm
         ImageIndex = 1
         TabColor = clBtnFace
         TabColorTo = clNone
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 0
         object pnlRight: TAdvPanel
           Left = 609
           Top = 0
@@ -3089,9 +3086,6 @@ object RestMainForm: TRestMainForm
           ColorTo = clNone
           TabColor = clBtnFace
           TabColorTo = clNone
-          ExplicitTop = 0
-          ExplicitWidth = 0
-          ExplicitHeight = 0
           object btnExitWindows: TAdvSmoothButton
             AlignWithMargins = True
             Left = 3
@@ -4721,6 +4715,7 @@ object RestMainForm: TRestMainForm
     end
   end
   object actList: TActionList
+    OnExecute = actListExecute
     Left = 424
     Top = 128
     object actPassEnter: TAction

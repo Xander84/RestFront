@@ -66,6 +66,8 @@ type
 
   TCrackDBSumListProducer = class(TDBSumListProducer);
 
+  TCrackControl = class(TControl);
+
   TRestMainForm = class(TBaseFrontForm)
     pnlMain: TPanel;
     pcMain: TAdvPageControl;
@@ -337,6 +339,7 @@ type
     procedure actFindGoodExecute(Sender: TObject);
     procedure actFindGoodUpdate(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure actListExecute(Action: TBasicAction; var Handled: Boolean);
   private
     // Компонент обращения к БД
     // Объявлен в базовом классе форм TBaseFrontForm
@@ -347,7 +350,8 @@ type
     // Класс работы с FR4
     FReport: TRestReport;
     // Класс логирования во внешнюю БД
-    FLogManager: TLogManager;
+    // Объявлен в базовом классе форм TBaseFrontForm
+    //FLogManager: TLogManager;
     // Наборы данных
     FOrderDataSet: TkbmMemTable;
     FMenuDataSet: TkbmMemTable;
@@ -1855,7 +1859,15 @@ begin
   FButton := TAdvSmoothButton(Sender);
   FButton.Enabled := False;
   // FButton.Appearance.Font.Color := clLime;
-
+  if Assigned(FLogManager) then
+  begin
+    if Assigned(FLogManager) then
+    begin
+      FLogManager.DoActionLog(FLogManager.GetCurrentUserInfo,
+        Format('Форма %s (%s), событие %s (%s)', [Self.Caption,
+        Self.Name, FButton.Caption, FButton.Name]));
+    end;
+  end;
   FGroupLastTop := btnFirstTop;
   FGroupFirstTop := btnFirstTop;
   FGroupLastLeftButton := 2 {$IFDEF NEW_TABCONTROL} + 4 {$ENDIF};
@@ -1884,6 +1896,16 @@ begin
     FButton := TAdvSmoothButton(Sender);
     FButton.Enabled := False;
 
+    if Assigned(FLogManager) then
+    begin
+      if Assigned(FLogManager) then
+      begin
+        FLogManager.DoActionLog(FLogManager.GetCurrentUserInfo,
+          Format('Форма %s (%s), событие %s (%s)', [Self.Caption,
+          Self.Name, FButton.Caption, FButton.Name]));
+      end;
+    end;
+
     RemoveGoodButton;
     FGoodLastTop := btnFirstTop;
     FGoodFirstTop := btnFirstTop;
@@ -1902,6 +1924,15 @@ begin
   LockWindowUpdate(Handle);
   try
     FButton := TButton(Sender);
+    if Assigned(FLogManager) then
+    begin
+      if Assigned(FLogManager) then
+      begin
+        FLogManager.DoActionLog(FLogManager.GetCurrentUserInfo,
+          Format('Форма %s (%s), событие %s (%s)', [Self.Caption,
+          Self.Name, TButton(Sender).Caption, TButton(Sender).Name]));
+      end;
+    end;
 
     RemoveChooseTable;
     // План зала
@@ -1969,6 +2000,15 @@ end;
 
 procedure TRestMainForm.GoodButtonOnClick(Sender: TObject);
 begin
+  if Assigned(FLogManager) then
+  begin
+    if Assigned(FLogManager) then
+    begin
+      FLogManager.DoActionLog(FLogManager.GetCurrentUserInfo,
+        Format('Форма %s (%s), событие %s (%s)', [Self.Caption,
+        Self.Name, TButton(Sender).Caption, TButton(Sender).Name]));
+    end;
+  end;
   AddGood(TButton(Sender).Tag);
 end;
 
@@ -2841,6 +2881,24 @@ end;
 procedure TRestMainForm.actKeyBoardUpdate(Sender: TObject);
 begin
   actKeyBoard.Enabled := cn_KeyBoardEnabled;
+end;
+
+procedure TRestMainForm.actListExecute(Action: TBasicAction;
+  var Handled: Boolean);
+var
+  FComponent: TControl;
+begin
+  inherited;
+  if Action.ActionComponent is TControl then
+  begin
+    FComponent := TControl(Action.ActionComponent);
+    if Assigned(FLogManager) then
+    begin
+      FLogManager.DoActionLog(GetCurrentUserInfo,
+        Format('Форма %s (%s), событие %s (%s)', [Self.Caption,
+        Self.Name, TCrackControl(FComponent).Caption, FComponent.Name]));
+    end;
+  end;
 end;
 
 procedure TRestMainForm.actCutCheckExecute(Sender: TObject);
@@ -4556,6 +4614,15 @@ procedure TRestMainForm.SplitButtonOnClick(Sender: TObject);
 begin
   if Assigned(FSplitForm) then
   begin
+    if Assigned(FLogManager) then
+    begin
+      if Assigned(FLogManager) then
+      begin
+        FLogManager.DoActionLog(FLogManager.GetCurrentUserInfo,
+          Format('Форма %s (%s), событие %s (%s)', [Self.Caption,
+          Self.Name, TButton(Sender).Caption, TButton(Sender).Name]));
+      end;
+    end;
     FSplitForm.OrderKey := TButton(Sender).Tag;
     FSplitForm.FrontBase := FFrontBase;
     try
@@ -4661,6 +4728,16 @@ begin
     exit;
 
   CurrentRestTable := TRestTable(Sender);
+
+  if Assigned(FLogManager) then
+  begin
+    if Assigned(FLogManager) then
+    begin
+      FLogManager.DoActionLog(FLogManager.GetCurrentUserInfo,
+        Format('Форма %s (%s), событие Выбор столика (%s)', [Self.Caption,
+        Self.Name, TRestTable(Sender).Number]));
+    end;
+  end;
 
   if dxfDesigner.Active then
     Exit;
@@ -4824,6 +4901,21 @@ begin
 
   // В поле Tag храним ID связанного заказа
   MenuOrderButton := TButton(Sender);
+
+  if Assigned(FLogManager) then
+  begin
+    if Assigned(FLogManager) then
+    begin
+      if Sender is TAdvSmoothButton then
+        FLogManager.DoActionLog(FLogManager.GetCurrentUserInfo,
+          Format('Форма %s (%s), выбор заказа %s (%s)', [Self.Caption,
+          Self.Name, MenuOrderButton.Caption, MenuOrderButton.Name]))
+      else if Sender is TMenuItem then
+        FLogManager.DoActionLog(FLogManager.GetCurrentUserInfo,
+          Format('Форма %s (%s), выбор заказа %s ', [Self.Caption,
+          Self.Name, TMenuItem(Sender).Caption]));
+    end;
+  end;
   // Если активен режим разблокировки стола
   if btnUnblockTable.Down then
   begin
@@ -5287,6 +5379,7 @@ begin
     FForm := TAdminForm.Create(Self);
     try
       FForm.FrontBase := FFrontBase;
+      FForm.LogManager := FLogManager;
       FForm.ShowModal;
       // Редактор залов
       if FForm.ModalResult = mrOK then

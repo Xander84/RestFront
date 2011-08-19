@@ -5,17 +5,19 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, FrontData_Unit, AdvAppStyler, AdvPanel, AdvPageControl, ExtCtrls,
-  Front_DataBase_Unit, AdvSmoothButton;
+  Front_DataBase_Unit, AdvSmoothButton, FrontLog_Unit;
 
 type
   TBaseFrontForm = class(TForm)
     AdvFormStyler: TAdvFormStyler;
   protected
+    FLogManager: TLogManager;
     FFrontBase: TFrontBase;
     FIsActionRun: Boolean;
   public
     procedure AfterConstruction; override;
     property FrontBase: TFrontBase read FFrontBase write FFrontBase;
+    property LogManager: TLogManager read FLogManager write FLogManager;
     property IsActionRun: Boolean read FIsActionRun write FIsActionRun;
   end;
 

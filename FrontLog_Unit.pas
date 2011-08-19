@@ -4,8 +4,7 @@ interface
 
 uses
   Front_DataBase_Unit, Classes, SysUtils, Forms, Generics.Collections, IBSQL,
-  IBDatabase, IB, IBScript, rfMetadata_unit, TouchMessageBoxForm_Unit, Dialogs,
-  Windows;
+  IBDatabase, IB, IBScript, rfMetadata_unit, Dialogs, Windows;
 
 const
   // simple event's UserKey, DateTime, Event
@@ -394,6 +393,8 @@ type
   public
     constructor Create;
     destructor Destroy; override;
+{ TODO : «аменить в других местах данной ф-цией }
+    function GetCurrentUserInfo: TLogUserInfo;
 
     procedure DoSimpleEvent(const Event: Integer);
     procedure DoSimpleLog(const UserInfo: TLogUserInfo; Event: Integer);
@@ -420,6 +421,9 @@ type
   end;
 
 implementation
+
+uses
+  TouchMessageBoxForm_Unit;
 
 { TLogManager }
 
@@ -534,6 +538,15 @@ begin
   begin
     if FEventLog.DataBase.Connected then
       FEventLog.DoSimpleLog(UserInfo, Event);
+  end;
+end;
+
+function TLogManager.GetCurrentUserInfo: TLogUserInfo;
+begin
+  if Assigned(FFrontBase) then
+  begin
+    Result.UserID := FFrontBase.ContactKey;
+    Result.UserName := FFrontBase.UserName;
   end;
 end;
 
