@@ -56,6 +56,8 @@ begin
     end else
     if (Components[I] is TAdvSmoothButton) then
       SetButtonStyle(TAdvSmoothButton(Components[I]))
+    else if (Components[I] is TGridPanel) or (Components[I] is TScrollBox) then
+      TPanel(Components[I]).Color := FrontData.PanelColor
     else if (Components[I] is TAdvPageControl) then
       TAdvPageControl(Components[I]).TabBackGroundColor := FrontData.PanelColor;
   end;
