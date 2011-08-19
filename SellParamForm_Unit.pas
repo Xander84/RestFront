@@ -543,7 +543,7 @@ begin
                 FLineTable.FieldByName('usr$sumncuwithdiscount').AsCurrency := FSumToPay;
                 FLineTable.FieldByName('usr$costncuwithdiscount').AsCurrency := FSumToPay;
                 FLineTable.FieldByName('USR$COMPUTERNAME').AsString := FFrontBase.ComputerName;
-                FLineTable.FieldByName('GOODNAME').AsString := 'Оплата согласно договора о бронировании';
+                FLineTable.FieldByName('GOODNAME').AsString := 'Окончательный рассчет';
                 FLineTable.Post;
 
                 if FFiscalRegiter.PrintCheck(Doc, FLineTable, dsPayLine, FSums) then
