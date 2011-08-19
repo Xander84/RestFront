@@ -211,9 +211,9 @@ begin
           FReport.Variables.AddVariable(cn_RestParam, 'DocID', '''' + '0' + '''');
           FReport.Variables.AddVariable(cn_RestParam, 'UserName', '''' + FrontBase.UserName + '''');
 
-          if (FFrontBase.UserKey and FFrontBase.Options.ManagerGroupMask) <> 0 then
+          if (FFrontBase.UserGroup and FFrontBase.Options.ManagerGroupMask) <> 0 then
             RespName := 'менеджер'
-          else if (FFrontBase.UserKey and FFrontBase.Options.KassaGroupMask) <> 0 then
+          else if (FFrontBase.UserGroup and FFrontBase.Options.KassaGroupMask) <> 0 then
             RespName := 'кассир'
           else
             RespName := 'официант';
@@ -791,9 +791,9 @@ begin
       FReport.Variables.AddVariable(cn_RestParam, 'DocID', '''' + IntToStr(DocID) + '''');
       FReport.Variables.AddVariable(cn_RestParam, 'UserName', '''' + FrontBase.UserName + '''');
 
-      if (FFrontBase.UserKey and FFrontBase.Options.ManagerGroupMask) <> 0 then
+      if (FFrontBase.UserGroup and FFrontBase.Options.ManagerGroupMask) <> 0 then
         RespName := 'менеджер'
-      else if (FFrontBase.UserKey and FFrontBase.Options.KassaGroupMask) <> 0 then
+      else if (FFrontBase.UserGroup and FFrontBase.Options.KassaGroupMask) <> 0 then
         RespName := 'кассир'
       else
         RespName := 'официант';

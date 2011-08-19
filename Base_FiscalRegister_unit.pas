@@ -198,18 +198,14 @@ end;
 
 procedure SavePayment(const ContactKey, DocID: Integer; const PayLine: TkbmMemTable;
   const FrontBase: TFrontBase; const FSums: TSaleSums; Revert: Boolean);
-var
-  FRubPayTypeKey: Integer;
 begin
-  FRubPayTypeKey := FrontBase.GetIDByRUID(mn_RUBpaytypeXID, mn_RUBpaytypeDBID);
-
   PayLine.DisableControls;
   try
     PayLine.First;
     try
       while not PayLine.Eof do
       begin
-        if PayLine.FieldByName('USR$PAYTYPEKEY').AsInteger <> FRubPayTypeKey then
+        if PayLine.FieldByName('USR$PAYTYPEKEY').AsInteger <> FrontBase.FrontConst.KindType_CashDefault then
           FrontBase.SavePayment(ContactKey, DocID,
             PayLine.FieldByName('USR$PAYTYPEKEY').AsInteger,
             PayLine.FieldByName('USR$PERSONALCARDKEY').AsInteger, PayLine.FieldByName('SUM').AsCurrency, Revert)

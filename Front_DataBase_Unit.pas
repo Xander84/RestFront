@@ -13,9 +13,6 @@ const
   cn_StateInsert = 1;
   cn_StateUpdate = 2;
   cn_StateUpdateParent = 3;
-  //рубли по умолчанию форма оплаты
-  mn_RUBpaytypeXID = 147141777;
-  mn_RUBpaytypeDBID = 349813242;
   cn_ContactFolderID = 650001;
 
 //константы с запросами
@@ -325,6 +322,10 @@ type
   TFrontConst = record
     DocumentTypeKey_ZakazRezerv: Integer;
     DocumentTypeKey_Zakaz: Integer;
+    PayType_Cash: Integer;
+    PayType_Card: Integer;
+    PayType_PersonalCard: Integer;
+    KindType_CashDefault: Integer;
   end;
 
   TFrontBase = class
@@ -341,7 +342,7 @@ type
     FIBPassword: String;
     FIBPath: String;
 
-    FUserKey: Integer;
+   // FUserKey: Integer;
     FContactKey: Integer;
     FUserName: String;
     FUserGroup: Integer;
@@ -428,8 +429,7 @@ type
 
     function GetPayKindType(const MemTable: TkbmMemTable; const PayType: Integer;
       IsPlCard: Integer = 0; const IsExternal: Boolean = False): Boolean;
-    procedure GetPaymentsCount(var CardCount, NoCashCount, PercCardCount: Integer;
-      const CashID, PCID: Integer);
+    procedure GetPaymentsCount(var CardCount, NoCashCount, PercCardCount, CashCount: Integer);
     function GetCashFiscalType: Integer;
     function GetUserRuleForPayment(const PayKey: Integer): Boolean;
     procedure GetNoCashGroupList(const MemTable: TkbmMemTable);
@@ -472,7 +472,7 @@ type
       const LDate: TDateTime; const Pass: String): Boolean;
     function CalcBonusSum(const DataSet: TDataSet; FLine: TkbmMemTable; var Bonus: Boolean; var PercDisc: Currency): Boolean;
     function GetPersonalCardInfo(const MemTable: TkbmMemTable;
-      const Pass: String; const PersonalCardID: Integer): Boolean;
+      const Pass: String): Boolean;
     //список подразделений компании
     function GetDepartmentList(const MemTable: TkbmMemTable): Boolean;
     function GetUserGroupList(const MemTable: TkbmMemTable): Boolean;
@@ -528,7 +528,7 @@ type
     class function RoundCost(const Cost: Currency): Currency;
 
     property UserName: String read FUserName;
-    property UserKey: Integer read FUserKey;
+ //   property UserKey: Integer read FUserKey;
     property ContactKey: Integer read FContactKey;
     property UserGroup: Integer read FUserGroup;
     property Options: TFrontOptions read FOptions write FOptions;
@@ -2852,7 +2852,7 @@ begin
     while not FReadSQL.Eof do
     begin
       FMask := GetGroupMask(FReadSQL.FieldByName('USR$GROUPKEY').AsInteger);
-      Result := ((FUserKey and FMask) <> 0);
+      Result := ((FUserGroup and FMask) <> 0);
       if Result then
         exit;
 
@@ -3202,14 +3202,14 @@ begin
       if not FReadSQL.EOF then
       begin
         Result := True;
-        FUserKey := FReadSQL.FieldByName('ingroup').AsInteger;
+     //   FUserKey := 0;//FReadSQL.FieldByName('userkey').AsInteger;
         FUserName := FReadSQL.FieldByName('Name').AsString;
         FContactKey := FReadSQL.FieldByName('contactkey').AsInteger;
-        FUserGroup := FReadSQL.FieldByName('contactkey').AsInteger;
+        FUserGroup := FReadSQL.FieldByName('ingroup').AsInteger;
       end else
       begin
         Result := False;
-        FUserKey := -1;
+//        FUserKey := -1;
         FUserName := '';
         FContactKey := -1;
         FUserGroup := -1;
@@ -3359,14 +3359,16 @@ end;
 
 procedure TFrontBase.InitFrontConst;
 var
-  FSQL, FSQLInsRUID, FSQLDelRUID: TIBSQL;
+  FSQL, FSQLInsRUID, FSQLDelRUID, FSQLIns: TIBSQL;
   FTransaction: TIBTransaction;
+  FXID, FDBID: Integer;
 begin
   if Assigned(FDataBase) and FDataBase.Connected then
   begin
     FSQL := TIBSQL.Create(nil);
     FSQLInsRUID := TIBSQL.Create(nil);
     FSQLDelRUID := TIBSQL.Create(nil);
+    FSQLIns := TIBSQL.Create(nil);
     FTransaction := TIBTransaction.Create(nil);
     try
 
@@ -3374,16 +3376,19 @@ begin
       FSQL.Transaction := FTransaction;
       FSQLInsRUID.Transaction := FTransaction;
       FSQLDelRUID.Transaction := FTransaction;
+      FSQLIns.Transaction := FTransaction;
       FSQLDelRUID.SQL.Text := ' DELETE FROM gd_ruid r WHERE r.xid = :xid and r.dbid = :dbid ';
       FSQLInsRUID.SQL.Text := ' insert into gd_ruid (id, xid, dbid, modified) values (:id, :xid, :dbid, current_timestamp) ';
       FTransaction.StartTransaction;
 
       //DocumentTypeKey
       // DocumentTypeKey_ZakazRezerv  147747477, 1650037404
+      FXID := 147747477;
+      FDBID := 1650037404;
       FSQL.SQL.Text := ' SELECT dt.id from gd_ruid r JOIN gd_documenttype dt ON dt.id = r.id ' +
                        ' WHERE r.xid = :XID and r.dbid = :DBID ';
-      FSQL.ParamByName('xid').AsInteger := 147747477;
-      FSQL.ParamByName('dbid').AsInteger := 1650037404;
+      FSQL.ParamByName('xid').AsInteger := FXID;
+      FSQL.ParamByName('dbid').AsInteger := FDBID;
       FSQL.ExecQuery;
       if not FSQL.EOF then
         FFrontConst.DocumentTypeKey_ZakazRezerv := FSQL.FieldByName('ID').AsInteger
@@ -3392,20 +3397,167 @@ begin
       FSQL.Close;
 
       // DocumentTypeKey_Zakaz 147014509, 9263644
-      FSQL.ParamByName('xid').AsInteger := 147014509;
-      FSQL.ParamByName('dbid').AsInteger := 9263644;
+      FXID := 147014509;
+      FDBID := 9263644;
+
+      FSQL.ParamByName('xid').AsInteger := FXID;
+      FSQL.ParamByName('dbid').AsInteger := FDBID;
       FSQL.ExecQuery;
       if not FSQL.EOF then
         FFrontConst.DocumentTypeKey_Zakaz := FSQL.FieldByName('ID').AsInteger
       else
         raise Exception.Create('Неверная структура БД. Отсутствует типовой документ Заказ');
+
+      //USR$INV_PAYTYPE
+      // Наличными 147142772_354772515
+      FXID := 147142772;
+      FDBID := 354772515;
+
+      FSQL.Close;
+      FSQL.SQL.Text := ' SELECT pt.id from gd_ruid r JOIN USR$INV_PAYTYPE pt ON pt.id = r.id ' +
+                       ' WHERE r.xid = :XID and r.dbid = :DBID ';
+      FSQL.ParamByName('xid').AsInteger := FXID;
+      FSQL.ParamByName('dbid').AsInteger := FDBID;
+      FSQL.ExecQuery;
+      if not FSQL.EOF then
+        FFrontConst.PayType_Cash := FSQL.FieldByName('ID').AsInteger
+      else
+      begin
+        FSQLDelRUID.Close;
+        FSQLDelRUID.ParamBYName('XID').AsInteger := FXID;
+        FSQLDelRUID.ParamBYName('DBID').AsInteger := FDBID;
+        FSQLDelRUID.ExecQuery;
+
+        FSQLIns.Close;
+        FSQLIns.SQL.Text := 'INSERT INTO USR$INV_PAYTYPE (ID, EDITIONDATE, EDITORKEY, USR$NAME) ' +
+                            ' VALUES (:ID, current_timestamp, 650002, :Name)';
+        FFrontConst.PayType_Cash := GetNextID;
+        FSQLIns.ParamByName('ID').AsInteger := FFrontConst.PayType_Cash;
+        FSQLIns.ParamByName('Name').AsString := 'Наличными';
+        FSQLIns.ExecQuery;
+
+        FSQLInsRUID.Close;
+        FSQLInsRUID.ParamBYName('ID').AsInteger := FFrontConst.PayType_Cash;
+        FSQLInsRUID.ParamBYName('XID').AsInteger := FXID;
+        FSQLInsRUID.ParamBYName('DBID').AsInteger := FDBID;
+        FSQLInsRUID.ExecQuery;
+      end;
       FSQL.Close;
 
+      // Персональная карта 147733995_1604829035
+      FXID := 147733995;
+      FDBID := 1604829035;
+
+      FSQL.Close;
+      FSQL.ParamByName('xid').AsInteger := FXID;
+      FSQL.ParamByName('dbid').AsInteger := FDBID;
+      FSQL.ExecQuery;
+      if not FSQL.EOF then
+        FFrontConst.PayType_PersonalCard := FSQL.FieldByName('ID').AsInteger
+      else
+      begin
+        FSQLDelRUID.Close;
+        FSQLDelRUID.ParamBYName('XID').AsInteger := FXID;
+        FSQLDelRUID.ParamBYName('DBID').AsInteger := FDBID;
+        FSQLDelRUID.ExecQuery;
+
+        FSQLIns.Close;
+        FSQLIns.SQL.Text := 'INSERT INTO USR$INV_PAYTYPE (ID, EDITIONDATE, EDITORKEY, USR$NAME) ' +
+                            ' VALUES (:ID, current_timestamp, 650002, :Name)';
+        FFrontConst.PayType_PersonalCard := GetNextID;
+        FSQLIns.ParamByName('ID').AsInteger := FFrontConst.PayType_PersonalCard;
+        FSQLIns.ParamByName('Name').AsString := 'Персональная карта';
+        FSQLIns.ExecQuery;
+
+        FSQLInsRUID.Close;
+        FSQLInsRUID.ParamBYName('ID').AsInteger := FFrontConst.PayType_PersonalCard;
+        FSQLInsRUID.ParamBYName('XID').AsInteger := FXID;
+        FSQLInsRUID.ParamBYName('DBID').AsInteger := FDBID;
+        FSQLInsRUID.ExecQuery;
+      end;
+      FSQL.Close;
+
+      // Пластиковая карта 147783694_1702380588
+      FXID := 147783694;
+      FDBID := 1702380588;
+      FSQL.Close;
+      FSQL.ParamByName('xid').AsInteger := FXID;
+      FSQL.ParamByName('dbid').AsInteger := FDBID;
+      FSQL.ExecQuery;
+      if not FSQL.EOF then
+        FFrontConst.PayType_Card := FSQL.FieldByName('ID').AsInteger
+      else
+      begin
+        FSQLDelRUID.Close;
+        FSQLDelRUID.ParamBYName('XID').AsInteger := FXID;
+        FSQLDelRUID.ParamBYName('DBID').AsInteger := FDBID;
+        FSQLDelRUID.ExecQuery;
+
+        FSQLIns.Close;
+        FSQLIns.SQL.Text := 'INSERT INTO USR$INV_PAYTYPE (ID, EDITIONDATE, EDITORKEY, USR$NAME) ' +
+                            ' VALUES (:ID, current_timestamp, 650002, :Name)';
+        FFrontConst.PayType_Card := GetNextID;
+        FSQLIns.ParamByName('ID').AsInteger := FFrontConst.PayType_Card;
+        FSQLIns.ParamByName('Name').AsString := 'Пластиковая карта';
+        FSQLIns.ExecQuery;
+
+        FSQLInsRUID.Close;
+        FSQLInsRUID.ParamBYName('ID').AsInteger := FFrontConst.PayType_Card;
+        FSQLInsRUID.ParamBYName('XID').AsInteger := FXID;
+        FSQLInsRUID.ParamBYName('DBID').AsInteger := FDBID;
+        FSQLInsRUID.ExecQuery;
+
+        FSQLIns.Close;
+        FSQLIns.SQL.Text := ' UPDATE usr$mn_kindtype SET usr$paytypekey = :usr$paytypekey WHERE usr$isplcard = 1 ';
+        FSQLIns.ParamByName('usr$paytypekey').AsInteger := FFrontConst.PayType_Card;
+        FSQLIns.ExecQuery;
+
+      end;
+      FSQL.Close;
+
+  // USR$MN_KINDTYPE
+  //рубли по умолчанию форма оплаты
+  //  mn_RUBpaytypeXID = 147141777;
+  //  mn_RUBpaytypeDBID = 349813242;
+
+      FXID := 147141777;
+      FDBID := 349813242;
+      FSQL.SQL.Text := ' SELECT pt.id from gd_ruid r JOIN USR$MN_KINDTYPE pt ON pt.id = r.id ' +
+                       ' WHERE r.xid = :XID and r.dbid = :DBID ';
+      FSQL.ParamByName('xid').AsInteger := FXID;
+      FSQL.ParamByName('dbid').AsInteger := FDBID;
+      FSQL.ExecQuery;
+      if not FSQL.EOF then
+        FFrontConst.KindType_CashDefault := FSQL.FieldByName('ID').AsInteger
+      else
+      begin
+        FSQLDelRUID.Close;
+        FSQLDelRUID.ParamBYName('XID').AsInteger := FXID;
+        FSQLDelRUID.ParamBYName('DBID').AsInteger := FDBID;
+        FSQLDelRUID.ExecQuery;
+
+        FSQLIns.Close;
+        FSQLIns.SQL.Text := ' INSERT INTO USR$MN_KINDTYPE (ID, EDITIONDATE,        EDITORKEY, USR$NAME, USR$ALIAS, USR$PAYTYPEKEY) ' +
+                            ' VALUES (:ID, current_timestamp, 650002,    ''РУБЛИ'',  ''001'',     :PAYTYPEKEY)';
+
+        FFrontConst.KindType_CashDefault := GetNextID;
+        FSQLIns.ParamByName('ID').AsInteger := FFrontConst.KindType_CashDefault;
+        FSQLIns.ParamByName('PAYTYPEKEY').AsInteger := FFrontConst.PayType_Cash;
+        FSQLIns.ExecQuery;
+
+        FSQLInsRUID.Close;
+        FSQLInsRUID.ParamBYName('ID').AsInteger := FFrontConst.KindType_CashDefault;
+        FSQLInsRUID.ParamBYName('XID').AsInteger := FXID;
+        FSQLInsRUID.ParamBYName('DBID').AsInteger := FDBID;
+        FSQLInsRUID.ExecQuery;
+      end;
+      FSQL.Close;
 
 
       FTransaction.Commit;
     finally
       FSQL.Free;
+      FSQLIns.Free;
       FSQLInsRUID.Free;
       FSQLDelRUID.Free;
       FTransaction.Free;
@@ -3543,14 +3695,14 @@ begin
           ' LEFT JOIN USR$MN_PAYMENTRULES R ON R.USR$PAYTYPEKEY = K.USR$PAYTYPEKEY ';
         if IsPlCard = 1 then
           S := S + ' WHERE K.USR$ISPLCARD = 1 ' +
-            ' AND (R.USR$PAYTYPEKEY IS NULL OR (BIN_AND(g_b_shl(1, R.USR$GROUPKEY - 1), :FKEY) <> 0)) '
+            ' AND (R.USR$PAYTYPEKEY IS NULL OR (BIN_AND(g_b_shl(1, R.USR$GROUPKEY - 1), :UserGroup) <> 0)) '
         else
           S := S + ' WHERE K.USR$PAYTYPEKEY = :paytype AND ((K.USR$ISPLCARD IS NULL) OR (K.USR$ISPLCARD = 0))';
         S := S + ' ORDER BY K.USR$NAME ';
         FReadSQL.SQL.Text := S;
 
         if IsPlCard = 1 then
-          FReadSQL.ParamByName('FKEY').AsInteger := FUserKey
+          FReadSQL.ParamByName('UserGroup').AsInteger := FUserGroup
         else
           FReadSQL.ParamByName('paytype').AsInteger := PayType;
 
@@ -3576,52 +3728,76 @@ begin
 end;
 
 procedure TFrontBase.GetPaymentsCount(var CardCount, NoCashCount,
-  PercCardCount: Integer; const CashID, PCID: Integer);
+  PercCardCount, CashCount: Integer);
 begin
   FReadSQL.Close;
 
   CardCount := 0;
   NoCashCount := 0;
   PercCardCount := 0;
+  CashCount := 0;
   try
     try
       if not FReadSQL.Transaction.InTransaction then
         FReadSQL.Transaction.StartTransaction;
 
-      //1. Запрос на персональные карты
       FReadSQL.SQL.Text :=
-        ' SELECT COUNT(*) AS PC_COUNT FROM USR$MN_KINDTYPE K ' +
-        ' WHERE K.USR$PAYTYPEKEY = :PCID ';
-      FReadSQL.Params[0].AsInteger := PCID;
+        ' SELECT ' +
+        '   SUM(IIF(R.USR$PAYTYPEKEY IS NULL OR (BIN_AND(g_b_shl(1, R.USR$GROUPKEY - 1), :UserGroup) <> 0), 1, 0)) AS PayCount ' +
+        ' FROM usr$mn_personalcard K ' +
+        ' LEFT JOIN USR$MN_PAYMENTRULES R ON R.USR$PAYTYPEKEY = :PAYTYPEKEY ';
+      //1. Запрос на персональные карты
+      FReadSQL.ParamByName('PAYTYPEKEY').AsInteger := FrontConst.PayType_PersonalCard;
+      FReadSQL.ParamByName('UserGroup').AsInteger := FUserGroup;
       FReadSQL.ExecQuery;
-      PercCardCount := FReadSQL.FieldByName('PC_COUNT').AsInteger;
-      FReadSQL.Close;
+
+      if not FReadSQL.EOF then
+        PercCardCount := FReadSQL.FieldByName('PayCount').AsInteger;
 
       //2. Кредитные карты
+      FReadSQL.Close;
       FReadSQL.SQL.Text :=
         ' SELECT ' +
-        '   SUM(IIF(R.USR$PAYTYPEKEY IS NULL OR (BIN_AND(g_b_shl(1, R.USR$GROUPKEY - 1), :FKEY) <> 0), 1, 0)) AS CARD_COUNT ' +
+        '   SUM(IIF(R.USR$PAYTYPEKEY IS NULL OR (BIN_AND(g_b_shl(1, R.USR$GROUPKEY - 1), :UserGroup) <> 0), 1, 0)) AS PayCount ' +
         ' FROM USR$MN_KINDTYPE K' +
         ' LEFT JOIN USR$MN_PAYMENTRULES R ON R.USR$PAYTYPEKEY = K.USR$PAYTYPEKEY ' +
-        ' WHERE K.USR$ISPLCARD = 1 ';
-      FReadSQL.Params[0].AsInteger := FUserKey;
+        ' WHERE K.USR$PAYTYPEKEY = :PAYTYPEKEY  ';
+
+      FReadSQL.ParamByName('PAYTYPEKEY').AsInteger := FrontConst.PayType_Card;
+      FReadSQL.ParamByName('UserGroup').AsInteger := FUserGroup;
       FReadSQL.ExecQuery;
-      CardCount := FReadSQL.FieldByName('CARD_COUNT').AsInteger;
+      if not FReadSQL.EOF then
+        CardCount := FReadSQL.FieldByName('PayCount').AsInteger;
       FReadSQL.Close;
 
-      //3. Различные формы безнала
+      //2. Наличные деньги
+      FReadSQL.Close;
+      FReadSQL.ParamByName('PAYTYPEKEY').AsInteger := FrontConst.PayType_Cash;
+      FReadSQL.ParamByName('UserGroup').AsInteger := FUserGroup;
+      FReadSQL.ExecQuery;
+      if not FReadSQL.EOF then
+        CashCount := FReadSQL.FieldByName('PayCount').AsInteger;
+
+
+      //4. Различные формы безнала
+      FReadSQL.Close;
       FReadSQL.SQL.Text :=
         ' SELECT ' +
-        '   SUM(IIF(R.USR$PAYTYPEKEY IS NULL OR (BIN_AND(g_b_shl(1, R.USR$GROUPKEY - 1), :FKEY) <> 0), 1, 0)) AS CREDIT_COUNT ' +
+        '   SUM(IIF(R.USR$PAYTYPEKEY IS NULL OR (BIN_AND(g_b_shl(1, R.USR$GROUPKEY - 1), :UserGroup) <> 0), 1, 0)) AS PayCount ' +
         ' FROM USR$MN_KINDTYPE K' +
         ' LEFT JOIN USR$MN_PAYMENTRULES R ON R.USR$PAYTYPEKEY = K.USR$PAYTYPEKEY ' +
-        ' WHERE COALESCE(K.USR$ISPLCARD, 0) = 0 AND K.USR$PAYTYPEKEY <> :PCID ' +
-        '   AND K.USR$PAYTYPEKEY <> :CASHID ';
-      FReadSQL.ParamByName('FKEY').AsInteger := FUserKey;
-      FReadSQL.ParamByName('PCID').AsInteger := PCID;
-      FReadSQL.ParamByName('CASHID').AsInteger := CashID;
+        ' WHERE ' +
+        '  K.USR$PAYTYPEKEY <> :CashType ' +
+        '  AND K.USR$PAYTYPEKEY <> :CardType ' +
+        '  AND K.USR$PAYTYPEKEY <> :PrersCardType ';
+      FReadSQL.ParamByName('UserGroup').AsInteger := FUserGroup;
+      FReadSQL.ParamByName('CashType').AsInteger := FrontConst.PayType_Cash;
+      FReadSQL.ParamByName('CardType').AsInteger := FrontConst.PayType_Card;
+      FReadSQL.ParamByName('PrersCardType').AsInteger := FrontConst.PayType_PersonalCard;
       FReadSQL.ExecQuery;
-      NoCashCount := FReadSQL.FieldByName('CREDIT_COUNT').AsInteger;
+      if not FReadSQL.EOF then
+        NoCashCount := FReadSQL.FieldByName('PayCount').AsInteger;
+
       FReadSQL.Close;
     except
       raise;
@@ -3632,7 +3808,7 @@ begin
 end;
 
 function TFrontBase.GetPersonalCardInfo(const MemTable: TkbmMemTable;
-  const Pass: String; const PersonalCardID: Integer): Boolean;
+  const Pass: String): Boolean;
 begin
   FReadSQL.Close;
   MemTable.Close;
@@ -3648,7 +3824,7 @@ begin
         'JOIN USR$MN_KINDTYPE T ON 1 = 1 ' +
         'WHERE T.usr$paytypekey = :ID AND C.USR$CODE = :pass ';
       FReadSQL.ParamByName('pass').AsString := Pass;
-      FReadSQL.ParamByName('ID').AsInteger := PersonalCardID;
+      FReadSQL.ParamByName('ID').AsInteger := FrontConst.PayType_PersonalCard;
       FReadSQL.ExecQuery;
       while not FReadSQL.Eof do
       begin
@@ -3860,7 +4036,7 @@ begin
       FSQL.Transaction := ReadTransaction;
       FSQL.SQL.Text := ' SELECT USR$NOFISCAL ' +
         ' FROM USR$MN_KINDTYPE WHERE ID = :ID ';
-      FSQL.Params[0].AsInteger := GetIDByRUID(mn_RUBpaytypeXID, mn_RUBpaytypeDBID);
+      FSQL.ParamByName('ID').AsInteger := FrontConst.KindType_CashDefault;
       FSQL.ExecQuery;
       Result := FSQL.FieldByName('USR$NOFISCAL').AsInteger;
       FSQL.Close;
@@ -6188,12 +6364,6 @@ begin
 end;
 
 procedure TFrontBase.GetNoCashGroupList(const MemTable: TkbmMemTable);
-{ TODO : Сделать общие константы }
-const
-  mn_CashXID = 147142772;
-  mn_CashlDBID = 354772515;
-  mn_personalcardXID = 147733995;
-  mn_personalcardDBID = 1604829035;
 begin
   FReadSQL.Close;
   MemTable.Close;
@@ -6209,13 +6379,15 @@ begin
         ' FROM USR$MN_KINDTYPE K' +
         ' LEFT JOIN USR$MN_PAYMENTRULES R ON R.USR$PAYTYPEKEY = K.USR$PAYTYPEKEY ' +
         ' LEFT JOIN USR$INV_PAYTYPE P ON K.USR$PAYTYPEKEY = P.ID ' +
-        ' WHERE COALESCE(K.USR$ISPLCARD, 0) = 0 AND K.USR$PAYTYPEKEY <> :PCID ' +
+        ' WHERE K.USR$PAYTYPEKEY <> :PCID ' +
         '   AND K.USR$PAYTYPEKEY <> :CASHID ' +
-        '   AND (R.USR$PAYTYPEKEY IS NULL OR (BIN_AND(g_b_shl(1, R.USR$GROUPKEY - 1), :FKEY) <> 0)) ' +
+        '   AND K.USR$PAYTYPEKEY <> :CARDID ' +
+        '   AND (R.USR$PAYTYPEKEY IS NULL OR (BIN_AND(g_b_shl(1, R.USR$GROUPKEY - 1), :UserGroup) <> 0)) ' +
         ' ORDER BY 2 ';
-      FReadSQL.ParamByName('FKEY').AsInteger := FUserKey;
-      FReadSQL.ParamByName('PCID').AsInteger := GetIDByRUID(mn_personalcardXID, mn_personalcardDBID);
-      FReadSQL.ParamByName('CASHID').AsInteger := GetIDByRUID(mn_CashXID, mn_CashlDBID);
+      FReadSQL.ParamByName('UserGroup').AsInteger := FUserGroup;
+      FReadSQL.ParamByName('PCID').AsInteger := FrontConst.PayType_PersonalCard;
+      FReadSQL.ParamByName('CARDID').AsInteger := FrontConst.PayType_Card;
+      FReadSQL.ParamByName('CASHID').AsInteger := FrontConst.PayType_Cash;
       FReadSQL.ExecQuery;
       while not FReadSQL.Eof do
       begin
@@ -6308,7 +6480,7 @@ begin
         '  order by 1 desc ';
       FSQL.ExecQuery;
 
-      if (IsMainCash) and ((UserKey and Options.KassaGroupMask) <> 0) then
+      if (IsMainCash) and ((UserGroup and Options.KassaGroupMask) <> 0) then
       begin
          if (FSQL.FieldByName('usr$open').AsCurrency = 0) or (FSQL.FieldByName('usr$off').AsCurrency = 1) then
            Touch_MessageBox('Внимание', 'Смена не открыта! Попросите менеджера открыть смену!',

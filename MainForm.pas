@@ -577,7 +577,7 @@ begin
   // Проверка введёного пароля
   if FFrontBase.LogIn(edPassword.Text) then
   begin
-    if (not FFrontBase.CheckForSession) and not(FFrontBase.IsMainCash and ((FFrontBase.UserKey and FFrontBase.Options.KassaGroupMask) <> 0)
+    if (not FFrontBase.CheckForSession) and not(FFrontBase.IsMainCash and ((FFrontBase.UserGroup and FFrontBase.Options.KassaGroupMask) <> 0)
       ) then
       exit;
 
@@ -1643,7 +1643,7 @@ begin
     exit;
 
   { TODO : Проверка на Max кол-во гостей }
-  if (FFrontBase.UserKey and FFrontBase.Options.ManagerGroupMask) = 0 then
+  if (FFrontBase.UserGroup and FFrontBase.Options.ManagerGroupMask) = 0 then
   begin
     if FFrontBase.CheckCountOrderByResp(FFrontBase.ContactKey) then
     begin
@@ -1722,7 +1722,7 @@ begin
   try
     ClearDisplay;
     { TODO : Проверка на Max кол-во гостей }
-    if (FFrontBase.UserKey and FFrontBase.Options.ManagerGroupMask) = 0 then
+    if (FFrontBase.UserGroup and FFrontBase.Options.ManagerGroupMask) = 0 then
     begin
       if FFrontBase.CheckCountOrderByResp(FFrontBase.ContactKey) then
       begin
@@ -2785,7 +2785,7 @@ end;
 
 procedure TRestMainForm.actManagerInfoUpdate(Sender: TObject);
 begin
-  actManagerInfo.Enabled := ((FFrontBase.UserKey and FFrontBase.Options.ManagerGroupMask) <> 0)
+  actManagerInfo.Enabled := ((FFrontBase.UserGroup and FFrontBase.Options.ManagerGroupMask) <> 0)
     and (not btnSwapTable.Down) and (not btnReservationTable.Down);
 end;
 
@@ -4221,7 +4221,7 @@ end;
 
 procedure TRestMainForm.actUnblockTableUpdate(Sender: TObject);
 begin
-  actUnblockTable.Enabled := ((FFrontBase.UserKey and FFrontBase.Options.ManagerGroupMask) <> 0)
+  actUnblockTable.Enabled := ((FFrontBase.UserGroup and FFrontBase.Options.ManagerGroupMask) <> 0)
     and (not btnSwapTable.Down) and (not btnReservationTable.Down);
   btnUnblockTable.Enabled := actUnblockTable.Enabled;
 end;
@@ -4862,7 +4862,7 @@ begin
   end;
   // Пункт меню для нового заказа
   if (Table.RespKey <= 0) or (Table.RespKey = FFrontBase.ContactKey) or
-    ((FFrontBase.UserKey and FFrontBase.Options.ManagerGroupMask) <> 0) then
+    ((FFrontBase.UserGroup and FFrontBase.Options.ManagerGroupMask) <> 0) then
   begin
     Item := TMenuItem.Create(tablePopupMenu);
     Item.Caption := 'Новый заказ';
@@ -4874,7 +4874,7 @@ begin
   for Order in Table.OrderList do
   begin
     // если заказ не свой или не менеджер, то не добавляем меню
-    if (FFrontBase.ContactKey = Table.RespKey) or ((FFrontBase.UserKey and FFrontBase.Options.ManagerGroupMask) <> 0) then
+    if (FFrontBase.ContactKey = Table.RespKey) or ((FFrontBase.UserGroup and FFrontBase.Options.ManagerGroupMask) <> 0) then
     begin
       Item := TMenuItem.Create(tablePopupMenu);
       Item.Tag := Order.ID;
@@ -5161,7 +5161,7 @@ end;
 
 procedure TRestMainForm.actEditMenuUpdate(Sender: TObject);
 begin
-  actEditMenu.Enabled := ((FFrontBase.UserKey and FFrontBase.Options.ManagerGroupMask) <> 0)
+  actEditMenu.Enabled := ((FFrontBase.UserGroup and FFrontBase.Options.ManagerGroupMask) <> 0)
     and (not btnSwapTable.Down) and (not btnReservationTable.Down);
 end;
 
@@ -5400,7 +5400,7 @@ end;
 
 procedure TRestMainForm.actAllChecksUpdate(Sender: TObject);
 begin
-  actAllChecks.Enabled := ((FFrontBase.UserKey and FFrontBase.Options.ManagerGroupMask) <> 0)
+  actAllChecks.Enabled := ((FFrontBase.UserGroup and FFrontBase.Options.ManagerGroupMask) <> 0)
     and (not btnSwapTable.Down) and (not btnReservationTable.Down);
 end;
 
@@ -5412,8 +5412,8 @@ end;
 
 procedure TRestMainForm.actKassirInfoUpdate(Sender: TObject);
 begin
-  actKassirInfo.Enabled := (((FFrontBase.UserKey and FFrontBase.Options.KassaGroupMask) <> 0) or
-    ((FFrontBase.UserKey and FFrontBase.Options.ManagerGroupMask) <> 0))
+  actKassirInfo.Enabled := (((FFrontBase.UserGroup and FFrontBase.Options.KassaGroupMask) <> 0) or
+    ((FFrontBase.UserGroup and FFrontBase.Options.ManagerGroupMask) <> 0))
     and (not btnSwapTable.Down) and (not btnReservationTable.Down);
 end;
 
@@ -5430,7 +5430,7 @@ end;
 
 procedure TRestMainForm.actReservTableUpdate(Sender: TObject);
 begin
-  actReservTable.Enabled := ((FFrontBase.UserKey and FFrontBase.Options.ManagerGroupMask) <> 0)
+  actReservTable.Enabled := ((FFrontBase.UserGroup and FFrontBase.Options.ManagerGroupMask) <> 0)
     and (not btnSwapTable.Down);
   btnReservationTable.Enabled := actReservTable.Enabled;
 end;
@@ -5463,7 +5463,7 @@ end;
 
 procedure TRestMainForm.actPayUpdate(Sender: TObject);
 begin
-  actPay.Enabled := (not FLineTable.IsEmpty) and ((FFrontBase.UserKey and FFrontBase.Options.KassaGroupMask) <> 0) and (not IsActionRun);
+  actPay.Enabled := (not FLineTable.IsEmpty) and ((FFrontBase.UserGroup and FFrontBase.Options.KassaGroupMask) <> 0) and (not IsActionRun);
 end;
 
 procedure TRestMainForm.OnAfterPost(DataSet: TDataSet);
@@ -5485,7 +5485,7 @@ begin
   FForm.FrontBase := FFrontBase;
   try
     FForm.FiscalRegistry := FFiscal;
-    FForm.IsManager := ((FFrontBase.UserKey and FFrontBase.Options.ManagerGroupMask) <> 0);
+    FForm.IsManager := ((FFrontBase.UserGroup and FFrontBase.Options.ManagerGroupMask) <> 0);
 
     // Отключим таймер выхода из зала
     SetCloseTimerActive(False);
@@ -5501,14 +5501,14 @@ end;
 
 procedure TRestMainForm.actCashFormUpdate(Sender: TObject);
 begin
-  actCashForm.Enabled := (((FFrontBase.UserKey and FFrontBase.Options.KassaGroupMask) <> 0) or
-    ((FFrontBase.UserKey and FFrontBase.Options.ManagerGroupMask) <> 0))
+  actCashForm.Enabled := (((FFrontBase.UserGroup and FFrontBase.Options.KassaGroupMask) <> 0) or
+    ((FFrontBase.UserGroup and FFrontBase.Options.ManagerGroupMask) <> 0))
     and (not btnSwapTable.Down) and (not btnReservationTable.Down);
 end;
 
 procedure TRestMainForm.actChangeDocNumberUpdate(Sender: TObject);
 begin
-  actChangeDocNumber.Enabled := ((FFrontBase.UserKey and FFrontBase.Options.ManagerGroupMask) <> 0)
+  actChangeDocNumber.Enabled := ((FFrontBase.UserGroup and FFrontBase.Options.ManagerGroupMask) <> 0)
     and (not btnSwapTable.Down);
   btnChangeDocNumber.Enabled := actChangeDocNumber.Enabled;
 end;
@@ -5534,7 +5534,7 @@ end;
 
 procedure TRestMainForm.actSwapTableUpdate(Sender: TObject);
 begin
-  actSwapTable.Enabled := ((FFrontBase.UserKey and FFrontBase.Options.ManagerGroupMask) <> 0)
+  actSwapTable.Enabled := ((FFrontBase.UserGroup and FFrontBase.Options.ManagerGroupMask) <> 0)
     and (not btnReservationTable.Down);
   btnSwapTable.Enabled := actSwapTable.Enabled;
 end;
@@ -5644,7 +5644,7 @@ end;
 
 procedure TRestMainForm.actSwapWaiterUpdate(Sender: TObject);
 begin
-  actSwapWaiter.Enabled := ((FFrontBase.UserKey and FFrontBase.Options.ManagerGroupMask) <> 0)
+  actSwapWaiter.Enabled := ((FFrontBase.UserGroup and FFrontBase.Options.ManagerGroupMask) <> 0)
     and (not btnSwapTable.Down) and (not btnReservationTable.Down);
 end;
 

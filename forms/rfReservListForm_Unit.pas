@@ -52,7 +52,6 @@ type
     FTableKey: Integer;
     FCurrentTable: TRestTable;
     FFiscalRegiter: TFiscalRegister;
-    FRubPayTypeKey: Integer;
     function GetOrderKey: Integer;
     function GetReservKey: Integer;
     procedure SetFiscalRegister(const Value: TFiscalRegister);
@@ -231,7 +230,6 @@ begin
   Assert(Assigned(FrontBase), 'FrontBase not assigned');
 
   FrontBase.GetReservListByTable(FTableKey, MemTable);
-  FRubPayTypeKey := FrontBase.GetIDByRUID(mn_RUBpaytypeXID, mn_RUBpaytypeDBID);
   MemTable.First;
 
   FReport := TRestReport.Create(nil);

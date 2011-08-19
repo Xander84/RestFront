@@ -24,10 +24,8 @@ type
     procedure usrg_lblCardCodeKeyPress(Sender: TObject; var Key: Char);
   private
     FHeaderTable: TkbmMemTable;
-    FPersonalCardID: Integer;
   public
     property HeaderTable: TkbmMemTable read FHeaderTable write FHeaderTable;
-    property PersonalCardID: Integer read FPersonalCardID write FPersonalCardID;
   end;
 
 var
@@ -81,7 +79,7 @@ begin
   RemoveWrongPassChar(Key);
   if (Key = #13) then
   begin
-    if FFrontBase.GetPersonalCardInfo(FHeaderTable, usrg_lblCardCode.Text, FPersonalCardID) then
+    if FFrontBase.GetPersonalCardInfo(FHeaderTable, usrg_lblCardCode.Text) then
     begin
       FHeaderTable.First;
       if not FHeaderTable.Eof then

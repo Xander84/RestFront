@@ -12,12 +12,6 @@ uses
 
 const
   cn_maxpay = 1000000;
-  mn_CashXID = 147142772;
-  mn_CashlDBID = 354772515;
-  mn_CreditlXID = 147142771;
-  mn_CreditDBID = 362821871;
-  mn_personalcardXID = 147733995;
-  mn_personalcardDBID = 1604829035;
 
 type
   // тип оплаты: продажа или возврат
@@ -89,10 +83,7 @@ type
     FInDeleteOrUpdate: Boolean;
     FInInsert: Boolean;
     FInBrowse: Boolean;
-    FCashID: Integer;
-    FCreditID: Integer;
-    FPersonalCardID: Integer;
-    FPersonalCardKey: Integer;
+ {}   FCreditID: Integer;
     FCurrentPayType: Integer;
     FCurrentPayName: String;
     FNoFiscal: Integer;
@@ -105,6 +96,7 @@ type
     FCashNoFiscal: Integer;
     FSaleType: TSaleType;
     FAvansSum: Currency;
+    FPersonalCardKey: Integer;
     FExternalPay: Boolean;
     procedure SetSumToPay(const Value: Currency);
     procedure SetFiscalRegister(const Value: TFiscalRegister);
@@ -213,6 +205,7 @@ constructor TSellParamForm.CreateWithFrontBase(AOwner: TComponent;
   FBase: TFrontBase);
 var
   CardCount: Integer;
+  CashCount: Integer;
   PercCardCount: Integer;
   NoCashCount: Integer;
 begin
@@ -243,16 +236,11 @@ begin
   dsMain.DataSet := dsPayLine;
   dsPayLine.Open;
 
-  FCashID := FFrontBase.GetIDByRUID(mn_CashXID, mn_CashlDBID);
-  Assert(FCashID <> -1, 'Invalid RUID');
-  FCreditID := FFrontBase.GetIDByRUID(mn_CreditlXID, mn_CreditDBID);
-  Assert(FCreditID <> -1, 'Invalid RUID');
-  FPersonalCardID := FFrontBase.GetIDByRUID(mn_personalcardXID, mn_personalcardDBID);
-  Assert(FPersonalCardID <> -1, 'Invalid RUID');
   FCashNoFiscal := FFrontBase.GetCashFiscalType;
   FSaleType := ptSale;
 
-  FFrontBase.GetPaymentsCount(CardCount, NoCashCount, PercCardCount, FCashID, FPersonalCardID);
+  FFrontBase.GetPaymentsCount(CardCount, NoCashCount, PercCardCount, CashCount);
+  btnCashPay.Enabled := (CashCount > 0);
   btnCardPay.Enabled := (CardCount > 0);
   btnCreditlPay.Enabled := (NoCashCount > 0);
   btnPersonalCard.Enabled := (PercCardCount > 0);
@@ -264,10 +252,10 @@ begin
   end;      }
 
   //есть ли права на оплату перс. картой
-  if btnPersonalCard.Enabled then
-    btnPersonalCard.Enabled := FFrontBase.GetUserRuleForPayment(FPersonalCardID);
+//  if btnPersonalCard.Enabled then
+//    btnPersonalCard.Enabled := FFrontBase.GetUserRuleForPayment(FPersonalCardID);
   //есть ли права на оплату наличностью.
-  btnCashPay.Enabled := FFrontBase.GetUserRuleForPayment(FCashID);
+//  btnCashPay.Enabled := FFrontBase.GetUserRuleForPayment(FCashID);
 
   SetupAdvGrid(DBAdvGrMain);
   with DBAdvGrMain do
@@ -317,7 +305,7 @@ begin
     if btnCashPay.Enabled then
     begin
       btnCashPay.Down := True;
-      FCurrentPayType := FFrontBase.GetIDByRUID(mn_RUBpaytypeXID, mn_RUBpaytypeDBID);
+      FCurrentPayType := FFrontBase.FrontConst.KindType_CashDefault;
       FCurrentPayName := 'Рубли';
       FNoFiscal := FCashNoFiscal;//0;
       FPayType := cn_paytype_cash;
@@ -617,7 +605,6 @@ begin
 
   FForm := TPersonalCardForm.Create(nil);
   FForm.FrontBase := FFrontBase;
-  FForm.PersonalCardID := FPersonalCardID;
   try
     FForm.ShowModal;
     if FForm.ModalResult = mrOK then
@@ -736,7 +723,7 @@ begin
   if btnCashPay.Down then
   begin
     FPersonalCardKey := -1;
-    FCurrentPayType := FFrontBase.GetIDByRUID(mn_RUBpaytypeXID, mn_RUBpaytypeDBID);
+    FCurrentPayType := FFrontBase.FrontConst.KindType_CashDefault;
     FCurrentPayName := 'Рубли';
     FNoFiscal := FCashNoFiscal;//0;
     FPayType := cn_paytype_cash;
@@ -814,7 +801,7 @@ begin
       FPersonalCardKey := dsPayLine.FieldByName('USR$PERSONALCARDKEY').AsInteger;
     end else
     begin
-      FCurrentPayType := FFrontBase.GetIDByRUID(mn_RUBpaytypeXID, mn_RUBpaytypeDBID);
+      FCurrentPayType := FFrontBase.FrontConst.KindType_CashDefault;
       FCurrentPayName := 'Рубли';
       FPayType := cn_paytype_cash;
     end;
