@@ -137,10 +137,14 @@ begin
             else
               DestDS.Fields[I].AsString := SourceDS.Fields[I].AsString;
             end;
-            DestDS.FieldByName('ID').AsInteger := FFrontBase.GetNextID;
             DestDS.FieldByName('usr$quantity').AsCurrency := Quantity;
             DestDS.FieldByName('PARENT').AsInteger := Parent;
-            DestDS.FieldByName('STATEFIELD').AsInteger := 1;
+            if SourceDS.FieldByName('usr$quantity').AsCurrency = 0 then
+              DestDS.FieldByName('STATEFIELD').AsInteger := cn_StateUpdateParent
+            else begin
+              DestDS.FieldByName('STATEFIELD').AsInteger := cn_StateInsert;
+              DestDS.FieldByName('ID').AsInteger := FFrontBase.GetNextID;
+            end;
             DestDS.Post;
 
             if SourceDS = FLeftDocLine then
@@ -187,7 +191,7 @@ begin
           DestDS.Fields[I].AsString := SourceDS.Fields[I].AsString;
       end;
       DestDS.FieldByName('PARENT').AsInteger := Parent;
-      DestDS.FieldByName('STATEFIELD').AsInteger := 3;
+      DestDS.FieldByName('STATEFIELD').AsInteger := cn_StateUpdateParent;
       DestDS.Post;
 
       if SourceDS = FLeftDocLine then
