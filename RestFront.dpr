@@ -11,6 +11,7 @@ program RestFront;
 }
 
 uses
+ // rf_Restart in 'utils\rf_Restart.pas',
   Forms,
   AppEvnts,
   MidasLib,
@@ -67,7 +68,8 @@ uses
   rfNoCashGroupForm_Unit in 'rfNoCashGroupForm_Unit.pas' {rfNoCashGroup},
   rfFindGood_Unit in 'forms\rfFindGood_Unit.pas' {FindGood},
   rfReservListForm_Unit in 'forms\rfReservListForm_Unit.pas' {ReservList},
-  rfCheckDatabase in 'utils\rfCheckDatabase.pas';
+  rfCheckDatabase in 'utils\rfCheckDatabase.pas'{,
+  rf_GetNewVersion in 'utils\rf_GetNewVersion.pas'};
 
 {$R *.res}
 
@@ -79,27 +81,30 @@ var
   FApplicationEvents: TApplicationEvents;
   hMutex: THandle;
 begin
-  ApplicationEventsHandler := TApplicationEventsHandler.Create;
-  try
-    FApplicationEvents := TApplicationEvents.Create(Application);
-    FApplicationEvents.OnException := ApplicationEventsHandler.ApplicationEventsException;
+//  if not GetNewVersion('d:\front\restfront.exe') then
+  begin
+    ApplicationEventsHandler := TApplicationEventsHandler.Create;
+    try
+      FApplicationEvents := TApplicationEvents.Create(Application);
+      FApplicationEvents.OnException := ApplicationEventsHandler.ApplicationEventsException;
 
-    Application.CreateForm(TFrontData, FrontData);
-    hMutex := CreateMutex(nil, False, UniqString);
-    if GetLastError = ERROR_ALREADY_EXISTS then
-    begin
-      CloseHandle(hMutex);
-      {$IFNDEF DEBUG}
-      Touch_MessageBox('Внимание', 'Приложение уже запущено', MB_OK, mtWarning);
-      Exit;
-      {$ENDIF}
+      Application.CreateForm(TFrontData, FrontData);
+      hMutex := CreateMutex(nil, False, UniqString);
+      if GetLastError = ERROR_ALREADY_EXISTS then
+      begin
+        CloseHandle(hMutex);
+        {$IFNDEF DEBUG}
+        Touch_MessageBox('Внимание', 'Приложение уже запущено', MB_OK, mtWarning);
+        Exit;
+        {$ENDIF}
+      end;
+      Application.Initialize;
+      Application.Title := 'Ресторан';
+      AppHandle := hMutex;
+      Application.CreateForm(TRestMainForm, RestMainForm);
+      Application.Run;
+    finally
+      ApplicationEventsHandler.Free;
     end;
-    Application.Initialize;
-    Application.Title := 'Ресторан';
-    AppHandle := hMutex;
-    Application.CreateForm(TRestMainForm, RestMainForm);
-    Application.Run;
-  finally
-    ApplicationEventsHandler.Free;
-  end;
+  end
 end.

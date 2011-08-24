@@ -39,6 +39,7 @@ procedure TDevideForm.edtNumberKeyPress(Sender: TObject; var Key: Char);
 var
   D: Double;
 begin
+  inherited;
   if (Key = '.') or (Key = ',') then
     Key := DecimalSeparator;
   if Key <> #8 then
@@ -49,7 +50,6 @@ begin
       Beep;
     end;
   end;
-  inherited;
 end;
 
 procedure TDevideForm.FormCreate(Sender: TObject);

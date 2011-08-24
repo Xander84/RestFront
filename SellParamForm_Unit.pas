@@ -71,7 +71,7 @@ type
     FFrontBase: TFrontBase;
     // сумма к оплате
     FSumToPay: Currency;
-    //общая сумма (вместе с авансом)
+    // общая сумма (вместе с авансом)
     FAllSum: Currency;
     // сумма по всем видам оплат
     FPaySum: Currency;
@@ -83,7 +83,7 @@ type
     FInDeleteOrUpdate: Boolean;
     FInInsert: Boolean;
     FInBrowse: Boolean;
- {}   FCreditID: Integer;
+    { } FCreditID: Integer;
     FCurrentPayType: Integer;
     FCurrentPayName: String;
     FNoFiscal: Integer;
@@ -120,7 +120,8 @@ type
     property Sums: TSaleSums read FSums;
     property SumToPay: Currency read FSumToPay write SetSumToPay;
     property AvansSum: Currency read FAvansSum write SetAvansSum;
-    property FiscalRegiter: TFiscalRegister read FFiscalRegiter write SetFiscalRegister;
+    property FiscalRegiter: TFiscalRegister read FFiscalRegiter write
+      SetFiscalRegister;
     property Doc: TkbmMemTable read FDoc write SetDoc;
     property DocLine: TkbmMemTable read FDocLine write SetDocLine;
     property SaleType: TSaleType read FSaleType write SetSaleType;
@@ -136,11 +137,8 @@ implementation
 uses
   PayForm_Unit, TouchMessageBoxForm_Unit, Report_Unit, PersonalCardForm_Unit,
   rfUtils_unit, rfNoCashGroupForm_Unit;
-
 {$R *.dfm}
-
 { TSellParamForm }
-
 
 procedure TSellParamForm.CalcSums;
 var
@@ -167,23 +165,30 @@ begin
       while not dsPayLine.Eof do
       begin
         case dsPayLine.FieldByName('PAYTYPE').AsInteger of
-          cn_paytype_cash: //наличные
-            FSums.FCashSum := FSums.FCashSum + dsPayLine.FieldByName('SUM').AsInteger;
-          cn_paytype_credit: //кредитная карта
-            FSums.FCardSum := FSums.FCardSum + dsPayLine.FieldByName('SUM').AsInteger;
-          cn_paytype_noncash: //безнал (кредит)
-            FSums.FCreditSum := FSums.FCreditSum + dsPayLine.FieldByName('SUM').AsInteger;
+          cn_paytype_cash: // наличные
+            FSums.FCashSum := FSums.FCashSum + dsPayLine.FieldByName('SUM')
+              .AsInteger;
+          cn_paytype_credit: // кредитная карта
+            FSums.FCardSum := FSums.FCardSum + dsPayLine.FieldByName('SUM')
+              .AsInteger;
+          cn_paytype_noncash: // безнал (кредит)
+            FSums.FCreditSum := FSums.FCreditSum + dsPayLine.FieldByName('SUM')
+              .AsInteger;
           cn_paytype_personalcard:
-            FSums.FPersonalCardSum := FSums.FPersonalCardSum + dsPayLine.FieldByName('SUM').AsInteger;
+            FSums.FPersonalCardSum := FSums.FPersonalCardSum +
+              dsPayLine.FieldByName('SUM').AsInteger;
         end;
         // проверка на то, что бы фискальные оплаты не были с нефискальными
         if FFirst then
         begin
           FIsValidPayment := True;
-          FNoFiscalPayment := (dsPayLine.FieldByName('USR$NOFISCAL').AsInteger = 1);
-        end else
+          FNoFiscalPayment := (dsPayLine.FieldByName('USR$NOFISCAL')
+              .AsInteger = 1);
+        end
+        else
         begin
-          if FNoFiscalPayment <> (dsPayLine.FieldByName('USR$NOFISCAL').AsInteger = 1) then
+          if FNoFiscalPayment <> (dsPayLine.FieldByName('USR$NOFISCAL')
+              .AsInteger = 1) then
             FIsValidPayment := False;
 
         end;
@@ -245,17 +250,17 @@ begin
   btnCreditlPay.Enabled := (NoCashCount > 0);
   btnPersonalCard.Enabled := (PercCardCount > 0);
 
-{  if not FFrontBase.GetUserRuleForPayment(FCreditID) then
-  begin
+  { if not FFrontBase.GetUserRuleForPayment(FCreditID) then
+    begin
     btnCardPay.Enabled := False;
     btnCreditlPay.Enabled := False;
-  end;      }
+    end; }
 
-  //есть ли права на оплату перс. картой
-//  if btnPersonalCard.Enabled then
-//    btnPersonalCard.Enabled := FFrontBase.GetUserRuleForPayment(FPersonalCardID);
-  //есть ли права на оплату наличностью.
-//  btnCashPay.Enabled := FFrontBase.GetUserRuleForPayment(FCashID);
+  // есть ли права на оплату перс. картой
+  // if btnPersonalCard.Enabled then
+  // btnPersonalCard.Enabled := FFrontBase.GetUserRuleForPayment(FPersonalCardID);
+  // есть ли права на оплату наличностью.
+  // btnCashPay.Enabled := FFrontBase.GetUserRuleForPayment(FCashID);
 
   SetupAdvGrid(DBAdvGrMain);
   with DBAdvGrMain do
@@ -274,7 +279,8 @@ end;
 
 procedure TSellParamForm.edMainKeyPress(Sender: TObject; var Key: Char);
 begin
-  if (Key = 'ю') or (Key = 'Ю') or (Key = 'б') or (Key = 'Б') or (Key = ',') or (Key = '<') then
+  if (Key = 'ю') or (Key = 'Ю') or (Key = 'б') or (Key = 'Б') or (Key = ',') or
+    (Key = '<') then
     Key := DecimalSeparator;
 end;
 
@@ -283,7 +289,8 @@ begin
   inherited;
 
   btnCashPay.Picture := FrontData.RestPictureContainer.FindPicture('money');
-  btnCardPay.Picture := FrontData.RestPictureContainer.FindPicture('master_card');
+  btnCardPay.Picture := FrontData.RestPictureContainer.FindPicture
+    ('master_card');
   btnPersonalCard.Picture := FrontData.RestPictureContainer.FindPicture('user');
   btnDelPay.Picture := FrontData.RestPictureContainer.FindPicture('cancel');
 
@@ -291,7 +298,8 @@ begin
   btnCancel.Picture := FrontData.RestPictureContainer.FindPicture('cross');
 end;
 
-procedure TSellParamForm.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+procedure TSellParamForm.FormKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
 begin
   inherited;
   if IsKeyCalculatorValid(Key) and (Shift = []) then
@@ -307,9 +315,10 @@ begin
       btnCashPay.Down := True;
       FCurrentPayType := FFrontBase.FrontConst.KindType_CashDefault;
       FCurrentPayName := 'Рубли';
-      FNoFiscal := FCashNoFiscal;//0;
+      FNoFiscal := FCashNoFiscal; // 0;
       FPayType := cn_paytype_cash;
-    end else
+    end
+    else
       exit;
   end;
 
@@ -327,10 +336,12 @@ begin
           dsPayLine.FieldByName('USR$NAME').AsString := FCurrentPayName;
           dsPayLine.FieldByName('USR$NOFISCAL').AsInteger := FNoFiscal;
           dsPayLine.FieldByName('PAYTYPE').AsInteger := FPayType;
-          dsPayLine.FieldByName('USR$PERSONALCARDKEY').AsInteger := FPersonalCardKey;
+          dsPayLine.FieldByName('USR$PERSONALCARDKEY').AsInteger :=
+            FPersonalCardKey;
           dsPayLine.Post;
         end;
-      end else
+      end
+      else
       begin
         if dsPayLine.Locate('USR$PAYTYPEKEY', FCurrentPayType, []) then
         begin
@@ -340,7 +351,8 @@ begin
           else
             dsPayLine.FieldByName('SUM').AsCurrency := 0;
           dsPayLine.Post;
-        end else
+        end
+        else
         begin
           dsPayLine.Append;
           if edMain.Text <> '' then
@@ -349,7 +361,8 @@ begin
           dsPayLine.FieldByName('USR$NAME').AsString := FCurrentPayName;
           dsPayLine.FieldByName('USR$NOFISCAL').AsInteger := FNoFiscal;
           dsPayLine.FieldByName('PAYTYPE').AsInteger := FPayType;
-          dsPayLine.FieldByName('USR$PERSONALCARDKEY').AsInteger := FPersonalCardKey;
+          dsPayLine.FieldByName('USR$PERSONALCARDKEY').AsInteger :=
+            FPersonalCardKey;
           dsPayLine.Post;
         end;
       end;
@@ -359,7 +372,8 @@ begin
     if FSaleType <> ptAvans then
     begin
       if (FSumToPay - FPaySum) < 0 then
-        lblChange.Caption := Format(DBAdvGrMain.FloatFormat, [(FPaySum - FSumToPay)])
+        lblChange.Caption := Format(DBAdvGrMain.FloatFormat,
+          [(FPaySum - FSumToPay)])
       else
         lblChange.Caption := '0';
 
@@ -379,7 +393,8 @@ begin
     lblAvansSum.Visible := True;
     lblAllSumCaption.Visible := True;
     lblAvansCaption.Visible := True;
-  end else
+  end
+  else
   begin
     lblAllSum.Visible := False;
     lblAvansSum.Visible := False;
@@ -428,12 +443,14 @@ var
 begin
   if ((lblChange.Caption = '') or (FChange < 0)) and (FSaleType <> ptAvans) then
   begin
-    Touch_MessageBox('Внимание', 'Сумма оплаты меньше суммы чека!', MB_OK, mtWarning);
+    Touch_MessageBox('Внимание', 'Сумма оплаты меньше суммы чека!', MB_OK,
+      mtWarning);
     exit;
   end;
   if (FChange > 0) and (FSumToPay = 0) then
   begin
-    Touch_MessageBox('Внимание', 'Сумма оплаты больше суммы чека!', MB_OK, mtWarning);
+    Touch_MessageBox('Внимание', 'Сумма оплаты больше суммы чека!', MB_OK,
+      mtWarning);
     exit;
   end;
   if (-FChange >= cn_maxpay) then
@@ -442,42 +459,65 @@ begin
     exit;
   end;
   CalcSums;
-  if (((FSums.FCardSum + FSums.FCreditSum) > FSumToPay) or (FSums.FPersonalCardSum > FSumToPay))
-    and (FSaleType <> ptAvans) then
+  if (((FSums.FCardSum + FSums.FCreditSum) > FSumToPay) or
+      (FSums.FPersonalCardSum > FSumToPay)) and (FSaleType <> ptAvans) then
   begin
-    Touch_MessageBox('Внимание', 'Сумма оплаты по безналичному расчету превышает сумму чека!', MB_OK, mtWarning);
+    Touch_MessageBox('Внимание',
+      'Сумма оплаты по безналичному расчету превышает сумму чека!', MB_OK,
+      mtWarning);
     exit;
   end;
-  if ((FSums.FPersonalCardSum > 0) and ((FSums.FCardSum + FSums.FCashSum + FSums.FCreditSum) > 0)) then
+  if ((FSums.FPersonalCardSum > 0) and
+      ((FSums.FCardSum + FSums.FCashSum + FSums.FCreditSum) > 0)) then
   begin
-    Touch_MessageBox('Внимание', 'Не может быть смешанной оплаты при оплате персональной карточкой!', MB_OK, mtWarning);
+    Touch_MessageBox('Внимание',
+      'Не может быть смешанной оплаты при оплате персональной карточкой!',
+      MB_OK, mtWarning);
     exit;
   end;
   if not FIsValidPayment then
   begin
-    Touch_MessageBox('Внимание', 'Не может быть комбинации фискальной и не фискальной оплаты!', MB_OK, mtWarning);
+    Touch_MessageBox('Внимание',
+      'Не может быть комбинации фискальной и не фискальной оплаты!', MB_OK,
+      mtWarning);
     exit;
   end;
   FSums.FChangeSum := FChange;
-  if ((FSaleType = ptReturn) or (FSaleType = ptReturnAvans)) and (FChange <> 0)  then
+  if ((FSaleType = ptReturn) or (FSaleType = ptReturnAvans)) and (FChange <> 0)
+    then
   begin
-    Touch_MessageBox('Внимание', 'При возврате сдачи не может быть!', MB_OK, mtWarning);
+    Touch_MessageBox('Внимание', 'При возврате сдачи не может быть!', MB_OK,
+      mtWarning);
     exit;
   end;
+  if Assigned(DocLine) then
+    if DocLine.Active then
+      if DocLine.RecordCount > 99 then
+      begin
+        Touch_MessageBox('Внимание',
+          'Колличество позиций в чеке не может быть > 99. Разделите счет!',
+          MB_OK, mtWarning);
+        exit;
+      end;
 
   dsPayLine.First;
-  while not dsPayLine.EOF do
+  while not dsPayLine.Eof do
   begin
     // Cумма одного из платежей равна 0
     if dsPayLine.FieldByName('SUM').AsCurrency = 0 then
     begin
-      Touch_MessageBox('Внимание', 'Неверная сумма оплаты! Сумма одного из платежей равна 0!', MB_OK, mtWarning);
+      Touch_MessageBox('Внимание',
+        'Неверная сумма оплаты! Сумма одного из платежей равна 0!', MB_OK,
+        mtWarning);
       exit;
     end;
     // Сумма одного из платежей больше или равна Сумме оплаты и присутствует второй платеж
-    if (dsPayLine.FieldByName('SUM').AsCurrency >= FSumToPay) and (dsPayLine.RecordCount > 1) and (FSaleType <> ptAvans) then
+    if (dsPayLine.FieldByName('SUM').AsCurrency >= FSumToPay) and
+      (dsPayLine.RecordCount > 1) and (FSaleType <> ptAvans) then
     begin
-      Touch_MessageBox('Внимание', 'Неверная сумма оплаты! Сумма одного из платежей больше суммы оплаты!', MB_OK, mtWarning);
+      Touch_MessageBox('Внимание',
+        'Неверная сумма оплаты! Сумма одного из платежей больше суммы оплаты!',
+        MB_OK, mtWarning);
       exit;
     end;
     dsPayLine.Next;
@@ -517,20 +557,23 @@ begin
                     FReport := TRestReport.Create(Self);
                     FReport.FrontBase := FFrontBase;
                     try
-                      FReport.PrintAfterSalePreCheck(FDoc.FieldByName('ID').AsInteger, FSums);
+                      FReport.PrintAfterSalePreCheck
+                        (FDoc.FieldByName('ID').AsInteger, FSums);
                     finally
                       FReport.Free;
                     end;
                   end;
                 except
                   on E: Exception do
-                    Touch_MessageBox('Внимание', 'Ошибка печати копии чека ' + E.Message, MB_OK, mtError);
+                    Touch_MessageBox('Внимание',
+                      'Ошибка печати копии чека ' + E.Message, MB_OK, mtError);
                 end;
                 Self.ModalResult := mrOk;
               end;
-            end else
+            end
+            else
             begin
-              //Если был аванс, то в чеке пишем оплата по договору бронирования
+              // Если был аванс, то в чеке пишем оплата по договору бронирования
               FLineTable := TkbmMemTable.Create(nil);
               try
                 GetLineTable(FLineTable);
@@ -540,13 +583,18 @@ begin
                 FLineTable.FieldByName('usr$quantity').AsInteger := 1;
                 FLineTable.FieldByName('usr$costncu').AsCurrency := FSumToPay;
                 FLineTable.FieldByName('usr$sumncu').AsCurrency := FSumToPay;
-                FLineTable.FieldByName('usr$sumncuwithdiscount').AsCurrency := FSumToPay;
-                FLineTable.FieldByName('usr$costncuwithdiscount').AsCurrency := FSumToPay;
-                FLineTable.FieldByName('USR$COMPUTERNAME').AsString := FFrontBase.ComputerName;
-                FLineTable.FieldByName('GOODNAME').AsString := 'Окончательный рассчет';
+                FLineTable.FieldByName('usr$sumncuwithdiscount').AsCurrency :=
+                  FSumToPay;
+                FLineTable.FieldByName('usr$costncuwithdiscount').AsCurrency :=
+                  FSumToPay;
+                FLineTable.FieldByName('USR$COMPUTERNAME').AsString :=
+                  FFrontBase.ComputerName;
+                FLineTable.FieldByName('GOODNAME').AsString :=
+                  'Окончательный рассчет';
                 FLineTable.Post;
 
-                if FFiscalRegiter.PrintCheck(Doc, FLineTable, dsPayLine, FSums) then
+                if FFiscalRegiter.PrintCheck(Doc, FLineTable, dsPayLine, FSums)
+                  then
                 begin
                   try
                     if FFrontBase.Options.PrintCopyCheck then
@@ -554,14 +602,17 @@ begin
                       FReport := TRestReport.Create(Self);
                       FReport.FrontBase := FFrontBase;
                       try
-                        FReport.PrintAfterSalePreCheck(FDoc.FieldByName('ID').AsInteger, FSums);
+                        FReport.PrintAfterSalePreCheck
+                          (FDoc.FieldByName('ID').AsInteger, FSums);
                       finally
                         FReport.Free;
                       end;
                     end;
                   except
                     on E: Exception do
-                      Touch_MessageBox('Внимание', 'Ошибка печати копии чека ' + E.Message, MB_OK, mtError);
+                      Touch_MessageBox('Внимание',
+                        'Ошибка печати копии чека ' + E.Message, MB_OK,
+                        mtError);
                   end;
                   Self.ModalResult := mrOk;
                 end;
@@ -569,8 +620,8 @@ begin
                 FLineTable.Free;
               end;
             end;
-          end else
-          if FSaleType = ptReturn then
+          end
+          else if FSaleType = ptReturn then
           begin
             if FFiscalRegiter.ReturnCheck(Doc, DocLine, dsPayLine, FSums) then
               Self.ModalResult := mrOk;
@@ -578,8 +629,11 @@ begin
         finally
           FInBrowse := False;
         end;
-      end else
-        Touch_MessageBox('Внимание', 'Для данной рабочей станции не указан кассовый терминал!', MB_OK, mtWarning);
+      end
+      else
+        Touch_MessageBox('Внимание',
+          'Для данной рабочей станции не указан кассовый терминал!', MB_OK,
+          mtWarning);
     except
       btnPay.Enabled := True;
       TouchKeyBoard.OnKeyClick := Ev;
@@ -592,8 +646,8 @@ end;
 
 procedure TSellParamForm.actPayUpdate(Sender: TObject);
 begin
-  actPay.Enabled := (Assigned(FFrontBase)) and
-    (Assigned(FDoc)) and (Assigned(FDocLine)) and (not FPrinting);
+  actPay.Enabled := (Assigned(FFrontBase)) and (Assigned(FDoc)) and
+    (Assigned(FDocLine)) and (not FPrinting);
 end;
 
 procedure TSellParamForm.actPersonalCardExecute(Sender: TObject);
@@ -607,7 +661,7 @@ begin
   FForm.FrontBase := FFrontBase;
   try
     FForm.ShowModal;
-    if FForm.ModalResult = mrOK then
+    if FForm.ModalResult = mrOk then
     begin
       FCurrentPayType := FForm.HeaderTable.FieldByName('kindtypekey').AsInteger;
       FCurrentPayName := 'Персональная карта';
@@ -620,7 +674,8 @@ begin
         edMain.Text := CurrToStr(FSumToPay);
         edMain.SelStart := Length(edMain.Text);
       end;
-    end else
+    end
+    else
       PrevSettings(FPayType);
   finally
     FForm.Free;
@@ -632,8 +687,7 @@ begin
   actPersonalCard.Enabled := not FPrinting;
 end;
 
-procedure TSellParamForm.TouchKeyBoardKeyClick(Sender: TObject;
-  Index: Integer);
+procedure TSellParamForm.TouchKeyBoardKeyClick(Sender: TObject; Index: Integer);
 begin
   with TouchKeyBoard.Keys.Items[Index] do
   begin
@@ -669,17 +723,20 @@ begin
   FForm.PayType := FCreditID;
   FForm.IsPlCard := 1;
   try
-    if FFrontBase.GetPayKindType(FForm.PayFormDataSet,
-      FForm.PayType, FForm.IsPlCard) then
+    if FFrontBase.GetPayKindType(FForm.PayFormDataSet, FForm.PayType,
+      FForm.IsPlCard) then
     begin
       if FForm.PayFormDataSet.RecordCount > 0 then
       begin
         if FForm.PayFormDataSet.RecordCount = 1 then
         begin
           FPersonalCardKey := -1;
-          FCurrentPayType := FForm.PayFormDataSet.FieldByName('USR$PAYTYPEKEY').AsInteger;
-          FCurrentPayName := FForm.PayFormDataSet.FieldByName('USR$NAME').AsString;
-          FNoFiscal := FForm.PayFormDataSet.FieldByName('USR$NOFISCAL').AsInteger;
+          FCurrentPayType := FForm.PayFormDataSet.FieldByName('USR$PAYTYPEKEY')
+            .AsInteger;
+          FCurrentPayName := FForm.PayFormDataSet.FieldByName('USR$NAME')
+            .AsString;
+          FNoFiscal := FForm.PayFormDataSet.FieldByName('USR$NOFISCAL')
+            .AsInteger;
           FPayType := cn_paytype_credit;
           edMain.Text := '';
           if dsPayLine.IsEmpty then
@@ -687,15 +744,19 @@ begin
             edMain.Text := CurrToStr(FSumToPay);
             edMain.SelStart := Length(edMain.Text);
           end;
-        end else
+        end
+        else
         begin
           FForm.ShowModal;
-          if FForm.ModalResult = mrOK then
+          if FForm.ModalResult = mrOk then
           begin
             FPersonalCardKey := -1;
-            FCurrentPayType := FForm.PayFormDataSet.FieldByName('USR$PAYTYPEKEY').AsInteger;
-            FCurrentPayName := FForm.PayFormDataSet.FieldByName('USR$NAME').AsString;
-            FNoFiscal := FForm.PayFormDataSet.FieldByName('USR$NOFISCAL').AsInteger;
+            FCurrentPayType := FForm.PayFormDataSet.FieldByName
+              ('USR$PAYTYPEKEY').AsInteger;
+            FCurrentPayName := FForm.PayFormDataSet.FieldByName('USR$NAME')
+              .AsString;
+            FNoFiscal := FForm.PayFormDataSet.FieldByName('USR$NOFISCAL')
+              .AsInteger;
             FPayType := cn_paytype_credit;
             edMain.Text := '';
             if dsPayLine.IsEmpty then
@@ -703,7 +764,8 @@ begin
               edMain.Text := CurrToStr(FSumToPay);
               edMain.SelStart := Length(edMain.Text);
             end;
-          end else
+          end
+          else
             PrevSettings(FPayType);
         end;
       end;
@@ -725,7 +787,7 @@ begin
     FPersonalCardKey := -1;
     FCurrentPayType := FFrontBase.FrontConst.KindType_CashDefault;
     FCurrentPayName := 'Рубли';
-    FNoFiscal := FCashNoFiscal;//0;
+    FNoFiscal := FCashNoFiscal; // 0;
     FPayType := cn_paytype_cash;
 
     if dsPayLine.RecordCount = 0 then
@@ -745,7 +807,7 @@ end;
 
 procedure TSellParamForm.actCreditPayExecute(Sender: TObject);
 var
-//  FForm: TPayForm;
+  // FForm: TPayForm;
   FForm: TrfNoCashGroup;
 begin
   if btnCreditlPay.Down = False then
@@ -755,7 +817,7 @@ begin
   try
     FForm.FrontBase := FFrontBase;
     FForm.ShowModal;
-    if FForm.ModalResult = mrOK then
+    if FForm.ModalResult = mrOk then
     begin
       FPersonalCardKey := -1;
       FCurrentPayType := FForm.PayTypeKey;
@@ -769,7 +831,8 @@ begin
         edMain.Text := CurrToStr(FSumToPay);
         edMain.SelStart := Length(edMain.Text);
       end;
-    end else
+    end
+    else
       PrevSettings(FPayType);
   finally
     FForm.Free;
@@ -790,7 +853,7 @@ procedure TSellParamForm.OnAfterDelete(DataSet: TDataSet);
 begin
   FInDeleteOrUpdate := True;
   try
-    //edMain.Text := '';
+    // edMain.Text := '';
     edMain.Text := dsPayLine.FieldByName('SUM').AsString;
     PrevSettings(dsPayLine.FieldByName('PAYTYPE').AsInteger, False);
     if not dsPayLine.IsEmpty then
@@ -798,8 +861,10 @@ begin
       FCurrentPayType := dsPayLine.FieldByName('USR$PAYTYPEKEY').AsInteger;
       FCurrentPayName := dsPayLine.FieldByName('USR$NAME').AsString;
       FPayType := dsPayLine.FieldByName('PAYTYPE').AsInteger;
-      FPersonalCardKey := dsPayLine.FieldByName('USR$PERSONALCARDKEY').AsInteger;
-    end else
+      FPersonalCardKey := dsPayLine.FieldByName('USR$PERSONALCARDKEY')
+        .AsInteger;
+    end
+    else
     begin
       FCurrentPayType := FFrontBase.FrontConst.KindType_CashDefault;
       FCurrentPayName := 'Рубли';
@@ -811,10 +876,10 @@ begin
   DBAdvGrMain.CalcFooter(2);
 end;
 
-procedure TSellParamForm.DBAdvGrMainFooterCalc(Sender: TObject; ACol,
-  ARow: Integer; var Value: String);
+procedure TSellParamForm.DBAdvGrMainFooterCalc(Sender: TObject;
+  ACol, ARow: Integer; var Value: String);
 var
-  I : Integer;
+  I: Integer;
   Curr: Currency;
 begin
   if ACol = 1 then
@@ -835,29 +900,30 @@ begin
   end;
 end;
 
-procedure TSellParamForm.PrevSettings(const PayType: Integer; NeedLocate: Boolean);
+procedure TSellParamForm.PrevSettings(const PayType: Integer;
+  NeedLocate: Boolean);
 begin
   try
     if NeedLocate then
       dsPayLine.Locate('USR$PAYTYPEKEY', FCurrentPayType, []);
     case PayType of
-       cn_paytype_cash:
-         btnCashPay.Down := True;
+      cn_paytype_cash:
+        btnCashPay.Down := True;
 
-       cn_paytype_credit:
-         btnCardPay.Down := True;
+      cn_paytype_credit:
+        btnCardPay.Down := True;
 
-       cn_paytype_noncash:
-         btnCreditlPay.Down := True;
+      cn_paytype_noncash:
+        btnCreditlPay.Down := True;
 
-       cn_paytype_personalcard:
-         btnPersonalCard.Down := True;
+      cn_paytype_personalcard:
+        btnPersonalCard.Down := True;
 
     else
       btnCashPay.Down := True;
     end;
   except
-    raise;
+    raise ;
   end;
 end;
 
@@ -866,7 +932,7 @@ begin
   if FInBrowse then
     exit;
 
-  if (not FInInsert)  and (not dsPayLine.IsEmpty) then
+  if (not FInInsert) and (not dsPayLine.IsEmpty) then
   begin
     FInDeleteOrUpdate := True;
     try
@@ -875,7 +941,8 @@ begin
       FCurrentPayType := dsPayLine.FieldByName('USR$PAYTYPEKEY').AsInteger;
       FCurrentPayName := dsPayLine.FieldByName('USR$NAME').AsString;
       FPayType := dsPayLine.FieldByName('PAYTYPE').AsInteger;
-      FPersonalCardKey := dsPayLine.FieldByName('USR$PERSONALCARDKEY').AsInteger;
+      FPersonalCardKey := dsPayLine.FieldByName('USR$PERSONALCARDKEY')
+        .AsInteger;
       PrevSettings(FPayType, False);
     finally
       FInDeleteOrUpdate := False;

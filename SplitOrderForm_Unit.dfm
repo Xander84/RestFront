@@ -595,6 +595,38 @@ object SplitOrder: TSplitOrder
     StatusBar.GradientDirection = gdVertical
     Styler = FrontData.FrontPanelStyler
     FullHeight = 61
+    object lbLeftCount: TLabel
+      Left = 8
+      Top = 7
+      Width = 13
+      Height = 29
+      Caption = '0'
+      Color = clWindow
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -24
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentColor = False
+      ParentFont = False
+      Transparent = True
+    end
+    object lbRightCount: TLabel
+      Left = 569
+      Top = 6
+      Width = 13
+      Height = 29
+      Caption = '0'
+      Color = clWindow
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -24
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentColor = False
+      ParentFont = False
+      Transparent = True
+    end
     object btnOK: TAdvSmoothButton
       Left = 613
       Top = 6

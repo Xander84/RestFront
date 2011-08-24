@@ -15,7 +15,7 @@ interface
 
 uses
   Classes, Graphics, Forms, Windows, Controls, Messages, Menus, SysUtils, IniFiles,
-  RestTable_Unit, Types, AppEvnts;
+ Types, AppEvnts;
 
 type
   TOrderInfo = class
@@ -91,6 +91,7 @@ var dxfDsCount: TdxfDsCount;
 procedure Register;
 
 implementation
+uses RestTable_Unit;
 
 procedure Register;
 begin

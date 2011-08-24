@@ -27,6 +27,8 @@ type
     DBGrLeft: TDBAdvGrid;
     DBGrRight: TDBAdvGrid;
     btnCancel: TAdvSmoothButton;
+    lbLeftCount: TLabel;
+    lbRightCount: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -117,7 +119,9 @@ begin
       try
         FForm.LabelCaption := 'Количество';
         FForm.CanDevided := FCanDevide;
+        FForm.edtNumber.Text := CurrToStr(SourceDS.FieldByName('usr$quantity').AsCurrency);
         FForm.ShowModal;
+
         if FForm.ModalResult = mrOK then
         begin
           Quantity := StrToCurr(FForm.Number);
@@ -313,6 +317,7 @@ begin
   pnlRightTop.Text := '<FONT  size="14" face="Times New Roman">' + '№ ' +
     FRightDoc.FieldByName('NUMBER').AsString + '. ' +
     FFrontBase.GetNameWaiterOnID(FRightDoc.FieldByName('usr$respkey').AsInteger, False, False) + '</FONT>';
+  RefreshDataSets;
 end;
 
 procedure TSplitOrder.SetFrontBase(const Value: TFrontBase);
@@ -463,6 +468,8 @@ procedure TSplitOrder.RefreshDataSets;
   FOrderKey: Integer;
   FMainOrderKey: Integer; }
 begin
+  lbRightCount.Caption := IntToStr(FRightDocLine.RecordCount);
+  lbLeftCount.Caption := IntToStr(FLeftDocLine.RecordCount);
 //  FFrontBase.CreateNewOrder(FLeftDoc, FLeftDocLine, FLeftModificationDataSet, FMainOrderKey);
 //  FFrontBase.CreateNewOrder(FRightDoc, FRightDocLine, FRightModificationDataSet, FOrderKey);
 //  FFrontBase.GetOrder(FLeftDoc, FLeftDocLine, FLeftModificationDataSet, FMainOrderKey);
