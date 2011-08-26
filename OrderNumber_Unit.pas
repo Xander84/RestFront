@@ -44,8 +44,9 @@ procedure TOrderNumber.edtNumberKeyPress(Sender: TObject;
 begin
   if (Key = 'þ') or (Key = 'Þ') or (Key = 'á') or (Key = 'Á') or (Key = ',') or (Key = '<') or (Key = '.') then
     Key := '.'
-  else if not IsDigit(Key) then
-    key := #0;
+  else if Key <> #8 then
+    if not IsDigit(Key) then
+      key := #0;
 end;
 
 function TOrderNumber.GetNumber: String;
